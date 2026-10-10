@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+@keyframes live-ticker {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-live-ticker {
+  animation: live-ticker 40s linear infinite;
+}
+
+/* Premium Dark Liquid Glass Effect for Mobile Bottom Nav */
+.liquid-glass {
+  background: rgba(15, 23, 42, 0.3); /* highly transparent slate-900 */
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px) saturate(150%);
+  -webkit-backdrop-filter: blur(4px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}

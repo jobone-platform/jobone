@@ -1,0 +1,77 @@
+@use "sass:math";
+
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 91deg;
+}
+
+.hero-rain-container {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Darker Jobseeker blue theme */
+  background: linear-gradient(180deg, #0a192f, #1e3a8a);
+  position: relative;
+}
+
+.rain {
+  position: absolute;
+  width: 120vw;
+  height: 100vh;
+  z-index: 0;
+  left: -10vw;
+  top: 0;
+}
+
+.drop {
+  $drops: 100;
+  /* Thicker, more visible rain lines */
+  border: 0.35vmin solid transparent;
+  /* Soft blue drops */
+  border-bottom-color: rgba(171, 194, 233, 0.6);
+  position: absolute;
+  top: -5vmin;
+  --angle: 91deg;
+  
+  @for $i from 1 through $drops {
+    &:nth-child(#{$i}) {
+      /* Boosted opacity slightly since there are fewer drops */
+      opacity: (math.random(60) + 40) * 0.01;
+      left: math.random(1200) * 0.1vw;
+      /* Increase length of the rain drops significantly */
+      border-left-width: (math.random(120) * 0.1vmin) + 0.3vmin;
+      /* Hardware acceleration hint */
+      will-change: transform;
+      /* Slowed down rain: changed 0.15s to 0.35s base */
+      animation: fall-#{$i}
+        (math.random(15) * 0.35s)
+        (math.random(25) * -0.5s)
+        ease-in
+        infinite;
+    }
+    @keyframes fall-#{$i} {
+      #{math.percentage( math.div(math.random(50), 100) )} {
+        transform: rotate(var(--angle)) translateX(0);
+      }
+      to {
+        transform: rotate(var(--angle)) translateX(calc(100vh + 5vmin));
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .rain {
+      height: 150vh;
+  }
+  .hero-rain-container {
+    height: 150vh;
+  }
+  /* Reduce rain density by half on mobile by hiding odd numbered drops */
+  .drop:nth-child(odd) {
+    display: none;
+  }
+}
