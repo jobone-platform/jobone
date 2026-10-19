@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -36,7 +37,7 @@ export default function Candidates() {
         const token = stored ? JSON.parse(stored).token : null;
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/employer/search-candidates?skills=${encodeURIComponent(appliedQuery)}&page=${page}&limit=20`,
+          `${API_BASE_URL}/employer/search-candidates?skills=${encodeURIComponent(appliedQuery)}&page=${page}&limit=20`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
 

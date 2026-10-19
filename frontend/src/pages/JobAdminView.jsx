@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -38,7 +39,7 @@ export default function JobAdminView() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       const { data } = await axios.get(
-        `https://jobone-mrpy.onrender.com/admin/jobs/${id}`,
+        `${API_BASE_URL}/admin/jobs/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -57,7 +58,7 @@ export default function JobAdminView() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/admin/jobs/${id}/review`,
+        `${API_BASE_URL}/admin/jobs/${id}/review`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } },
       );

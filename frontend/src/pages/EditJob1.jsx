@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -139,7 +140,7 @@ export default function EditJob() {
         const token = JSON.parse(stored).token;
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/jobs/${id}`,
+          `${API_BASE_URL}/jobs/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -417,7 +418,7 @@ export default function EditJob() {
       delete payload.longitude;
 
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/jobs/${id}`,
+        `${API_BASE_URL}/jobs/${id}`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } },
       );

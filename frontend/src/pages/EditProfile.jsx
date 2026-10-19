@@ -23,6 +23,7 @@ import {
   HeartHandshake,
 } from "lucide-react";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
+import { API_BASE_URL } from "../config/api";
 
 export default function EditProfile() {
   const navigate = useNavigate();
@@ -100,7 +101,7 @@ export default function EditProfile() {
         if (!storedUser.token || !userId) return navigate("/login");
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/user/${userId}`,
+          `${API_BASE_URL}/user/${userId}`,
           { headers: { Authorization: `Bearer ${storedUser.token}` } },
         );
 
@@ -181,7 +182,7 @@ export default function EditProfile() {
 
     try {
       const { data: s3Data } = await axios.post(
-        `https://jobone-if7l.onrender.com/user/${userId}/resume/upload-url`,
+        `${API_BASE_URL}/user/${userId}/resume/upload-url`,
         { fileType: file.type },
         { headers: { Authorization: `Bearer ${storedData.token}` } }
       );
@@ -200,7 +201,7 @@ export default function EditProfile() {
         });
       }
       await axios.post(
-        `https://jobone-if7l.onrender.com/user/${userId}/resume/save-key`,
+        `${API_BASE_URL}/user/${userId}/resume/save-key`,
         { key: s3Data.key },
         { headers: { Authorization: `Bearer ${storedData.token}` } }
       );
@@ -209,7 +210,7 @@ export default function EditProfile() {
       let parsedData;
       if (window.__TAURI__) {
         const res = await axios.post(
-          "https://jobone-if7l.onrender.com/ai/parse-resume",
+          `${API_BASE_URL}/ai/parse-resume`,
           { key: s3Data.key },
           {
             headers: {
@@ -223,7 +224,7 @@ export default function EditProfile() {
         formData.append("resume", file);
 
         const res = await axios.post(
-          "https://jobone-if7l.onrender.com/ai/parse-resume",
+          `${API_BASE_URL}/ai/parse-resume`,
           formData,
           {
             headers: {
@@ -282,7 +283,7 @@ export default function EditProfile() {
       const uid = id || userId;
 
       const { data } = await axios.post(
-        `https://jobone-mrpy.onrender.com/user/${uid}/profile-picture/upload-url`,
+        `${API_BASE_URL}/user/${uid}/profile-picture/upload-url`,
         { fileType: file.type },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -388,7 +389,7 @@ export default function EditProfile() {
       };
 
       const { data } = await axios.patch(
-        `https://jobone-if7l.onrender.com/user/${userId}`,
+        `${API_BASE_URL}/user/${userId}`,
         payload,
         { headers: { Authorization: `Bearer ${storedUser.token}` } },
       );

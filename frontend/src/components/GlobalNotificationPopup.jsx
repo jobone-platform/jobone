@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,7 +39,7 @@ export default function GlobalNotificationPopup() {
         if (!token || !userId) return;
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/applications/${userId}`,
+          `${API_BASE_URL}/applications/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
 
@@ -72,7 +73,7 @@ export default function GlobalNotificationPopup() {
       const { token } = JSON.parse(storedUser);
 
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/applications/${applicationId}/seen`,
+        `${API_BASE_URL}/applications/${applicationId}/seen`,
         {},
         { headers: { Authorization: `Bearer ${token}` } },
       );

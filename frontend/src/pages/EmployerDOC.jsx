@@ -1,10 +1,11 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Loader2, CheckCircle, XCircle, FileText, UploadCloud, Eye, Download, AlertTriangle } from "lucide-react";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 
-const API_BASE = "https://jobone-mrpy.onrender.com/employer";
+const API_BASE = `${API_BASE_URL}/employer`;
 
 const getAuthHeader = () => {
   const userInfo = JSON.parse(localStorage.getItem("employerInfo"));

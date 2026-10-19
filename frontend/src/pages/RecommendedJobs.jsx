@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Sparkles, MapPin, Briefcase, Clock, Building2, IndianRupee, ArrowRight, X } from "lucide-react";
 import CompanyDisplay from "../components/CompanyDisplay";
 import JobDetailsModal from "../components/JobDetailsModal"; // Re-using existing modal
+import { API_BASE_URL } from "../config/api";
 
 export default function RecommendedJobs() {
   const [recommendedJobs, setRecommendedJobs] = useState([]);
@@ -25,7 +26,7 @@ export default function RecommendedJobs() {
           return;
         }
 
-        const { data } = await axios.get("https://jobone-if7l.onrender.com/ai/recommend-jobs", {
+        const { data } = await axios.get(`${API_BASE_URL}/ai/recommend-jobs`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -52,7 +53,7 @@ export default function RecommendedJobs() {
 
     const fetchAllJobs = async () => {
       try {
-        const { data } = await axios.get("https://jobone-mrpy.onrender.com/jobs?limit=100");
+        const { data } = await axios.get(`${API_BASE_URL}/jobs?limit=100`);
         const allJobs = data.data || data || [];
         fetchRecommendations(allJobs);
       } catch (err) {

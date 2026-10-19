@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -122,7 +123,7 @@ export default function JobsAroundMe({ onJobClick }) {
     try {
       // Default radius: 50km
       const { data } = await axios.get(
-        `https://jobone-mrpy.onrender.com/jobs/nearby?lat=${lat}&lng=${lng}&dist=50`
+        `${API_BASE_URL}/jobs/nearby?lat=${lat}&lng=${lng}&dist=50`
       );
       setJobs(Array.isArray(data) ? data : []);
     } catch (err) {

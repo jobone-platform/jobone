@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -95,7 +96,7 @@ export default function HeroSection() {
     try {
       if (regTab === "jobseeker") {
         const { data } = await axios.post(
-          "https://jobone-mrpy.onrender.com/user/register",
+          `${API_BASE_URL}/user/register`,
           {
             name: regData.name,
             email: regData.email,
@@ -106,7 +107,7 @@ export default function HeroSection() {
         navigate("/userotp", { state: { email: data.email } });
       } else {
         const { data } = await axios.post(
-          "https://jobone-mrpy.onrender.com/employer/register",
+          `${API_BASE_URL}/employer/register`,
           {
             name: regData.name,
             email: regData.email,

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +20,7 @@ const Hero = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("https://jobone-mrpy.onrender.com/jobs/public-stats");
+        const res = await axios.get(`${API_BASE_URL}/jobs/public-stats`);
         setStats({
           liveJobs: res.data.liveJobs + "+",
           companies: res.data.companies + "+",

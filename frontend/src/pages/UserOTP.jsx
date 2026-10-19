@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 // src/pages/UserVerifyOTP.jsx
 import React, { useState } from "react";
 import axios from "axios";
@@ -18,7 +19,7 @@ const UserVerifyOTP = () => {
   const handleResend = async () => {
     try {
       setLoading(true);
-      await axios.post("https://jobone-mrpy.onrender.com/user/resend-otp", { email });
+      await axios.post(`${API_BASE_URL}/user/resend-otp`, { email });
       setMessage("✅ A new OTP has been sent to your email!");
       setOtp("");
     } catch (err) {
@@ -35,7 +36,7 @@ const UserVerifyOTP = () => {
 
     try {
       const res = await axios.post(
-        "https://jobone-mrpy.onrender.com/user/verifyotp",
+        `${API_BASE_URL}/user/verifyotp`,
         { email, otp }
       );
       // Save JWT token in localStorage

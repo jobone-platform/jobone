@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -57,7 +58,7 @@ export default function EmployerDashboard() {
         if (employerInfo.id || employerInfo.employerId) {
           try {
             const profileRes = await axios.get(
-              `https://jobone-mrpy.onrender.com/employer/profile/${employerInfo.id || employerInfo.employerId}`,
+              `${API_BASE_URL}/employer/profile/${employerInfo.id || employerInfo.employerId}`,
               { headers: { Authorization: `Bearer ${token}` } },
             );
             setEmployerName(
@@ -72,14 +73,14 @@ export default function EmployerDashboard() {
         }
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/jobs/employer-jobs`,
+          `${API_BASE_URL}/jobs/employer-jobs`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
 
         setJobs(Array.isArray(data) ? data : data.jobs || []);
 
         const metricsRes = await axios.get(
-          `https://jobone-mrpy.onrender.com/jobs/metrics`,
+          `${API_BASE_URL}/jobs/metrics`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         setMetrics(metricsRes.data);
@@ -112,7 +113,7 @@ export default function EmployerDashboard() {
       const token = JSON.parse(stored).token;
 
       await axios.put(
-        `https://jobone-mrpy.onrender.com/jobs/${jobId}`,
+        `${API_BASE_URL}/jobs/${jobId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } },
       );

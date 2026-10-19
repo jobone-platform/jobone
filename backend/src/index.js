@@ -21,6 +21,9 @@ connectDB();
 const app = express();
 app.use(express.json());
 
+app.get("/api/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 
 // Enable CORS for all routes
 app.use(cors());

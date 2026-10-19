@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -71,7 +72,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
       const token = JSON.parse(storedUser)?.token;
 
       await axios.post(
-        `https://jobone-mrpy.onrender.com/applications/${applicationId}/reschedule`,
+        `${API_BASE_URL}/applications/${applicationId}/reschedule`,
         rescheduleData,
         { headers: { Authorization: `Bearer ${token}` } },
       );

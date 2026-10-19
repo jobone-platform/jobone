@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -48,7 +49,7 @@ export default function UserRegister() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post("https://jobone-mrpy.onrender.com/user/register", {
+            const { data } = await axios.post(`${API_BASE_URL}/user/register`, {
                 name,
                 email,
                 password,

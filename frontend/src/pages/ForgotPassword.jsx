@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -24,8 +25,8 @@ export default function ForgotPassword() {
     try {
       const endpoint =
         activeTab === "employer"
-          ? "https://jobone-mrpy.onrender.com/employer/forgot-password"
-          : "https://jobone-mrpy.onrender.com/user/forgot-password";
+          ? `${API_BASE_URL}/employer/forgot-password`
+          : `${API_BASE_URL}/user/forgot-password`;
 
       const { data } = await axios.post(endpoint, { email });
       setMessage(data.message);
@@ -46,8 +47,8 @@ export default function ForgotPassword() {
     try {
       const endpoint =
         activeTab === "employer"
-          ? "https://jobone-mrpy.onrender.com/employer/reset-password"
-          : "https://jobone-mrpy.onrender.com/user/reset-password";
+          ? `${API_BASE_URL}/employer/reset-password`
+          : `${API_BASE_URL}/user/reset-password`;
 
       const { data } = await axios.post(endpoint, { email, otp, newPassword });
       setMessage(data.message);

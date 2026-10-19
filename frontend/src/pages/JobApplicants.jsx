@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
@@ -66,13 +67,13 @@ export default function JobApplicants() {
         const { token } = JSON.parse(stored);
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/applications/job/${id}`,
+          `${API_BASE_URL}/applications/job/${id}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         setApplicants(data);
 
         const jobRes = await axios.get(
-          `https://jobone-mrpy.onrender.com/jobs/${id}`,
+          `${API_BASE_URL}/jobs/${id}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         setJobTitle(jobRes.data.title || jobRes.data.job?.title || "Job");
@@ -117,7 +118,7 @@ export default function JobApplicants() {
       await Promise.all(
         selectedApps.map((appId) =>
           axios.patch(
-            `https://jobone-mrpy.onrender.com/applications/${appId}/status`,
+            `${API_BASE_URL}/applications/${appId}/status`,
             { status: actionModal.status, employerMessage, meetingLink },
             { headers: { Authorization: `Bearer ${token}` } },
           ),
@@ -155,7 +156,7 @@ export default function JobApplicants() {
     try {
       const token = JSON.parse(localStorage.getItem("employerInfo")).token;
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/applications/${actionModal.appId}/reschedule/respond`,
+        `${API_BASE_URL}/applications/${actionModal.appId}/reschedule/respond`,
         { action, employerMessage },
         { headers: { Authorization: `Bearer ${token}` } },
       );

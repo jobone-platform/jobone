@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -32,8 +33,8 @@ export default function Login() {
     try {
       const endpoint =
         activeTab === "employer"
-          ? "https://jobone-mrpy.onrender.com/employer/google-login"
-          : "https://jobone-mrpy.onrender.com/user/google-login";
+          ? `${API_BASE_URL}/employer/google-login`
+          : `${API_BASE_URL}/user/google-login`;
 
       const { data } = await axios.post(endpoint, {
         token: credentialResponse.credential,
@@ -72,8 +73,8 @@ export default function Login() {
     try {
       const endpoint =
         activeTab === "employer"
-          ? "https://jobone-mrpy.onrender.com/employer/login"
-          : "https://jobone-mrpy.onrender.com/user/login";
+          ? `${API_BASE_URL}/employer/login`
+          : `${API_BASE_URL}/user/login`;
 
       const { data } = await axios.post(endpoint, { email, password });
 

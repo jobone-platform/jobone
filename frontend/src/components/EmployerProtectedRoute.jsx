@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import { Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -18,7 +19,7 @@ const EmployerProtectedRoute = ({ children }) => {
       try {
         const { token } = JSON.parse(storedData);
         await axios.get(
-          "https://jobone-mrpy.onrender.com/employer/check-eligibility",
+          `${API_BASE_URL}/employer/check-eligibility`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         setIsAuthorized("authorized");

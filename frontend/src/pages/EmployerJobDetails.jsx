@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -40,7 +41,7 @@ export default function EmployerJobDetails() {
         if (!token) return navigate("/login");
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/jobs/${id}`,
+          `${API_BASE_URL}/jobs/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -65,7 +66,7 @@ export default function EmployerJobDetails() {
       return;
     try {
       const token = JSON.parse(localStorage.getItem("employerInfo"))?.token;
-      await axios.delete(`https://jobone-mrpy.onrender.com/jobs/${id}`, {
+      await axios.delete(`${API_BASE_URL}/jobs/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Job deleted successfully.");

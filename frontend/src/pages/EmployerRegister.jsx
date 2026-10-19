@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -72,7 +73,7 @@ const EmployerRegister = () => {
             };
 
             const { data } = await axios.post(
-                "https://jobone-mrpy.onrender.com/employer/register",
+                `${API_BASE_URL}/employer/register`,
                 payload,
                 { headers: { "Content-Type": "application/json" } }
             );

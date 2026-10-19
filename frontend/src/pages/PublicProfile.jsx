@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -48,7 +49,7 @@ export default function PublicProfile() {
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/user/${userId}`,
+          `${API_BASE_URL}/user/${userId}`,
           { headers },
         );
 
@@ -86,7 +87,7 @@ export default function PublicProfile() {
       const stored = localStorage.getItem("employerInfo");
       const { token } = JSON.parse(stored);
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/applications/${applicationId}/status`,
+        `${API_BASE_URL}/applications/${applicationId}/status`,
         { status: actionModal.status, employerMessage: employerMessage },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -121,7 +122,7 @@ export default function PublicProfile() {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       const { data } = await axios.get(
-        `https://jobone-mrpy.onrender.com/user/${profile._id}/resume/view`,
+        `${API_BASE_URL}/user/${profile._id}/resume/view`,
         { headers }
       );
 
@@ -379,7 +380,7 @@ export default function PublicProfile() {
                             onClick={async () => {
                               try {
                                 const token = JSON.parse(localStorage.getItem("userInfo"))?.token || JSON.parse(localStorage.getItem("employerInfo"))?.token;
-                                const { data } = await axios.get(`https://jobone-mrpy.onrender.com/user/${profile._id}/document/download?field=${field}`, {
+                                const { data } = await axios.get(`${API_BASE_URL}/user/${profile._id}/document/download?field=${field}`, {
                                   headers: token ? { Authorization: `Bearer ${token}` } : {}
                                 });
                                 if (data.downloadableUrl) {

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -136,7 +137,7 @@ export default function JobCategories() {
     const fetchCategoryCounts = async () => {
       try {
         const { data } = await axios.get(
-          "https://jobone-mrpy.onrender.com/jobs/category-counts",
+          `${API_BASE_URL}/jobs/category-counts`,
         );
         setRealCounts(data);
       } catch (err) {

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -112,7 +113,7 @@ export default function Jobs() {
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("https://jobone-mrpy.onrender.com/jobs");
+        const res = await axios.get(`${API_BASE_URL}/jobs`);
         const jobsData = res.data.data || res.data;
 
         // Filter out closed or inactive jobs from the public board

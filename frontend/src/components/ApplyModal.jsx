@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { X, Send, Loader2, FileText, CheckCircle2, UserCircle, ExternalLink, AlertTriangle } from "lucide-react";
@@ -41,7 +42,7 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
         const userId = id || fallbackId;
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/user/${userId}`,
+          `${API_BASE_URL}/user/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setUserProfile(data);
@@ -84,7 +85,7 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
       if (!token) throw new Error("No authorization token found. Please log in.");
 
       await axios.post(
-        "https://jobone-mrpy.onrender.com/applications",
+        `${API_BASE_URL}/applications`,
         {
           jobId: job._id,
           message: pitch,
