@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -19,7 +20,7 @@ export default function AdminJobseekerView() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       const { data } = await axios.get(
-        `https://jobone-mrpy.onrender.com/admin/users/${id}/applications`,
+        `${API_BASE_URL}/admin/users/${id}/applications`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setJobseeker(data.user);

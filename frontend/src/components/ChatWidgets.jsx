@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { MessageSquare, X, Send, Bot, Loader2 } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +25,7 @@ export default function ChatWidget() {
   //   status     → "ready" | "submitted" | "streaming" | "error"
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
-      api: "https://jobone-if7l.onrender.com/ai/chat",
+      api: `${API_BASE_URL}/ai/chat`,
     }),
     onError: (err) => console.error("Chat Error:", err),
   });

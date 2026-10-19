@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +25,7 @@ export default function AdminLogin() {
 
     try {
       const { data } = await axios.post(
-        "https://jobone-mrpy.onrender.com/admin/login",
+        `${API_BASE_URL}/admin/login`,
         {
           email,
           password,

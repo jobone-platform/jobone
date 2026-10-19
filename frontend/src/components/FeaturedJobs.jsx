@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CompanyDisplay from "./CompanyDisplay";
@@ -22,7 +23,7 @@ export default function FeaturedJobs() {
     const fetchJobs = async () => {
       try {
         const { data } = await axios.get(
-          "https://jobone-mrpy.onrender.com/jobs",
+          `${API_BASE_URL}/jobs`,
         );
         const jobArray = data?.data || data || [];
         const latestJobs = Array.isArray(jobArray)

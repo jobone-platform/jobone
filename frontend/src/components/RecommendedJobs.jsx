@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { API_BASE_URL } from "../config/api";
 
 const RecommendedJobs = () => {
     const [jobs, setJobs] = useState([]);
@@ -14,7 +15,7 @@ const RecommendedJobs = () => {
             setLoading(true);
             const userInfo = JSON.parse(localStorage.getItem("userInfo"));
             const token = userInfo?.token
-            const res = await axios.get("https://jobone-if7l.onrender.com/ai/recommend-jobs", {
+            const res = await axios.get(`${API_BASE_URL}/ai/recommend-jobs`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -36,7 +37,7 @@ export default function EmployerProfile() {
       }
 
       const { data } = await axios.get(
-        `https://jobone-mrpy.onrender.com/employer/profile/${employerID}`,
+        `${API_BASE_URL}/employer/profile/${employerID}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setProfile(data);
@@ -53,7 +54,7 @@ export default function EmployerProfile() {
       if (!info.token) return;
 
       const { data } = await axios.get(
-        "https://jobone-mrpy.onrender.com/jobs/employer-jobs",
+        `${API_BASE_URL}/jobs/employer-jobs`,
         { headers: { Authorization: `Bearer ${info.token}` } }
       );
 

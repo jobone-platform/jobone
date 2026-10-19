@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -66,7 +67,7 @@ export default function EmployerEditProfile() {
         const targetId = id || employerId;
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/employer/profile/${targetId}`,
+          `${API_BASE_URL}/employer/profile/${targetId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
 
@@ -121,7 +122,7 @@ export default function EmployerEditProfile() {
       const { token } = JSON.parse(storedString);
 
       const { data } = await axios.post(
-        `https://jobone-mrpy.onrender.com/employer/profile-picture/upload-url`,
+        `${API_BASE_URL}/employer/profile-picture/upload-url`,
         { fileType: file.type },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -211,7 +212,7 @@ export default function EmployerEditProfile() {
       };
 
       const { data } = await axios.post(
-        "https://jobone-mrpy.onrender.com/employer/updateProfile",
+        `${API_BASE_URL}/employer/updateProfile`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } },
       );

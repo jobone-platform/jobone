@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -29,14 +30,14 @@ export default function JobApplicants() {
 
         // 1. Get Applications
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/applications/job/${id}`,
+          `${API_BASE_URL}/applications/job/${id}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         setApplicants(data);
 
         // 2. Get Job Title
         const jobRes = await axios.get(
-          `https://jobone-mrpy.onrender.com/jobs/${id}`,
+          `${API_BASE_URL}/jobs/${id}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         setJobTitle(jobRes.data.title || jobRes.data.job?.title || "Job");

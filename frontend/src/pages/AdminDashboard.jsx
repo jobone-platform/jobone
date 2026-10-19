@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -88,32 +89,32 @@ export default function AdminDashboard() {
       const headers = { Authorization: `Bearer ${admin.token}` };
 
       const statsRes = await axios
-        .get("https://jobone-mrpy.onrender.com/admin/stats", { headers })
+        .get(`${API_BASE_URL}/admin/stats`, { headers })
         .catch(() => ({ data: { jobs: 0, jobseekers: 0, employers: 0 } }));
       setDbStats(statsRes.data);
 
       const contactsRes = await axios
-        .get("https://jobone-mrpy.onrender.com/admin/contacts", { headers })
+        .get(`${API_BASE_URL}/admin/contacts`, { headers })
         .catch(() => ({ data: [] }));
       setAllContacts(contactsRes.data);
 
       if (admin.role === "superAdmin" || admin.role === "employerAdmin") {
         const [pJobsRes, aJobsRes, pEmpRes, aEmpRes] = await Promise.all([
           axios
-            .get("https://jobone-mrpy.onrender.com/admin/jobs/pending", {
+            .get(`${API_BASE_URL}/admin/jobs/pending`, {
               headers,
             })
             .catch(() => ({ data: [] })),
           axios
-            .get("https://jobone-mrpy.onrender.com/admin/jobs", { headers })
+            .get(`${API_BASE_URL}/admin/jobs`, { headers })
             .catch(() => ({ data: [] })),
           axios
-            .get("https://jobone-mrpy.onrender.com/admin/employers/pending", {
+            .get(`${API_BASE_URL}/admin/employers/pending`, {
               headers,
             })
             .catch(() => ({ data: [] })),
           axios
-            .get("https://jobone-mrpy.onrender.com/admin/employers", {
+            .get(`${API_BASE_URL}/admin/employers`, {
               headers,
             })
             .catch(() => ({ data: [] })),
@@ -126,14 +127,14 @@ export default function AdminDashboard() {
 
       if (admin.role === "superAdmin" || admin.role === "jobseekerAdmin") {
         const usersRes = await axios
-          .get("https://jobone-mrpy.onrender.com/admin/users", { headers })
+          .get(`${API_BASE_URL}/admin/users`, { headers })
           .catch(() => ({ data: [] }));
         setAllJobseekers(usersRes.data);
       }
 
       if (admin.role === "superAdmin") {
         const adminsRes = await axios
-          .get("https://jobone-mrpy.onrender.com/admin/all-admins", { headers })
+          .get(`${API_BASE_URL}/admin/all-admins`, { headers })
           .catch(() => ({ data: [] }));
         setAllAdmins(adminsRes.data);
       }
@@ -148,7 +149,7 @@ export default function AdminDashboard() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/admin/contacts/${id}/read`,
+        `${API_BASE_URL}/admin/contacts/${id}/read`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -164,7 +165,7 @@ export default function AdminDashboard() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/admin/${id}/role`,
+        `${API_BASE_URL}/admin/${id}/role`,
         { role: newRole },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -181,7 +182,7 @@ export default function AdminDashboard() {
     if (!window.confirm("Are you sure you want to delete this admin?")) return;
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
-      await axios.delete(`https://jobone-mrpy.onrender.com/admin/${id}`, {
+      await axios.delete(`${API_BASE_URL}/admin/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllAdmins((prev) => prev.filter((a) => a._id !== id));
@@ -201,7 +202,7 @@ export default function AdminDashboard() {
           ? "/admin/search/users"
           : "/admin/search/employers";
       const { data } = await axios.get(
-        `https://jobone-mrpy.onrender.com${endpoint}?q=${searchQuery}`,
+        `${API_BASE_URL}${endpoint}?q=${searchQuery}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -228,7 +229,7 @@ export default function AdminDashboard() {
           ? `/admin/freeze-user/${id}`
           : `/admin/freeze-employer/${id}`;
       await axios.put(
-        `https://jobone-mrpy.onrender.com${endpoint}`,
+        `${API_BASE_URL}${endpoint}`,
         { freeze: !isCurrentlyFrozen },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -269,7 +270,7 @@ export default function AdminDashboard() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/admin/jobs/${id}/review`,
+        `${API_BASE_URL}/admin/jobs/${id}/review`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -292,7 +293,7 @@ export default function AdminDashboard() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/admin/employers/${id}/review`,
+        `${API_BASE_URL}/admin/employers/${id}/review`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -316,7 +317,7 @@ export default function AdminDashboard() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       const res = await axios.post(
-        "https://jobone-mrpy.onrender.com/admin/create-admin",
+        `${API_BASE_URL}/admin/create-admin`,
         {
           name: newAdminName,
           email: newAdminEmail,
@@ -330,7 +331,7 @@ export default function AdminDashboard() {
         setAllAdmins((prev) => [...prev, res.data.admin]);
       } else {
         // Fallback fetch if API doesn't return the admin
-        const adminsRes = await axios.get("https://jobone-mrpy.onrender.com/admin/all-admins", { headers: { Authorization: `Bearer ${token}` } });
+        const adminsRes = await axios.get(`${API_BASE_URL}/admin/all-admins`, { headers: { Authorization: `Bearer ${token}` } });
         setAllAdmins(adminsRes.data);
       }
 
@@ -351,13 +352,13 @@ export default function AdminDashboard() {
       let url = "";
       let filename = "";
       if (type === "all") {
-        url = "https://jobone-mrpy.onrender.com/admin/export/all";
+        url = `${API_BASE_URL}/admin/export/all`;
         filename = "Platform_Complete_DB.zip";
       } else if (type === "employers") {
-        url = "https://jobone-mrpy.onrender.com/admin/export/employers";
+        url = `${API_BASE_URL}/admin/export/employers`;
         filename = "Platform_Employers_Jobs.xlsx";
       } else if (type === "jobseekers") {
-        url = "https://jobone-mrpy.onrender.com/admin/export/jobseekers";
+        url = `${API_BASE_URL}/admin/export/jobseekers`;
         filename = "Platform_Jobseekers_Jobs.xlsx";
       }
 

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -91,7 +92,7 @@ export default function EditProfile() {
         }
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/user/${userId}`,
+          `${API_BASE_URL}/user/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
 
@@ -151,7 +152,7 @@ export default function EditProfile() {
       const uid = id || userId;
 
       const { data } = await axios.post(
-        `https://jobone-mrpy.onrender.com/user/${uid}/profile-picture/upload-url`,
+        `${API_BASE_URL}/user/${uid}/profile-picture/upload-url`,
         { fileType: file.type },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -235,7 +236,7 @@ export default function EditProfile() {
       if (payload.phone === "") delete payload.phone;
 
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/user/${userId}`,
+        `${API_BASE_URL}/user/${userId}`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } },
       );

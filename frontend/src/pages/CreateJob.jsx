@@ -8,6 +8,7 @@ import ElasticTitleDropdown from "../components/ElasticTitleDropdown.jsx";
 import CourseSuggestionsDropdown from "../components/CourseSuggestionsDropdown.jsx";
 import LanguageSuggestionsDropdown from "../components/LanguageSuggestionsDropdown.jsx";
 import SkillSuggestionsDropdown from "../components/SkillSuggestionsDropdown.jsx";
+import { API_BASE_URL } from "../config/api";
 
 export const INDUSTRY_SUBDOMAINS = {
   "IT & Software": [
@@ -227,7 +228,7 @@ export default function CreateJob() {
         const { token } = JSON.parse(storedData);
 
         const res = await axios.get(
-          "https://jobone-mrpy.onrender.com/employer/check-eligibility",
+          `${API_BASE_URL}/employer/check-eligibility`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -513,7 +514,7 @@ export default function CreateJob() {
       if (!token) throw new Error("No token found");
 
       const { data } = await axios.post(
-        "https://jobone-if7l.onrender.com/ai/generate-job-details",
+        `${API_BASE_URL}/ai/generate-job-details`,
         {
           title: job.title,
           jobType: job.jobType.join(", "),
@@ -684,7 +685,7 @@ export default function CreateJob() {
         delete payload.location;
       }
 
-      await axios.post("https://jobone-mrpy.onrender.com/jobs", payload, {
+      await axios.post(`${API_BASE_URL}/jobs`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

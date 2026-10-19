@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -50,7 +51,7 @@ const Profile = () => {
         }
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/user/${id}`,
+          `${API_BASE_URL}/user/${id}`,
           { headers: { Authorization: `Bearer ${storedUser.token}` } },
         );
 
@@ -182,7 +183,7 @@ const Profile = () => {
                     } else if (profile.resumeFileKey) {
                       try {
                         const token = JSON.parse(localStorage.getItem("userInfo"))?.token;
-                        const { data } = await axios.get(`https://jobone-mrpy.onrender.com/user/${profile._id}/resume/view`, {
+                        const { data } = await axios.get(`${API_BASE_URL}/user/${profile._id}/resume/view`, {
                           headers: { Authorization: `Bearer ${token}` }
                         });
                         if (data.viewableUrl) {

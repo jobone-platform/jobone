@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -19,7 +20,7 @@ export default function ExploreCompanies() {
     window.scrollTo(0, 0);
     const fetchCompanies = async () => {
       try {
-        const res = await axios.get("https://jobone-mrpy.onrender.com/employer/explore");
+        const res = await axios.get(`${API_BASE_URL}/employer/explore`);
         setCompanies(res.data);
         setFilteredCompanies(res.data);
       } catch (err) {

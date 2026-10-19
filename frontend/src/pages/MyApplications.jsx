@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -51,7 +52,7 @@ export default function MyApplications() {
         }
 
         const { data } = await axios.get(
-          `https://jobone-mrpy.onrender.com/applications/${userId}`,
+          `${API_BASE_URL}/applications/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
 

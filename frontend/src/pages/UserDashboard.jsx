@@ -33,6 +33,7 @@ import Footer from "../components/Footer";
 import JobCategories from "../components/JobCategories";
 import JobsAroundMe from "../components/JobsAroundMe";
 import JobDetailsModal from "../components/JobDetailsModal"; // Import Modal
+import { API_BASE_URL } from "../config/api";
 
 export default function Home() {
   const [featuredJobs, setFeaturedJobs] = useState([]);
@@ -63,7 +64,7 @@ export default function Home() {
 
       setLoadingRecommendations(true);
       const { data } = await axios.get(
-        "https://jobone-if7l.onrender.com/ai/recommend-jobs",
+        `${API_BASE_URL}/ai/recommend-jobs`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -113,7 +114,7 @@ export default function Home() {
     const fetchFeatured = async () => {
       try {
         const { data } = await axios.get(
-          "https://jobone-mrpy.onrender.com/jobs?limit=100",
+          `${API_BASE_URL}/jobs?limit=100`,
         );
         const allJobs = data.data || data || [];
         setAllFetchedJobs(allJobs);

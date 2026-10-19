@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -57,7 +58,7 @@ export default function EmployerEditProfile2() {
 
                 // 2. Fetch Data
                 const { data } = await axios.get(
-                    `https://jobone-mrpy.onrender.com/employer/profile/${employerID}`,
+                    `${API_BASE_URL}/employer/profile/${employerID}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -108,7 +109,7 @@ export default function EmployerEditProfile2() {
             const { token } = JSON.parse(storedString);
 
             const { data } = await axios.post(
-                `https://jobone-mrpy.onrender.com/employer/profile-picture/upload-url`,
+                `${API_BASE_URL}/employer/profile-picture/upload-url`,
                 { fileType: file.type },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -145,7 +146,7 @@ export default function EmployerEditProfile2() {
 
             // Send POST request to update (as per your backend route)
             await axios.post(
-                "https://jobone-mrpy.onrender.com/employer/updateProfile",
+                `${API_BASE_URL}/employer/updateProfile`,
                 form,
                 {
                     headers: { Authorization: `Bearer ${token}` },

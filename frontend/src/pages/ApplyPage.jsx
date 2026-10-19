@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CompanyDisplay from "../components/CompanyDisplay";
 import { motion } from "framer-motion";
+import { API_BASE_URL } from "../config/api";
 import {
   Loader2,
   Briefcase,
@@ -35,9 +36,9 @@ export default function ApplyPage() {
         setJobLoading(true);
         // FACT: Fetching both concurrently to save loading time
         const [jobRes, similarRes] = await Promise.all([
-          axios.get(`https://jobone-if7l.onrender.com/jobs/${jobId}`),
+          axios.get(`${API_BASE_URL}/jobs/${jobId}`),
           axios
-            .get(`https://jobone-if7l.onrender.com/jobs/${jobId}/similar`)
+            .get(`${API_BASE_URL}/jobs/${jobId}/similar`)
             .catch(() => ({ data: [] })),
         ]);
 
@@ -74,7 +75,7 @@ export default function ApplyPage() {
       };
 
       await axios.post(
-        "https://jobone-mrpy.onrender.com/applications",
+        `${API_BASE_URL}/applications`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } },
       );

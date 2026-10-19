@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaLock, FaMapMarkerAlt, FaClock, FaGlobe } from "react-icons/fa";
@@ -34,7 +35,7 @@ export default function FeaturedJobs() {
         const fetchJobs = async () => {
             try {
                 const { data } = await axios.get(
-                    "https://jobone-mrpy.onrender.com/jobs"
+                    `${API_BASE_URL}/jobs`
                 );
                 const jobArray = data?.data || [];
                 const latestJobs = jobArray.slice(-6).reverse();

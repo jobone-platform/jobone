@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
@@ -13,7 +14,7 @@ const EmployerRegisterOption = () => {
 
     const handleGoogleSuccess = async (credentialResponse) => {
         try {
-            const { data } = await axios.post("https://jobone-mrpy.onrender.com/employer/google-login", {
+            const { data } = await axios.post(`${API_BASE_URL}/employer/google-login`, {
                 token: credentialResponse.credential,
             });
 

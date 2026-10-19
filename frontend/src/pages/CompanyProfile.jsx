@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -37,9 +38,9 @@ export default function CompanyProfile() {
       try {
         setLoading(true);
         const [profileRes, jobsRes] = await Promise.all([
-          axios.get(`https://jobone-mrpy.onrender.com/employer/profile/${id}`),
+          axios.get(`${API_BASE_URL}/employer/profile/${id}`),
           axios
-            .get(`https://jobone-mrpy.onrender.com/jobs`)
+            .get(`${API_BASE_URL}/jobs`)
             .catch(() => ({ data: [] })),
         ]);
 

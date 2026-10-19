@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -58,11 +59,11 @@ export default function EmployerAdminView() {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       const [{ data: empData }, { data: jobsData }] = await Promise.all([
         axios.get(
-          `https://jobone-mrpy.onrender.com/admin/employers/${id}`,
+          `${API_BASE_URL}/admin/employers/${id}`,
           { headers: { Authorization: `Bearer ${token}` } },
         ),
         axios.get(
-          `https://jobone-mrpy.onrender.com/admin/employers/${id}/jobs`,
+          `${API_BASE_URL}/admin/employers/${id}/jobs`,
           { headers: { Authorization: `Bearer ${token}` } },
         ).catch(() => ({ data: [] }))
       ]);
@@ -80,7 +81,7 @@ export default function EmployerAdminView() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       const { data } = await axios.get(
-        `https://jobone-mrpy.onrender.com/admin/employers/${id}/document?field=${field}`,
+        `${API_BASE_URL}/admin/employers/${id}/document?field=${field}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -99,7 +100,7 @@ export default function EmployerAdminView() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       const response = await axios.get(
-        `https://jobone-mrpy.onrender.com/admin/employers/${id}/export`,
+        `${API_BASE_URL}/admin/employers/${id}/export`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob", // FACT: Required to prevent Excel file corruption
@@ -125,7 +126,7 @@ export default function EmployerAdminView() {
     try {
       const token = JSON.parse(localStorage.getItem("adminInfo")).token;
       await axios.patch(
-        `https://jobone-mrpy.onrender.com/admin/employers/${id}/review`,
+        `${API_BASE_URL}/admin/employers/${id}/review`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } },
       );
