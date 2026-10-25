@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Navbar from "../components/NavBar";
 import Footer from "../components/Footer";
 
 const Contact = () => {
@@ -18,7 +17,6 @@ const Contact = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
       <main className="flex-grow max-w-4xl mx-auto w-full px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>

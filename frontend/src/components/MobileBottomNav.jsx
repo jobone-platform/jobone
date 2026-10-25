@@ -46,6 +46,7 @@ export default function MobileBottomNav() {
     "/employerregister",
     "/employer-register",
     "/employerregisteroption",
+    "/admin/login",
   ];
   if (standaloneRoutes.includes(currentPath)) return null;
 

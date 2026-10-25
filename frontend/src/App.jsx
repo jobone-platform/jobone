@@ -73,6 +73,7 @@ const isStandaloneAuthRoute = (pathname) => {
     "/employerregister",
     "/employer-register",
     "/employerregisteroption",
+    "/admin/login",
   ].includes(clean);
 };
 
