@@ -8,15 +8,14 @@ import { protectEmployer } from "../middleware/employercheck.js";
 const router = express.Router();
 
 const rules = [
-  body('name', 'Name is required').not().isEmpty().trim(),
-  
-  body('email', 'A valid email is required').isEmail(), 
-  
-  body('password', 'Password must be 6+ characters').isLength({ min: 6 })
+  body('name', 'Name is required (2-80 characters)').not().isEmpty().trim().isLength({ min: 2, max: 80 }),
+  body('email', 'A valid email is required').isEmail().normalizeEmail(), 
+  body('password', 'Password must be 6+ characters').isLength({ min: 6 }),
+  body('phone', 'Phone number is required').not().isEmpty().trim()
 ];
 
 
-router.post("/register",rules, registerEmployer);
+router.post("/register", rules, registerEmployer);
 
 router.post("/verifyotp", verifyOTP);
 

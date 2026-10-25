@@ -12,10 +12,13 @@ import {
   Sparkles,
   Building,
   Download,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import LogoJobOne from "./LogoJobOne";
-import axios from "axios";
+import { useTheme } from "../routes/Context";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -91,10 +94,122 @@ export default function Navbar() {
     localStorage.removeItem("userInfo");
     localStorage.removeItem("employerToken");
     localStorage.removeItem("employerInfo");
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminInfo");
 
     setMenuOpen(false);
     setUserMenuOpen(false);
-    navigate("/login");
+    navigate(isAdmin ? "/admin/login" : "/login");
+  };
+
+  const ThemeToggle = ({ scrolled: isScrolled, mobile: isMobile }) => {
+    const { theme, setTheme, resolvedTheme } = useTheme();
+    const [themeMenuOpen, setThemeMenuOpen] = useState(false);
+    const themeDropdownRef = useRef(null);
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (
+          themeDropdownRef.current &&
+          !themeDropdownRef.current.contains(event.target)
+        ) {
+          setThemeMenuOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const themeOptions = [
+      { key: "light", label: "Light", icon: Sun },
+      { key: "dark", label: "Dark", icon: Moon },
+      { key: "default", label: "System", icon: Monitor },
+    ];
+
+    const CurrentIcon = resolvedTheme === "dark" ? Moon : Sun;
+
+    if (isMobile) {
+      return (
+        <div className="flex items-center justify-between py-3 border-t border-slate-200/60 dark:border-slate-800 mt-2">
+          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            Theme
+          </span>
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            {themeOptions.map((opt) => {
+              const Icon = opt.icon;
+              const active = theme === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setTheme(opt.key)}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                    active
+                      ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  <Icon size={14} />
+                  <span>{opt.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative" ref={themeDropdownRef}>
+        <button
+          type="button"
+          onClick={() => setThemeMenuOpen(!themeMenuOpen)}
+          title={`Theme: ${theme}`}
+          aria-label="Toggle Theme"
+          className={`p-2 rounded-full border transition flex items-center justify-center cursor-pointer ${
+            isScrolled
+              ? "bg-white/80 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 shadow-sm"
+              : "bg-white/10 dark:bg-slate-800/60 hover:bg-white/20 text-white border-white/20"
+          }`}
+        >
+          <CurrentIcon size={18} />
+        </button>
+
+        <AnimatePresence>
+          {themeMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.95 }}
+              className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 rounded-2xl shadow-xl py-1.5 z-50 border border-slate-100 dark:border-slate-700 overflow-hidden"
+            >
+              {themeOptions.map((opt) => {
+                const Icon = opt.icon;
+                const active = theme === opt.key;
+                return (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => {
+                      setTheme(opt.key);
+                      setThemeMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-left transition cursor-pointer ${
+                      active
+                        ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold"
+                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                    }`}
+                  >
+                    <Icon size={15} />
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -107,9 +222,21 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (
-    ["/login", "/register", "/employerregister"].includes(location.pathname)
-  ) {
+  const currentPath = location.pathname.toLowerCase().split("?")[0].split("#")[0].replace(/\/+$/, "") || "/";
+  const standaloneRoutes = [
+    "/userotp",
+    "/employerotp",
+    "/verifyotp",
+    "/verify-otp",
+    "/login",
+    "/register",
+    "/userregister",
+    "/employerregister",
+    "/employer-register",
+    "/employerregisteroption",
+  ];
+
+  if (standaloneRoutes.includes(currentPath)) {
     return null;
   }
 
@@ -335,6 +462,9 @@ export default function Navbar() {
               </button>
             </div>
           ) : null}
+
+          {/* Theme Switcher Button */}
+          <ThemeToggle scrolled={scrolled} />
         </div>
 
         {/* --- MOBILE HAMBURGER --- */}
@@ -502,6 +632,8 @@ export default function Navbar() {
                 </div>
               </>
             )}
+
+            <ThemeToggle mobile={true} />
           </motion.div>
         )}
       </AnimatePresence>

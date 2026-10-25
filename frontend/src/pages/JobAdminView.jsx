@@ -35,9 +35,22 @@ export default function JobAdminView() {
     fetchJobData();
   }, [id]);
 
+  const getAdminToken = () => {
+    try {
+      const adminInfo = JSON.parse(localStorage.getItem("adminInfo") || "null");
+      return adminInfo?.token || null;
+    } catch {
+      return null;
+    }
+  };
+
   const fetchJobData = async () => {
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
+      const token = getAdminToken();
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
       const { data } = await axios.get(
         `${API_BASE_URL}/admin/jobs/${id}`,
         {
@@ -56,7 +69,11 @@ export default function JobAdminView() {
   const handleStatusChange = async (status, stayOnPage = false) => {
     setActionLoading(true);
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
+      const token = getAdminToken();
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
       await axios.patch(
         `${API_BASE_URL}/admin/jobs/${id}/review`,
         { status },

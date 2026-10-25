@@ -54,9 +54,22 @@ export default function EmployerAdminView() {
     fetchEmployerData();
   }, [id]);
 
+  const getAdminToken = () => {
+    try {
+      const adminInfo = JSON.parse(localStorage.getItem("adminInfo") || "null");
+      return adminInfo?.token || null;
+    } catch {
+      return null;
+    }
+  };
+
   const fetchEmployerData = async () => {
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
+      const token = getAdminToken();
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
       const [{ data: empData }, { data: jobsData }] = await Promise.all([
         axios.get(
           `${API_BASE_URL}/admin/employers/${id}`,
@@ -79,7 +92,11 @@ export default function EmployerAdminView() {
 
   const handleViewDocument = async (field) => {
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
+      const token = getAdminToken();
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
       const { data } = await axios.get(
         `${API_BASE_URL}/admin/employers/${id}/document?field=${field}`,
         {
@@ -98,7 +115,11 @@ export default function EmployerAdminView() {
 
   const handleExportSingleProfile = async () => {
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
+      const token = getAdminToken();
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
       const response = await axios.get(
         `${API_BASE_URL}/admin/employers/${id}/export`,
         {
@@ -124,7 +145,11 @@ export default function EmployerAdminView() {
   const handleStatusChange = async (status) => {
     setActionLoading(true);
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
+      const token = getAdminToken();
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
       await axios.patch(
         `${API_BASE_URL}/admin/employers/${id}/review`,
         { status },

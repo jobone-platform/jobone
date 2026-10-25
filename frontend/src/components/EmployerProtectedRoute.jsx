@@ -53,7 +53,11 @@ const EmployerProtectedRoute = ({ children }) => {
     try {
       const employerInfo = JSON.parse(storedData);
       if (employerInfo.isProfileComplete === false) {
-         if (location.pathname !== "/employereditprofile" && location.pathname !== "/employerotp/employereditprofile2") {
+         if (
+           location.pathname !== "/employereditprofile" &&
+           location.pathname !== "/employerotp/employereditprofile2" &&
+           location.pathname !== "/employereditprofile2"
+         ) {
              return <Navigate to="/employereditprofile" replace state={{ showWarning: true }} />;
          }
       }
