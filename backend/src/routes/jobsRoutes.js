@@ -43,11 +43,7 @@ router.get("/:id/applicants", protectEmployer, getJobApplicants);
 
 router.delete("/:id", protectAdmin, deleteJob);
 
-router.patch("/:id",protectEmployer,updateJob);
-
-router.put("/:id",protectEmployer,updateJob);
-
-router.patch("/:id",protectEmployer,updateJob);
-
+router.patch("/:id", protectEmployer, updateJob);
+router.put("/:id", protectEmployer, updateJob);
 
 export default router;

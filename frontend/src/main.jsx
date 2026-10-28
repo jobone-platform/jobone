@@ -5,18 +5,30 @@ import axios from "axios";
 import "./index.css";
 import App from "./App.jsx";
 
+import { ThemeProvider } from "./routes/Context.jsx";
+
 // Global interceptor for expired/invalid tokens
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
       const url = error.config?.url || "";
-      if (!url.includes("/login") && !url.includes("/register")) {
-        localStorage.removeItem("userInfo");
-        localStorage.removeItem("userToken");
-        localStorage.removeItem("employerInfo");
-        localStorage.removeItem("employerToken");
-        window.location.href = "/login";
+      if (!url.includes("/login") && !url.includes("/register") && !url.includes("/verifyotp")) {
+        if (url.includes("/admin") || window.location.pathname.startsWith("/admin")) {
+          localStorage.removeItem("adminInfo");
+          localStorage.removeItem("adminToken");
+          if (!window.location.pathname.includes("/admin/login")) {
+            window.location.href = "/admin/login";
+          }
+        } else {
+          localStorage.removeItem("userInfo");
+          localStorage.removeItem("userToken");
+          localStorage.removeItem("employerInfo");
+          localStorage.removeItem("employerToken");
+          if (!window.location.pathname.includes("/login")) {
+            window.location.href = "/login";
+          }
+        }
       }
     }
     return Promise.reject(error);
@@ -24,9 +36,11 @@ axios.interceptors.response.use(
 );
 
 createRoot(document.getElementById("root")).render(
-  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}>
     <StrictMode>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </StrictMode>
   </GoogleOAuthProvider>
 );

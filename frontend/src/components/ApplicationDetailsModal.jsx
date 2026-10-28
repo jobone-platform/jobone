@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
   MapPin,
   Calendar,
@@ -32,6 +32,7 @@ import {
 import CompanyDisplay from "./CompanyDisplay";
 
 export default function ApplicationDetailsModal({ application, onClose }) {
+  const navigate = useNavigate();
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [rescheduleData, setRescheduleData] = useState({
     reason: "",

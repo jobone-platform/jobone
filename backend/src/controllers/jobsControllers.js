@@ -44,22 +44,26 @@ export const createJob = expressAsyncHandler(async (req, res) => {
   let missingFields = [];
   
   // Universal required fields
-  const baseFields = ['phone', 'location', 'industry', 'description', 'aadharCard', 'panCard'];
+  const baseFields = ['phone', 'industry', 'description', 'aadharCard', 'panCard'];
   baseFields.forEach(field => {
-    if (!employer[field] || employer[field].trim() === '') missingFields.push(field);
+    if (!employer[field] || String(employer[field]).trim() === '') missingFields.push(field);
   });
+
+  if (!employer.location && (!employer.officeLocation || !employer.officeLocation.coordinates)) {
+    missingFields.push("location");
+  }
 
   // Conditional required fields based on entity type
   if (employer.employerType === "company") {
     const companyFields = ['companyName', 'natureOfBusiness', 'gstForm'];
     companyFields.forEach(field => {
-      if (!employer[field] || employer[field].trim() === '') missingFields.push(field);
+      if (!employer[field] || String(employer[field]).trim() === '') missingFields.push(field);
     });
   } else {
     // Individual
     const individualFields = ['tradeLicense', 'educationDocuments'];
     individualFields.forEach(field => {
-      if (!employer[field] || employer[field].trim() === '') missingFields.push(field);
+      if (!employer[field] || String(employer[field]).trim() === '') missingFields.push(field);
     });
   }
 
@@ -339,6 +343,10 @@ export const updateJob = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   const job = await Job.findById(id);
   const employer = await Employer.findById(req.employerId);
+  if (!employer) {
+    res.status(404);
+    throw new Error("Employer account not found");
+  }
   // FACT: Block updates if frozen
   if (employer.isFrozen) {
     res.status(403);

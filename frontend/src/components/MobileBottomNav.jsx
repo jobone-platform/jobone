@@ -34,6 +34,22 @@ export default function MobileBottomNav() {
 
   if (!isTauri) return null;
 
+  const currentPath = location.pathname.toLowerCase().split("?")[0].split("#")[0].replace(/\/+$/, "") || "/";
+  const standaloneRoutes = [
+    "/userotp",
+    "/employerotp",
+    "/verifyotp",
+    "/verify-otp",
+    "/login",
+    "/register",
+    "/userregister",
+    "/employerregister",
+    "/employer-register",
+    "/employerregisteroption",
+    "/admin/login",
+  ];
+  if (standaloneRoutes.includes(currentPath)) return null;
+
   // Determine active role
   const userInfoStr = localStorage.getItem("userInfo");
   const employerInfoStr = localStorage.getItem("employerInfo");
@@ -62,8 +78,11 @@ export default function MobileBottomNav() {
   if (activeRole === "admin") return null;
 
   const handleLogout = () => {
+    localStorage.removeItem("userToken");
     localStorage.removeItem("userInfo");
+    localStorage.removeItem("employerToken");
     localStorage.removeItem("employerInfo");
+    localStorage.removeItem("adminToken");
     localStorage.removeItem("adminInfo");
     setShowMoreMenu(false);
     navigate("/login");

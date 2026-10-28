@@ -6,7 +6,7 @@ import { validationResult } from 'express-validator';
 import Employer from '../models/employer.js'; // Adjust path as needed
 import {protectEmployer} from '../middleware/employercheck.js';
 import OTP from '../models/verification.js';
-import sendEmail from '../utils/emailVerification.js';
+import sendEmail from '../utils/sendEmail.js';
 import {S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand} from '@aws-sdk/client-s3';
 import crypto from 'crypto';
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
@@ -16,6 +16,14 @@ import User from "../models/users.js";
 import Job from "../models/jobs.js";
 import { OAuth2Client } from 'google-auth-library';
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+import {
+  isValidEmail,
+  validatePasswordStrength,
+  validatePhone,
+  validateName,
+  sanitizeString,
+} from '../utils/validators.js';
 
 let s3Client;
 
@@ -35,70 +43,136 @@ export const getS3Client = () => {
 
 
 export const registerEmployer = expressAsyncHandler(async (req, res) => {
-  // 1. Validation (Same as before)
+  // 1. Validation Results
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(400);
     throw new Error(errors.array()[0].msg);
   }
 
-  const { name, email, password, phone, companyName } = req.body;
+  const { name, email, password, phone, companyName, countryCode, userType } = req.body;
 
-  const existingEmployer = await Employer.findOne({ email });
-  if (existingEmployer) {
+  // 1. Validate Name
+  const nameCheck = validateName(name, "Employer name");
+  if (!nameCheck.isValid) {
     res.status(400);
-    throw new Error('Employer with this email already exists');
+    throw new Error(nameCheck.message);
   }
 
-  const existingUser = await User.findOne({ email });
+  // 2. Validate Email
+  if (!isValidEmail(email)) {
+    res.status(400);
+    throw new Error("A valid email address is required");
+  }
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // 3. Validate Password
+  const passCheck = validatePasswordStrength(password);
+  if (!passCheck.isValid) {
+    res.status(400);
+    throw new Error(passCheck.message);
+  }
+
+  // 4. Validate Phone
+  const phoneCheck = validatePhone(phone, countryCode || "+91");
+  if (!phoneCheck.isValid) {
+    res.status(400);
+    throw new Error(phoneCheck.message);
+  }
+  const formattedPhone = phoneCheck.formatted;
+  const rawDigits = phoneCheck.rawDigits;
+
+  // 5. Company Name check if Company type
+  const normalizedUserType = userType === "Company" || userType === "company" ? "company" : "individual";
+  const sanitizedCompany = sanitizeString(companyName);
+  if (normalizedUserType === "company" && !sanitizedCompany) {
+    res.status(400);
+    throw new Error("Company name is required for company registrations");
+  }
+
+  // 6. Duplicate Email Check
+  const existingEmployer = await Employer.findOne({ email: normalizedEmail });
+  if (existingEmployer && existingEmployer.isVerified) {
+    res.status(400);
+    throw new Error('An employer account with this email already exists. Please log in.');
+  }
+
+  const existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
     res.status(400);
-    throw new Error('This email is already registered as a Jobseeker.');
+    throw new Error('This email is already registered as a Jobseeker account.');
   }
 
-  // 3. Hash password (Same as before)
+  // 7. Duplicate Phone Check across Employers and Users
+  const phoneQuery = {
+    $or: [{ phone: formattedPhone }, { phone: rawDigits }],
+  };
+
+  const phoneInEmployer = await Employer.findOne(phoneQuery);
+  if (phoneInEmployer && (!existingEmployer || phoneInEmployer._id.toString() !== existingEmployer._id.toString())) {
+    res.status(400);
+    throw new Error('This mobile number is already registered to an Employer account.');
+  }
+
+  const phoneInUser = await User.findOne(phoneQuery);
+  if (phoneInUser) {
+    res.status(400);
+    throw new Error('This mobile number is already registered to a candidate account.');
+  }
+
+  // 8. Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // 4. Create Employer
-  const employer = new Employer({
-    name,
-    email,
-    password: hashedPassword,
-    phone,
-    companyName: companyName || "",
-  });
-  
-  const savedEmployer = await employer.save();
+  // 9. Save or refresh Employer record
+  let savedEmployer;
+  if (existingEmployer && !existingEmployer.isVerified) {
+    existingEmployer.name = nameCheck.value;
+    existingEmployer.password = hashedPassword;
+    existingEmployer.phone = formattedPhone;
+    existingEmployer.employerType = normalizedUserType;
+    existingEmployer.companyName = sanitizedCompany;
+    savedEmployer = await existingEmployer.save();
+    await OTP.deleteMany({ employerId: savedEmployer._id });
+  } else {
+    const employer = new Employer({
+      name: nameCheck.value,
+      email: normalizedEmail,
+      password: hashedPassword,
+      phone: formattedPhone,
+      employerType: normalizedUserType,
+      companyName: sanitizedCompany,
+    });
+    savedEmployer = await employer.save();
+  }
 
-  // 5. Generate 6-digit OTP
+  // 10. Generate 6-digit OTP
   const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
   try {
-    // 6. Save to OTP collection
+    await OTP.deleteMany({ employerId: savedEmployer._id });
     await OTP.create({
       employerId: savedEmployer._id,
       otp: otpCode,
     });
 
-    // 7. Send Email
     await sendEmail({
       email: savedEmployer.email,
-      subject: 'Verify your Employer Account',
+      subject: 'Verify your JobOne Employer Account',
       message: `Your verification code is: ${otpCode}. It expires in 10 minutes.`,
     });
 
-    // 8. Response (NO TOKEN)
+    // SECURITY: Never return savedEmployer or hashed passwords in response!
     res.status(201).json({
       message: 'Registration successful. Please check your email to verify your account.',
       email: savedEmployer.email,
-      employerId: savedEmployer._id,
-      savedEmployer // <-- ADDED THIS LINE
+      employerId: savedEmployer._id
     });
     
   } catch (error) {
-    // CRITICAL: If email/OTP fails, delete the user.
-    await Employer.deleteOne({ _id: savedEmployer._id });
-    await OTP.deleteOne({ employerId: savedEmployer._id });
+    if (!existingEmployer) {
+      await Employer.deleteOne({ _id: savedEmployer._id });
+    }
+    await OTP.deleteMany({ employerId: savedEmployer._id });
     
     console.error("Registration failed during OTP step:", error);
     res.status(500);
@@ -189,47 +263,71 @@ export const checkEmployerEligibility = expressAsyncHandler(async (req, res) => 
 
 export const verifyOTP = expressAsyncHandler(async (req, res) => {
   const { email, otp } = req.body;
+  if (!email || !otp) {
+    res.status(400);
+    throw new Error("Email and OTP are required");
+  }
 
-  // 1. Find the employer first to get their ID
-  const employer = await Employer.findOne({ email });
+  const normalizedEmail = email.trim().toLowerCase();
+  const employer = await Employer.findOne({ email: normalizedEmail });
   
   if (!employer) {
     res.status(404);
-    throw new Error("Employer not found");
+    throw new Error("Employer account not found");
   }
 
-  // 2. Look for their OTP in the separate collection
-  // We match BOTH employerId and the specific OTP code
-  const otpRecord = await OTP.findOne({
-    employerId: employer._id,
-    otp: otp,
-  });
+  // Handle already verified employer
+  if (employer.isVerified) {
+    const token = jwt.sign(
+      { employer: { id: employer._id } }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '5h' }
+    );
+    return res.status(200).json({ 
+      message: "Account is already verified. You can log in.", 
+      alreadyVerified: true,
+      token,
+      employerId: employer._id 
+    });
+  }
 
+  const otpRecord = await OTP.findOne({ employerId: employer._id });
   if (!otpRecord) {
     res.status(400);
-    throw new Error("Invalid or expired OTP.");
+    throw new Error("Verification code has expired or does not exist. Please request a new code.");
   }
 
-  // 3. Mark Verified
+  // Explicit 10-minute expiry check
+  const isExpired = Date.now() - new Date(otpRecord.createdAt).getTime() > 10 * 60 * 1000;
+  if (isExpired) {
+    await OTP.deleteMany({ employerId: employer._id });
+    res.status(400);
+    throw new Error("Verification code has expired. Please request a new code.");
+  }
+
+  if (otpRecord.otp.trim() !== String(otp).trim()) {
+    res.status(400);
+    throw new Error("Invalid verification code. Please check and try again.");
+  }
+
+  // Mark Verified
   employer.isVerified = true;
   await employer.save();
 
-  // 4. Clean up OTP (Prevent reuse)
-  await OTP.deleteOne({ _id: otpRecord._id });
+  // Clean up OTP
+  await OTP.deleteMany({ employerId: employer._id });
 
-  // 5. Generate Token & Login immediately
+  // Generate Token & Login immediately
   const token = jwt.sign(
     { employer: { id: employer._id } }, 
     process.env.JWT_SECRET, 
     { expiresIn: '5h' }
   );
   
-  // 6. Send Response
-  // CRITICAL: Sending 'employerId' allows frontend to save { token, id } structure
   res.status(200).json({ 
-      message: "Account verified!", 
-      token,
-      employerId: employer._id 
+    message: "Account verified successfully!", 
+    token,
+    employerId: employer._id 
   });
 });
 
@@ -239,15 +337,24 @@ export const resendOTP = expressAsyncHandler(async (req, res) => {
     res.status(400); throw new Error("Email is required");
   }
 
-  const employer = await Employer.findOne({ email });
+  const normalizedEmail = email.trim().toLowerCase();
+  const employer = await Employer.findOne({ email: normalizedEmail });
   if (!employer) {
-    res.status(404); throw new Error("Employer not found");
+    res.status(404); throw new Error("Employer account not found");
   }
   if (employer.isVerified) {
-    res.status(400); throw new Error("Employer is already verified");
+    res.status(400); throw new Error("This employer account is already verified. Please log in.");
   }
 
-  // Delete existing OTP
+  // Rate limiting: Prevent requesting a new OTP within 30 seconds
+  const existingOTP = await OTP.findOne({ employerId: employer._id });
+  if (existingOTP && (Date.now() - new Date(existingOTP.createdAt).getTime()) < 30 * 1000) {
+    const remainingSec = Math.ceil((30 * 1000 - (Date.now() - new Date(existingOTP.createdAt).getTime())) / 1000);
+    res.status(429);
+    throw new Error(`Please wait ${remainingSec} seconds before requesting another code.`);
+  }
+
+  // Delete existing OTPs
   await OTP.deleteMany({ employerId: employer._id });
 
   // Create new OTP
@@ -257,13 +364,19 @@ export const resendOTP = expressAsyncHandler(async (req, res) => {
     otp: otpCode,
   });
 
-  await sendEmail({
-    email: employer.email,
-    subject: 'Your New Verification Code',
-    message: `Your new verification code is: ${otpCode}. It expires in 10 minutes.`,
-  });
+  try {
+    await sendEmail({
+      email: employer.email,
+      subject: 'Your New Verification Code - JobOne Employer',
+      message: `Your new verification code is: ${otpCode}. It expires in 10 minutes.`,
+    });
 
-  res.status(200).json({ message: "OTP resent successfully" });
+    res.status(200).json({ message: "A new verification code has been sent to your business email." });
+  } catch (error) {
+    await OTP.deleteMany({ employerId: employer._id });
+    res.status(500);
+    throw new Error("Could not send verification email. Please try again later.");
+  }
 });
 
 
@@ -377,8 +490,32 @@ export const updateEmployerProfile = expressAsyncHandler(async (req, res) => {
     employer.employerType = req.body.employerType;
   }
 
-  if (req.body.name !== undefined) employer.name = req.body.name;
-  if (req.body.phone !== undefined) employer.phone = req.body.phone;
+  if (req.body.name !== undefined) {
+    const nameCheck = validateName(req.body.name, "Employer name");
+    if (!nameCheck.isValid) {
+      res.status(400);
+      throw new Error(nameCheck.message);
+    }
+    employer.name = nameCheck.value;
+  }
+
+  if (req.body.phone !== undefined) {
+    const phoneCheck = validatePhone(req.body.phone);
+    if (!phoneCheck.isValid) {
+      res.status(400);
+      throw new Error(phoneCheck.message);
+    }
+    const existingPhone = await Employer.findOne({
+      _id: { $ne: employer._id },
+      $or: [{ phone: phoneCheck.formatted }, { phone: phoneCheck.rawDigits }]
+    });
+    if (existingPhone) {
+      res.status(400);
+      throw new Error("This phone number is already registered to another employer account.");
+    }
+    employer.phone = phoneCheck.formatted;
+  }
+
   if (req.body.location !== undefined) employer.location = req.body.location; 
   if (req.body.officeLocation !== undefined) employer.officeLocation = req.body.officeLocation;
   if (req.body.industry !== undefined) employer.industry = req.body.industry;
@@ -403,7 +540,7 @@ export const updateEmployerProfile = expressAsyncHandler(async (req, res) => {
   }
   
   if (employer.employerType === "company") {
-    if (req.body.companyName !== undefined) employer.companyName = req.body.companyName;
+    if (req.body.companyName !== undefined) employer.companyName = sanitizeString(req.body.companyName);
     if (req.body.companyWebsite !== undefined) employer.companyWebsite = req.body.companyWebsite;
     if (req.body.natureOfBusiness !== undefined) employer.natureOfBusiness = req.body.natureOfBusiness;
   } else {
@@ -420,7 +557,9 @@ export const updateEmployerProfile = expressAsyncHandler(async (req, res) => {
   if (req.body.educationDocuments !== undefined) employer.educationDocuments = req.body.educationDocuments;
 
   const updatedEmployer = await employer.save();
-  res.status(200).json(updatedEmployer);
+  const safeData = updatedEmployer.toObject();
+  delete safeData.password;
+  res.status(200).json(safeData);
 });
 
 
@@ -802,16 +941,20 @@ export const getMyCandidates = expressAsyncHandler(async (req, res) => {
     res.status(200).json(applications);
   } catch (error) {
     console.error("ERROR IN getMyCandidates:", error);
-    res.status(500).json({ message: "Server Error loading candidates", error: error.message, stack: error.stack });
+    res.status(500).json({ message: "Server Error loading candidates" });
   }
 });
 
 export const forgotPasswordEmployer = expressAsyncHandler(async (req, res) => {
   const { email } = req.body;
-  const employer = await Employer.findOne({ email });
+  if (!isValidEmail(email)) {
+    res.status(400);
+    throw new Error("A valid email address is required");
+  }
+  const employer = await Employer.findOne({ email: email.trim().toLowerCase() });
   if (!employer) {
     res.status(404);
-    throw new Error("Employer not found with this email");
+    throw new Error("No employer account found with this email");
   }
 
   const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -826,7 +969,7 @@ export const forgotPasswordEmployer = expressAsyncHandler(async (req, res) => {
 
   await sendEmail({
     email: employer.email,
-    subject: 'Password Reset Request - Job Portal',
+    subject: 'Password Reset Request - JobOne',
     message: `Your password reset code is: ${otpCode}. It expires in 10 minutes. If you did not request this, please ignore this email.`,
   });
 
@@ -836,13 +979,28 @@ export const forgotPasswordEmployer = expressAsyncHandler(async (req, res) => {
 export const resetPasswordEmployer = expressAsyncHandler(async (req, res) => {
   const { email, otp, newPassword } = req.body;
 
-  const employer = await Employer.findOne({ email });
+  if (!isValidEmail(email)) {
+    res.status(400);
+    throw new Error("A valid email address is required");
+  }
+  if (!otp || typeof otp !== "string" || otp.trim().length !== 6) {
+    res.status(400);
+    throw new Error("A valid 6-digit OTP code is required");
+  }
+
+  const passCheck = validatePasswordStrength(newPassword);
+  if (!passCheck.isValid) {
+    res.status(400);
+    throw new Error(passCheck.message);
+  }
+
+  const employer = await Employer.findOne({ email: email.trim().toLowerCase() });
   if (!employer) {
     res.status(404);
     throw new Error("Employer not found");
   }
 
-  const otpRecord = await OTP.findOne({ employerId: employer._id, otp: otp });
+  const otpRecord = await OTP.findOne({ employerId: employer._id, otp: otp.trim() });
   if (!otpRecord) {
     res.status(400);
     throw new Error("Invalid or expired OTP");

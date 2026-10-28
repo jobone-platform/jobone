@@ -7,10 +7,27 @@ import {
 } from "../controllers/userControllers.js";
 import { protectAny, protect } from "../middleware/authorization.js";
 
+import { body } from "express-validator";
+
 const router = express.Router();
 
+const registerRules = [
+  body("name", "Name is required and must be between 2 and 80 characters")
+    .notEmpty()
+    .trim()
+    .isLength({ min: 2, max: 80 }),
+  body("email", "A valid email address is required")
+    .isEmail()
+    .normalizeEmail(),
+  body("password", "Password must be at least 6 characters long")
+    .isLength({ min: 6 }),
+  body("phone", "Phone number is required")
+    .notEmpty()
+    .trim(),
+];
+
 // Auth & Profile
-router.post("/register", createUser);
+router.post("/register", registerRules, createUser);
 router.post("/login", loginUser);
 router.post("/verifyotp", verifyUserOTP);
 router.post("/resend-otp", resendUserOTP);

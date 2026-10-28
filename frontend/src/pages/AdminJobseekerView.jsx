@@ -18,7 +18,12 @@ export default function AdminJobseekerView() {
 
   const fetchJobseekerData = async () => {
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
+      const adminInfo = JSON.parse(localStorage.getItem("adminInfo") || "null");
+      const token = adminInfo?.token;
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
       const { data } = await axios.get(
         `${API_BASE_URL}/admin/users/${id}/applications`,
         { headers: { Authorization: `Bearer ${token}` } }

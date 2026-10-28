@@ -59,16 +59,14 @@ app.use("/images", imageRoutes);
 
 
 
+//Admin Routes
+app.use("/admin", adminRoutes);
+
 //-----------------------------ERROR HANDLING MIDDLEWARE--------------------------//
 // Error handling middleware                                                      //
 app.use(errorHandler);                                                            //
 //-----------------------------ERROR HANDLING MIDDLEWARE--------------------------//
 
-
-
-
-app.use("/admin", adminRoutes);
-
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

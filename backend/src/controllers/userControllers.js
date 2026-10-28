@@ -5,8 +5,15 @@ import expressAsyncHandler from "express-async-handler";
 import { OAuth2Client } from 'google-auth-library';
 import bcrypt from "bcrypt";
 import UserOTP from '../models/userVerification.js';
-import sendEmail from '../utils/emailVerification.js';
+import sendEmail from '../utils/sendEmail.js';
 import { validationResult } from 'express-validator';
+import {
+  isValidEmail,
+  validatePasswordStrength,
+  validatePhone,
+  validateName,
+  sanitizeString,
+} from '../utils/validators.js';
 
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -37,29 +44,89 @@ export const createUser = expressAsyncHandler(async (req, res) => {
     throw new Error(errors.array()[0].msg);
   }
 
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone, countryCode } = req.body;
 
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
+  // 1. Validate Name
+  const nameCheck = validateName(name, "Name");
+  if (!nameCheck.isValid) {
     res.status(400);
-    throw new Error("User already exists");
+    throw new Error(nameCheck.message);
   }
 
-  const existingEmployer = await Employer.findOne({ email });
+  // 2. Validate Email
+  if (!isValidEmail(email)) {
+    res.status(400);
+    throw new Error("A valid email address is required");
+  }
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // 3. Validate Password
+  const passCheck = validatePasswordStrength(password);
+  if (!passCheck.isValid) {
+    res.status(400);
+    throw new Error(passCheck.message);
+  }
+
+  // 4. Validate Phone
+  const phoneCheck = validatePhone(phone, countryCode || "+91");
+  if (!phoneCheck.isValid) {
+    res.status(400);
+    throw new Error(phoneCheck.message);
+  }
+  const formattedPhone = phoneCheck.formatted;
+  const rawDigits = phoneCheck.rawDigits;
+
+  // 5. Check Duplicate Email
+  const existingUser = await User.findOne({ email: normalizedEmail });
+  if (existingUser) {
+    if (existingUser.isVerified) {
+      res.status(400);
+      throw new Error("An account with this email already exists. Please log in.");
+    }
+  }
+
+  const existingEmployer = await Employer.findOne({ email: normalizedEmail });
   if (existingEmployer) {
     res.status(400);
     throw new Error("This email is already registered as an Employer.");
   }
 
+  // 6. Check Duplicate Phone across Jobseekers and Employers
+  const phoneQuery = {
+    $or: [{ phone: formattedPhone }, { phone: rawDigits }],
+  };
+
+  const phoneInUser = await User.findOne(phoneQuery);
+  if (phoneInUser && (!existingUser || phoneInUser._id.toString() !== existingUser._id.toString())) {
+    res.status(400);
+    throw new Error("This mobile number is already registered to a candidate account.");
+  }
+
+  const phoneInEmployer = await Employer.findOne(phoneQuery);
+  if (phoneInEmployer) {
+    res.status(400);
+    throw new Error("This mobile number is already registered to an Employer account.");
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user = new User({
-    name,
-    email,
-    password: hashedPassword,
-    phone,
-  });
-  const savedUser = await user.save();
+  let savedUser;
+  if (existingUser && !existingUser.isVerified) {
+    // Refresh existing unverified user
+    existingUser.name = nameCheck.value;
+    existingUser.password = hashedPassword;
+    existingUser.phone = formattedPhone;
+    savedUser = await existingUser.save();
+    await UserOTP.deleteMany({ userId: savedUser._id });
+  } else {
+    const user = new User({
+      name: nameCheck.value,
+      email: normalizedEmail,
+      password: hashedPassword,
+      phone: formattedPhone,
+    });
+    savedUser = await user.save();
+  }
 
   const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -71,7 +138,7 @@ export const createUser = expressAsyncHandler(async (req, res) => {
 
     await sendEmail({
       email: savedUser.email,
-      subject: 'Verify your Job Portal Account',
+      subject: 'Verify your JobOne Account',
       message: `Your verification code is: ${otpCode}. It expires in 10 minutes.`,
     });
 
@@ -81,10 +148,12 @@ export const createUser = expressAsyncHandler(async (req, res) => {
     });
 
   } catch (error) {
-    await User.deleteOne({ _id: savedUser._id });
-    await UserOTP.deleteOne({ userId: savedUser._id });
+    if (!existingUser) {
+      await User.deleteOne({ _id: savedUser._id });
+    }
+    await UserOTP.deleteMany({ userId: savedUser._id });
     res.status(500);
-    throw new Error('Verification email failed. Please try again.');
+    throw new Error('Verification email failed to send. Please try again.');
   }
 });
 
@@ -95,31 +164,55 @@ export const verifyUserOTP = expressAsyncHandler(async (req, res) => {
     res.status(400); throw new Error("Email and OTP are required");
   }
 
-  const user = await User.findOne({ email });
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
-    res.status(404); throw new Error("User not found");
+    res.status(404); throw new Error("Candidate account not found");
+  }
+
+  // Handle already verified user
+  if (user.isVerified) {
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '5h' }
+    );
+    return res.status(200).json({
+      message: "Email is already verified. You can log in.",
+      alreadyVerified: true,
+      token,
+      user: { id: user._id, name: user.name, email: user.email },
+      isProfileComplete: user.isProfileComplete || false
+    });
   }
 
   const userOTP = await UserOTP.findOne({ userId: user._id });
   if (!userOTP) {
-    res.status(400); throw new Error("OTP expired or invalid");
+    res.status(400); throw new Error("Verification code has expired or does not exist. Please request a new code.");
   }
 
-  if (userOTP.otp !== otp) {
-    res.status(400); throw new Error("Invalid OTP");
+  // Explicit 10-minute expiry check
+  const isExpired = Date.now() - new Date(userOTP.createdAt).getTime() > 10 * 60 * 1000;
+  if (isExpired) {
+    await UserOTP.deleteMany({ userId: user._id });
+    res.status(400); throw new Error("Verification code has expired. Please request a new code.");
+  }
+
+  if (userOTP.otp.trim() !== String(otp).trim()) {
+    res.status(400); throw new Error("Invalid verification code. Please check and try again.");
   }
 
   user.isVerified = true;
   await user.save();
-  await UserOTP.deleteOne({ userId: user._id });
+  await UserOTP.deleteMany({ userId: user._id });
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '5h' });
+  const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '5h' });
 
   res.status(200).json({
     message: "Email verified successfully",
     token,
     user: { id: user._id, name: user.name, email: user.email },
-    isProfileComplete: false
+    isProfileComplete: user.isProfileComplete || false
   });
 });
 
@@ -129,15 +222,24 @@ export const resendUserOTP = expressAsyncHandler(async (req, res) => {
     res.status(400); throw new Error("Email is required");
   }
 
-  const user = await User.findOne({ email });
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
-    res.status(404); throw new Error("User not found");
+    res.status(404); throw new Error("Candidate account not found");
   }
   if (user.isVerified) {
-    res.status(400); throw new Error("User is already verified");
+    res.status(400); throw new Error("This account is already verified. Please log in.");
   }
 
-  // Delete existing OTP
+  // Rate limiting: Prevent requesting a new OTP within 30 seconds
+  const existingOTP = await UserOTP.findOne({ userId: user._id });
+  if (existingOTP && (Date.now() - new Date(existingOTP.createdAt).getTime()) < 30 * 1000) {
+    const remainingSec = Math.ceil((30 * 1000 - (Date.now() - new Date(existingOTP.createdAt).getTime())) / 1000);
+    res.status(429);
+    throw new Error(`Please wait ${remainingSec} seconds before requesting another code.`);
+  }
+
+  // Delete existing OTPs
   await UserOTP.deleteMany({ userId: user._id });
 
   // Create new OTP
@@ -147,13 +249,19 @@ export const resendUserOTP = expressAsyncHandler(async (req, res) => {
     otp: otpCode,
   });
 
-  await sendEmail({
-    email: user.email,
-    subject: 'Your New Verification Code',
-    message: `Your new verification code is: ${otpCode}. It expires in 10 minutes.`,
-  });
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Your New Verification Code - JobOne',
+      message: `Your new verification code is: ${otpCode}. It expires in 10 minutes.`,
+    });
 
-  res.status(200).json({ message: "OTP resent successfully" });
+    res.status(200).json({ message: "A new verification code has been sent to your email." });
+  } catch (error) {
+    await UserOTP.deleteMany({ userId: user._id });
+    res.status(500);
+    throw new Error("Could not send verification email. Please try again later.");
+  }
 });
 
 
@@ -193,8 +301,33 @@ export const updateUser = expressAsyncHandler(async (req, res) => {
     const userId = req.params.id; 
     const updates = req.body;     
 
-    const notAllowed = ["email", "password"]; 
+    // IDOR Security Protection: Ensure user can only update their own profile
+    if (!req.user || req.user._id.toString() !== userId) {
+      res.status(403);
+      throw new Error("Forbidden: Not authorized to update this profile");
+    }
+
+    const notAllowed = ["email", "password", "_id", "isVerified", "isFrozen"]; 
     notAllowed.forEach(field => delete updates[field]);
+
+    // Validate phone update if provided
+    if (updates.phone) {
+      const phoneCheck = validatePhone(updates.phone);
+      if (!phoneCheck.isValid) {
+        res.status(400);
+        throw new Error(phoneCheck.message);
+      }
+      // Check phone uniqueness
+      const existingPhone = await User.findOne({
+        _id: { $ne: userId },
+        $or: [{ phone: phoneCheck.formatted }, { phone: phoneCheck.rawDigits }]
+      });
+      if (existingPhone) {
+        res.status(400);
+        throw new Error("This phone number is already registered by another account");
+      }
+      updates.phone = phoneCheck.formatted;
+    }
 
     // FACT: If the profile picture is being updated, delete the old one from S3 if it exists
     if (updates.profilePicture) {
@@ -221,7 +354,7 @@ export const updateUser = expressAsyncHandler(async (req, res) => {
       userId,
       { $set: updates },  
       { new: true, runValidators: true } 
-    );
+    ).select("-password");
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -434,10 +567,14 @@ export const getDownloadableResumeUrl = expressAsyncHandler(async (req, res) => 
 
 export const forgotPasswordUser = expressAsyncHandler(async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
+  if (!isValidEmail(email)) {
+    res.status(400);
+    throw new Error("A valid email address is required");
+  }
+  const user = await User.findOne({ email: email.trim().toLowerCase() });
   if (!user) {
     res.status(404);
-    throw new Error("User not found with this email");
+    throw new Error("No candidate account found with this email");
   }
 
   const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -452,7 +589,7 @@ export const forgotPasswordUser = expressAsyncHandler(async (req, res) => {
 
   await sendEmail({
     email: user.email,
-    subject: 'Password Reset Request - Job Portal',
+    subject: 'Password Reset Request - JobOne',
     message: `Your password reset code is: ${otpCode}. It expires in 10 minutes. If you did not request this, please ignore this email.`,
   });
 
@@ -462,13 +599,28 @@ export const forgotPasswordUser = expressAsyncHandler(async (req, res) => {
 export const resetPasswordUser = expressAsyncHandler(async (req, res) => {
   const { email, otp, newPassword } = req.body;
 
-  const user = await User.findOne({ email });
+  if (!isValidEmail(email)) {
+    res.status(400);
+    throw new Error("A valid email address is required");
+  }
+  if (!otp || typeof otp !== "string" || otp.trim().length !== 6) {
+    res.status(400);
+    throw new Error("A valid 6-digit OTP code is required");
+  }
+
+  const passCheck = validatePasswordStrength(newPassword);
+  if (!passCheck.isValid) {
+    res.status(400);
+    throw new Error(passCheck.message);
+  }
+
+  const user = await User.findOne({ email: email.trim().toLowerCase() });
   if (!user) {
     res.status(404);
     throw new Error("User not found");
   }
 
-  const otpRecord = await UserOTP.findOne({ userId: user._id, otp: otp });
+  const otpRecord = await UserOTP.findOne({ userId: user._id, otp: otp.trim() });
   if (!otpRecord) {
     res.status(400);
     throw new Error("Invalid or expired OTP");
