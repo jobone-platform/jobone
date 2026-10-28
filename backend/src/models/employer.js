@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
 const employerSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true },
-  phone: { type: String, unique: true, sparse: true },
+  phone: { type: String, unique: true, sparse: true, trim: true },
   
   // FACT: Removed the Gender field entirely as per instructions.
   
@@ -61,5 +61,8 @@ const employerSchema = new mongoose.Schema({
   ],
 }, { timestamps: true });
 
+employerSchema.index({ isApproved: 1, isFrozen: 1 });
+employerSchema.index({ createdAt: -1 });
+
 const Employer = mongoose.model("Employer", employerSchema);
-export default Employer;
+export default Employer;

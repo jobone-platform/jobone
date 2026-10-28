@@ -176,17 +176,17 @@ export default function PublicProfile() {
   if (!profile) return <div className="p-10 text-center">User not found.</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-12 px-4 sm:px-6 font-sans transition-colors duration-150">
       <div className="max-w-5xl mx-auto">
         {/* FACT: Fixed Back Button Placement */}
         <div className="mb-6 flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="p-2.5 bg-white border border-slate-200 shadow-sm rounded-xl hover:bg-slate-50 transition-colors text-slate-600"
+            className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
           >
             <ArrowLeft size={18} />
           </button>
-          <h1 className="text-2xl font-extrabold text-slate-900">
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
             Applicant Review
           </h1>
         </div>
@@ -217,7 +217,7 @@ export default function PublicProfile() {
           )}
 
           {applicationId && (
-            <div className="flex flex-wrap gap-2 bg-white p-2 rounded-xl shadow-sm border border-slate-200">
+            <div className="flex flex-wrap gap-2 bg-white dark:bg-slate-900 p-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
               {status === "hired" ? (
                 <span className="px-6 py-2 bg-green-100 text-green-700 font-bold rounded-lg border border-green-200 flex items-center gap-2">
                   <CheckCircle size={18} /> Hired
@@ -301,7 +301,7 @@ export default function PublicProfile() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-center">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800 p-6 text-center">
               <img
                 src={
                   profile.profilePicture ||
@@ -312,13 +312,13 @@ export default function PublicProfile() {
                 alt="User"
                 className="w-32 h-32 rounded-full object-cover mx-auto border-4 border-slate-50 shadow-sm"
               />
-              <h2 className="text-2xl font-bold text-slate-900 mt-4">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-4">
                 {profile.name}
               </h2>
               <p className="text-slate-500 font-medium">Job Seeker</p>
 
               <div className="mt-6 space-y-3 text-left">
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
                   <Mail className="text-blue-500" size={18} />
                   <span className="text-sm text-slate-700 break-all">
                     {profile.email}
@@ -402,7 +402,7 @@ export default function PublicProfile() {
               )}
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800 p-6">
               <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <User size={18} className="text-orange-500" /> Skills
               </h3>
@@ -426,7 +426,7 @@ export default function PublicProfile() {
           </div>
 
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800 p-8">
               <h3 className="text-lg font-bold text-slate-900 mb-4">
                 Professional Summary
               </h3>
@@ -435,7 +435,7 @@ export default function PublicProfile() {
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
               <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <Briefcase className="text-indigo-500" size={20} /> Work
                 Experience
@@ -468,7 +468,7 @@ export default function PublicProfile() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
               <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <GraduationCap className="text-green-500" size={20} /> Education
               </h3>
@@ -507,7 +507,7 @@ export default function PublicProfile() {
             {/* FACT: New Projects Section UI */}
             {(profile.resumeData?.projects?.length > 0 ||
               profile.projects?.length > 0) && (
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+              <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
                 <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
                   <Code className="text-blue-500" size={20} /> Technical
                   Projects
@@ -555,7 +555,7 @@ export default function PublicProfile() {
             {/* FACT: New Certifications Section UI */}
             {(profile.resumeData?.certifications?.length > 0 ||
               profile.certifications?.length > 0) && (
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+              <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
                 <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
                   <Award className="text-amber-500" size={20} /> Certifications
                 </h3>
@@ -589,7 +589,7 @@ export default function PublicProfile() {
 
       {actionModal.show && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-8 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800">
             <h3 className="text-xl font-bold text-slate-900 mb-2">
               {actionModal.title}
             </h3>

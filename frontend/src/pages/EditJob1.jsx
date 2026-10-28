@@ -348,6 +348,7 @@ export default function EditJob() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (saving) return;
     if (!job.title || job.mode.length === 0 || job.jobType.length === 0) {
       return alert("Title, Mode, and Job Type are required.");
     }
@@ -436,24 +437,24 @@ export default function EditJob() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-slate-50 flex justify-center items-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex justify-center items-center">
         <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-24 font-sans mt-16 sm:mt-20">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 font-sans mt-16 sm:mt-20">
       {/* FACT: Sticky Top Header Removed. Back button and Title moved to standard flow. */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 space-y-8">
         <div className="flex items-center gap-4 mb-6 border-b border-slate-200 pb-6">
           <button
             onClick={() => navigate(-1)}
-            className="p-3 bg-white shadow-sm border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition-colors"
+            className="p-3 bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition-colors"
           >
             <ArrowLeft size={18} />
           </button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
               Edit Posting
             </h1>
             <p className="text-sm font-medium text-slate-500 truncate max-w-sm">
@@ -463,8 +464,8 @@ export default function EditJob() {
         </div>
 
         {/* CORE DETAILS */}
-        <section className="bg-white rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200">
-          <h2 className="text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
+        <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-800">
+          <h2 className="text-lg font-extrabold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
             <Briefcase size={20} className="text-indigo-600" /> Core Details
           </h2>
           <div className="space-y-6">
@@ -861,7 +862,7 @@ export default function EditJob() {
         </section>
 
         {/* DEMOGRAPHICS & SKILLS */}
-        <section className="bg-white rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200">
+        <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-800">
           <h2 className="text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
             <UserCircle2 size={20} className="text-blue-600" /> Candidate
             Profile & Skills
@@ -1130,7 +1131,7 @@ export default function EditJob() {
         </section>
 
         {/* TIMINGS & DATES */}
-        <section className="bg-white rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200">
+        <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-800">
           <h2 className="text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
             <Clock size={20} className="text-purple-600" /> Schedule & Deadlines
           </h2>
@@ -1440,7 +1441,7 @@ export default function EditJob() {
         </section>
 
         {/* FEATURES & DESCRIPTION */}
-        <section className="bg-white rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200">
+        <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-800">
           <h2 className="text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
             <AlignLeft size={20} className="text-amber-500" /> Description &
             Highlights
@@ -1507,7 +1508,7 @@ export default function EditJob() {
         {/* LOCATION */}
         {(job.mode.includes("Work from office") ||
           job.mode.includes("Work from field")) && (
-          <section className="bg-white rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200">
+          <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-800">
             <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
               <h2 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
                 <MapPin size={20} className="text-rose-500" /> Office Location

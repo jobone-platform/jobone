@@ -151,12 +151,12 @@ export default function ApplyPage() {
       : job.location || "Location not specified";
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 flex justify-center items-center mt-10">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-12 px-4 sm:px-6 flex justify-center items-center mt-10 transition-colors duration-150">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-2xl bg-white shadow-xl shadow-slate-200/40 rounded-3xl overflow-hidden border border-slate-100"
+        className="w-full max-w-2xl bg-white dark:bg-slate-900 shadow-xl dark:shadow-slate-950/40 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800"
       >
         {/* --- HEADER & JOB SUMMARY --- */}
         <div className="bg-slate-900 p-6 sm:p-8 text-white relative overflow-hidden">
@@ -205,7 +205,7 @@ export default function ApplyPage() {
               <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4 shadow-inner">
                 <CheckCircle2 size={32} />
               </div>
-              <h2 className="text-2xl font-extrabold text-slate-800 mb-2">
+              <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white mb-2">
                 Application Sent!
               </h2>
               <p className="text-slate-500 font-medium mb-8 text-center">
@@ -228,10 +228,10 @@ export default function ApplyPage() {
                         <div
                           key={sJob._id}
                           onClick={() => navigate(`/apply/${sJob._id}`)}
-                          className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:border-indigo-300 hover:shadow-md transition-all group"
+                          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-500 hover:shadow-md transition-all group"
                         >
                           <div className="flex items-center gap-4 overflow-hidden">
-                            <div className="w-12 h-12 bg-white rounded-xl border border-slate-200 flex items-center justify-center text-indigo-600 font-bold shrink-0">
+                            <div className="w-12 h-12 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold shrink-0">
                               {sJob.postedByCompany ? (
                                 sJob.postedByCompany.charAt(0)
                               ) : (
@@ -239,7 +239,7 @@ export default function ApplyPage() {
                               )}
                             </div>
                             <div className="truncate">
-                              <h4 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+                              <h4 className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                                 {sJob.title}
                               </h4>
                               <p className="text-xs text-slate-500 font-medium truncate flex items-center gap-2 mt-0.5">
@@ -286,7 +286,7 @@ export default function ApplyPage() {
                   required
                   rows="6"
                   placeholder="I am writing to express my interest in the..."
-                  className="w-full border border-slate-200 bg-slate-50 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white outline-none resize-none transition-all text-sm font-medium text-slate-700"
+                  className="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800 outline-none resize-none transition-all text-sm font-medium text-slate-700 dark:text-slate-200"
                 />
               </div>
 

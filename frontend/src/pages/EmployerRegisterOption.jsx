@@ -7,9 +7,11 @@ import axios from "axios";
 import login from "../assets/login.jpg";
 
 
+import { useAuth } from "../routes/Context";
+
 const EmployerRegisterOption = () => {
     const navigate = useNavigate();
-
+    const { loginEmployer } = useAuth();
     const [error, setError] = React.useState("");
 
     const handleGoogleSuccess = async (credentialResponse) => {
@@ -18,8 +20,7 @@ const EmployerRegisterOption = () => {
                 token: credentialResponse.credential,
             });
 
-            localStorage.setItem("employerToken", data.token);
-            localStorage.setItem("employerInfo", JSON.stringify(data));
+            loginEmployer(data.token, data);
 
             if (data.isProfileComplete === false) {
                 navigate("/employereditprofile", { state: { showWarning: true } });
@@ -39,15 +40,15 @@ const EmployerRegisterOption = () => {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-4" style={{ backgroundImage: `url(${login})` }}>
             <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                    Sign-up and apply for free
+                <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
+                    Sign Up to Hire Talent
                 </h1>
-                <p className="text-gray-600 text-lg">
-                    3,00,000+ employers hiring on <span className="font-semibold">First Job</span>
+                <p className="text-gray-600 dark:text-slate-300 text-lg">
+                    Post job openings and hire verified candidates on <span className="font-semibold">JobOne</span>
                 </p>
             </div>
 
-            <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md text-center">
+            <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 shadow-lg rounded-xl p-8 w-full max-w-md text-center">
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
                 {/* Google Sign-up */}
                 <div className="mb-4 flex justify-center">
@@ -63,7 +64,7 @@ const EmployerRegisterOption = () => {
                 {/* OR Divider */}
                 <button
                     onClick={handleEmailSignup}
-                    className="w-full py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition font-medium text-gray-700"
+                    className="w-full py-3 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 rounded-md hover:bg-gray-50 dark:hover:bg-slate-700 transition font-medium text-gray-700 dark:text-slate-100"
                 >
                     Sign up with Email
                 </button>

@@ -25,14 +25,14 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import LogoJobOne from "./LogoJobOne";
-import { useTheme } from "../routes/Context";
+import { useTheme, useAuth } from "../routes/Context";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,61 +40,39 @@ export default function Navbar() {
   const mobileMenuRef = useRef(null);
 
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const { authStatus, role: contextRole, user, employer, admin, logout } = useAuth();
   const isDark = resolvedTheme === "dark";
 
-  // --- 0. SCROLL EVENT LISTENER ---
+  // --- 0. SCROLL EVENT LISTENER (RAF-throttled, passive) ---
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setScrolled(currentScrollY > 15);
+    let ticking = false;
 
-      if (currentScrollY > lastScrollY && currentScrollY > 90) {
-        // Scrolling down and past threshold
-        setShowNavbar(false);
-      } else {
-        // Scrolling up
-        setShowNavbar(true);
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          setScrolled(currentScrollY > 15);
+
+          if (currentScrollY > lastScrollYRef.current && currentScrollY > 90) {
+            setShowNavbar(false);
+          } else {
+            setShowNavbar(true);
+          }
+          lastScrollYRef.current = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
       }
-      setLastScrollY(currentScrollY);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
-  // --- 1. DETERMINE ROLE & AUTH DATA ---
-  const [authData, setAuthData] = useState(() => {
-    try {
-      const u = localStorage.getItem("userInfo");
-      const e = localStorage.getItem("employerInfo");
-      const a = localStorage.getItem("adminInfo");
-      return {
-        userInfo: u ? JSON.parse(u) : null,
-        employerInfo: e ? JSON.parse(e) : null,
-        adminInfo: a ? JSON.parse(a) : null,
-      };
-    } catch {
-      return { userInfo: null, employerInfo: null, adminInfo: null };
-    }
-  });
-
-  // Re-sync auth data on location change
-  useEffect(() => {
-    try {
-      const u = localStorage.getItem("userInfo");
-      const e = localStorage.getItem("employerInfo");
-      const a = localStorage.getItem("adminInfo");
-      setAuthData({
-        userInfo: u ? JSON.parse(u) : null,
-        employerInfo: e ? JSON.parse(e) : null,
-        adminInfo: a ? JSON.parse(a) : null,
-      });
-    } catch {
-      // ignore
-    }
-  }, [location.pathname]);
-
-  const { userInfo, employerInfo, adminInfo } = authData;
+  // --- 1. DETERMINE ROLE & AUTH DATA (Reactive from AuthContext) ---
+  const userInfo = user;
+  const employerInfo = employer;
+  const adminInfo = admin;
 
   let employerType = employerInfo?.employerType || "company";
 
@@ -219,10 +197,16 @@ export default function Navbar() {
     "/verify-otp",
     "/login",
     "/register",
+    "/signup",
     "/userregister",
+    "/jobseeker/register",
     "/employerregister",
     "/employer-register",
+    "/employer/register",
+    "/employer/signup",
     "/employerregisteroption",
+    "/forgot-password",
+    "/reset-password",
     "/admin/login",
   ];
 
@@ -251,13 +235,7 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("userInfo");
-    localStorage.removeItem("employerToken");
-    localStorage.removeItem("employerInfo");
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminInfo");
-
+    logout();
     setMenuOpen(false);
     setUserMenuOpen(false);
     navigate(isAdmin ? "/admin/login" : "/login");
@@ -798,7 +776,8 @@ export default function Navbar() {
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={menuOpen}
-              className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer ${
+              aria-controls="mobile-navigation"
+              className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none ${
                 isTransparentHero
                   ? "text-white border-white/20 bg-white/10 hover:bg-white/20"
                   : isDark
@@ -829,6 +808,9 @@ export default function Navbar() {
 
             {/* Drawer */}
             <motion.div
+              id="mobile-navigation"
+              role="navigation"
+              aria-label="Mobile Navigation"
               ref={mobileMenuRef}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}

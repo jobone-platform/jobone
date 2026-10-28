@@ -73,16 +73,16 @@ export default function RecommendedJobs() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-12 px-4 sm:px-6 transition-colors duration-150">
       <div className="max-w-7xl mx-auto">
         <div className="mb-10 text-center">
-          <span className="text-indigo-600 font-bold text-sm uppercase tracking-wider bg-white border border-indigo-100 px-4 py-1.5 rounded-full inline-flex items-center gap-2 shadow-sm mb-4">
+          <span className="text-indigo-600 dark:text-indigo-400 font-bold text-sm uppercase tracking-wider bg-white dark:bg-slate-900 border border-indigo-100 dark:border-slate-800 px-4 py-1.5 rounded-full inline-flex items-center gap-2 shadow-sm mb-4">
             <Sparkles size={16} className="text-indigo-500" /> AI Matched For You
           </span>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-4">
             Recommended Jobs
           </h1>
-          <p className="text-slate-600 text-lg max-w-2xl mx-auto">
+          <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto">
             These jobs have been uniquely matched to your profile, skills, and experience using our AI recommendation engine.
           </p>
         </div>
@@ -98,10 +98,10 @@ export default function RecommendedJobs() {
               <div
                 key={job._id}
                 onClick={() => setSelectedJob(job)}
-                className={`bg-white rounded-3xl border p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group flex flex-col relative overflow-hidden ${
+                className={`bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-md dark:shadow-slate-950/40 hover:shadow-xl dark:hover:border-indigo-500/50 transition-all cursor-pointer group flex flex-col relative overflow-hidden ${
                   job.matchScore > 70
-                    ? "border-amber-400 hover:border-amber-500 shadow-amber-100/50"
-                    : "border-indigo-100 hover:border-indigo-300"
+                    ? "border-amber-400 hover:border-amber-500 shadow-amber-100/50 dark:shadow-amber-950/20"
+                    : "border-indigo-100 dark:border-slate-800 hover:border-indigo-300"
                 }`}
               >
                 <div className={`absolute top-0 right-0 px-4 py-2 rounded-bl-2xl font-bold flex items-center gap-1 text-sm border-b border-l ${
@@ -113,7 +113,7 @@ export default function RecommendedJobs() {
                 </div>
 
                 <div className="flex items-start gap-4 mb-5 mt-2">
-                  <div className="w-14 h-14 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center p-2 shrink-0">
+                  <div className="w-14 h-14 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center justify-center p-2 shrink-0">
                     <img
                       src={job.postedByCompany?.profilePicture || "https://ui-avatars.com/api/?name=" + (job.postedByCompany?.companyName || "Company")}
                       alt="Logo"
@@ -122,7 +122,7 @@ export default function RecommendedJobs() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-slate-800 text-lg group-hover:text-indigo-600 transition-colors line-clamp-1">
+                    <h3 className="font-extrabold text-slate-800 dark:text-white text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
                       {job.title}
                     </h3>
                     <div className="flex items-center gap-1.5 text-sm text-slate-500 font-medium mt-1">
@@ -164,9 +164,9 @@ export default function RecommendedJobs() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm">
-            <h3 className="text-2xl font-bold text-slate-800 mb-2">No recommendations yet</h3>
-            <p className="text-slate-500">Update your profile with more skills and experience to get AI-matched jobs.</p>
+          <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">No recommendations yet</h3>
+            <p className="text-slate-500 dark:text-slate-400">Update your profile with more skills and experience to get AI-matched jobs.</p>
             <Link to="/editprofile2" className="mt-6 inline-block bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition">
               Update Profile
             </Link>

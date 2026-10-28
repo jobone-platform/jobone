@@ -20,8 +20,8 @@ export default function Footer() {
             JOBONE<span className="text-blue-500">Portal</span>
           </h2>
           <p className="text-xs md:text-sm leading-relaxed max-w-xs font-medium">
-            Connecting elite talent with tomorrow's leading companies. The most
-            trusted career platform in the region.
+            Connecting qualified job seekers with verified employers. The trusted
+            recruitment platform for discovering jobs, tracking applications, and hiring talent.
           </p>
 
           <div className="flex space-x-3 md:space-x-4">

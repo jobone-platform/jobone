@@ -5,7 +5,7 @@ import expressAsyncHandler from "express-async-handler";
 import { isValidEmail, validateName, sanitizeString } from "../utils/validators.js";
 
 export const contactUs = expressAsyncHandler(async (req, res) => {
-    const { name, email, communicationType, message } = req.body;
+    const { name, email, communicationType, subject, message } = req.body;
 
     const nameCheck = validateName(name, "Name");
     if (!nameCheck.isValid) {
@@ -19,9 +19,11 @@ export const contactUs = expressAsyncHandler(async (req, res) => {
     }
 
     const validTypes = ["feedback", "complaint", "suggestion", "inquiry"];
-    if (!communicationType || !validTypes.includes(communicationType)) {
-      res.status(400);
-      throw new Error("Please select a valid communication type (feedback, complaint, suggestion, or inquiry)");
+    let finalType = communicationType;
+    if (!finalType || !validTypes.includes(finalType.toLowerCase())) {
+      finalType = "inquiry";
+    } else {
+      finalType = finalType.toLowerCase();
     }
 
     const sanitizedMsg = sanitizeString(message);
@@ -30,11 +32,15 @@ export const contactUs = expressAsyncHandler(async (req, res) => {
       throw new Error("Message must be at least 5 characters long");
     }
 
+    const fullMessage = subject && subject.trim() 
+      ? `[Subject: ${sanitizeString(subject)}]\n${sanitizedMsg}`
+      : sanitizedMsg;
+
     const newContact = new Contact({
       name: nameCheck.value,
       email: email.trim().toLowerCase(),
-      communicationType,
-      message: sanitizedMsg
+      communicationType: finalType,
+      message: fullMessage
     });
 
     await newContact.save();

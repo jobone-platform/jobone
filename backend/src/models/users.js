@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true },
-  phone: { type: String, unique: true, sparse: true},
+  phone: { type: String, unique: true, sparse: true, trim: true },
   isVerified: { type: Boolean, default: false },
   gender: { type: String, enum: ["Male", "Female", "Other", "Prefer not to say"] }, 
   skills: [String],
@@ -142,6 +142,9 @@ const userSchema = new mongoose.Schema({
     ]
 });
 
+userSchema.index({ skills: 1 });
+userSchema.index({ createdAt: -1 });
+
 const User = mongoose.model("User", userSchema);
 
-export default User;
+export default User;

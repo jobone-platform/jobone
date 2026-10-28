@@ -45,7 +45,7 @@ export default function JobPreviewCard({ job, onClose }) {
     job.jobFeatures?.filter((f) => f && f.trim() !== "") || [];
 
   return (
-    <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col h-full max-h-[85vh] lg:max-h-[800px] overflow-hidden relative">
+    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-slate-100 rounded-3xl shadow-2xl flex flex-col h-full max-h-[85vh] lg:max-h-[800px] overflow-hidden relative">
       <div className="bg-slate-900 px-6 py-4 flex justify-between items-center text-white shrink-0">
         <h3 className="font-bold flex items-center gap-2 text-sm">
           <FileText size={16} /> Live Preview
@@ -53,7 +53,8 @@ export default function JobPreviewCard({ job, onClose }) {
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1 hover:bg-slate-700 rounded-full transition-colors"
+            aria-label="Close preview"
+            className="p-1 hover:bg-slate-700 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <X size={18} />
           </button>
@@ -71,7 +72,7 @@ export default function JobPreviewCard({ job, onClose }) {
               {renderArray(job.mode)}
             </span>
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-4 tracking-tight leading-tight">
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight leading-tight">
             {job.title || "Job Title"}
           </h1>
           <div className="flex flex-wrap gap-2">

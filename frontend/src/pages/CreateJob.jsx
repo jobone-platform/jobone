@@ -609,6 +609,7 @@ export default function CreateJob() {
   };
 
   const handleSubmit = async () => {
+    if (loading) return;
     if (!job.isFlexibleShifts) {
       for (const shift of job.shifts) {
         if (!shift.startTime || !shift.endTime) {
@@ -703,13 +704,13 @@ export default function CreateJob() {
 
   const getInputClass = (fieldName, hasIcon = false) => {
     const base = `w-full p-3 ${hasIcon ? "pl-10" : ""} border rounded-xl outline-none transition-all duration-200`;
-    return `${base} ${touched[fieldName] && errors[fieldName] ? "border-red-500 focus:ring-red-200 bg-red-50" : "border-gray-200 focus:border-blue-500 focus:ring-blue-100 bg-gray-50 focus:bg-white"}`;
+    return `${base} ${touched[fieldName] && errors[fieldName] ? "border-red-500 focus:ring-red-200 bg-red-50" : "border-gray-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-100 dark:focus:ring-blue-900/40 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800"}`;
   };
 
   // --- SECURITY BARRIERS ---
   if (pageAccess === "checking") {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50 flex-col gap-4">
+      <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 flex-col gap-4">
         <Loader2 className="animate-spin text-indigo-600" size={48} />
         <p className="text-slate-500 font-bold animate-pulse">
           Verifying account eligibility...
@@ -720,12 +721,12 @@ export default function CreateJob() {
 
   if (pageAccess === "blocked") {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50 p-4">
-        <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-slate-200 p-8 text-center">
+      <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
+        <div className="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-8 text-center">
           <div className="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <AlertTriangle className="text-rose-600" size={32} />
           </div>
-          <h2 className="text-2xl font-extrabold text-slate-900 mb-3">
+          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-3">
             Access Denied
           </h2>
           <p className="text-slate-600 font-medium mb-8 leading-relaxed">
@@ -744,14 +745,14 @@ export default function CreateJob() {
 
   if (pageAccess === "incomplete") {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50 p-4">
-        <div className="max-w-lg w-full bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
+      <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
+        <div className="max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center shrink-0">
               <FileText className="text-amber-600" size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-slate-900">
+              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
                 Profile Incomplete
               </h2>
               <p className="text-sm text-slate-500 font-medium mt-1">
@@ -762,7 +763,7 @@ export default function CreateJob() {
           <p className="text-slate-600 font-medium mb-6 leading-relaxed">
             {blockMessage}
           </p>
-          <div className="bg-slate-50 rounded-xl p-5 border border-slate-200 mb-8 max-h-48 overflow-y-auto">
+          <div className="bg-slate-50 dark:bg-slate-800/80 rounded-xl p-5 border border-slate-200 dark:border-slate-700 mb-8 max-h-48 overflow-y-auto">
             <ul className="space-y-2">
               {missingItems.map((item) => (
                 <li
@@ -798,19 +799,19 @@ export default function CreateJob() {
   }
 
   return (
-    <div className="flex flex-col pt-24 pb-10 sm:py-20 md:flex-row gap-4 sm:gap-10 p-4 sm:p-8 bg-gray-50 min-h-screen">
+    <div className="flex flex-col pt-24 pb-10 sm:py-20 md:flex-row gap-4 sm:gap-10 p-4 sm:p-8 bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
       {isPostingDisabled && (
         <div className="bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl mb-6 font-bold flex items-center gap-3">
           <AlertTriangle size={20} />
           {blockMessage}
         </div>
       )}
-      <div className="w-full md:w-1/2 bg-white p-4 sm:p-8 rounded-2xl shadow-lg border border-gray-100 overflow-y-auto">
+      <div className="w-full md:w-1/2 bg-white dark:bg-slate-900 p-4 sm:p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-800 text-slate-900 dark:text-slate-100 overflow-y-auto">
         <div className="flex items-center justify-between mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
             {locationState?.repostData ? "Repost a Job" : "Create a Job"}
           </h1>
-          <span className="text-xs sm:text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
+          <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-gray-200 dark:border-slate-700">
             Step {step} of 2
           </span>
         </div>
@@ -2102,7 +2103,7 @@ export default function CreateJob() {
         {preview ? (
           <JobPreviewCard job={job} onClose={() => setPreview(false)} />
         ) : (
-          <div className="flex flex-col items-center justify-center h-[400px] text-gray-400 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50/50">
+          <div className="flex flex-col items-center justify-center h-[400px] text-gray-400 dark:text-slate-500 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-2xl bg-gray-50/50 dark:bg-slate-900/50">
             <div className="p-4 bg-white rounded-full shadow-sm mb-4">
               <FileText size={32} className="text-gray-300" />
             </div>

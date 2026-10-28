@@ -55,35 +55,36 @@ export default function EmployerDashboard() {
         const employerInfo = JSON.parse(stored);
         const token = employerInfo?.token;
 
-        if (employerInfo.id || employerInfo.employerId) {
-          try {
-            const profileRes = await axios.get(
-              `${API_BASE_URL}/employer/profile/${employerInfo.id || employerInfo.employerId}`,
-              { headers: { Authorization: `Bearer ${token}` } },
-            );
-            setEmployerName(
-              profileRes.data.name || profileRes.data.companyName || "Employer",
-            );
+        const empId = employerInfo.id || employerInfo.employerId;
+        const authConfig = { headers: { Authorization: `Bearer ${token}` } };
 
-            // FACT: Extract the security status directly from the database response
-            setApprovalStatus(profileRes.data.isApproved || "pending");
-          } catch (profileErr) {
-            console.error("Could not load employer profile name", profileErr);
-          }
+        // Execute profile, jobs, and metrics requests concurrently
+        const [profileRes, jobsRes, metricsRes] = await Promise.all([
+          empId
+            ? axios
+                .get(`${API_BASE_URL}/employer/profile/${empId}`, authConfig)
+                .catch((profileErr) => {
+                  console.error("Could not load employer profile name", profileErr);
+                  return null;
+                })
+            : Promise.resolve(null),
+          axios.get(`${API_BASE_URL}/jobs/employer-jobs`, authConfig),
+          axios.get(`${API_BASE_URL}/jobs/metrics`, authConfig),
+        ]);
+
+        if (profileRes?.data) {
+          setEmployerName(
+            profileRes.data.name || profileRes.data.companyName || "Employer",
+          );
+          setApprovalStatus(profileRes.data.isApproved || "pending");
         }
 
-        const { data } = await axios.get(
-          `${API_BASE_URL}/jobs/employer-jobs`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
+        const jobsData = jobsRes?.data;
+        setJobs(Array.isArray(jobsData) ? jobsData : jobsData?.jobs || []);
 
-        setJobs(Array.isArray(data) ? data : data.jobs || []);
-
-        const metricsRes = await axios.get(
-          `${API_BASE_URL}/jobs/metrics`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        setMetrics(metricsRes.data);
+        if (metricsRes?.data) {
+          setMetrics(metricsRes.data);
+        }
       } catch (err) {
         console.error("API Error:", err);
         if (err.response?.status === 401) navigate("/login");
@@ -137,16 +138,16 @@ export default function EmployerDashboard() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-8 sm:py-20 bg-slate-50 px-4 sm:px-10 font-sans">
+    <div className="min-h-screen pt-24 pb-8 sm:py-20 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 px-4 sm:px-10 font-sans transition-colors duration-150">
       {/* Sidebar */}
 
-      <aside className="fixed left-0 top-15 hidden h-full w-64 border-r border-slate-200 bg-white p-6 md:block z-20">
+      <aside className="fixed left-0 top-15 hidden h-full w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 md:block z-20">
         <div className="h-[50px] w-[100%]"></div>
         <div className="mb-10 flex items-center gap-2 px-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200">
             <Briefcase size={22} />
           </div>
-          <span className="text-2xl font-bold tracking-tight text-slate-900">
+          <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             JobOne
           </span>
         </div>
@@ -183,7 +184,7 @@ export default function EmployerDashboard() {
         <div className="absolute bottom-8 left-6 right-6">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-500 dark:text-slate-400 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-400"
           >
             <LogOut size={20} /> <span className="font-medium">Logout</span>
           </button>
@@ -193,10 +194,10 @@ export default function EmployerDashboard() {
       <main className="flex-1 md:ml-64 px-0 sm:px-8 relative">
         <header className="mb-6 sm:mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
               Welcome back, {employerName}!
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-slate-500">
+            <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
               {approvalStatus === "approved"
                 ? "Here's a live overview of your hiring pipeline."
                 : "Your account security status overview."}
@@ -220,14 +221,14 @@ export default function EmployerDashboard() {
           </div>
         ) : approvalStatus === "pending" ? (
           /* FACT: The Pending Lock Screen */
-          <div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-16 text-center flex flex-col items-center justify-center max-w-3xl mx-auto mt-10">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm p-16 text-center flex flex-col items-center justify-center max-w-3xl mx-auto mt-10">
             <div className="w-24 h-24 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mb-6 border-8 border-orange-100/50">
               <Clock size={40} />
             </div>
-            <h2 className="text-2xl font-extrabold text-slate-900 mb-3">
+            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-3">
               Account Pending Review
             </h2>
-            <p className="text-slate-500 font-medium leading-relaxed max-w-lg">
+            <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-lg">
               To ensure the highest quality of opportunities on our platform,
               our administration team manually verifies all new employer
               accounts.
@@ -236,7 +237,7 @@ export default function EmployerDashboard() {
               You will be granted full access to post jobs and review candidates
               once your profile is approved.
             </p>
-            <div className="mt-8 flex items-center gap-2 bg-slate-50 text-slate-600 px-6 py-3 rounded-xl border border-slate-200 font-bold text-sm">
+            <div className="mt-8 flex items-center gap-2 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-sm">
               <ShieldAlert size={18} className="text-slate-400" /> Current
               Status: <span className="text-orange-500">Under Review</span>
             </div>
@@ -283,14 +284,14 @@ export default function EmployerDashboard() {
               />
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
-              <div className="p-4 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <h2 className="text-base sm:text-lg font-extrabold text-slate-900">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden">
+              <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/40">
+                <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
                   Job Management Tracker
                 </h2>
-                <div className="flex bg-slate-200 p-1 rounded-lg">
-                   <button onClick={() => setViewMode('table')} className={`px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-md transition-all ${viewMode === 'table' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}>Table</button>
-                   <button onClick={() => setViewMode('card')} className={`px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-md transition-all ${viewMode === 'card' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}>Cards</button>
+                <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-lg">
+                   <button onClick={() => setViewMode('table')} className={`px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-md transition-all ${viewMode === 'table' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Table</button>
+                   <button onClick={() => setViewMode('card')} className={`px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-md transition-all ${viewMode === 'card' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Cards</button>
                 </div>
               </div>
 
@@ -299,11 +300,11 @@ export default function EmployerDashboard() {
                   <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-400">
                     <Briefcase size={32} />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900">
-                    No job posts yet
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    No Active Job Postings
                   </h3>
-                  <p className="text-slate-500 mt-1">
-                    Get started by creating your first listing.
+                  <p className="text-slate-500 mt-1 max-w-sm">
+                    Create your first job listing to start receiving and reviewing qualified candidate applications.
                   </p>
                 </div>
               ) : viewMode === "card" ? (
@@ -322,7 +323,7 @@ export default function EmployerDashboard() {
                 <div className="overflow-x-auto custom-scrollbar">
                   <table className="w-full text-left border-collapse min-w-[1000px] sm:min-w-[1200px]">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-[10px] sm:text-xs uppercase tracking-wider text-slate-500">
+                      <tr className="bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         <th className="p-3 sm:p-4 font-bold">Job Title & Details</th>
                         <th className="p-3 sm:p-4 font-bold text-center">Status</th>
                         <th className="p-4 font-bold text-center border-l border-slate-100 bg-slate-50/50">
@@ -351,16 +352,16 @@ export default function EmployerDashboard() {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                       {jobs.map((job) => (
                         <tr
                           key={job._id}
                           onClick={() => navigate(`/job/${job._id}`)}
-                          className="hover:bg-slate-50 transition-colors cursor-pointer group"
+                          className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
                         >
                           {/* Job Title & Details */}
                           <td className="p-3 sm:p-4">
-                            <div className="font-extrabold text-slate-900 text-[13px] sm:text-sm group-hover:text-blue-600 transition-colors">
+                            <div className="font-extrabold text-slate-900 dark:text-white text-[13px] sm:text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                               {job.title}
                             </div>
                             <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-1 flex items-center gap-1.5">
@@ -542,7 +543,7 @@ function NavItem({ icon, label, active = false, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 font-medium transition-all ${active ? "bg-blue-50 text-blue-700" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
+      className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 font-medium transition-all ${active ? "bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"}`}
     >
       {icon} {label}
     </button>
@@ -557,10 +558,10 @@ function StatCard({ label, value, color }) {
     purple: "bg-purple-50 text-purple-600",
   };
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-5 shadow-sm">
-      <p className="text-[10px] sm:text-xs font-medium text-slate-500 truncate">{label}</p>
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 sm:p-5 shadow-sm">
+      <p className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">{label}</p>
       <div className="mt-1 sm:mt-2 flex items-end justify-between">
-        <h4 className="text-lg sm:text-2xl font-extrabold text-slate-900">{value}</h4>
+        <h4 className="text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white">{value}</h4>
         <span
           className={`rounded-lg px-1.5 py-0.5 sm:px-2 sm:py-1 text-[9px] sm:text-xs font-bold ${colors[color] || colors.blue}`}
         >
@@ -593,11 +594,11 @@ function JobCard({ job, toggleJobStatus, navigate, employerName }) {
   return (
     <div 
       onClick={() => navigate(`/job/${job._id}`)}
-      className="border border-slate-200 bg-white rounded-2xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-2.5 group relative"
+      className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-2.5 group relative"
     >
       <div className="flex justify-between items-start gap-3">
         <div className="flex-1">
-           <div className="font-extrabold text-slate-900 text-[13px] sm:text-[14px] group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight mb-1">{job.title}</div>
+           <div className="font-extrabold text-slate-900 dark:text-white text-[13px] sm:text-[14px] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-tight mb-1">{job.title}</div>
            <div className="text-[11px] text-slate-500 font-bold flex items-center gap-1.5 mb-0.5"><CompanyDisplay job={job} fallback={employerName || "Your Company"} /></div>
            <div className="text-[10px] text-slate-400 font-medium flex items-center gap-1.5"><Clock size={11} className="w-3 h-3" /> Posted: {new Date(job.postedAt).toLocaleDateString()}</div>
         </div>
@@ -616,7 +617,7 @@ function JobCard({ job, toggleJobStatus, navigate, employerName }) {
          <MetricBox title="NCTT" value={job.stats?.nctt || 0} color="rose" onClick={(e) => { e.stopPropagation(); navigate(`/job/${job._id}/applicants?status=NCTT`); }} />
       </div>
 
-      <div className="flex items-center justify-between mt-2 border-t border-slate-100 pt-3">
+      <div className="flex items-center justify-between mt-2 border-t border-slate-100 dark:border-slate-800 pt-3">
          <span className="text-[10px] text-slate-400 font-medium px-1">Click to view details</span>
          <button
             onClick={(e) => {

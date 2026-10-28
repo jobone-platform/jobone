@@ -243,7 +243,7 @@ export default function EmployerEditProfile() {
     );
 
   return (
-    <div className="min-h-screen bg-slate-50 py-4 px-0 sm:py-10 sm:px-4 relative font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-4 px-0 sm:py-10 sm:px-4 relative font-sans">
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative border-t-4 border-red-500">
@@ -276,10 +276,10 @@ export default function EmployerEditProfile() {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto bg-white sm:rounded-2xl shadow-lg p-3 sm:p-8 border-y sm:border border-slate-100">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 sm:rounded-2xl shadow-lg p-3 sm:p-8 border-y sm:border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-slate-100">
         <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
           <div>
-            <h1 className="text-lg sm:text-2xl font-bold text-slate-800">
+            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white">
               Edit Profile
             </h1>
             <p className="text-sm text-slate-500">
@@ -295,7 +295,7 @@ export default function EmployerEditProfile() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="bg-slate-50 p-3 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200">
+          <div className="bg-slate-50 dark:bg-slate-800/80 p-3 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700">
             <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-3 sm:mb-4 flex items-center gap-2">
               <ShieldCheck size={18} className="text-blue-600" /> Entity Type
             </label>

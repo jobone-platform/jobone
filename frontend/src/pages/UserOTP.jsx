@@ -3,9 +3,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
+import { useAuth } from "../routes/Context";
+
 const UserVerifyOTP = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { loginUser } = useAuth();
 
   const initialEmail = location.state?.email || "";
 
@@ -36,6 +39,7 @@ const UserVerifyOTP = () => {
   };
 
   const handleResend = async () => {
+    if (resending) return;
     if (!email.trim()) {
       setMessage("Please provide your email address to resend OTP.");
       setIsError(true);
@@ -61,6 +65,7 @@ const UserVerifyOTP = () => {
 
   const handleVerify = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setMessage("");
     setIsError(false);
 
@@ -84,9 +89,9 @@ const UserVerifyOTP = () => {
         otp: otp.trim(),
       });
 
-      // Save credentials in localStorage
-      localStorage.setItem("userToken", res.data.token);
-      localStorage.setItem("userInfo", JSON.stringify(res.data));
+      // Update centralized auth state
+      loginUser(res.data.token, res.data);
+
       setMessage(
         res.data.alreadyVerified
           ? "Account is already verified! Redirecting to your dashboard..."
@@ -105,7 +110,7 @@ const UserVerifyOTP = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-colors">
-      <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8 w-full max-w-md border border-gray-100 dark:border-gray-700 transition-colors">
+      <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-5 sm:p-8 w-full max-w-md border border-gray-100 dark:border-gray-700 transition-colors">
         <h2 className="text-2xl font-extrabold text-center text-indigo-700 dark:text-indigo-400 mb-2">
           Verify Your Candidate Email
         </h2>
@@ -159,6 +164,7 @@ const UserVerifyOTP = () => {
               maxLength="6"
               className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none tracking-widest text-center text-xl font-mono font-bold"
               placeholder="••••••"
+              autoComplete="one-time-code"
               autoFocus
             />
           </div>

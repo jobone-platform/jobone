@@ -99,8 +99,14 @@ const JobSchema = new mongoose.Schema({
   showHiringCompanyName: { type: Boolean, default: false }
 });
 
-// Force 2dsphere index for geospatial queries
+// Geospatial index for nearby queries
 JobSchema.index({ location: "2dsphere" });
 
+// High-frequency query indexes
+JobSchema.index({ status: 1, postedAt: -1 });
+JobSchema.index({ postedBy: 1, status: 1 });
+JobSchema.index({ industry: 1, status: 1 });
+JobSchema.index({ createdAt: -1 });
+
 const Job = mongoose.model("Job", JobSchema);
-export default Job;
+export default Job;

@@ -34,10 +34,15 @@ export default function JobDetailsModal({ job, onClose }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = "auto";
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [onClose]);
 
   if (!job) return null;
 
@@ -71,10 +76,10 @@ export default function JobDetailsModal({ job, onClose }) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-[#F8FAFC] w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative"
+          role="dialog" aria-modal="true" aria-labelledby="job-details-title" className="bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative"
         >
           {/* --- PREMIUM HEADER --- */}
-          <header className="bg-white p-4 sm:p-6 border-b border-slate-200 shadow-sm flex flex-row justify-between items-start gap-3 relative shrink-0">
+          <header className="bg-white dark:bg-slate-900/95 p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 shadow-sm flex flex-row justify-between items-start gap-3 relative shrink-0">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none -mt-20 -mr-20"></div>
 
             <div className="relative z-10 flex gap-3 sm:gap-5 items-center w-full pr-6">
@@ -108,7 +113,7 @@ export default function JobDetailsModal({ job, onClose }) {
                     {renderArray(job.jobType)}
                   </span>
                 </div>
-                <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-tight truncate">
+                <h1 id="job-details-title" className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight truncate">
                   {job.title}
                 </h1>
                 <div className="flex flex-wrap items-center text-slate-500 text-[10px] sm:text-xs font-bold gap-2 mt-1">
@@ -137,7 +142,8 @@ export default function JobDetailsModal({ job, onClose }) {
 
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-colors z-20"
+              aria-label="Close job details"
+              className="absolute top-3 right-3 p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-colors z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             >
               <X size={16} />
             </button>
@@ -586,7 +592,7 @@ export default function JobDetailsModal({ job, onClose }) {
           </div>
 
           {/* --- FOOTER ACTION --- */}
-          <div className="p-3 sm:p-6 bg-white border-t border-slate-200 shrink-0 flex justify-end items-center gap-3 sm:gap-4">
+          <div className="p-3 sm:p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end items-center gap-3 sm:gap-4">
             <button
               onClick={onClose}
               className="px-4 py-2.5 sm:px-6 sm:py-3 text-[13px] sm:text-base font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"

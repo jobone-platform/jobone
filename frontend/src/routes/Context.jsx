@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
 
 export const ThemeContext = createContext({
   theme: "default",
@@ -61,11 +61,18 @@ export const ThemeProvider = ({ children }) => {
     }
   };
 
+  const themeValue = useMemo(
+    () => ({ theme, resolvedTheme, setTheme }),
+    [theme, resolvedTheme]
+  );
+
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
+    <ThemeContext.Provider value={themeValue}>
       {children}
     </ThemeContext.Provider>
   );
 };
 
 export const useTheme = () => useContext(ThemeContext);
+
+export { AuthContext, AuthProvider, useAuth } from "./AuthContext";

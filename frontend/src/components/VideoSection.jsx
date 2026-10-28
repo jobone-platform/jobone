@@ -87,10 +87,10 @@ export default function VideoSection() {
   return (
     <section
       ref={containerRef}
-      className={`relative ${isMobile ? 'h-[300vh]' : 'h-[600vh]'} bg-white font-sans`}
+      className={`relative ${isMobile ? 'h-[300vh]' : 'h-[600vh]'} bg-white dark:bg-slate-950 font-sans transition-colors duration-150`}
     >
       {/* FACT: Added [perspective:1000px] to enable 3D GPU sorting inside the sticky container */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-white flex items-center justify-center isolate [perspective:1000px]">
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-white dark:bg-slate-950 flex items-center justify-center isolate [perspective:1000px] transition-colors duration-150">
         {/* Subtle grain texture */}
         <div
           className="absolute inset-0 z-0 pointer-events-none opacity-[0.025] mix-blend-overlay"
@@ -108,7 +108,7 @@ export default function VideoSection() {
               loop
               muted
               playsInline
-              preload="auto"
+              preload="metadata"
               className="w-full h-full object-cover"
             >
               <source src="/video.mp4" type="video/mp4" />
@@ -117,6 +117,8 @@ export default function VideoSection() {
             <img 
               src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1080&q=80" 
               alt="Professionals collaborating" 
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover" 
             />
           )}
@@ -164,7 +166,7 @@ export default function VideoSection() {
           className="absolute bottom-[22%] z-30 text-center pointer-events-none px-6"
         >
           <p className="text-slate-500 text-sm md:text-base font-medium tracking-[0.22em] uppercase">
-            Discover your next opportunity
+            Connecting Candidates with Active Employers
           </p>
         </motion.div>
 
@@ -221,16 +223,16 @@ export default function VideoSection() {
               </div>
 
               <h2 className="text-4xl md:text-6xl lg:text-[72px] font-extrabold text-white tracking-tight leading-[1.05] mb-5">
-                How JOBONE helps you
+                Connecting candidates
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-indigo-400">
-                  grow faster.
+                  with top employers.
                 </span>
               </h2>
 
               <p className="text-slate-300/90 text-base md:text-lg max-w-lg mx-auto mb-10 leading-relaxed font-normal">
-                Discover top talent or your next big opportunity — powered by AI
-                that actually understands your career.
+                Search verified job openings or hire qualified candidates with verified skills
+                and structured application pipelines.
               </p>
 
               <div className="flex items-center gap-8 md:gap-12 mb-10">

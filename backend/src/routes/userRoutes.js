@@ -26,16 +26,18 @@ const registerRules = [
     .trim(),
 ];
 
+import { authLimiter, otpVerifyLimiter, otpResendLimiter } from "../middleware/rateLimiter.js";
+
 // Auth & Profile
-router.post("/register", registerRules, createUser);
-router.post("/login", loginUser);
-router.post("/verifyotp", verifyUserOTP);
-router.post("/resend-otp", resendUserOTP);
-router.post("/google-login", googleLogin);
+router.post("/register", authLimiter, registerRules, createUser);
+router.post("/login", authLimiter, loginUser);
+router.post("/verifyotp", otpVerifyLimiter, verifyUserOTP);
+router.post("/resend-otp", otpResendLimiter, resendUserOTP);
+router.post("/google-login", authLimiter, googleLogin);
 router.patch("/:id", protect, updateUser);
 router.get("/:id", protectAny, userDetails);
-router.post("/forgot-password", forgotPasswordUser);
-router.post("/reset-password", resetPasswordUser);
+router.post("/forgot-password", otpResendLimiter, forgotPasswordUser);
+router.post("/reset-password", otpVerifyLimiter, resetPasswordUser);
 
 // FACT: New S3 Resume Endpoints
 router.post("/:id/resume/upload-url", protect, getResumeUploadUrl);

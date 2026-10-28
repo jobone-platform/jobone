@@ -2,7 +2,7 @@ import {
   createJob, getJob, getJobs, getJobApplicants, getEmployerCreatedJobs, 
   updateJob, deleteJob, getEmployerMetrics, jobCreatedByUser, getJobCountsByIndustry, getSimilarJobs, getNearbyJobs, getPublicStats
 } from "../controllers/jobsControllers.js";
-import { protect, protectAdmin } from "../middleware/authorization.js";
+import { protect, protectAdmin, protectAdminOrEmployer } from "../middleware/authorization.js";
 import { protectEmployer } from "../middleware/employercheck.js";
 import express from "express";
 import { body } from "express-validator";
@@ -41,7 +41,8 @@ router.get("/:id", getJob);
 
 router.get("/:id/applicants", protectEmployer, getJobApplicants);
 
-router.delete("/:id", protectAdmin, deleteJob);
+router.delete("/:id", protectAdminOrEmployer, deleteJob);
+
 
 router.patch("/:id", protectEmployer, updateJob);
 router.put("/:id", protectEmployer, updateJob);

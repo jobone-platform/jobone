@@ -174,8 +174,8 @@ export default function LanguageSuggestionsDropdown({ languages, onAdd, onRemove
             <div
                 className={`flex items-center gap-2 p-2 border rounded-lg cursor-text transition-all ${
                     open
-                        ? "border-indigo-400 ring-2 ring-indigo-100 bg-white"
-                        : "border-indigo-200 bg-white hover:border-indigo-300"
+                        ? "border-indigo-400 ring-2 ring-indigo-100 dark:ring-indigo-900/30 bg-white dark:bg-slate-800"
+                        : "border-indigo-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300"
                 }`}
                 onClick={() => setOpen(true)}
             >
@@ -217,7 +217,7 @@ export default function LanguageSuggestionsDropdown({ languages, onAdd, onRemove
 
             {/* Dropdown panel */}
             {open && (
-                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-indigo-100 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto">
                     {visibleCategories.every((c) => c.languages.length === 0) ? (
                         <div className="px-4 py-3 text-xs text-gray-400 text-center">
                             No matches — press Enter or click{" "}

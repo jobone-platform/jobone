@@ -43,10 +43,15 @@ export default function ApplicationDetailsModal({ application, onClose }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = "auto";
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [onClose]);
 
   if (!application) return null;
 
@@ -181,10 +186,13 @@ export default function ApplicationDetailsModal({ application, onClose }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-[#F8FAFC] w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="app-details-title"
+        className="bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative"
       >
         {/* --- PREMIUM HEADER --- */}
-        <header className="bg-white p-6 sm:p-8 border-b border-slate-200 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative shrink-0">
+        <header className="bg-white dark:bg-slate-900 p-6 sm:p-8 border-b border-slate-200 dark:border-slate-800 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative shrink-0">
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none -mt-20 -mr-20"></div>
 
           <div className="relative z-10 flex gap-4 sm:gap-6 items-center w-full">
@@ -215,7 +223,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                   {renderArray(job.jobType)}
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              <h1 id="app-details-title" className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
                 {job.title}
               </h1>
               <div className="flex flex-wrap items-center text-slate-500 text-xs sm:text-sm font-bold gap-3 mt-2">
@@ -244,7 +252,8 @@ export default function ApplicationDetailsModal({ application, onClose }) {
 
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-colors z-20"
+            aria-label="Close application details"
+            className="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-colors z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <X size={20} />
           </button>

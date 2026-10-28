@@ -65,10 +65,10 @@ export default function EmployerDocumentManager() {
   // Filter required docs based on what the employer selected in Edit Profile
   
   return (
-    <div className="max-w-4xl mx-auto p-6 mt-10 font-sans">
+    <div className="max-w-4xl mx-auto p-6 mt-10 font-sans text-slate-900 dark:text-slate-100">
       <div className="mb-8">
-        <h2 className="text-3xl font-extrabold text-slate-900">Verification Documents</h2>
-        <p className="text-slate-500 mt-2">
+        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Verification Documents</h2>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">
           You are registered as a <span className="font-bold text-indigo-600 uppercase tracking-wide">{currentType}</span>. 
           Please upload the following required documents to get your account approved.
         </p>
@@ -121,7 +121,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
   };
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file || uploading) return;
     setUploading(true);
     setError("");
 
@@ -182,7 +182,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 transition-all hover:shadow-md">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-6 transition-all hover:shadow-md">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         
         {/* Left Side: Info */}
@@ -192,7 +192,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-extrabold text-slate-800 text-lg">{doc.label}</h3>
+              <h3 className="font-extrabold text-slate-800 dark:text-white text-lg">{doc.label}</h3>
               {doc.optional && <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">Optional</span>}
             </div>
             {isUploaded ? (
@@ -221,7 +221,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <button onClick={handleView} className="flex-1 sm:flex-none bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl font-bold hover:bg-blue-100 transition flex items-center justify-center gap-2 text-sm">
                 <Eye size={16} /> {viewUrl ? "Close" : "Preview"}
               </button>

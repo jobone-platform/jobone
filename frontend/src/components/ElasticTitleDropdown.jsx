@@ -1069,14 +1069,14 @@ export default function ElasticTitleDropdown({ value, onChange, hasError }) {
         className={`w-full p-3 pl-10 bg-white border rounded-xl flex items-center justify-between cursor-pointer focus-within:ring-2 transition-all ${
           hasError
             ? "border-red-500 bg-red-50 focus-within:ring-red-200"
-            : "border-gray-200 bg-gray-50 hover:bg-white focus-within:ring-blue-100 focus-within:border-blue-500"
+            : "border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-800 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/40 focus-within:border-blue-500"
         }`}
       >
         <Briefcase
           className="absolute left-3 top-3.5 text-gray-400"
           size={18}
         />
-        <span className={value ? "text-gray-900 font-medium" : "text-gray-400"}>
+        <span className={value ? "text-gray-900 dark:text-slate-100 font-medium" : "text-gray-400"}>
           {value || "Select or type a job title..."}
         </span>
         <ChevronDown
@@ -1086,8 +1086,8 @@ export default function ElasticTitleDropdown({ value, onChange, hasError }) {
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden">
-          <div className="p-3 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+        <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-xl overflow-hidden">
+          <div className="p-3 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex items-center gap-2">
             <Search size={16} className="text-gray-400" />
             <input
               type="text"

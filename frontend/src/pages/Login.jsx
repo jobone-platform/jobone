@@ -1,20 +1,37 @@
 import { API_BASE_URL } from "../config/api";
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import { FaUserTie, FaBuilding } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
 import BackgroundJoin from "../components/BackgroundJoin";
+import { useAuth } from "../routes/Context";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { loginUser, loginEmployer, authStatus, role } = useAuth();
+
   const [activeTab, setActiveTab] = useState("user");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(location.state?.error || "");
   const [loading, setLoading] = useState(false);
+
+  // If already authenticated in this role, redirect to appropriate dashboard
+  useEffect(() => {
+    if (authStatus === "authenticated") {
+      if (role === "employer") {
+        navigate("/employerdashboard", { replace: true });
+      } else if (role === "jobseeker") {
+        navigate("/userdashboard", { replace: true });
+      } else if (role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      }
+    }
+  }, [authStatus, role, navigate]);
 
   useEffect(() => {
     const savedEmail = activeTab === "user" 
@@ -30,7 +47,10 @@ export default function Login() {
   }, [activeTab]);
 
   const handleGoogleSuccess = async (credentialResponse) => {
+    if (loading) return;
     try {
+      setLoading(true);
+      setError("");
       const endpoint =
         activeTab === "employer"
           ? `${API_BASE_URL}/employer/google-login`
@@ -40,33 +60,43 @@ export default function Login() {
         token: credentialResponse.credential,
       });
 
+      const redirectPath = location.state?.from?.pathname;
+
       if (activeTab === "employer") {
-        localStorage.setItem("employerToken", data.token);
-        localStorage.setItem("employerInfo", JSON.stringify(data));
+        loginEmployer(data.token, data);
 
         if (data.isProfileComplete === false) {
           navigate("/employereditprofile", { state: { showWarning: true } });
         } else {
-          navigate("/employerdashboard");
+          navigate(redirectPath || "/employerdashboard");
         }
       } else {
-        localStorage.setItem("userToken", data.token);
-        localStorage.setItem("userInfo", JSON.stringify(data));
+        loginUser(data.token, data);
 
         if (data.isProfileComplete === false) {
           navigate("/editprofile", { state: { showWarning: true } });
         } else {
-          navigate("/userdashboard");
+          navigate(redirectPath || "/userdashboard");
         }
       }
     } catch (err) {
       console.error("Google Login Error:", err);
-      setError("Google Login failed. Please try again.");
+      setError(err.response?.data?.message || "Google Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || !password) {
+      setError("Please provide both email and password.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -76,21 +106,20 @@ export default function Login() {
           ? `${API_BASE_URL}/employer/login`
           : `${API_BASE_URL}/user/login`;
 
-      const { data } = await axios.post(endpoint, { email, password });
+      const { data } = await axios.post(endpoint, { email: normalizedEmail, password });
+      const redirectPath = location.state?.from?.pathname;
 
       if (activeTab === "employer") {
-        localStorage.setItem("employerToken", data.token);
-        localStorage.setItem("employerInfo", JSON.stringify(data));
-        localStorage.setItem("lastEmployerEmail", email);
-        navigate("/employerdashboard");
+        loginEmployer(data.token, data);
+        localStorage.setItem("lastEmployerEmail", normalizedEmail);
+        navigate(redirectPath || "/employerdashboard");
       } else {
-        localStorage.setItem("userToken", data.token);
-        localStorage.setItem("userInfo", JSON.stringify(data));
-        localStorage.setItem("lastJobseekerEmail", email);
-        navigate("/userdashboard");
+        loginUser(data.token, data);
+        localStorage.setItem("lastJobseekerEmail", normalizedEmail);
+        navigate(redirectPath || "/userdashboard");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Invalid email or password.");
     } finally {
       setLoading(false);
     }
@@ -100,7 +129,7 @@ export default function Login() {
     // FACT: Replaced 100dvh with min-h-screen to prevent the desktop band issue.
     // Removed unnecessary w-full that conflicts with Windows scrollbars.
     // UPDATE: Now fully fixed to screen to prevent any scrolling.
-    <div className={`fixed inset-0 flex flex-col justify-center items-center font-sans p-4 sm:p-8 overflow-hidden transition-colors duration-700 ${
+    <div className={`relative min-h-screen w-full flex flex-col justify-center items-center font-sans p-4 sm:p-8 py-16 sm:py-8 overflow-y-auto transition-colors duration-700 ${
       activeTab === "employer" ? "bg-[#0a0b22]" : "bg-slate-950"
     }`}>
       {/* FACT: The background is pinned directly to the screen viewport */}
@@ -122,7 +151,7 @@ export default function Login() {
         Admin
       </button>
 
-      <div className="relative z-10 w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div className="relative z-10 w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl my-auto">
         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
@@ -132,7 +161,9 @@ export default function Login() {
               Welcome Back
             </h2>
             <p className="text-slate-400 text-sm">
-              Sign in to continue your journey.
+              {activeTab === "user"
+                ? "Sign in to search jobs and track your applications."
+                : "Sign in to manage job postings and review candidates."}
             </p>
           </div>
 
@@ -166,7 +197,7 @@ export default function Login() {
           </div>
 
           {error && (
-            <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs p-3 rounded-xl mb-4 text-center">
+            <div role="alert" className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs p-3 rounded-xl mb-4 text-center">
               {error}
             </div>
           )}
@@ -214,7 +245,8 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-all duration-200 focus:outline-none ${
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus:outline-none ${
                     activeTab === "user"
                       ? "text-blue-500 hover:bg-blue-500 hover:text-white"
                       : "text-indigo-500 hover:bg-indigo-500 hover:text-white"
@@ -242,7 +274,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-2 transition-all shadow-lg ${
+              className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-2 transition-all shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none ${
                 activeTab === "user"
                   ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/30"
                   : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30"

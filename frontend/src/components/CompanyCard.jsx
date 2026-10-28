@@ -21,7 +21,7 @@ export default function CompanyCard() {
     // FACT: Perspective is established here
     <section
       ref={containerRef}
-      className="px-4 py-12 md:py-16 bg-[#F8FAFC] flex justify-center items-center font-sans overflow-hidden"
+      className="px-4 py-12 md:py-16 bg-[#F8FAFC] dark:bg-slate-950 flex justify-center items-center font-sans overflow-hidden transition-colors duration-150"
       style={{ perspective: 2000 }}
     >
       {/* FACT: 3D Chain Link 1 - The wrapper MUST preserve 3D */}
@@ -72,9 +72,9 @@ export default function CompanyCard() {
                 className="text-3xl font-extrabold tracking-tight text-white md:text-5xl lg:text-6xl leading-[1.1] drop-shadow-2xl"
                 style={{ transform: "translateZ(80px)" }}
               >
-                Find your next <br />
+                Connect with actively <br />
                 <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                  dream workplace.
+                  hiring employers.
                 </span>
               </h2>
 
@@ -82,9 +82,8 @@ export default function CompanyCard() {
                 className="mt-4 md:mt-6 max-w-md text-sm md:text-base leading-relaxed text-slate-400 font-medium"
                 style={{ transform: "translateZ(50px)" }}
               >
-                Skip the generic listings. We’ve curated 500+ top-rated
-                companies hiring this month based on culture, growth, and
-                benefits.
+                Skip the generic job boards. Discover verified companies actively
+                posting openings and reviewing applications across tech, finance, and engineering.
               </p>
 
               <div
@@ -93,7 +92,7 @@ export default function CompanyCard() {
               >
                 <button 
                   onClick={() => navigate('/companies')}
-                  className="group flex items-center gap-2 rounded-xl bg-blue-600 px-7 py-3.5 font-bold text-white transition-all hover:bg-blue-500 hover:scale-105 shadow-[0_0_20px_rgba(37,99,235,0.3)]"
+                  className="group flex items-center gap-2 rounded-xl bg-blue-600 px-7 py-3.5 font-bold text-white transition-all hover:bg-blue-500 hover:scale-105 shadow-[0_0_20px_rgba(37,99,235,0.3)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                 >
                   Explore Companies
                   <FaArrowRight className="text-xs transition-transform group-hover:translate-x-1" />
@@ -124,7 +123,9 @@ export default function CompanyCard() {
               >
                 <img
                   src={demoIllustration}
-                  alt="Skyscrapers"
+                  alt="Modern office skyline representing top hiring companies"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover opacity-80"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-transparent to-transparent opacity-80" />

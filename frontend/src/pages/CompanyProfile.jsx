@@ -85,7 +85,7 @@ export default function CompanyProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex justify-center items-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex justify-center items-center">
         <Loader2 className="animate-spin text-indigo-600" size={48} />
       </div>
     );
@@ -93,8 +93,8 @@ export default function CompanyProfile() {
 
   if (error || !company) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4">
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-center max-w-md w-full">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center items-center p-4">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 text-center max-w-md w-full">
           <Building2 className="mx-auto text-slate-300 mb-4" size={64} />
           <h2 className="text-2xl font-bold text-slate-800 mb-2">
             Profile Not Found
@@ -120,7 +120,7 @@ export default function CompanyProfile() {
   const logo = company.profilePicture || company.image;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans pb-24 ">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans pb-24 transition-colors duration-150">
       {/* --- HERO COVER SECTION --- */}
       <div className="h-48 sm:h-64 bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 relative ">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 "></div>
@@ -139,9 +139,9 @@ export default function CompanyProfile() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 flex flex-col sm:flex-row gap-6 items-center sm:items-end text-center sm:text-left"
+          className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-6 items-center sm:items-end text-center sm:text-left"
         >
-          <div className="w-32 h-32 sm:w-40 sm:h-40 bg-white rounded-3xl border-4 border-white flex items-center justify-center shrink-0 shadow-xl overflow-hidden mt-[-4rem] sm:mt-[-5rem] relative z-20">
+          <div className="w-32 h-32 sm:w-40 sm:h-40 bg-white dark:bg-slate-800 rounded-3xl border-4 border-white dark:border-slate-700 flex items-center justify-center shrink-0 shadow-xl overflow-hidden mt-[-4rem] sm:mt-[-5rem] relative z-20">
             {logo ? (
               <img
                 src={logo}
@@ -154,7 +154,7 @@ export default function CompanyProfile() {
           </div>
 
           <div className="flex-1 pb-2">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">
               {company.companyName || company.name}
             </h1>
             <p className="text-slate-500 font-bold text-sm flex items-center justify-center sm:justify-start gap-1.5">
@@ -188,9 +188,9 @@ export default function CompanyProfile() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200"
+              className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800"
             >
-              <h2 className="text-xl font-extrabold text-slate-800 mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
+              <h2 className="text-xl font-extrabold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
                 About the Company
               </h2>
               {company.description ? (
@@ -209,7 +209,7 @@ export default function CompanyProfile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-2xl font-extrabold text-slate-900 mb-6">
+              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6">
                 Active Openings{" "}
                 <span className="text-indigo-600 bg-indigo-50 px-3 py-1 rounded-xl text-lg ml-2">
                   {jobs.length}
@@ -217,7 +217,7 @@ export default function CompanyProfile() {
               </h2>
 
               {jobs.length === 0 ? (
-                <div className="bg-white rounded-3xl p-10 text-center border border-slate-200 shadow-sm">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 text-center border border-slate-200 dark:border-slate-800 shadow-sm">
                   <Briefcase
                     className="mx-auto text-slate-300 mb-4"
                     size={48}
@@ -240,10 +240,10 @@ export default function CompanyProfile() {
                       <div
                         key={job._id}
                         onClick={() => setSelectedJob(job)} // FACT: Now opens the modal instead of redirecting!
-                        className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:shadow-lg hover:border-indigo-200 transition-all cursor-pointer group flex flex-col sm:flex-row justify-between gap-5"
+                        className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-lg dark:hover:border-indigo-500/50 transition-all cursor-pointer group flex flex-col sm:flex-row justify-between gap-5"
                       >
                         <div>
-                          <h3 className="text-lg font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors mb-3 line-clamp-1">
+                          <h3 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-3 line-clamp-1">
                             {job.title}
                           </h3>
                           <div className="flex flex-wrap gap-2 text-xs font-bold text-slate-600">

@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../config/api";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -96,12 +96,24 @@ export default function Jobs() {
     profile: queryParams.get("title") || "",
     location: queryParams.get("location") || "",
     industry: queryParams.get("industry") || "", // FACT: Injected Industry URL parameter
-    subdomain: "", // FACT: Injected Subdomain parameter
+    subdomain: queryParams.get("subdomain") || "", // FACT: Injected Subdomain parameter
     stipend: 0,
     workFromHome: false,
     partTime: false,
     jobType: "all",
   });
+
+  // Sync filters whenever location.search changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setFilters((prev) => ({
+      ...prev,
+      profile: params.get("title") !== null ? (params.get("title") || "") : prev.profile,
+      location: params.get("location") !== null ? (params.get("location") || "") : prev.location,
+      industry: params.get("industry") !== null ? (params.get("industry") || "") : prev.industry,
+      subdomain: params.get("subdomain") !== null ? (params.get("subdomain") || "") : prev.subdomain,
+    }));
+  }, [location.search]);
 
   const [allJobs, setAllJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,11 +122,18 @@ export default function Jobs() {
   const [selectedJob, setSelectedJob] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${API_BASE_URL}/jobs`);
-        const jobsData = res.data.data || res.data;
+        const res = await axios.get(`${API_BASE_URL}/jobs`, {
+          signal: controller.signal,
+        });
+        const jobsData =
+          res.data.data ||
+          res.data.results ||
+          (Array.isArray(res.data) ? res.data : []);
 
         // Filter out closed or inactive jobs from the public board
         const activeJobs = Array.isArray(jobsData)
@@ -127,14 +146,33 @@ export default function Jobs() {
           : [];
         setAllJobs(activeJobs);
       } catch (err) {
+        if (axios.isCancel(err) || err.name === "CanceledError" || err.name === "AbortError") {
+          return;
+        }
         console.error(err);
         setError("Failed to load jobs. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchJobs();
+    return () => {
+      controller.abort();
+    };
   }, []);
+
+  // Lock body scroll when mobile filter drawer is open
+  useEffect(() => {
+    if (showMobileFilters) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showMobileFilters]);
 
   const renderArray = (val) => {
     if (!val) return "Not specified";
@@ -150,58 +188,60 @@ export default function Jobs() {
       : [String(val).toLowerCase()];
   };
 
-  // --- FILTER LOGIC ---
-  const filteredJobs = allJobs.filter((job) => {
-    const jobLocation =
-      typeof job.location === "object"
-        ? job.location?.address?.toLowerCase() || ""
-        : job.location?.toLowerCase() || "";
-    const title = job.title?.toLowerCase() || "";
+  // --- FILTER LOGIC (Memoized to prevent massive recalculations on re-render) ---
+  const filteredJobs = useMemo(() => {
+    return allJobs.filter((job) => {
+      const jobLocation =
+        typeof job.location === "object"
+          ? job.location?.address?.toLowerCase() || ""
+          : job.location?.toLowerCase() || "";
+      const title = job.title?.toLowerCase() || "";
 
-    const salary = Number(job.salaryMin) || Number(job.salaryAmount) || 0;
+      const salary = Number(job.salaryMin) || Number(job.salaryAmount) || 0;
 
-    const jobTypes = getArraySafe(job.jobType);
-    const modes = getArraySafe(job.mode);
+      const jobTypes = getArraySafe(job.jobType);
+      const modes = getArraySafe(job.mode);
 
-    const matchProfile = filters.profile
-      ? title.includes(filters.profile.toLowerCase()) ||
-        job.description?.toLowerCase().includes(filters.profile.toLowerCase())
-      : true;
+      const matchProfile = filters.profile
+        ? title.includes(filters.profile.toLowerCase()) ||
+          job.description?.toLowerCase().includes(filters.profile.toLowerCase())
+        : true;
 
-    const matchLocation = filters.location
-      ? jobLocation.includes(filters.location.toLowerCase())
-      : true;
-    const matchSalary = filters.stipend
-      ? salary >= Number(filters.stipend)
-      : true;
+      const matchLocation = filters.location
+        ? jobLocation.includes(filters.location.toLowerCase())
+        : true;
+      const matchSalary = filters.stipend
+        ? salary >= Number(filters.stipend)
+        : true;
 
-    const matchWFH = filters.workFromHome
-      ? modes.some((m) => m.includes("home") || m.includes("online")) ||
-        title.includes("remote")
-      : true;
+      const matchWFH = filters.workFromHome
+        ? modes.some((m) => m.includes("home") || m.includes("online")) ||
+          title.includes("remote")
+        : true;
 
-    const matchPartTime = filters.partTime
-      ? jobTypes.some((t) => t.includes("part-time"))
-      : true;
+      const matchPartTime = filters.partTime
+        ? jobTypes.some((t) => t.includes("part-time"))
+        : true;
 
-    // FACT: Implemented the logic to strictly filter by Industry & Subdomain
-    const matchIndustry = filters.industry
-      ? job.industry === filters.industry
-      : true;
-    const matchSubdomain = filters.subdomain
-      ? job.subdomain === filters.subdomain
-      : true;
+      // FACT: Implemented the logic to strictly filter by Industry & Subdomain
+      const matchIndustry = filters.industry
+        ? job.industry === filters.industry
+        : true;
+      const matchSubdomain = filters.subdomain
+        ? job.subdomain === filters.subdomain
+        : true;
 
-    return (
-      matchProfile &&
-      matchLocation &&
-      matchSalary &&
-      matchWFH &&
-      matchPartTime &&
-      matchIndustry &&
-      matchSubdomain
-    );
-  });
+      return (
+        matchProfile &&
+        matchLocation &&
+        matchSalary &&
+        matchWFH &&
+        matchPartTime &&
+        matchIndustry &&
+        matchSubdomain
+      );
+    });
+  }, [allJobs, filters]);
 
   const formatTimeAgo = (dateString) => {
     if (!dateString) return "Recently";
@@ -213,15 +253,15 @@ export default function Jobs() {
   };
 
   return (
-<div className="min-h-screen bg-[#F8FAFC] pt-24 pb-12 px-4 sm:px-6 font-sans mt-10">
+<div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 pt-24 pb-12 px-4 sm:px-6 font-sans mt-10 transition-colors duration-150">
   <div className="max-w-7xl mx-auto">
     {/* HEADER */}
     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
       <div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Find Your Next Role
         </h1>
-        <p className="text-slate-500 mt-2 font-medium">
+        <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">
           Browse{" "}
           <span className="text-indigo-600 font-bold">
             {filteredJobs.length}
@@ -230,7 +270,7 @@ export default function Jobs() {
         </p>
       </div>
       <button
-        className="md:hidden flex items-center gap-2 bg-white px-5 py-2.5 rounded-xl shadow-sm border border-slate-200 text-slate-700 font-bold active:scale-95 transition-transform"
+        className="md:hidden flex items-center gap-2 bg-white dark:bg-slate-900 px-5 py-2.5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold active:scale-95 transition-transform"
         onClick={() => setShowMobileFilters(true)}
       >
         <Filter size={18} /> Filters
@@ -240,10 +280,10 @@ export default function Jobs() {
     <div className="flex flex-col md:flex-row gap-8">
       {/* --- SIDEBAR FILTERS --- */}
       <aside
-        className={`fixed inset-y-0 left-0 w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 p-6 overflow-y-auto md:relative md:translate-x-0 md:w-1/4 md:shadow-none md:bg-transparent md:p-0 md:h-auto md:overflow-visible ${showMobileFilters ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed inset-y-0 left-0 w-72 bg-white dark:bg-slate-900 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 p-6 overflow-y-auto md:relative md:translate-x-0 md:w-1/4 md:shadow-none md:bg-transparent md:p-0 md:h-auto md:overflow-visible ${showMobileFilters ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex justify-between items-center md:hidden mb-6">
-          <h2 className="text-xl font-extrabold text-slate-800">Filters</h2>
+          <h2 className="text-xl font-extrabold text-slate-800 dark:text-white">Filters</h2>
           <button
             onClick={() => setShowMobileFilters(false)}
             className="p-2 hover:bg-slate-100 rounded-full text-slate-500"
@@ -252,7 +292,7 @@ export default function Jobs() {
           </button>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 space-y-8 md:sticky md:top-24">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 space-y-8 md:sticky md:top-24">
           {/* FACT: New Domain Filters cleanly injected into the sidebar */}
           <div className="space-y-4">
             <div>
@@ -260,7 +300,7 @@ export default function Jobs() {
                 Industry
               </label>
               <select
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none text-sm font-medium text-slate-700"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none text-sm font-medium text-slate-700 dark:text-slate-200"
                 value={filters.industry}
                 onChange={(e) =>
                   setFilters({
@@ -285,7 +325,7 @@ export default function Jobs() {
                   Speciality
                 </label>
                 <select
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none text-sm font-medium text-slate-700"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none text-sm font-medium text-slate-700 dark:text-slate-200"
                   value={filters.subdomain}
                   onChange={(e) =>
                     setFilters({ ...filters, subdomain: e.target.value })
@@ -315,8 +355,8 @@ export default function Jobs() {
                 />
                 <input
                   type="text"
-                  placeholder="Job title or keyword"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none text-sm font-medium"
+                  placeholder="Job title, skills, or keyword"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400"
                   value={filters.profile}
                   onChange={(e) =>
                     setFilters({ ...filters, profile: e.target.value })
@@ -335,8 +375,8 @@ export default function Jobs() {
                 />
                 <input
                   type="text"
-                  placeholder="City or Zip code"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none text-sm font-medium"
+                  placeholder="City, state, or 'Remote'"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400"
                   value={filters.location}
                   onChange={(e) =>
                     setFilters({ ...filters, location: e.target.value })
@@ -363,7 +403,7 @@ export default function Jobs() {
               }
               className="w-full accent-indigo-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
             />
-            <div className="flex justify-between mt-3 text-xs font-extrabold text-slate-600">
+            <div className="flex justify-between mt-3 text-xs font-extrabold text-slate-600 dark:text-slate-300">
               <span>₹{Number(filters.stipend).toLocaleString()}</span>
               <span className="text-slate-400">₹2L+</span>
             </div>
@@ -381,7 +421,7 @@ export default function Jobs() {
                   setFilters({ ...filters, workFromHome: e.target.checked })
                 }
               />
-              <span className="text-sm font-bold text-slate-600 group-hover:text-indigo-600 transition-colors">
+              <span className="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 Work from home
               </span>
             </label>
@@ -394,7 +434,7 @@ export default function Jobs() {
                   setFilters({ ...filters, partTime: e.target.checked })
                 }
               />
-              <span className="text-sm font-bold text-slate-600 group-hover:text-indigo-600 transition-colors">
+              <span className="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 Part-time only
               </span>
             </label>
@@ -413,7 +453,7 @@ export default function Jobs() {
                 jobType: "all",
               })
             }
-            className="w-full py-3 text-sm font-bold text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-800 rounded-xl transition-colors border border-slate-200"
+            className="w-full py-3 text-sm font-bold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100 rounded-xl transition-colors border border-slate-200 dark:border-slate-700"
           >
             Reset Filters
           </button>
@@ -443,15 +483,15 @@ export default function Jobs() {
             <p className="text-rose-500 font-bold">{error}</p>
           </div>
         ) : filteredJobs.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-3xl border border-slate-200 shadow-sm">
-            <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+          <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="bg-slate-50 dark:bg-slate-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100 dark:border-slate-700">
               <Search className="text-slate-400" size={32} />
             </div>
-            <h3 className="text-xl font-extrabold text-slate-800">
-              No jobs found
+            <h3 className="text-xl font-extrabold text-slate-800 dark:text-white">
+              No matching job openings found
             </h3>
-            <p className="text-slate-500 mt-2 font-medium">
-              Try adjusting your filters or search criteria.
+            <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium max-w-md mx-auto">
+              Try clearing filters, searching with broader keywords, or exploring other industry categories.
             </p>
           </div>
         ) : (
@@ -468,12 +508,12 @@ export default function Jobs() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                  className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 hover:shadow-lg hover:border-indigo-200 transition-all cursor-pointer group relative overflow-hidden"
+                  className="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-lg dark:hover:border-indigo-500/50 transition-all cursor-pointer group relative overflow-hidden"
                   onClick={() => setSelectedJob(job)}
                 >
                   <div className="flex flex-col sm:flex-row justify-between gap-5">
-                    <div className="flex gap-5">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 flex items-center justify-center text-2xl shrink-0 text-indigo-600 font-extrabold shadow-sm">
+                    <div className="flex gap-3.5 sm:gap-5">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-indigo-50 dark:from-slate-800 to-blue-50 dark:to-slate-800 border border-indigo-100 dark:border-slate-700 flex items-center justify-center text-xl sm:text-2xl shrink-0 text-indigo-600 dark:text-indigo-400 font-extrabold shadow-sm">
                         {job.postedByImage ? (
                           <img
                             src={job.postedByImage}
@@ -489,25 +529,25 @@ export default function Jobs() {
                         )}
                       </div>
                       <div>
-                        <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
+                        <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
                           {job.title}
                         </h3>
-                        <p className="text-sm text-slate-500 font-bold mb-3 flex items-center gap-1.5">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-bold mb-3 flex items-center gap-1.5">
                           <CompanyDisplay job={job} fallback="Company Confidential" />
                         </p>
                         <div className="flex flex-wrap gap-2.5 text-xs font-bold text-slate-600">
-                          <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                          <span className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                             <MapPin size={14} className="text-slate-400" />{" "}
                             <span className="truncate max-w-[120px] sm:max-w-[200px]">
                               {displayLocation}
                             </span>
                           </span>
-                          <span className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-100 capitalize">
+                          <span className="flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-lg border border-indigo-100 dark:border-indigo-800/60 capitalize">
                             <Briefcase size={14} />{" "}
                             {renderArray(job.jobType)}
                           </span>
 
-                          <span className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-100">
+                          <span className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 px-3 py-1.5 rounded-lg border border-emerald-100 dark:border-emerald-800/60">
                             <IndianRupee size={14} />{" "}
                             {job.salaryMin === 0 && job.salaryMax === 0
                               ? "UNPAID"
@@ -516,7 +556,7 @@ export default function Jobs() {
 
                           {/* FACT: Explicitly renders the Industry & Subdomain badges on the card */}
                           {job.industry && (
-                            <span className="flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg border border-amber-100">
+                            <span className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 px-3 py-1.5 rounded-lg border border-amber-100 dark:border-amber-800/60">
                               <Target size={14} /> {job.industry}
                               {job.subdomain && (
                                 <span className="text-amber-500/80 mx-0.5">
@@ -531,12 +571,12 @@ export default function Jobs() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-row sm:flex-col justify-between items-center sm:items-end min-w-fit mt-2 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                    <div className="flex flex-row sm:flex-col justify-between items-center sm:items-end min-w-fit mt-2 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
                         <Clock size={12} />{" "}
                         {formatTimeAgo(job.postedAt || job.createdAt)}
                       </span>
-                      <button className="text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-5 py-2.5 rounded-xl sm:opacity-0 sm:group-hover:opacity-100 transition-all border border-indigo-100 shadow-sm">
+                      <button className="text-sm font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/70 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 px-5 py-2.5 rounded-xl sm:opacity-0 sm:group-hover:opacity-100 transition-all border border-indigo-100 dark:border-indigo-800/60 shadow-sm">
                         View Details
                       </button>
                     </div>

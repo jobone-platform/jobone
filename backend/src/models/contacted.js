@@ -14,6 +14,9 @@ const contactSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+contactSchema.index({ createdAt: -1 });
+contactSchema.index({ isRead: 1 });
+
 const Contact = mongoose.model("Contact", contactSchema);
 
-export default Contact;
+export default Contact;

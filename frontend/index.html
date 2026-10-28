@@ -2,9 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <link rel="icon" type="image/png" href="/JobOneLogo.png" />
+    <link rel="apple-touch-icon" href="/JobOneLogo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="JobOne is a next-generation hiring and career platform connecting verified candidates with top employers." />
+    <meta property="og:title" content="JobOne Portal — Next-Gen Hiring & Career Platform" />
+    <meta property="og:description" content="Connect with top employers, apply seamlessly, and accelerate your career on JobOne." />
+    <meta property="og:type" content="website" />
     <title>JobOne Portal</title>
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('jobone_theme') || 'default';
+          var isDark = saved === 'dark' || (saved === 'default' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

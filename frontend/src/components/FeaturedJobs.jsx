@@ -20,23 +20,36 @@ export default function FeaturedJobs() {
   const [selectedJob, setSelectedJob] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchJobs = async () => {
       try {
         const { data } = await axios.get(
-          `${API_BASE_URL}/jobs`,
+          `${API_BASE_URL}/jobs?limit=6`,
+          { signal: controller.signal }
         );
-        const jobArray = data?.data || data || [];
+        const jobArray =
+          data?.data ||
+          data?.results ||
+          (Array.isArray(data) ? data : []);
         const latestJobs = Array.isArray(jobArray)
-          ? jobArray.slice(-6).reverse()
+          ? jobArray.slice(0, 6)
           : [];
         setJobs(latestJobs);
       } catch (error) {
+        if (axios.isCancel(error) || error.name === "CanceledError" || error.name === "AbortError") {
+          return;
+        }
         console.error("Error fetching jobs:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchJobs();
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const formatTimeAgo = (dateString) => {
@@ -60,7 +73,7 @@ export default function FeaturedJobs() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-[#F8FAFC]">
+      <section className="py-20 bg-[#F8FAFC] dark:bg-slate-950 transition-colors duration-150">
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <div
@@ -76,7 +89,7 @@ export default function FeaturedJobs() {
   if (jobs.length === 0) return null;
 
   return (
-    <section className="py-20 bg-[#F8FAFC] font-sans">
+    <section className="py-20 bg-[#F8FAFC] dark:bg-slate-950 font-sans transition-colors duration-150">
       {/* FACT: Injected custom animation for the transparent rotating gradient */}
       <style>{`
                 @keyframes border-spin {
@@ -95,11 +108,11 @@ export default function FeaturedJobs() {
             <div className="flex items-center gap-2 mb-2">
               <span className="w-6 h-[2px] bg-blue-600 rounded-full"></span>
               <span className="text-blue-600 font-bold tracking-widest uppercase text-[10px] flex items-center gap-1">
-                <Sparkles size={10} /> Recommended
+                <Sparkles size={10} /> Live Openings
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Featured Opportunities
+            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Featured Job Openings
             </h2>
           </div>
         </div>
@@ -120,15 +133,15 @@ export default function FeaturedJobs() {
               <motion.div
                 key={job._id}
                 onClick={() => setSelectedJob(job)}
-                className="relative p-[2px] rounded-3xl overflow-hidden cursor-pointer group/card transition-all duration-500 ease-out group-hover/list:blur-[4px] group-hover/list:scale-[0.96] group-hover/list:opacity-60 hover:!blur-none hover:!scale-[1.02] hover:!opacity-100 hover:shadow-[0_8px_30px_-4px_rgba(59,130,246,0.3)]"
+                className="relative p-[2px] rounded-3xl overflow-hidden cursor-pointer group/card transition-all duration-500 ease-out md:group-hover/list:blur-[4px] md:group-hover/list:scale-[0.96] md:group-hover/list:opacity-60 hover:!blur-none hover:!scale-[1.02] hover:!opacity-100 hover:shadow-[0_8px_30px_-4px_rgba(59,130,246,0.3)]"
               >
                 {/* The Rotating Transparent Gradient */}
                 <div className="absolute inset-[-100%] z-0 opacity-0 group-hover/card:opacity-100 border-spin-bg transition-opacity duration-500" />
 
                 {/* Inner White Card */}
-                <div className="relative z-10 bg-white rounded-[calc(1.5rem-2px)] p-6 h-full flex flex-col border border-slate-200/80 group-hover/card:border-transparent transition-colors duration-300">
+                <div className="relative z-10 bg-white dark:bg-slate-900 rounded-[calc(1.5rem-2px)] p-6 h-full flex flex-col border border-slate-200/80 dark:border-slate-800 group-hover/card:border-transparent transition-colors duration-300">
                   <div className="flex items-start gap-4 mb-5">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
                       {job.postedByImage ? (
                         <img
                           src={job.postedByImage}
@@ -141,27 +154,27 @@ export default function FeaturedJobs() {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-bold text-slate-900 text-lg leading-tight truncate group-hover/card:text-blue-600 transition-colors">
+                      <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight truncate group-hover/card:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {job.title}
                       </h3>
-                      <p className="text-sm text-slate-500 font-medium truncate mt-0.5">
+                      <p className="text-sm text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
                         <CompanyDisplay job={job} fallback="Company Confidential" />
                       </p>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap gap-2 mb-5">
-                    <span className="px-2.5 py-1 rounded-md bg-slate-50 text-slate-600 text-[11px] font-bold tracking-wide border border-slate-200/60 flex items-center gap-1.5">
+                    <span className="px-2.5 py-1 rounded-md bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-[11px] font-bold tracking-wide border border-slate-200/60 dark:border-slate-700 flex items-center gap-1.5">
                       <MapPin size={12} className="text-slate-400" />
                       <span className="truncate max-w-[90px]">
                         {locationStr.split(",")[0]}
                       </span>
                     </span>
-                    <span className="px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-bold tracking-wide border border-indigo-100/60 flex items-center gap-1.5 capitalize">
+                    <span className="px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold tracking-wide border border-indigo-100/60 dark:border-indigo-800/60 flex items-center gap-1.5 capitalize">
                       <Briefcase size={12} className="text-indigo-400" />{" "}
                       {jobTypeDisplay}
                     </span>
-                    <span className="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold tracking-wide border border-emerald-100/60 flex items-center gap-1.5">
+                    <span className="px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold tracking-wide border border-emerald-100/60 dark:border-emerald-800/60 flex items-center gap-1.5">
                       <IndianRupee size={12} className="text-emerald-400" />
                       {/* FACT: Upgraded to use the new salaryMin and salaryMax range */}
                       {job.salaryMin === 0 && job.salaryMax === 0
@@ -171,11 +184,11 @@ export default function FeaturedJobs() {
                   </div>
 
                   {/* FACT: Strip HTML tags to prevent <h3> and <ul> from rendering raw text in the preview */}
-                  <p className="text-sm text-slate-500 mb-6 line-clamp-2 leading-relaxed font-medium">
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 line-clamp-2 leading-relaxed font-medium">
                     {job.description?.replace(/<[^>]+>/g, " ")}
                   </p>
 
-                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
                     <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
                       {/* Fallback to postedAt if createdAt is missing based on schema */}
                       <Clock size={12} />{" "}

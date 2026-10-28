@@ -89,8 +89,8 @@ export default function UserRegister() {
             if (phone.length !== 10) {
                 return `Indian mobile number must be exactly 10 digits. You have entered ${phone.length} digit(s).`;
             }
-            if (!/^[5-9]\d{9}$/.test(phone)) {
-                return "Invalid Indian mobile number. Mobile numbers must start with 5, 6, 7, 8, or 9.";
+            if (!/^[6-9]\d{9}$/.test(phone)) {
+                return "Invalid Indian mobile number. Mobile numbers must start with 6, 7, 8, or 9.";
             }
         } else {
             if (phone.length < 7 || phone.length > 15) {
@@ -103,6 +103,7 @@ export default function UserRegister() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (loading) return;
         setError("");
 
         const validationError = validateForm();
@@ -131,10 +132,10 @@ export default function UserRegister() {
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: `url(${login})` }}>
-            <div className="w-full max-w-md p-8 space-y-6 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100">
+            <div className="w-full max-w-md p-5 sm:p-8 space-y-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 text-slate-900 dark:text-slate-100">
                 <div className="text-center">
-                    <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Candidate Registration</h2>
-                    <p className="text-sm text-gray-600 mt-1">Create your profile and start applying for jobs</p>
+                    <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Candidate Registration</h2>
+                    <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">Create your profile and start applying for jobs</p>
                 </div>
 
                 {error && (
@@ -192,7 +193,7 @@ export default function UserRegister() {
                             <select
                                 value={countryCode}
                                 onChange={handleCountryCodeChange}
-                                className="w-32 border border-gray-300 rounded-lg px-2 py-2.5 bg-white text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-28 sm:w-32 shrink-0 border border-gray-300 rounded-lg px-2 py-2.5 bg-white text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 {countryCodes.map((country) => (
                                     <option key={country.name} value={country.code}>
@@ -205,7 +206,7 @@ export default function UserRegister() {
                                 inputMode="numeric"
                                 pattern="[0-9]*"
                                 placeholder={countryCode === "+91" ? "10-digit number" : "Mobile number"}
-                                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-sm tracking-wide"
+                                className="flex-1 min-w-0 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-sm tracking-wide"
                                 value={phone}
                                 onChange={handlePhoneChange}
                                 maxLength={countryCode === "+91" ? 10 : 15}
@@ -218,7 +219,7 @@ export default function UserRegister() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 active:scale-[0.99] transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                        className="w-full py-3 font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 active:scale-[0.99] transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                     >
                         {loading ? "Creating Account..." : "Register as Candidate"}
                     </button>

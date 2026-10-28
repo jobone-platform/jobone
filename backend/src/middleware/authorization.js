@@ -59,7 +59,7 @@ export const restrictTo = (...roles) => {
 
 import Employer from "../models/employer.js";
 
-// FACT: Middleware that allows either a User or an Employer
+// FACT: Middleware that allows either a User or an Employer or Admin
 export const protectAny = async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
@@ -69,6 +69,14 @@ export const protectAny = async (req, res, next) => {
       
       const targetId = decoded.id || (decoded.employer && decoded.employer.id);
       
+      if (decoded.id) {
+        const admin = await Admin.findById(decoded.id).select("-password");
+        if (admin) {
+          req.admin = admin;
+          return next();
+        }
+      }
+
       const user = await User.findById(targetId).select("-password");
       if (user) {
         if (user.isFrozen) return res.status(403).json({ message: "Account Suspended" });
@@ -90,3 +98,39 @@ export const protectAny = async (req, res, next) => {
   }
   return res.status(401).json({ message: "Not authorized, no token" });
 };
+
+// Middleware that allows either an Admin or an Employer
+export const protectAdminOrEmployer = async (req, res, next) => {
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      if (decoded.id) {
+        const admin = await Admin.findById(decoded.id).select("-password");
+        if (admin) {
+          req.admin = admin;
+          return next();
+        }
+      }
+
+      const targetEmployerId = decoded.id || (decoded.employer && decoded.employer.id);
+      if (targetEmployerId) {
+        const employer = await Employer.findById(targetEmployerId).select("-password");
+        if (employer) {
+          if (employer.isFrozen) {
+            return res.status(403).json({ message: "Account Suspended: Your employer account has been frozen by the administration." });
+          }
+          req.employerId = employer._id;
+          return next();
+        }
+      }
+
+      return res.status(401).json({ message: "Not authorized, employer or admin not found" });
+    } catch (error) {
+      return res.status(401).json({ message: "Not authorized, token failed" });
+    }
+  }
+  return res.status(401).json({ message: "Not authorized, no token" });
+};

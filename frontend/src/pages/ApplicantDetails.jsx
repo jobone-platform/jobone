@@ -113,7 +113,7 @@ export default function MyApplications() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-slate-50 text-slate-500">
+      <div className="min-h-screen flex flex-col justify-center items-center bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400">
         <Loader2 className="w-10 h-10 animate-spin mb-4 text-blue-600" />
         <p className="font-medium">Loading your applications...</p>
       </div>
@@ -122,8 +122,8 @@ export default function MyApplications() {
 
   if (applications.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-4">
-        <div className="bg-white p-10 rounded-3xl shadow-sm border border-slate-200 text-center max-w-md w-full">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+        <div className="bg-white dark:bg-slate-900 p-10 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 text-center max-w-md w-full">
           <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
             <SearchX className="text-slate-400" size={40} />
           </div>
@@ -146,19 +146,19 @@ export default function MyApplications() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-20 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-20 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto mt-10">
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               My Applications
             </h1>
             <p className="text-slate-500 mt-1">
               Track and manage your job applications.
             </p>
           </div>
-          <div className="bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm text-sm font-medium text-slate-600">
+          <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm text-sm font-medium text-slate-600 dark:text-slate-300">
             Total Applications:{" "}
             <span className="text-blue-600 font-bold ml-1">
               {applications.length}
@@ -184,7 +184,7 @@ export default function MyApplications() {
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.2 }}
-                className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col h-full"
+                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-blue-500/40 transition-all duration-300 flex flex-col h-full"
               >
                 {/* Card Header */}
                 <div className="p-6 pb-4">
@@ -203,7 +203,7 @@ export default function MyApplications() {
                       </div>
                       <div className="min-w-0">
                         <h3
-                          className="font-bold text-slate-900 text-lg leading-snug truncate pr-2"
+                          className="font-bold text-slate-900 dark:text-white text-lg leading-snug truncate pr-2"
                           title={job.title}
                         >
                           {job.title || "Job Title Unavailable"}

@@ -48,7 +48,7 @@ export default function AdminJobseekerView() {
     return <div className="text-center mt-20 text-rose-500 font-bold">Jobseeker not found.</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 px-4 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="bg-slate-900 rounded-2xl p-8 text-white flex justify-between items-center shadow-xl">
@@ -71,7 +71,7 @@ export default function AdminJobseekerView() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Profile Data */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2">
                 Profile Data
               </h2>
@@ -116,7 +116,7 @@ export default function AdminJobseekerView() {
 
           {/* Right Column: Applications */}
           <div className="lg:col-span-2">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-full">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm h-full">
               <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                 <Briefcase className="text-indigo-600" /> Application History ({applications.length})
               </h2>
@@ -134,11 +134,11 @@ export default function AdminJobseekerView() {
                           <h3 className="font-bold text-lg text-slate-800">
                             {app.job_id?.title || "Unknown Job"}
                           </h3>
-                          <p className="text-sm text-slate-500 font-medium">
+                          <div className="text-sm text-slate-500 font-medium">
                             <div className="flex items-center gap-1">
                               <CompanyDisplay job={app.job_id} fallback={app.job_id?.postedByCompany || "Unknown Company"} /> • {app.job_id?.location?.address || "Unknown Location"}
                             </div>
-                          </p>
+                          </div>
                           <div className="mt-3 flex gap-4 text-sm text-slate-600">
                             <p>
                               <span className="font-bold text-slate-800">Applied:</span>{" "}

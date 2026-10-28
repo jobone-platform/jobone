@@ -1,12 +1,11 @@
 import { API_BASE_URL } from "../config/api";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Building2, Search, MapPin, Briefcase, Filter, ArrowLeft } from "lucide-react";
 
 export default function ExploreCompanies() {
   const [companies, setCompanies] = useState([]);
-  const [filteredCompanies, setFilteredCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -18,40 +17,53 @@ export default function ExploreCompanies() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const controller = new AbortController();
+
     const fetchCompanies = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/employer/explore`);
-        setCompanies(res.data);
-        setFilteredCompanies(res.data);
+        const res = await axios.get(`${API_BASE_URL}/employer/explore`, {
+          signal: controller.signal,
+        });
+        setCompanies(res.data || []);
       } catch (err) {
+        if (axios.isCancel(err) || err.name === "CanceledError" || err.name === "AbortError") {
+          return;
+        }
         console.error("Error fetching companies:", err);
         setError("Failed to load companies. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchCompanies();
+    return () => {
+      controller.abort();
+    };
   }, []);
 
-  useEffect(() => {
+  const filteredCompanies = useMemo(() => {
     let result = companies;
     if (searchTerm) {
+      const lower = searchTerm.toLowerCase();
       result = result.filter(
         (c) =>
-          c.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          c.name?.toLowerCase().includes(searchTerm.toLowerCase())
+          c.companyName?.toLowerCase().includes(lower) ||
+          c.name?.toLowerCase().includes(lower)
       );
     }
     if (selectedIndustry) {
       result = result.filter((c) => c.industry === selectedIndustry);
     }
-    setFilteredCompanies(result);
-  }, [searchTerm, selectedIndustry, companies]);
+    return result;
+  }, [companies, searchTerm, selectedIndustry]);
 
-  const industries = [...new Set(companies.map(c => c.industry).filter(Boolean))];
+  const industries = useMemo(() => {
+    return [...new Set(companies.map((c) => c.industry).filter(Boolean))];
+  }, [companies]);
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-24 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pt-24 pb-20 transition-colors duration-150">
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-indigo-900 rounded-3xl p-8 sm:p-16 text-center text-white relative overflow-hidden shadow-2xl">
@@ -73,13 +85,13 @@ export default function ExploreCompanies() {
             </p>
 
             {/* Search and Filters */}
-            <div className="max-w-4xl mx-auto bg-white p-3 rounded-2xl flex flex-col sm:flex-row gap-3 shadow-xl">
+            <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 p-3 rounded-2xl flex flex-col sm:flex-row gap-3 shadow-xl">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                 <input
                   type="text"
                   placeholder="Search by company or employer name..."
-                  className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-indigo-100 text-slate-800 font-medium placeholder-slate-400 outline-none transition-all"
+                  className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-white font-medium placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -87,7 +99,7 @@ export default function ExploreCompanies() {
               <div className="sm:w-64 relative flex-shrink-0">
                 <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                 <select
-                  className="w-full pl-12 pr-10 py-3 sm:py-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-indigo-100 text-slate-800 font-medium appearance-none outline-none transition-all cursor-pointer"
+                  className="w-full pl-12 pr-10 py-3 sm:py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-white font-medium appearance-none outline-none transition-all cursor-pointer"
                   value={selectedIndustry}
                   onChange={(e) => setSelectedIndustry(e.target.value)}
                 >
@@ -106,7 +118,7 @@ export default function ExploreCompanies() {
         {/* Companies Grid */}
         <div className="mt-16">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-slate-800">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
               {filteredCompanies.length} {filteredCompanies.length === 1 ? "Company" : "Companies"} Hiring
             </h2>
           </div>
@@ -114,7 +126,7 @@ export default function ExploreCompanies() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white rounded-3xl p-6 h-64 animate-pulse border border-slate-100">
+                <div key={i} className="bg-white dark:bg-slate-900 rounded-3xl p-6 h-64 animate-pulse border border-slate-100 dark:border-slate-800">
                   <div className="w-16 h-16 bg-slate-200 rounded-2xl mb-4"></div>
                   <div className="w-3/4 h-6 bg-slate-200 rounded-lg mb-3"></div>
                   <div className="w-1/2 h-4 bg-slate-200 rounded-lg mb-6"></div>
@@ -130,10 +142,10 @@ export default function ExploreCompanies() {
               {error}
             </div>
           ) : filteredCompanies.length === 0 ? (
-            <div className="bg-white p-12 rounded-3xl border border-slate-200 text-center shadow-sm">
-              <Building2 className="mx-auto text-slate-300 mb-4" size={64} />
-              <h3 className="text-xl font-bold text-slate-800 mb-2">No companies found</h3>
-              <p className="text-slate-500">Try adjusting your search or filter criteria.</p>
+            <div className="bg-white dark:bg-slate-900 p-12 rounded-3xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
+              <Building2 className="mx-auto text-slate-300 dark:text-slate-600 mb-4" size={64} />
+              <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No companies found</h3>
+              <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filter criteria.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -143,10 +155,10 @@ export default function ExploreCompanies() {
                   <div
                     key={company._id}
                     onClick={() => navigate(`/company/${company._id}`)}
-                    className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:shadow-xl hover:border-indigo-100 transition-all cursor-pointer group flex flex-col h-full"
+                    className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-xl dark:hover:border-indigo-500/50 transition-all cursor-pointer group flex flex-col h-full"
                   >
                     <div className="flex items-start justify-between mb-6">
-                      <div className="w-16 h-16 rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center p-2 group-hover:scale-105 transition-transform shadow-sm">
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex items-center justify-center p-2 group-hover:scale-105 transition-transform shadow-sm">
                         {company.profilePicture ? (
                           <img
                             src={company.profilePicture}
@@ -163,7 +175,7 @@ export default function ExploreCompanies() {
                       </div>
                     </div>
                     
-                    <h3 className="text-xl font-bold text-slate-800 mb-2 line-clamp-1 group-hover:text-indigo-600 transition-colors">
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                       {displayName}
                     </h3>
                     
@@ -177,7 +189,7 @@ export default function ExploreCompanies() {
                       <span>{company.industry || "Industry not specified"}</span>
                     </div>
                     
-                    <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                       <span className="text-indigo-600 font-bold text-sm group-hover:underline">
                         View Profile
                       </span>

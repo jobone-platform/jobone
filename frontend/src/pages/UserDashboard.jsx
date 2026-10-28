@@ -142,9 +142,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-slate-50 text-slate-900 mt-[-80px]">
+    <div className="min-h-screen flex flex-col font-sans bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 mt-[-80px] transition-colors duration-150">
       {/* 1. HERO SECTION */}
-      <div className="relative bg-white shadow-sm border-b border-slate-100 z-10">
+      <div className="relative bg-white dark:bg-slate-900 shadow-sm border-b border-slate-100 dark:border-slate-800 z-10">
         <Hero />
       </div>
 
@@ -170,7 +170,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="bg-white rounded-3xl p-1.5 shadow-2xl relative z-0">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-1.5 shadow-2xl relative z-0 border border-slate-200 dark:border-slate-800">
               <div className="rounded-2xl overflow-hidden bg-slate-100 border border-slate-200">
                 <JobsAroundMe onJobClick={setSelectedJob} />
               </div>
@@ -180,15 +180,15 @@ export default function Home() {
 
         {/* RECOMMENDED JOBS (AI MATCHED) */}
         {loadingRecommendations ? (
-          <section id="ai-recommended-jobs" className="py-16 px-4 sm:px-6 bg-indigo-50 border-y border-indigo-100">
+          <section id="ai-recommended-jobs" className="py-16 px-4 sm:px-6 bg-indigo-50 dark:bg-slate-900/60 border-y border-indigo-100 dark:border-slate-800">
             <div className="max-w-7xl mx-auto">
               <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                   <span className="text-indigo-600 font-bold text-xs uppercase tracking-wider bg-white border border-indigo-100 px-3 py-1 rounded-full flex items-center gap-2 w-fit shadow-sm">
                     <Sparkles size={12} className="text-indigo-500 animate-pulse" /> Generating AI Recommendations...
                   </span>
-                  <h2 className="text-3xl font-bold text-slate-900 mt-3">Recommended Jobs</h2>
-                  <p className="text-slate-600 mt-2">Personalized matches based on your skills and profile experience.</p>
+                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white mt-3">Recommended Jobs</h2>
+                  <p className="text-slate-600 dark:text-slate-400 mt-2">Personalized matches based on your skills and profile experience.</p>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -259,10 +259,10 @@ export default function Home() {
                   <div
                     key={job._id}
                     onClick={() => setSelectedJob(job)}
-                    className={`bg-white p-6 rounded-3xl border shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col h-full relative overflow-hidden ${
+                    className={`bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-slate-950/40 hover:shadow-xl dark:hover:border-indigo-500/50 transition-all cursor-pointer group flex flex-col h-full relative overflow-hidden ${
                       job.matchScore > 70
-                        ? "border-amber-400 hover:border-amber-500 shadow-amber-100/50"
-                        : "border-indigo-100 hover:border-indigo-300"
+                        ? "border-amber-400 hover:border-amber-500 shadow-amber-100/50 dark:shadow-amber-950/20"
+                        : "border-indigo-100 dark:border-slate-800 hover:border-indigo-300"
                     }`}
                   >
                     <div
@@ -289,7 +289,7 @@ export default function Home() {
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-extrabold text-slate-900 mb-1 group-hover:text-indigo-600 transition-colors line-clamp-1">
+                    <h3 className="text-lg font-extrabold text-slate-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
                       {job.title}
                     </h3>
                     <p className="text-sm text-slate-500 font-bold mb-4">

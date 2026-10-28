@@ -13,8 +13,12 @@ const getAuthHeader = () => {
 };
 
 const getUserId = () => {
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  return userInfo ? (userInfo.id || userInfo.userId || userInfo._id) : null;
+  try {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    return userInfo ? (userInfo.userId || userInfo.id || userInfo.user?.id || userInfo.user?._id || userInfo._id) : null;
+  } catch (e) {
+    return null;
+  }
 };
 
 const DOCUMENT_CONFIG = [
@@ -69,17 +73,17 @@ export default function JobseekerDocumentManager() {
   const uploadedCount = DOCUMENT_CONFIG.filter(doc => profile.documents?.[doc.field]?.key).length;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 mt-10 font-sans pb-20">
+    <div className="max-w-4xl mx-auto p-6 mt-10 font-sans pb-20 text-slate-900 dark:text-slate-100">
       <div className="flex items-center gap-4 mb-6">
         <button 
           onClick={() => navigate('/profile')} 
-          className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 transition text-slate-700"
+          className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300"
           title="Back to Profile"
         >
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h2 className="text-3xl font-extrabold text-slate-900">My Verification & Credential Documents</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">My Verification & Credential Documents</h2>
           <p className="text-slate-500 mt-1">
             Upload your academic marksheets, ID proofs, and certificates.
           </p>
@@ -134,7 +138,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
   };
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file || uploading) return;
     setUploading(true);
     setError("");
 
@@ -222,7 +226,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 transition-all hover:shadow-md">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-slate-950/40 p-4 sm:p-6 transition-all hover:shadow-md">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         
         {/* Left Side: Info */}
@@ -232,7 +236,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-extrabold text-slate-800 text-lg">{doc.label}</h3>
+              <h3 className="font-extrabold text-slate-800 dark:text-white text-lg">{doc.label}</h3>
               <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">Optional</span>
             </div>
             {isUploaded ? (

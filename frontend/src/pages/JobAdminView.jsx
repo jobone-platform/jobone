@@ -112,7 +112,7 @@ export default function JobAdminView() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen bg-slate-50">
+      <div className="flex justify-center items-center h-screen bg-slate-50 dark:bg-slate-950">
         <Loader2 className="animate-spin text-indigo-600" size={48} />
       </div>
     );
@@ -124,7 +124,7 @@ export default function JobAdminView() {
     );
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 font-sans text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 font-sans text-slate-900 dark:text-slate-100">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* --- HEADER --- */}
         <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
@@ -163,7 +163,7 @@ export default function JobAdminView() {
           {/* --- LEFT SIDEBAR: QUICK STATS & ACTIONS --- */}
           <div className="lg:col-span-1 space-y-6">
             {/* Master Action Block */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm sticky top-6">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm sticky top-6">
               {job.status === "pending_approval" ? (
                 <>
                   <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4">

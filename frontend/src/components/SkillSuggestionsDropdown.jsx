@@ -97,8 +97,8 @@ export default function SkillSuggestionsDropdown({ skills, jobTitle, onAdd, onRe
             <div
                 className={`flex items-center gap-2 p-2.5 border rounded-xl cursor-text transition-all ${
                     open
-                        ? "border-blue-400 ring-2 ring-blue-100 bg-white"
-                        : "border-gray-300 bg-gray-50 hover:border-blue-300"
+                        ? "border-blue-400 ring-2 ring-blue-100 dark:ring-blue-900/30 bg-white dark:bg-slate-800"
+                        : "border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-slate-900 dark:text-white hover:border-blue-300"
                 }`}
                 onClick={() => setOpen(true)}
             >
@@ -122,7 +122,7 @@ export default function SkillSuggestionsDropdown({ skills, jobTitle, onAdd, onRe
                                 ? "Add more skills..."
                                 : "Click to browse or type a skill..."
                     }
-                    className="flex-1 outline-none text-sm bg-transparent text-gray-700 placeholder-gray-400"
+                    className="flex-1 outline-none text-sm bg-transparent text-gray-700 dark:text-slate-100 placeholder-gray-400"
                 />
                 {query && (
                     <button
@@ -141,7 +141,7 @@ export default function SkillSuggestionsDropdown({ skills, jobTitle, onAdd, onRe
 
             {/* Dropdown */}
             {open && (
-                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto">
 
                     {/* No job title */}
                     {!jobTitle?.trim() ? (
