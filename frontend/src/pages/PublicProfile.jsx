@@ -276,7 +276,7 @@ export default function PublicProfile() {
                         requireMessage: false,
                       })
                     }
-                    className="px-4 py-2 bg-white border border-rose-200 text-rose-600 font-bold rounded-lg hover:bg-rose-50 text-sm"
+                    className="px-4 py-2 bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-900/40 text-rose-600 dark:text-rose-400 font-bold rounded-lg hover:bg-rose-50 dark:hover:bg-slate-700 text-sm"
                   >
                     NCTT
                   </button>
@@ -320,13 +320,13 @@ export default function PublicProfile() {
               <div className="mt-6 space-y-3 text-left">
                 <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
                   <Mail className="text-blue-500" size={18} />
-                  <span className="text-sm text-slate-700 break-all">
+                  <span className="text-sm text-slate-700 dark:text-slate-300 break-all">
                     {profile.email}
                   </span>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
                   <Phone className="text-green-500" size={18} />
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-slate-700 dark:text-slate-300">
                     {profile.phone || "N/A"}
                   </span>
                 </div>
@@ -355,7 +355,7 @@ export default function PublicProfile() {
               {/* CANDIDATE VERIFICATION DOCUMENTS */}
               {profile.documents && Object.keys(profile.documents).some(k => profile.documents[k]?.key) && (
                 <div className="mt-6 pt-6 border-t border-slate-200">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3 flex items-center gap-1.5">
                     <FileText size={16} className="text-blue-600" /> Verification Documents
                   </h4>
                   <div className="space-y-2">
@@ -374,7 +374,7 @@ export default function PublicProfile() {
                       };
                       return (
                         <div key={field} className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-medium shadow-sm">
-                          <span className="text-slate-800 font-bold">{labelMap[field] || field}</span>
+                          <span className="text-slate-800 dark:text-white font-bold">{labelMap[field] || field}</span>
                           <button
                             type="button"
                             onClick={async () => {
@@ -390,7 +390,7 @@ export default function PublicProfile() {
                                 alert("Failed to download document.");
                               }
                             }}
-                            className="text-blue-600 hover:text-blue-800 font-bold underline flex items-center gap-1"
+                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-bold underline flex items-center gap-1"
                           >
                             <Download size={12} /> Download
                           </button>
@@ -403,7 +403,7 @@ export default function PublicProfile() {
             </div>
 
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800 p-6">
-              <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                 <User size={18} className="text-orange-500" /> Skills
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -411,7 +411,7 @@ export default function PublicProfile() {
                   profile.skills.map((skill, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold uppercase tracking-wide border border-slate-200"
+                      className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-bold uppercase tracking-wide border border-slate-200 dark:border-slate-700"
                     >
                       {skill}
                     </span>
@@ -427,7 +427,7 @@ export default function PublicProfile() {
 
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800 p-8">
-              <h3 className="text-lg font-bold text-slate-900 mb-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
                 Professional Summary
               </h3>
               <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
@@ -436,7 +436,7 @@ export default function PublicProfile() {
             </div>
 
             <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
-              <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                 <Briefcase className="text-indigo-500" size={20} /> Work
                 Experience
               </h3>
@@ -448,7 +448,7 @@ export default function PublicProfile() {
                       className="relative pl-6 border-l-2 border-indigo-100"
                     >
                       <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-50 border-2 border-indigo-500"></div>
-                      <h4 className="font-bold text-slate-900 text-lg">
+                      <h4 className="font-bold text-slate-900 dark:text-white text-lg">
                         {exp.role}
                       </h4>
                       <p className="text-indigo-600 font-semibold">
@@ -469,7 +469,7 @@ export default function PublicProfile() {
             </div>
 
             <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
-              <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                 <GraduationCap className="text-green-500" size={20} /> Education
               </h3>
               <div className="space-y-6">
@@ -480,7 +480,7 @@ export default function PublicProfile() {
                       className="flex justify-between items-start p-4 bg-slate-50 rounded-xl border border-slate-100"
                     >
                       <div>
-                        <h4 className="font-bold text-slate-900">
+                        <h4 className="font-bold text-slate-900 dark:text-white">
                           {edu.degree}
                         </h4>
                         <p className="text-slate-600 font-medium">
@@ -508,7 +508,7 @@ export default function PublicProfile() {
             {(profile.resumeData?.projects?.length > 0 ||
               profile.projects?.length > 0) && (
               <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                   <Code className="text-blue-500" size={20} /> Technical
                   Projects
                 </h3>
@@ -520,7 +520,7 @@ export default function PublicProfile() {
                         className="p-5 bg-slate-50 rounded-xl border border-slate-100"
                       >
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-extrabold text-slate-900 text-base">
+                          <h4 className="font-extrabold text-slate-900 dark:text-white text-base">
                             {proj.title}
                           </h4>
                           {proj.link && (
@@ -556,7 +556,7 @@ export default function PublicProfile() {
             {(profile.resumeData?.certifications?.length > 0 ||
               profile.certifications?.length > 0) && (
               <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                   <Award className="text-amber-500" size={20} /> Certifications
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -567,7 +567,7 @@ export default function PublicProfile() {
                       key={i}
                       className="p-4 bg-slate-50 rounded-xl border border-slate-100"
                     >
-                      <h4 className="font-bold text-slate-900 mb-1">
+                      <h4 className="font-bold text-slate-900 dark:text-white mb-1">
                         {cert.name}
                       </h4>
                       <div className="flex justify-between items-center mt-2">
@@ -590,12 +590,12 @@ export default function PublicProfile() {
       {actionModal.show && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-8 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800">
-            <h3 className="text-xl font-bold text-slate-900 mb-2">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
               {actionModal.title}
             </h3>
             {actionModal.requireMessage ? (
               <div className="mb-6 mt-4">
-                <label className="block text-sm font-bold text-slate-700 mb-2">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
                   Message / Details (Sent to Applicant)
                 </label>
                 <textarea

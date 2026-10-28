@@ -122,9 +122,9 @@ export default function ApplyPage() {
   if (!job) {
     return (
       <div className="min-h-screen bg-slate-50 flex justify-center items-center p-4">
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-center max-w-md w-full">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 text-center max-w-md w-full">
           <AlertCircle className="mx-auto text-rose-500 mb-4" size={48} />
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
             Job Unavailable
           </h2>
           <p className="text-slate-500 mb-6 font-medium">
@@ -215,7 +215,7 @@ export default function ApplyPage() {
               {/* FACT: The Similar Jobs block injected into the success state */}
               {similarJobs.length > 0 ? (
                 <div className="w-full border-t border-slate-100 pt-8 mt-2">
-                  <h3 className="text-lg font-extrabold text-slate-800 mb-4 text-left">
+                  <h3 className="text-lg font-extrabold text-slate-800 dark:text-white mb-4 text-left">
                     Explore Similar Roles
                   </h3>
                   <div className="flex flex-col gap-4">
@@ -249,7 +249,7 @@ export default function ApplyPage() {
                               </p>
                             </div>
                           </div>
-                          <span className="text-[10px] font-bold text-slate-400 bg-white px-2 py-1 rounded-md border border-slate-100 shrink-0 hidden sm:block">
+                          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-100 dark:border-slate-700 shrink-0 hidden sm:block">
                             {formatTimeAgo(sJob.postedAt || sJob.createdAt)}
                           </span>
                         </div>
@@ -271,7 +271,7 @@ export default function ApplyPage() {
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-sm font-extrabold text-slate-800 mb-2"
+                  className="block text-sm font-extrabold text-slate-800 dark:text-slate-200 mb-2"
                 >
                   Pitch Yourself <span className="text-rose-500">*</span>
                 </label>

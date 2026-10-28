@@ -72,7 +72,7 @@ export default function AdminJobseekerView() {
           {/* Left Column: Profile Data */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b pb-2">
                 Profile Data
               </h2>
               <div className="space-y-4">
@@ -92,10 +92,10 @@ export default function AdminJobseekerView() {
 
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase mt-4">Contact Info</p>
-                  <p className="font-medium text-slate-900 flex items-center gap-2 mt-2">
+                  <p className="font-medium text-slate-900 dark:text-white flex items-center gap-2 mt-2">
                     <Mail size={16} /> {jobseeker.email}
                   </p>
-                  <p className="font-medium text-slate-900 flex items-center gap-2 mt-2">
+                  <p className="font-medium text-slate-900 dark:text-white flex items-center gap-2 mt-2">
                     <Phone size={16} /> {jobseeker.phone || "Not Provided"}
                   </p>
                 </div>
@@ -117,7 +117,7 @@ export default function AdminJobseekerView() {
           {/* Right Column: Applications */}
           <div className="lg:col-span-2">
             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm h-full">
-              <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                 <Briefcase className="text-indigo-600" /> Application History ({applications.length})
               </h2>
 
@@ -128,10 +128,10 @@ export default function AdminJobseekerView() {
               ) : (
                 <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
                   {applications.map((app) => (
-                    <div key={app._id} className="p-5 border border-slate-200 rounded-xl hover:shadow-md transition bg-slate-50">
+                    <div key={app._id} className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl hover:shadow-md transition bg-slate-50">
                       <div className="flex justify-between items-start gap-4">
                         <div>
-                          <h3 className="font-bold text-lg text-slate-800">
+                          <h3 className="font-bold text-lg text-slate-800 dark:text-white">
                             {app.job_id?.title || "Unknown Job"}
                           </h3>
                           <div className="text-sm text-slate-500 font-medium">
@@ -141,7 +141,7 @@ export default function AdminJobseekerView() {
                           </div>
                           <div className="mt-3 flex gap-4 text-sm text-slate-600">
                             <p>
-                              <span className="font-bold text-slate-800">Applied:</span>{" "}
+                              <span className="font-bold text-slate-800 dark:text-white">Applied:</span>{" "}
                               {new Date(app.appliedAt).toLocaleDateString()}
                             </p>
                           </div>
@@ -151,7 +151,7 @@ export default function AdminJobseekerView() {
                             app.status === 'Hired' ? 'bg-emerald-100 text-emerald-700' :
                             app.status === 'Rejected' ? 'bg-rose-100 text-rose-700' :
                             app.status === 'Shortlisted' ? 'bg-blue-100 text-blue-700' :
-                            'bg-slate-200 text-slate-700'
+                            'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200'
                           }`}>
                             {app.status}
                           </span>

@@ -142,7 +142,7 @@ export default function MyApplications() {
           <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
             <SearchX className="text-slate-400" size={40} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
             No Applications Submitted Yet
           </h2>
           <p className="text-slate-500 mb-8 leading-relaxed">
@@ -261,7 +261,7 @@ export default function MyApplications() {
                     <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
                       <MapPin size={14} className="text-slate-400" />
                       <span
-                        className="text-xs font-semibold text-slate-700 truncate max-w-[120px]"
+                        className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[120px]"
                         title={locationStr}
                       >
                         {locationStr || "Office"}
@@ -270,7 +270,7 @@ export default function MyApplications() {
 
                     <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
                       <IndianRupee size={14} className="text-slate-400" />
-                      <span className="text-xs font-semibold text-slate-700">
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                         {job.salaryMin
                           ? `${job.salaryMin.toLocaleString()} - ${job.salaryMax.toLocaleString()}/${job.salaryFrequency}`
                           : "TBD"}
@@ -279,7 +279,7 @@ export default function MyApplications() {
 
                     <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
                       {getModeIcon(Array.isArray(job.mode) ? job.mode.join(", ") : job.mode || "")}
-                      <span className="text-xs font-semibold text-slate-700 truncate">
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
                         {Array.isArray(job.mode) ? job.mode.join(", ") : job.mode}
                       </span>
                     </div>

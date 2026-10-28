@@ -446,7 +446,7 @@ export default function EditJob() {
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 font-sans mt-16 sm:mt-20">
       {/* FACT: Sticky Top Header Removed. Back button and Title moved to standard flow. */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 space-y-8">
-        <div className="flex items-center gap-4 mb-6 border-b border-slate-200 pb-6">
+        <div className="flex items-center gap-4 mb-6 border-b border-slate-200 dark:border-slate-800 pb-6">
           <button
             onClick={() => navigate(-1)}
             className="p-3 bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition-colors"
@@ -489,7 +489,7 @@ export default function EditJob() {
                   name="status"
                   value={job.status}
                   onChange={handleChange}
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 font-bold rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-slate-50 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-bold rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="active">Active (Visible)</option>
                   <option value="inactive">Inactive (Hidden)</option>
@@ -515,7 +515,7 @@ export default function EditJob() {
                   }}
                   className="w-5 h-5 text-indigo-600 rounded border-blue-300 focus:ring-indigo-500"
                 />
-                <span className="text-sm font-bold text-gray-800">
+                <span className="text-sm font-bold text-gray-800 dark:text-white">
                   I am recruiting on behalf of another company (Agency/Third-Party)
                 </span>
               </label>
@@ -523,7 +523,7 @@ export default function EditJob() {
               {job.isThirdPartyRecruiting && (
                 <div className="mt-4 pl-8 space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1">
                       Client Company Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -566,7 +566,7 @@ export default function EditJob() {
                   ].map((type) => (
                     <label
                       key={type}
-                      className={`cursor-pointer px-4 py-2 text-xs font-bold rounded-xl border transition-all capitalize ${job.jobType.includes(type) ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"}`}
+                      className={`cursor-pointer px-4 py-2 text-xs font-bold rounded-xl border transition-all capitalize ${job.jobType.includes(type) ? "bg-slate-800 text-white border-slate-800" : "bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-800 hover:bg-slate-50"}`}
                     >
                       <input
                         type="checkbox"
@@ -592,7 +592,7 @@ export default function EditJob() {
                     name="noOfPeopleRequired"
                     value={job.noOfPeopleRequired}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 font-bold rounded-xl pl-10 pr-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full bg-slate-50 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-bold rounded-xl pl-10 pr-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
@@ -610,7 +610,7 @@ export default function EditJob() {
                 ].map((m) => (
                   <label
                     key={m.val}
-                    className={`flex-1 min-w-[150px] cursor-pointer border rounded-xl p-3 flex items-center justify-center gap-2 transition-all ${job.mode.includes(m.val) ? "bg-indigo-50 border-indigo-500 text-indigo-700 ring-1 ring-indigo-500" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                    className={`flex-1 min-w-[150px] cursor-pointer border rounded-xl p-3 flex items-center justify-center gap-2 transition-all ${job.mode.includes(m.val) ? "bg-indigo-50 border-indigo-500 text-indigo-700 ring-1 ring-indigo-500" : "border-slate-200 dark:border-slate-800 text-slate-600 hover:bg-slate-50"}`}
                   >
                     <input
                       type="checkbox"
@@ -662,7 +662,7 @@ export default function EditJob() {
               <button
                 type="button"
                 onClick={() => setCurrencyOpen((o) => !o)}
-                className="flex items-center justify-between gap-2 h-12 px-4 border border-green-200 rounded-xl bg-white text-sm font-bold text-gray-700 hover:bg-green-50 min-w-[110px]"
+                className="flex items-center justify-between gap-2 h-12 px-4 border border-green-200 rounded-xl bg-white dark:bg-slate-800 text-sm font-bold text-gray-700 dark:text-slate-300 hover:bg-green-50 min-w-[110px]"
               >
                 <div className="flex items-center gap-2">
                   <img
@@ -679,14 +679,14 @@ export default function EditJob() {
                 </div>
               </button>
               {currencyOpen && (
-                <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-gray-200 rounded-xl shadow-lg w-56 max-h-64 overflow-y-auto">
+                <div className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-800 rounded-xl shadow-lg w-56 max-h-64 overflow-y-auto">
                   <input
                     autoFocus
                     type="text"
                     value={currencySearch}
                     onChange={(e) => setCurrencySearch(e.target.value)}
                     placeholder="Search..."
-                    className="w-full px-3 py-2 text-xs border-b border-gray-100 outline-none"
+                    className="w-full px-3 py-2 text-xs border-b border-gray-100 dark:border-slate-800 outline-none"
                   />
                   {CURRENCIES.filter(
                     (c) =>
@@ -755,7 +755,7 @@ export default function EditJob() {
               onChange={(e) =>
                 setJob((prev) => ({ ...prev, salaryFrequency: e.target.value }))
               }
-              className="w-full md:w-auto p-3 border border-green-200 rounded-xl outline-none bg-white text-sm font-bold text-green-800"
+              className="w-full md:w-auto p-3 border border-green-200 rounded-xl outline-none bg-white dark:bg-slate-800 text-sm font-bold text-green-800"
             >
               <option value="Month">/ Month</option>
               <option value="Year">/ Year</option>
@@ -783,7 +783,7 @@ export default function EditJob() {
                           : [...prev.incentives, perk.value],
                       }))
                     }
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${isSelected ? "bg-green-600 text-white border-green-600 shadow-sm" : "bg-white text-green-700 border-green-200 hover:bg-green-50"}`}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${isSelected ? "bg-green-600 text-white border-green-600 shadow-sm" : "bg-white dark:bg-slate-900 text-green-700 border-green-200 hover:bg-green-50"}`}
                   >
                     <span>{perk.icon}</span> {perk.value}
                   </button>
@@ -809,7 +809,7 @@ export default function EditJob() {
                     setCustomPerkInput("");
                   }
                 }}
-                className="max-w-xs p-2.5 text-sm border border-green-200 rounded-xl outline-none focus:ring-2 focus:ring-green-300 bg-white"
+                className="max-w-xs p-2.5 text-sm border border-green-200 rounded-xl outline-none focus:ring-2 focus:ring-green-300 bg-white dark:bg-slate-900"
               />
               <button
                 type="button"
@@ -863,7 +863,7 @@ export default function EditJob() {
 
         {/* DEMOGRAPHICS & SKILLS */}
         <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-800">
-          <h2 className="text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
+          <h2 className="text-lg font-extrabold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
             <UserCircle2 size={20} className="text-blue-600" /> Candidate
             Profile & Skills
           </h2>
@@ -884,7 +884,7 @@ export default function EditJob() {
                 ].map((q) => (
                   <label
                     key={q}
-                    className={`cursor-pointer px-4 py-2 text-xs sm:text-sm font-bold rounded-xl border transition-all ${job.qualifications.includes(q) ? "bg-indigo-600 text-white border-indigo-600 shadow-md" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"}`}
+                    className={`cursor-pointer px-4 py-2 text-xs sm:text-sm font-bold rounded-xl border transition-all ${job.qualifications.includes(q) ? "bg-indigo-600 text-white border-indigo-600 shadow-md" : "bg-white dark:bg-slate-800 text-slate-600 border-slate-200 dark:border-slate-800 hover:bg-slate-50"}`}
                   >
                     <input
                       type="checkbox"
@@ -923,7 +923,7 @@ export default function EditJob() {
                 Experience Required
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-white border border-indigo-100 rounded-xl space-y-3">
+                <div className="p-4 bg-white dark:bg-slate-800 border border-indigo-100 rounded-xl space-y-3">
                   <p className="text-xs font-bold text-indigo-700">
                     Relevant Field Experience
                   </p>
@@ -975,7 +975,7 @@ export default function EditJob() {
                     Any / Freshers welcome
                   </label>
                 </div>
-                <div className="p-4 bg-white border border-indigo-100 rounded-xl space-y-3">
+                <div className="p-4 bg-white dark:bg-slate-800 border border-indigo-100 rounded-xl space-y-3">
                   <p className="text-xs font-bold text-indigo-700">
                     Total Work Experience
                   </p>
@@ -1074,7 +1074,7 @@ export default function EditJob() {
                 name="genderPreference"
                 value={job.genderPreference}
                 onChange={handleChange}
-                className="w-full p-3 border rounded-xl text-sm outline-none font-bold text-slate-700 bg-white focus:border-indigo-500"
+                className="w-full p-3 border rounded-xl text-sm outline-none font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 focus:border-indigo-500"
               >
                 <option value="No Preference">No Preference</option>
                 <option value="Male">Male</option>
@@ -1104,7 +1104,7 @@ export default function EditJob() {
               />
             </div>
 
-            <div className="col-span-1 md:col-span-2 pt-6 border-t border-slate-100">
+            <div className="col-span-1 md:col-span-2 pt-6 border-t border-slate-100 dark:border-slate-800">
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
                 Required Skills
               </label>
@@ -1132,7 +1132,7 @@ export default function EditJob() {
 
         {/* TIMINGS & DATES */}
         <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-800">
-          <h2 className="text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
+          <h2 className="text-lg font-extrabold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
             <Clock size={20} className="text-purple-600" /> Schedule & Deadlines
           </h2>
 
@@ -1147,7 +1147,7 @@ export default function EditJob() {
                     (p) => (
                       <label
                         key={p}
-                        className={`cursor-pointer py-2.5 text-center text-xs font-bold rounded-xl border transition-all ${job.workDaysPattern === p ? "bg-slate-800 text-white border-slate-800 shadow-md" : "bg-white text-slate-600 hover:bg-slate-50"}`}
+                        className={`cursor-pointer py-2.5 text-center text-xs font-bold rounded-xl border transition-all ${job.workDaysPattern === p ? "bg-slate-800 text-white border-slate-800 shadow-md" : "bg-white dark:bg-slate-800 text-slate-600 hover:bg-slate-50"}`}
                       >
                         <input
                           type="radio"
@@ -1174,7 +1174,7 @@ export default function EditJob() {
                 )}
               </div>
 
-              <div className="pt-2 border-t border-slate-100">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
                     Expected Timings {!job.isFlexibleShifts && <span className="text-red-500">*</span>}
@@ -1194,14 +1194,14 @@ export default function EditJob() {
                   {job.shifts.map((shift, index) => (
                     <div
                       key={index}
-                      className="flex gap-2 items-center p-2.5 bg-slate-50 rounded-xl border border-slate-200"
+                      className="flex gap-2 items-center p-2.5 bg-slate-50 rounded-xl border border-slate-200 dark:border-slate-800"
                     >
                       <input
                         value={shift.shiftName}
                         onChange={(e) =>
                           updateShift(index, "shiftName", e.target.value)
                         }
-                        className="w-24 bg-transparent text-xs font-bold outline-none text-slate-700"
+                        className="w-24 bg-transparent text-xs font-bold outline-none text-slate-700 dark:text-slate-300"
                         placeholder="Shift Name"
                       />
                       <input
@@ -1210,7 +1210,7 @@ export default function EditJob() {
                         onChange={(e) =>
                           updateShift(index, "startTime", e.target.value)
                         }
-                        className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500 font-mono font-bold"
+                        className="flex-1 p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg text-xs outline-none focus:border-indigo-500 font-mono font-bold"
                       />
                       <span className="text-slate-400">-</span>
                       <input
@@ -1219,7 +1219,7 @@ export default function EditJob() {
                         onChange={(e) =>
                           updateShift(index, "endTime", e.target.value)
                         }
-                        className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500 font-mono font-bold"
+                        className="flex-1 p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg text-xs outline-none focus:border-indigo-500 font-mono font-bold"
                       />
                       {index > 0 && (
                         <button
@@ -1243,7 +1243,7 @@ export default function EditJob() {
               </div>
             </div>
 
-            <div className="space-y-6 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+            <div className="space-y-6 bg-slate-50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
               <div className="flex justify-between items-center">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                   Duration & Dates
@@ -1270,7 +1270,7 @@ export default function EditJob() {
                     name="startDate"
                     value={job.startDate}
                     onChange={handleChange}
-                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-indigo-500 font-bold text-slate-700"
+                    className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-indigo-500 font-bold text-slate-700 dark:text-slate-300"
                   />
                 </div>
                 <div className="flex-1">
@@ -1283,11 +1283,11 @@ export default function EditJob() {
                     value={job.isLongTerm ? "" : job.endDate}
                     onChange={handleChange}
                     disabled={job.isLongTerm}
-                    className="w-full p-3 border border-slate-200 rounded-xl text-sm outline-none disabled:bg-slate-100 disabled:text-slate-400 bg-white font-bold text-slate-700 focus:border-indigo-500"
+                    className="w-full p-3 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none disabled:bg-slate-100 disabled:text-slate-400 bg-white dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-300 focus:border-indigo-500"
                   />
                 </div>
               </div>
-              <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+              <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <input
                   type="checkbox"
                   name="isLongTerm"
@@ -1298,7 +1298,7 @@ export default function EditJob() {
                 Long Term Role (No fixed end date)
               </label>
 
-              <div className="pt-4 border-t border-slate-200">
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
                 <label className="text-[10px] font-bold text-rose-500 uppercase tracking-wider mb-2 flex items-center gap-1 block">
                   <Calendar size={14} /> Application Deadline
                 </label>
@@ -1307,7 +1307,7 @@ export default function EditJob() {
                   name="applicationDeadline"
                   value={job.applicationDeadline}
                   onChange={handleChange}
-                  className="w-full p-3 border border-rose-200 bg-white rounded-xl text-sm outline-none focus:border-rose-500 font-bold text-rose-700 shadow-sm"
+                  className="w-full p-3 border border-rose-200 bg-white dark:bg-slate-800 rounded-xl text-sm outline-none focus:border-rose-500 font-bold text-rose-700 shadow-sm"
                 />
               </div>
             </div>
@@ -1334,7 +1334,7 @@ export default function EditJob() {
                 }
               }}
               placeholder="Type a question..."
-              className="flex-1 p-3.5 border border-purple-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-300 bg-white"
+              className="flex-1 p-3.5 border border-purple-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-300 bg-white dark:bg-slate-800"
             />
             <button
               type="button"
@@ -1361,7 +1361,7 @@ export default function EditJob() {
                      setJob(prev => ({ ...prev, screeningQuestions: [...prev.screeningQuestions, q] }));
                   }
                 }}
-                className="text-[11px] font-bold bg-white border border-purple-200 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors shadow-sm"
+                className="text-[11px] font-bold bg-white dark:bg-slate-900 border border-purple-200 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors shadow-sm"
               >
                 + Add: {q}
               </button>
@@ -1372,7 +1372,7 @@ export default function EditJob() {
               {job.screeningQuestions.map((q, idx) => (
                 <li
                   key={idx}
-                  className="flex justify-between items-center bg-white p-4 border border-purple-100 rounded-xl text-sm font-medium text-purple-900 shadow-sm"
+                  className="flex justify-between items-center bg-white dark:bg-slate-800 p-4 border border-purple-100 rounded-xl text-sm font-medium text-purple-900 shadow-sm"
                 >
                   <span>
                     <strong className="text-purple-600 mr-2">
@@ -1395,10 +1395,10 @@ export default function EditJob() {
 
         {/* REQUESTED DOCUMENTS CHECKLIST */}
         <section className="bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-3xl p-6 sm:p-8 border border-blue-200 shadow-sm">
-          <h2 className="text-lg font-extrabold text-blue-900 mb-2 flex items-center gap-2">
+          <h2 className="text-lg font-extrabold text-blue-900 dark:text-blue-300 mb-2 flex items-center gap-2">
             <FileText size={20} className="text-blue-600" /> Requested Candidate Documents (Optional Checklist)
           </h2>
-          <p className="text-sm text-blue-800 mb-6">
+          <p className="text-sm text-blue-800 dark:text-blue-300 mb-6">
             Select any specific documents you require applicants to provide when applying for this position:
           </p>
           <div className="flex flex-wrap gap-2.5">
@@ -1430,7 +1430,7 @@ export default function EditJob() {
                   className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all flex items-center gap-2 ${
                     isSelected
                       ? "bg-blue-600 text-white border-blue-600 shadow-md"
-                      : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"
+                      : "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900/40 hover:bg-blue-50 dark:hover:bg-slate-700"
                   }`}
                 >
                   <span>{isSelected ? "✓" : "+"}</span> {docName}
@@ -1442,7 +1442,7 @@ export default function EditJob() {
 
         {/* FEATURES & DESCRIPTION */}
         <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-800">
-          <h2 className="text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
+          <h2 className="text-lg font-extrabold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
             <AlignLeft size={20} className="text-amber-500" /> Description &
             Highlights
           </h2>
@@ -1463,7 +1463,7 @@ export default function EditJob() {
                   })
                 }
                 placeholder="Feature 1"
-                className="p-3.5 rounded-xl border border-amber-200 text-sm font-bold text-amber-900 outline-none focus:ring-2 focus:ring-amber-400 bg-white"
+                className="p-3.5 rounded-xl border border-amber-200 text-sm font-bold text-amber-900 outline-none focus:ring-2 focus:ring-amber-400 bg-white dark:bg-slate-800"
               />
               <input
                 type="text"
@@ -1476,7 +1476,7 @@ export default function EditJob() {
                   })
                 }
                 placeholder="Feature 2"
-                className="p-3.5 rounded-xl border border-amber-200 text-sm font-bold text-amber-900 outline-none focus:ring-2 focus:ring-amber-400 bg-white"
+                className="p-3.5 rounded-xl border border-amber-200 text-sm font-bold text-amber-900 outline-none focus:ring-2 focus:ring-amber-400 bg-white dark:bg-slate-800"
               />
             </div>
           </div>
@@ -1489,7 +1489,7 @@ export default function EditJob() {
               <textarea
                 value={jobSummary}
                 onChange={(e) => setJobSummary(e.target.value)}
-                className="w-full p-5 bg-slate-50 border border-slate-200 rounded-2xl text-sm min-h-[150px] outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 leading-relaxed font-medium"
+                className="w-full p-5 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm min-h-[150px] outline-none focus:bg-white dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500 leading-relaxed font-medium"
               />
             </div>
             <div>
@@ -1499,7 +1499,7 @@ export default function EditJob() {
               <textarea
                 value={keyResponsibilities}
                 onChange={(e) => setKeyResponsibilities(e.target.value)}
-                className="w-full p-5 bg-slate-50 border border-slate-200 rounded-2xl text-sm min-h-[150px] outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 leading-relaxed font-medium"
+                className="w-full p-5 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm min-h-[150px] outline-none focus:bg-white dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500 leading-relaxed font-medium"
               />
             </div>
           </div>
@@ -1509,8 +1509,8 @@ export default function EditJob() {
         {(job.mode.includes("Work from office") ||
           job.mode.includes("Work from field")) && (
           <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-800">
-            <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-              <h2 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+            <div className="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+              <h2 className="text-lg font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
                 <MapPin size={20} className="text-rose-500" /> Office Location
               </h2>
               <label className="text-xs font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 border border-indigo-100 hover:bg-indigo-100 transition-colors">
@@ -1525,7 +1525,7 @@ export default function EditJob() {
               </label>
             </div>
             {!job.useOfficeLocation && (
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
                 <div className="rounded-xl overflow-hidden border border-slate-300 mb-4 shadow-sm">
                   <LocationPicker onLocationSelect={handleLocationSelect} />
                 </div>
@@ -1534,7 +1534,7 @@ export default function EditJob() {
                   value={job.location}
                   onChange={handleChange}
                   placeholder="Refine specific address..."
-                  className="w-full p-3.5 bg-white border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
+                  className="w-full p-3.5 bg-white dark:bg-slate-800 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
                 />
               </div>
             )}
@@ -1542,10 +1542,10 @@ export default function EditJob() {
         )}
 
         {/* FACT: Save Button Moved to Bottom Right */}
-        <div className="flex gap-4 justify-end mt-12 pt-8 border-t border-slate-200">
+        <div className="flex gap-4 justify-end mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
           <button
             onClick={() => navigate(-1)}
-            className="px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors"
+            className="px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold transition-colors"
           >
             Cancel
           </button>

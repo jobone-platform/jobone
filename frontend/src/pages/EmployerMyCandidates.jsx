@@ -49,7 +49,7 @@ export default function MyCandidates() {
     };
     return (
       <span
-        className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${styles[status] || "bg-slate-100 text-slate-700 border-slate-200"}`}
+        className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${styles[status] || "bg-slate-100 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800"}`}
       >
         {status}
       </span>
@@ -81,7 +81,7 @@ export default function MyCandidates() {
       <div className="max-w-6xl mx-auto">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-6 transition-colors font-bold text-sm uppercase tracking-wide"
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:text-white mb-6 transition-colors font-bold text-sm uppercase tracking-wide"
         >
           <ArrowLeft size={16} /> Back
         </button>
@@ -89,7 +89,7 @@ export default function MyCandidates() {
           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <UserCheck size={28} />
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-2">
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
             My Candidates
           </h1>
           <p className="text-slate-500 font-medium">
@@ -102,12 +102,12 @@ export default function MyCandidates() {
           <input
             type="text"
             placeholder="Search by name or job title..."
-            className="flex-1 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            className="flex-1 bg-slate-50 border border-slate-200 dark:border-slate-800 px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <select
-            className="bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium text-slate-700"
+            className="bg-slate-50 border border-slate-200 dark:border-slate-800 px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium text-slate-700 dark:text-slate-300"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -150,7 +150,7 @@ export default function MyCandidates() {
                           : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
                       }
                       alt={candidate.name}
-                      className="w-16 h-16 rounded-full object-cover border border-slate-100 shrink-0"
+                      className="w-16 h-16 rounded-full object-cover border border-slate-100 dark:border-slate-800 shrink-0"
                     />
                     <div className="min-w-0">
                       <h3 className="font-extrabold text-lg text-slate-900 dark:text-white line-clamp-1">
@@ -158,7 +158,7 @@ export default function MyCandidates() {
                       </h3>
                       <p className="text-xs text-slate-500 font-medium truncate flex items-center gap-1 mt-1">
                         <Briefcase size={12} /> Applied for:{" "}
-                        <span className="font-bold text-slate-700">
+                        <span className="font-bold text-slate-700 dark:text-slate-300">
                           {app.job_id?.title}
                         </span>
                       </p>
@@ -168,11 +168,11 @@ export default function MyCandidates() {
                   <div className="mb-4">{getStatusBadge(app.status)}</div>
 
                   <div className="space-y-2 text-sm font-bold text-slate-600 mb-6 flex-1">
-                    <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
                       <Mail size={16} className="text-blue-400 shrink-0" />
                       <span className="truncate">{candidate.email}</span>
                     </div>
-                    <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
                       <Phone size={16} className="text-green-400 shrink-0" />
                       <span>{candidate.phone || "Not Provided"}</span>
                     </div>

@@ -38,6 +38,8 @@ const defaultAllowedOrigins = [
   "http://127.0.0.1:3000",
   "tauri://localhost",
   "http://tauri.localhost",
+  "https://jobone-v1.vercel.app",
+  "https://jobone.vercel.app",
 ];
 
 const envAllowed = [
@@ -53,25 +55,41 @@ const corsOptions = {
     // Allow requests with no origin (e.g. mobile apps, curl, or same-origin)
     if (!origin) return callback(null, true);
 
+    const normalizedOrigin = origin.trim().replace(/\/+$/, "");
+
     // In development mode, allow any localhost/127.0.0.1 origin
     if (process.env.NODE_ENV !== "production") {
-      if (/^https?:\/\/localhost(:\d+)?$/.test(origin) || /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)) {
+      if (/^https?:\/\/localhost(:\d+)?$/.test(normalizedOrigin) || /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(normalizedOrigin)) {
         return callback(null, true);
       }
     }
 
-    if (allowedOrigins.includes(origin)) {
+    // Allow explicitly configured origins (case-insensitive check)
+    if (allowedOrigins.some(o => o.toLowerCase() === normalizedOrigin.toLowerCase())) {
       return callback(null, true);
     }
 
-    return callback(new Error(`CORS error: Origin ${origin} not allowed`));
+    // Automatically allow any Vercel deployment (jobone-v1, preview branches, production)
+    if (/^https?:\/\/[a-zA-Z0-9_-]+\.vercel\.app$/.test(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    // Automatically allow Render deployments
+    if (/^https?:\/\/[a-zA-Z0-9_-]+\.onrender\.com$/.test(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    // Return false without throwing an unhandled Error (which avoids 500 crashes)
+    return callback(null, false);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.get("/api/health", (_req, res) => {
   res.status(200).json({ status: "ok" });

@@ -129,7 +129,7 @@ export default function VideoSection() {
         {/* ── LAYER 1: MASK & TEXT EFFECTS ─────────────────────── */}
         {!isMobile ? (
           /* DESKTOP: 300x Zoom through mix-blend hole punch */
-          <div className="absolute inset-0 z-20 bg-white mix-blend-screen flex items-center justify-center pointer-events-none [transform:translateZ(-10px)]">
+          <div className="absolute inset-0 z-20 bg-white dark:bg-slate-900 mix-blend-screen flex items-center justify-center pointer-events-none [transform:translateZ(-10px)]">
             <motion.div style={{ scale: textScale, transformOrigin: "34% 50%" }}>
               <h1
                 className="text-black font-black leading-[0.88] tracking-tight uppercase select-none"
@@ -146,7 +146,7 @@ export default function VideoSection() {
           /* MOBILE: High performance opacity crossfade (Zero blending overhead) */
           <motion.div 
             style={{ opacity: textOpacity }} 
-            className="absolute inset-0 z-20 bg-white flex items-center justify-center pointer-events-none [transform:translateZ(-10px)]"
+            className="absolute inset-0 z-20 bg-white dark:bg-slate-900 flex items-center justify-center pointer-events-none [transform:translateZ(-10px)]"
           >
             <h1
               className="text-black font-black leading-[0.88] tracking-tight uppercase select-none"

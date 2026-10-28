@@ -78,7 +78,7 @@ export default function FeaturedJobs() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-64 bg-white rounded-3xl shadow-sm border border-slate-100 animate-pulse"
+              className="h-64 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 animate-pulse"
             ></div>
           ))}
         </div>

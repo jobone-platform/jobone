@@ -44,7 +44,7 @@ const Contact = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Message Sent!</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Message Sent!</h2>
               <p className="text-gray-600 mb-6">Thank you for reaching out. Our team will get back to you shortly.</p>
               <button 
                 onClick={() => setStatus(null)}
@@ -68,7 +68,7 @@ const Contact = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Email Address</label>
                   <input
                     type="email"
                     required
@@ -81,7 +81,7 @@ const Contact = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Subject</label>
                 <input
                   type="text"
                   required
@@ -93,7 +93,7 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Message</label>
                 <textarea
                   required
                   rows="5"

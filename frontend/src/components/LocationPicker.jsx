@@ -268,7 +268,7 @@ export default function LocationPicker({ onLocationSelect }) {
 
       {/* Selected Address Display */}
       {address && (
-        <div className="p-3 bg-blue-50 text-blue-800 text-sm rounded-lg border border-blue-100">
+        <div className="p-3 bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200 text-sm rounded-lg border border-blue-100 dark:border-blue-900/40">
           <strong>Selected:</strong> {address}
         </div>
       )}

@@ -102,7 +102,7 @@ export default function JobDetailsModal({ job, onClose }) {
                 <div className="hidden sm:flex flex-wrap items-center gap-1.5 mb-1.5">
                   {/* FACT: Added Status and Posting Date to the UI */}
                   <span
-                    className={`px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest border ${job.status === "active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-600 border-slate-200"}`}
+                    className={`px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest border ${job.status === "active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-600 border-slate-200 dark:border-slate-800"}`}
                   >
                     {job.status?.replace("_", " ") || "Active"}
                   </span>
@@ -122,7 +122,7 @@ export default function JobDetailsModal({ job, onClose }) {
                       e.stopPropagation();
                       if (job.postedBy) navigate(`/company/${job.postedBy}`);
                     }}
-                    className="text-slate-700 hover:text-indigo-600 hover:underline cursor-pointer truncate max-w-[120px]"
+                    className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 hover:underline cursor-pointer truncate max-w-[120px]"
                   >
                     <CompanyDisplay job={job} fallback="Confidential Employer" />
                   </span>
@@ -158,7 +158,7 @@ export default function JobDetailsModal({ job, onClose }) {
                 {/* Mobile-only Status Badges */}
                 <div className="flex sm:hidden flex-wrap items-center gap-2 mb-2">
                   <span
-                    className={`px-2.5 py-1 rounded-md text-[9px] font-extrabold uppercase tracking-widest border ${job.status === "active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-600 border-slate-200"}`}
+                    className={`px-2.5 py-1 rounded-md text-[9px] font-extrabold uppercase tracking-widest border ${job.status === "active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-600 border-slate-200 dark:border-slate-800"}`}
                   >
                     {job.status?.replace("_", " ") || "Active"}
                   </span>
@@ -187,8 +187,8 @@ export default function JobDetailsModal({ job, onClose }) {
                 )}
 
                 {/* Candidate Requirements */}
-                <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-4 flex items-center gap-3 border-b border-slate-100 pb-4">
+                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                     <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
                       <UserCircle2 size={18} />
                     </div>{" "}
@@ -200,7 +200,7 @@ export default function JobDetailsModal({ job, onClose }) {
                         <GraduationCap size={12} className="text-indigo-400" />{" "}
                         Education
                       </p>
-                      <p className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                      <p className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
                         {renderArray(job.qualifications)}
                         {job.courses?.length > 0 && (
                           <span className="text-[11px] text-slate-500 font-medium">
@@ -215,7 +215,7 @@ export default function JobDetailsModal({ job, onClose }) {
                         <Languages size={12} className="text-indigo-400" />{" "}
                         Languages
                       </p>
-                      <p className="text-sm font-bold text-slate-800">
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">
                         {renderArray(job.languages)}
                       </p>
                     </div>
@@ -225,7 +225,7 @@ export default function JobDetailsModal({ job, onClose }) {
                         <Users size={12} className="text-indigo-400" /> Age
                         Limit
                       </p>
-                      <p className="text-sm font-bold text-slate-800">
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">
                         {job.ageLimit?.isAny
                           ? "Any Age"
                           : job.ageLimit?.min
@@ -239,7 +239,7 @@ export default function JobDetailsModal({ job, onClose }) {
                         <UserCircle2 size={12} className="text-indigo-400" />{" "}
                         Gender
                       </p>
-                      <p className="text-sm font-bold text-slate-800">
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">
                         {job.genderPreference || "No Preference"}
                       </p>
                     </div>
@@ -248,8 +248,8 @@ export default function JobDetailsModal({ job, onClose }) {
 
                 {/* Required Skills */}
                 {job.skillsRequired?.length > 0 && (
-                  <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                    <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-4 border-b border-slate-100 pb-4 flex items-center gap-3">
+                  <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-3">
                       <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
                         <CheckCircle2 size={18} />
                       </div>{" "}
@@ -269,10 +269,10 @@ export default function JobDetailsModal({ job, onClose }) {
                 )}
 
                 {/* Description Split */}
-                <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-8">
+                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
                   {/* Job Summary */}
                   <div>
-                    <h2 className="text-xs sm:text-sm font-extrabold text-blue-900 bg-blue-100 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg mb-3 shadow-sm border border-blue-200">
+                    <h2 className="text-xs sm:text-sm font-extrabold text-blue-900 dark:text-blue-300 bg-blue-100 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg mb-3 shadow-sm border border-blue-200">
                       <Briefcase size={14} className="text-blue-700" />
                       Job Summary
                     </h2>
@@ -297,7 +297,7 @@ export default function JobDetailsModal({ job, onClose }) {
                   {/* Key Responsibilities */}
                   {(job.keyResponsibilities ||
                     job.description?.includes("Key Responsibilities")) && (
-                    <div className="pt-4 sm:pt-6 border-t border-slate-100">
+                    <div className="pt-4 sm:pt-6 border-t border-slate-100 dark:border-slate-800">
                       <h2 className="text-xs sm:text-sm font-extrabold text-purple-900 bg-purple-100 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg mb-3 shadow-sm border border-purple-200">
                         <ListChecks size={14} className="text-purple-700" /> Key
                         Responsibilities
@@ -353,8 +353,8 @@ export default function JobDetailsModal({ job, onClose }) {
 
                 {/* FACT: New Assessment / Screening Questions Section (Desktop Only) */}
                 {job.screeningQuestions?.length > 0 && (
-                  <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hidden lg:block">
-                    <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-4 border-b border-slate-100 pb-4 flex items-center gap-3">
+                  <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm hidden lg:block">
+                    <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-3">
                       <div className="p-2 bg-rose-50 rounded-lg text-rose-600">
                         <HelpCircle size={18} />
                       </div>{" "}
@@ -368,7 +368,7 @@ export default function JobDetailsModal({ job, onClose }) {
                       {job.screeningQuestions.map((q, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2 sm:gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] sm:text-sm font-medium text-slate-700"
+                          className="flex items-start gap-2 sm:gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 text-[11px] sm:text-sm font-medium text-slate-700 dark:text-slate-300"
                         >
                           <span className="font-extrabold text-rose-500">
                             Q{i + 1}.
@@ -440,9 +440,9 @@ export default function JobDetailsModal({ job, onClose }) {
                 </section>
 
                 {/* Schedule & Timings */}
-                <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                  <div className="flex justify-between items-center mb-5 sm:mb-6 border-b border-slate-100 pb-3">
-                    <h3 className="text-[10px] sm:text-xs font-extrabold text-slate-800 flex items-center gap-2">
+                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                  <div className="flex justify-between items-center mb-5 sm:mb-6 border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <h3 className="text-[10px] sm:text-xs font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
                       <div className="p-1.5 bg-purple-50 rounded-lg text-purple-600">
                         <Clock size={16} />
                       </div>{" "}
@@ -459,7 +459,7 @@ export default function JobDetailsModal({ job, onClose }) {
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">
                       Working Days
                     </p>
-                    <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700">
+                    <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
                       {job.workDaysPattern === "Custom"
                         ? job.customWorkDaysDescription
                         : job.workDaysPattern || renderArray(job.workDays)}
@@ -473,12 +473,12 @@ export default function JobDetailsModal({ job, onClose }) {
                     {job.shifts?.map((shift, i) => (
                       <div
                         key={i}
-                        className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200"
+                        className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200 dark:border-slate-800"
                       >
-                        <span className="font-bold text-slate-800 text-xs truncate mr-2">
+                        <span className="font-bold text-slate-800 dark:text-white text-xs truncate mr-2">
                           {shift.shiftName}
                         </span>
-                        <span className="font-mono text-xs font-bold text-slate-600 bg-white px-2 py-1 border border-slate-200 rounded-md shadow-sm shrink-0">
+                        <span className="font-mono text-xs font-bold text-slate-600 bg-white dark:bg-slate-900 px-2 py-1 border border-slate-200 dark:border-slate-800 rounded-md shadow-sm shrink-0">
                           {shift.startTime || "--:--"} -{" "}
                           {shift.endTime || "--:--"}
                         </span>
@@ -488,8 +488,8 @@ export default function JobDetailsModal({ job, onClose }) {
                 </section>
 
                 {/* FACT: Comprehensive Job Overview mapping ALL timeline variables */}
-                <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                  <div className="flex items-center justify-between mb-5 sm:mb-6 border-b border-slate-100 pb-3">
+                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                  <div className="flex items-center justify-between mb-5 sm:mb-6 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       Job Overview
                     </h3>
@@ -562,8 +562,8 @@ export default function JobDetailsModal({ job, onClose }) {
 
                 {/* FACT: Assessment / Screening Questions Section (Mobile Only - Placed at bottom) */}
                 {job.screeningQuestions?.length > 0 && (
-                  <section className="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200 shadow-sm block lg:hidden mt-4">
-                    <h2 className="text-sm sm:text-lg font-extrabold text-slate-800 mb-3 border-b border-slate-100 pb-3 flex items-center gap-2">
+                  <section className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm block lg:hidden mt-4">
+                    <h2 className="text-sm sm:text-lg font-extrabold text-slate-800 dark:text-white mb-3 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
                       <div className="p-1.5 bg-rose-50 rounded-lg text-rose-600">
                         <HelpCircle size={16} />
                       </div>{" "}
@@ -576,7 +576,7 @@ export default function JobDetailsModal({ job, onClose }) {
                       {job.screeningQuestions.map((q, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-[10px] sm:text-sm font-medium text-slate-700"
+                          className="flex items-start gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-[10px] sm:text-sm font-medium text-slate-700 dark:text-slate-300"
                         >
                           <span className="font-extrabold text-rose-500">
                             Q{i + 1}.
@@ -595,7 +595,7 @@ export default function JobDetailsModal({ job, onClose }) {
           <div className="p-3 sm:p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end items-center gap-3 sm:gap-4">
             <button
               onClick={onClose}
-              className="px-4 py-2.5 sm:px-6 sm:py-3 text-[13px] sm:text-base font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
+              className="px-4 py-2.5 sm:px-6 sm:py-3 text-[13px] sm:text-base font-bold text-slate-500 hover:text-slate-800 dark:text-white hover:bg-slate-100 rounded-xl transition-colors"
             >
               Cancel
             </button>
@@ -630,7 +630,7 @@ function DetailRow({ icon, label, value }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 shadow-sm">
+        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
           {icon}
         </div>
         <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
@@ -638,7 +638,7 @@ function DetailRow({ icon, label, value }) {
         </span>
       </div>
       <span
-        className="text-slate-900 font-extrabold text-xs sm:text-sm text-right truncate max-w-[45%]"
+        className="text-slate-900 dark:text-white font-extrabold text-xs sm:text-sm text-right truncate max-w-[45%]"
         title={value}
       >
         {value}

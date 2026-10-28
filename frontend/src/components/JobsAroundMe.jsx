@@ -137,9 +137,9 @@ export default function JobsAroundMe({ onJobClick }) {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-800 overflow-hidden">
       {/* Header Section */}
-      <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="p-6 border-b border-gray-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
             <MapPin className="text-blue-600" /> Jobs Around You
           </h2>
           <p className="text-sm text-gray-500 mt-1">
@@ -172,7 +172,7 @@ export default function JobsAroundMe({ onJobClick }) {
 
       {/* Map View */}
       {userLocation && (
-        <div className="h-[250px] sm:h-[300px] md:h-[400px] w-full z-0 relative border-b border-gray-100">
+        <div className="h-[250px] sm:h-[300px] md:h-[400px] w-full z-0 relative border-b border-gray-100 dark:border-slate-800">
           <MapContainer
             center={[userLocation.lat, userLocation.lng]}
             zoom={12}
@@ -206,7 +206,7 @@ export default function JobsAroundMe({ onJobClick }) {
                   >
                     <Popup>
                       <div className="min-w-[150px]">
-                        <h3 className="font-bold text-gray-800 text-sm">
+                        <h3 className="font-bold text-gray-800 dark:text-white text-sm">
                           {job.title}
                         </h3>
                         <p className="text-xs text-gray-500 mt-1 truncate">
@@ -243,7 +243,7 @@ export default function JobsAroundMe({ onJobClick }) {
             <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-4 shadow-sm shadow-blue-100 animate-pulse">
               <MapPin size={28} />
             </div>
-            <h4 className="text-lg font-bold text-slate-800">Discover Local Opportunities</h4>
+            <h4 className="text-lg font-bold text-slate-800 dark:text-white">Discover Local Opportunities</h4>
             <p className="text-slate-500 text-sm max-w-sm mt-2 mb-6">
               We need your location to show the best jobs in your immediate area. 
             </p>
@@ -279,7 +279,7 @@ export default function JobsAroundMe({ onJobClick }) {
                   </span>
                 </div>
 
-                <h3 className="text-xl font-extrabold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors line-clamp-1">
+                <h3 className="text-xl font-extrabold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 transition-colors line-clamp-1">
                   {job.title}
                 </h3>
                 <p className="text-sm text-slate-500 font-semibold mb-5">
@@ -301,7 +301,7 @@ export default function JobsAroundMe({ onJobClick }) {
                     <div className="p-1.5 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-green-100 group-hover:text-green-600 transition-colors">
                         <IndianRupee size={14} className="shrink-0" />
                     </div>
-                    <span className="font-bold text-slate-700 group-hover:text-green-700 transition-colors">
+                    <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-green-700 transition-colors">
                       {job.salaryAmount === 0 || (job.salaryMin === 0 && job.salaryMax === 0) 
                         ? "Unpaid"
                         : job.salaryAmount?.toLocaleString() || job.salaryMin?.toLocaleString() || job.salary?.toLocaleString() || "TBD"}

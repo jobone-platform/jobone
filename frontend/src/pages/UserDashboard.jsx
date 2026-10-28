@@ -184,7 +184,7 @@ export default function Home() {
             <div className="max-w-7xl mx-auto">
               <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                  <span className="text-indigo-600 font-bold text-xs uppercase tracking-wider bg-white border border-indigo-100 px-3 py-1 rounded-full flex items-center gap-2 w-fit shadow-sm">
+                  <span className="text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900/40 px-3 py-1 rounded-full flex items-center gap-2 w-fit shadow-sm">
                     <Sparkles size={12} className="text-indigo-500 animate-pulse" /> Generating AI Recommendations...
                   </span>
                   <h2 className="text-3xl font-bold text-slate-900 dark:text-white mt-3">Recommended Jobs</h2>
@@ -193,7 +193,7 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="bg-white p-6 rounded-3xl border border-indigo-100 shadow-sm flex flex-col h-full relative overflow-hidden animate-pulse">
+                  <div key={i} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-indigo-100 dark:border-slate-800 shadow-sm flex flex-col h-full relative overflow-hidden animate-pulse">
                     <div className="flex items-start justify-between mb-4 mt-2">
                       <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100"></div>
                       <div className="w-16 h-6 rounded-lg bg-slate-100 border border-slate-200 mt-1"></div>
@@ -218,11 +218,11 @@ export default function Home() {
             <div className="max-w-7xl mx-auto">
               <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                  <span className="text-indigo-600 font-bold text-xs uppercase tracking-wider bg-white border border-indigo-100 px-3 py-1 rounded-full flex items-center gap-2 w-fit shadow-sm">
+                  <span className="text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900/40 px-3 py-1 rounded-full flex items-center gap-2 w-fit shadow-sm">
                     <Sparkles size={12} className="text-indigo-500" /> AI
                     Matched For You
                   </span>
-                  <h2 className="text-3xl font-bold text-slate-900 mt-3">
+                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white mt-3">
                     Recommended Jobs
                   </h2>
                   <p className="text-slate-600 mt-2">
@@ -235,7 +235,7 @@ export default function Home() {
                   {lastFetchedTime && (
                     <span className="text-slate-500 mb-2">
                       Last fetched:{" "}
-                      <span className="font-semibold text-slate-700">
+                      <span className="font-semibold text-slate-700 dark:text-slate-200">
                         {lastFetchedTime}
                       </span>
                     </span>
@@ -346,13 +346,13 @@ export default function Home() {
                 <span className="text-indigo-600 font-bold text-xs uppercase tracking-wider bg-indigo-50 px-3 py-1 rounded-full flex items-center gap-2 w-fit">
                   <Sparkles size={12} /> Hot Jobs
                 </span>
-                <h2 className="text-3xl font-bold text-slate-900 mt-3">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mt-3">
                   Featured Opportunities
                 </h2>
               </div>
               <Link
                 to="/jobs"
-                className="text-blue-600 font-semibold hover:text-blue-800 flex items-center gap-1 transition-colors"
+                className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
               >
                 View All <ArrowRight size={16} />
               </Link>
@@ -363,7 +363,7 @@ export default function Home() {
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="h-64 bg-white rounded-2xl animate-pulse shadow-sm"
+                    className="h-64 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl animate-pulse shadow-sm"
                   ></div>
                 ))}
               </div>
@@ -373,7 +373,7 @@ export default function Home() {
                   <div
                     key={job._id}
                     onClick={() => setSelectedJob(job)} // Open Modal
-                    className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all cursor-pointer group flex flex-col h-full"
+                    className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900/40 transition-all cursor-pointer group flex flex-col h-full"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-xl font-bold text-blue-600">
@@ -388,7 +388,7 @@ export default function Home() {
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors line-clamp-1">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                       {job.title}
                     </h3>
                     <p className="text-sm text-slate-500 font-medium mb-4">
@@ -443,7 +443,7 @@ function StatItem({ icon, label, value }) {
     <div className="flex items-center gap-3">
       <div className="p-3 bg-slate-100 rounded-xl text-xl">{icon}</div>
       <div className="text-left">
-        <p className="text-2xl font-bold text-slate-900 leading-none">
+        <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">
           {value}
         </p>
         <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold mt-1">

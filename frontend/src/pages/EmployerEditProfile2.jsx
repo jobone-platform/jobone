@@ -181,7 +181,7 @@ export default function EmployerEditProfile2() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8 border-b pb-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-800">
+                        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
                             Edit Company Profile
                         </h1>
                         <p className="text-sm text-gray-500">
@@ -190,7 +190,7 @@ export default function EmployerEditProfile2() {
                     </div>
                     <button
                         onClick={() => navigate(-1)}
-                        className="text-gray-500 hover:text-gray-800 flex items-center gap-1 text-sm font-medium bg-gray-100 px-3 py-2 rounded-lg transition"
+                        className="text-gray-500 hover:text-gray-800 dark:text-white flex items-center gap-1 text-sm font-medium bg-gray-100 px-3 py-2 rounded-lg transition"
                     >
                         <ArrowLeft size={16} /> Cancel
                     </button>
@@ -200,7 +200,7 @@ export default function EmployerEditProfile2() {
                     {/* Section 1: Basic Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2">
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1 flex items-center gap-2">
                                 <Building size={16} className="text-blue-500" /> Company Name
                             </label>
                             <input
@@ -213,7 +213,7 @@ export default function EmployerEditProfile2() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2">
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1 flex items-center gap-2">
                                 <Briefcase size={16} className="text-blue-500" /> Contact Person
                                 Name
                             </label>
@@ -227,7 +227,7 @@ export default function EmployerEditProfile2() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2">
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1 flex items-center gap-2">
                                 <Phone size={16} className="text-blue-500" /> Phone Number
                             </label>
                             <input
@@ -243,7 +243,7 @@ export default function EmployerEditProfile2() {
                     {/* Section 2: Online Presence */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2">
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1 flex items-center gap-2">
                                 <Globe size={16} className="text-blue-500" /> Website
                             </label>
                             <input
@@ -255,12 +255,12 @@ export default function EmployerEditProfile2() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2">
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1 flex items-center gap-2">
                                 <ImageIcon size={16} className="text-blue-500" /> Profile
                                 Picture / Logo
                             </label>
 
-                            <div className="flex gap-4 mb-3 border-b border-gray-100 pb-2">
+                            <div className="flex gap-4 mb-3 border-b border-gray-100 dark:border-slate-800 pb-2">
                                 <button
                                     type="button"
                                     onClick={() => setImgUploadType("link")}
@@ -310,7 +310,7 @@ export default function EmployerEditProfile2() {
                             )}
                             {form.profilePicture && !uploadingImage && (
                                 <div className="mt-3 flex items-center gap-3">
-                                    <img src={form.profilePicture} alt="Preview" className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-200" />
+                                    <img src={form.profilePicture} alt="Preview" className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-200 dark:border-slate-800" />
                                     <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded">Image ready</span>
                                 </div>
                             )}
@@ -320,7 +320,7 @@ export default function EmployerEditProfile2() {
                     {/* Section 3: Details */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2">
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1 flex items-center gap-2">
                                 <MapPin size={16} className="text-blue-500" /> Location
                             </label>
                             <input
@@ -332,7 +332,7 @@ export default function EmployerEditProfile2() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2">
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1 flex items-center gap-2">
                                 <Briefcase size={16} className="text-blue-500" /> Industry
                             </label>
                             <input
@@ -347,7 +347,7 @@ export default function EmployerEditProfile2() {
 
                     {/* Section 4: About */}
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1 flex items-center gap-2">
                             <FileText size={16} className="text-blue-500" /> About Company
                         </label>
                         <textarea
@@ -364,7 +364,7 @@ export default function EmployerEditProfile2() {
                         <button
                             type="button"
                             onClick={() => navigate(-1)}
-                            className="flex-1 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition"
+                            className="flex-1 py-3 bg-white dark:bg-slate-800 border border-gray-300 text-gray-700 dark:text-slate-300 rounded-xl font-medium hover:bg-gray-50 transition"
                         >
                             Cancel
                         </button>

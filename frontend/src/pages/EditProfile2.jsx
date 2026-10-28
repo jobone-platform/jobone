@@ -256,7 +256,7 @@ export default function EditProfile() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
+      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-slate-950">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           <p className="text-gray-500 font-medium">Loading your profile...</p>
@@ -282,7 +282,7 @@ export default function EditProfile() {
               <div className="bg-orange-100 p-3 rounded-full mb-4">
                 <AlertTriangle className="text-orange-600" size={32} />
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
                 Profile Incomplete
               </h3>
               <p className="text-gray-600 mb-6 leading-relaxed text-sm">
@@ -326,7 +326,7 @@ export default function EditProfile() {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* 1. PERSONAL DETAILS CARD */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-gray-100 dark:border-slate-800">
               <User className="text-blue-600" size={20} /> Personal Details
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -429,7 +429,7 @@ export default function EditProfile() {
 
           {/* 2. SUMMARY CARD */}
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-gray-100 dark:border-slate-800">
               <FileText className="text-purple-600" size={20} /> Professional
               Summary
             </h2>
@@ -439,13 +439,13 @@ export default function EditProfile() {
               onChange={handleProfileChange}
               rows={4}
               placeholder="Write a short bio about your professional background and goals..."
-              className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all resize-y text-slate-700 leading-relaxed text-sm"
+              className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 focus:border-indigo-500 outline-none transition-all resize-y text-slate-700 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 leading-relaxed text-sm"
             />
           </div>
 
           {/* 3. SKILLS CARD */}
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-gray-100 dark:border-slate-800">
               <span className="p-1 bg-orange-100 rounded-md text-orange-600">
                 <User size={16} />
               </span>{" "}
@@ -474,9 +474,9 @@ export default function EditProfile() {
                 {skills.map((skill, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg shadow-sm group"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm group"
                   >
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-medium text-gray-700 dark:text-slate-200">
                       {skill}
                     </span>
                     <button
@@ -498,7 +498,7 @@ export default function EditProfile() {
 
           {/* 4. WORK EXPERIENCE CARD */}
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-gray-100 dark:border-slate-800">
               <span className="p-1 bg-blue-100 rounded-md text-blue-600">
                 <Briefcase size={16} />
               </span>{" "}
@@ -540,7 +540,7 @@ export default function EditProfile() {
               <button
                 type="button"
                 onClick={handleAddExperience}
-                className="w-full py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+                className="w-full py-2.5 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
               >
                 <Plus size={16} /> Add Position
               </button>
@@ -551,10 +551,10 @@ export default function EditProfile() {
               {experience.map((exp, index) => (
                 <div
                   key={index}
-                  className="flex justify-between items-start p-4 bg-white border border-gray-100 rounded-xl shadow-sm"
+                  className="flex justify-between items-start p-4 bg-white dark:bg-slate-800/80 border border-gray-100 dark:border-slate-700 rounded-xl shadow-sm"
                 >
                   <div>
-                    <h4 className="font-bold text-gray-900">{exp.role}</h4>
+                    <h4 className="font-bold text-gray-900 dark:text-white">{exp.role}</h4>
                     <p className="text-sm text-blue-600 font-medium mb-1">
                       {exp.company} • {exp.duration}
                     </p>
@@ -574,7 +574,7 @@ export default function EditProfile() {
 
           {/* 5. EDUCATION CARD */}
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-gray-100 dark:border-slate-800">
               <span className="p-1 bg-green-100 rounded-md text-green-600">
                 <GraduationCap size={16} />
               </span>{" "}
@@ -625,7 +625,7 @@ export default function EditProfile() {
               <button
                 type="button"
                 onClick={handleAddEducation}
-                className="w-full py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+                className="w-full py-2.5 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
               >
                 <Plus size={16} /> Add Education
               </button>
@@ -636,10 +636,10 @@ export default function EditProfile() {
               {education.map((edu, index) => (
                 <div
                   key={index}
-                  className="flex justify-between items-start p-4 bg-white border border-gray-100 rounded-xl shadow-sm"
+                  className="flex justify-between items-start p-4 bg-white dark:bg-slate-800/80 border border-gray-100 dark:border-slate-700 rounded-xl shadow-sm"
                 >
                   <div>
-                    <h4 className="font-bold text-gray-900">{edu.degree}</h4>
+                    <h4 className="font-bold text-gray-900 dark:text-white">{edu.degree}</h4>
                     <p className="text-sm text-green-600 font-medium mb-1">
                       {edu.university}
                     </p>
@@ -664,7 +664,7 @@ export default function EditProfile() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="flex-1 py-3.5 bg-white border border-slate-300 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
+              className="flex-1 py-3.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
             >
               Cancel
             </button>

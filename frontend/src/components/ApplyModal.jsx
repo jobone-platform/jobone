@@ -165,7 +165,7 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
             </div>
           ) : userProfile ? (
             <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 space-y-4">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
                 <UserCircle size={18} className="text-blue-500" />
                 Profile Readiness
               </h3>
@@ -173,12 +173,12 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-slate-500 font-medium text-xs uppercase tracking-wider">Applicant</p>
-                  <p className="font-semibold text-slate-900">{userProfile.name}</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">{userProfile.name}</p>
                   <p className="text-slate-600 truncate">{userProfile.email}</p>
                 </div>
                 <div>
                   <p className="text-slate-500 font-medium text-xs uppercase tracking-wider">Top Skills</p>
-                  <p className="font-semibold text-slate-700 truncate">
+                  <p className="font-semibold text-slate-700 dark:text-slate-300 truncate">
                     {userProfile.skills?.length > 0 ? userProfile.skills.slice(0, 5).join(", ") : "No skills listed"}
                   </p>
                 </div>
@@ -200,13 +200,13 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-lg flex items-center justify-center">
                         <CheckCircle2 size={20} />
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-800 text-sm">Resume Attached</h4>
+                        <h4 className="font-bold text-slate-800 dark:text-white text-sm">Resume Attached</h4>
                         <p className="text-slate-500 text-xs mt-0.5">Your profile resume will be sent to the employer.</p>
                       </div>
                     </div>
@@ -225,7 +225,7 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
                 {/* Requested Documents Checklist */}
                 {job.requestedDocuments && job.requestedDocuments.length > 0 && (
                   <div className="mt-4 pt-4 border-t border-blue-100/60">
-                    <h4 className="font-bold text-slate-800 text-sm mb-1.5 flex items-center gap-1.5">
+                    <h4 className="font-bold text-slate-800 dark:text-white text-sm mb-1.5 flex items-center gap-1.5">
                       <FileText size={16} className="text-indigo-600" />
                       Employer Requested Documents
                     </h4>
@@ -239,8 +239,8 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
                         const isUploaded = !!(docObj && docObj.key);
                         const fileName = docObj?.name || "Uploaded File";
                         return (
-                          <div key={docName} className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200 text-xs shadow-sm">
-                            <span className="font-bold text-slate-700">{docName}</span>
+                          <div key={docName} className="flex items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shadow-sm">
+                            <span className="font-bold text-slate-700 dark:text-slate-300">{docName}</span>
                             {isUploaded ? (
                               <span className="text-emerald-600 font-bold flex items-center gap-1">
                                 ✓ Attached ({fileName})
@@ -275,7 +275,7 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
           {/* Application Form (Only interactive if they have a resume) */}
           <div className={`space-y-6 ${!hasResume ? 'opacity-50 pointer-events-none' : ''}`}>
             <div className="space-y-3">
-              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                 <FileText size={16} className="text-indigo-500" />
                 Cover Letter / Pitch (Optional)
               </label>
@@ -284,20 +284,20 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
                 value={pitch}
                 onChange={(e) => setPitch(e.target.value)}
                 placeholder="Why are you a great fit for this role?"
-                className="w-full p-4 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-sm resize-none"
+                className="w-full p-4 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-sm resize-none"
               />
             </div>
 
             {job.screeningQuestions && job.screeningQuestions.length > 0 && (
-              <div className="space-y-4 pt-4 border-t border-slate-100">
-                <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+              <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                   <CheckCircle2 size={16} className="text-purple-500" />
                   Employer Screening Questions <span className="text-rose-500">*</span>
                 </h3>
                 <div className="space-y-5 bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
                   {job.screeningQuestions.map((question, index) => (
                     <div key={index} className="space-y-2">
-                      <label className="text-sm font-semibold text-slate-800">
+                      <label className="text-sm font-semibold text-slate-800 dark:text-white">
                         <span className="text-purple-600 mr-1">{index + 1}.</span> {question}
                       </label>
                       <input
@@ -305,7 +305,7 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
                         value={answers[index].answer}
                         onChange={(e) => handleAnswerChange(index, e.target.value)}
                         placeholder="Type your answer..."
-                        className="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-purple-200 text-sm"
+                        className="w-full p-3 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-purple-200 text-sm"
                       />
                     </div>
                   ))}

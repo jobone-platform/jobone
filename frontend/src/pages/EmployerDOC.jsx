@@ -225,13 +225,13 @@ function DocumentUploader({ doc, profile, onRefresh }) {
               <button onClick={handleView} className="flex-1 sm:flex-none bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl font-bold hover:bg-blue-100 transition flex items-center justify-center gap-2 text-sm">
                 <Eye size={16} /> {viewUrl ? "Close" : "Preview"}
               </button>
-              <button onClick={handleDownload} className="flex-1 sm:flex-none bg-slate-100 text-slate-700 px-4 py-2.5 rounded-xl font-bold hover:bg-slate-200 transition flex items-center justify-center gap-2 text-sm">
+              <button onClick={handleDownload} className="flex-1 sm:flex-none bg-slate-100 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl font-bold hover:bg-slate-200 transition flex items-center justify-center gap-2 text-sm">
                 <Download size={16} /> Download
               </button>
               
               {/* Replace Button */}
               <input type="file" id={`replace-${doc.field}`} onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" className="hidden" />
-              <label htmlFor={`replace-${doc.field}`} className="cursor-pointer ml-2 text-sm font-bold text-slate-400 hover:text-slate-700 underline underline-offset-2">
+              <label htmlFor={`replace-${doc.field}`} className="cursor-pointer ml-2 text-sm font-bold text-slate-400 hover:text-slate-700 dark:text-slate-300 underline underline-offset-2">
                 Replace
               </label>
             </div>
@@ -241,7 +241,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
 
       {/* Inline Preview Iframe */}
       {viewUrl && (
-        <div className="mt-6 border border-slate-200 rounded-xl overflow-hidden bg-slate-100 h-[500px] animate-in fade-in slide-in-from-top-4">
+        <div className="mt-6 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-100 h-[500px] animate-in fade-in slide-in-from-top-4">
           {viewUrl.includes(".pdf") ? (
             <iframe src={viewUrl} title={doc.label} className="w-full h-full" />
           ) : (

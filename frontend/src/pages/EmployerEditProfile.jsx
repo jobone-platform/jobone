@@ -246,7 +246,7 @@ export default function EmployerEditProfile() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-4 px-0 sm:py-10 sm:px-4 relative font-sans">
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative border-t-4 border-red-500">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full p-6 relative border-t-4 border-red-500">
             <button
               onClick={() => setShowPopup(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -257,7 +257,7 @@ export default function EmployerEditProfile() {
               <div className="bg-red-100 p-3 rounded-full mb-4">
                 <AlertTriangle className="text-red-600" size={32} />
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
                 Profile Incomplete
               </h3>
               <p className="text-gray-600 mb-6 leading-relaxed text-sm">
@@ -277,7 +277,7 @@ export default function EmployerEditProfile() {
       )}
 
       <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 sm:rounded-2xl shadow-lg p-3 sm:p-8 border-y sm:border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-slate-100">
-        <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
+        <div className="flex items-center justify-between mb-8 border-b border-slate-100 dark:border-slate-800 pb-4">
           <div>
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white">
               Edit Profile
@@ -288,7 +288,7 @@ export default function EmployerEditProfile() {
           </div>
           <button
             onClick={() => navigate(-1)}
-            className="text-slate-500 hover:text-slate-800 flex items-center gap-1 text-sm font-medium bg-slate-50 px-3 py-2 rounded-lg transition-colors border border-slate-200"
+            className="text-slate-500 hover:text-slate-800 dark:text-white flex items-center gap-1 text-sm font-medium bg-slate-50 px-3 py-2 rounded-lg transition-colors border border-slate-200 dark:border-slate-800"
           >
             <ArrowLeft size={16} /> Cancel
           </button>
@@ -296,12 +296,12 @@ export default function EmployerEditProfile() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="bg-slate-50 dark:bg-slate-800/80 p-3 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700">
-            <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-3 sm:mb-4 flex items-center gap-2">
+            <label className="block text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 sm:mb-4 flex items-center gap-2">
               <ShieldCheck size={18} className="text-blue-600" /> Entity Type
             </label>
             <div className="flex flex-col sm:flex-row gap-4">
               <label
-                className={`flex-1 flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all text-xs sm:text-sm ${form.employerType === "company" ? "border-blue-600 bg-blue-50 text-blue-700 font-bold" : "border-slate-200 text-slate-600 hover:bg-slate-100"}`}
+                className={`flex-1 flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all text-xs sm:text-sm ${form.employerType === "company" ? "border-blue-600 bg-blue-50 text-blue-700 font-bold" : "border-slate-200 dark:border-slate-800 text-slate-600 hover:bg-slate-100"}`}
               >
                 <input
                   type="radio"
@@ -314,7 +314,7 @@ export default function EmployerEditProfile() {
                 <Building size={20} /> Registered Company
               </label>
               <label
-                className={`flex-1 flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all text-xs sm:text-sm ${form.employerType === "individual" ? "border-blue-600 bg-blue-50 text-blue-700 font-bold" : "border-slate-200 text-slate-600 hover:bg-slate-100"}`}
+                className={`flex-1 flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all text-xs sm:text-sm ${form.employerType === "individual" ? "border-blue-600 bg-blue-50 text-blue-700 font-bold" : "border-slate-200 dark:border-slate-800 text-slate-600 hover:bg-slate-100"}`}
               >
                 <input
                   type="radio"
@@ -333,7 +333,7 @@ export default function EmployerEditProfile() {
             {form.employerType === "company" && (
               <>
                 <div className="md:col-span-1">
-                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2">
                     <Building size={16} className="text-blue-500" /> Company
                     Name <span className="text-red-500">*</span>
                   </label>
@@ -341,13 +341,13 @@ export default function EmployerEditProfile() {
                     name="companyName"
                     value={form.companyName}
                     onChange={onChange}
-                    className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+                    className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
                     required={form.employerType === "company"}
                   />
                 </div>
 
                 <div className="md:col-span-1">
-                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2">
                     <Briefcase size={16} className="text-blue-500" /> Nature of
                     Business <span className="text-red-500">*</span>
                   </label>
@@ -355,7 +355,7 @@ export default function EmployerEditProfile() {
                     name="natureOfBusiness"
                     value={form.natureOfBusiness}
                     onChange={onChange}
-                    className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition bg-white"
+                    className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-800"
                     required={form.employerType === "company"}
                   >
                     <option value="">Select Type...</option>
@@ -372,14 +372,14 @@ export default function EmployerEditProfile() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2">
                     <Globe size={16} className="text-blue-500" /> Website
                   </label>
                   <input
                     name="companyWebsite"
                     value={form.companyWebsite}
                     onChange={onChange}
-                    className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+                    className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
                     placeholder="https://..."
                   />
                 </div>
@@ -387,20 +387,20 @@ export default function EmployerEditProfile() {
             )}
 
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2">
                 <User size={16} className="text-blue-500" /> Contact Person
               </label>
               <input
                 name="name"
                 value={form.name}
                 onChange={onChange}
-                className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+                className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2">
                 <Phone size={16} className="text-blue-500" /> Phone Number{" "}
                 <span className="text-red-500">*</span>
               </label>
@@ -408,13 +408,13 @@ export default function EmployerEditProfile() {
                 name="phone"
                 value={form.phone}
                 onChange={onChange}
-                className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+                className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
                 required
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2">
                 <ImageIcon size={16} className="text-blue-500" /> Profile/Logo
               </label>
 
@@ -449,7 +449,7 @@ export default function EmployerEditProfile() {
                   value={form.profilePicture}
                   onChange={onChange}
                   placeholder="https://example.com/logo.png"
-                  className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+                  className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
                 />
               ) : (
                 <div className="flex items-center gap-4">
@@ -476,7 +476,7 @@ export default function EmployerEditProfile() {
                   <img
                     src={form.profilePicture}
                     alt="Preview"
-                    className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-200"
+                    className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-200 dark:border-slate-800"
                   />
                   <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded">
                     Image ready
@@ -487,7 +487,7 @@ export default function EmployerEditProfile() {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
+            <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2">
               <MapPin size={16} className="text-blue-500" /> Office Location{" "}
               <span className="text-red-500">*</span>
             </label>
@@ -500,14 +500,14 @@ export default function EmployerEditProfile() {
               name="location"
               value={form.location}
               onChange={onChange}
-              className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+              className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
               placeholder="Refine specific address"
               required
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
+            <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2">
               <Briefcase size={16} className="text-blue-500" /> Industry{" "}
               <span className="text-red-500">*</span>
             </label>
@@ -515,7 +515,7 @@ export default function EmployerEditProfile() {
               name="industry"
               value={form.industry}
               onChange={onChange}
-              className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition bg-white"
+              className="w-full p-2.5 sm:p-3 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-800"
               required
             >
               <option value="">Select Industry...</option>
@@ -538,7 +538,7 @@ export default function EmployerEditProfile() {
 
           <div>
             <div className="flex justify-between items-end mb-1.5">
-              <label className="block text-xs sm:text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                 <FileText size={16} className="text-blue-500" /> About Details{" "}
                 <span className="text-red-500">*</span>
               </label>
@@ -554,13 +554,13 @@ export default function EmployerEditProfile() {
               name="description"
               value={form.description}
               onChange={onChange}
-              className={`w-full p-3 sm:p-4 text-xs sm:text-sm border rounded-xl focus:ring-2 outline-none h-48 resize-y transition leading-relaxed ${wordCount >= MIN_WORDS && wordCount <= MAX_WORDS ? "border-slate-200 focus:border-blue-500 focus:ring-blue-100" : "border-red-300 focus:border-red-500 focus:ring-red-100"}`}
+              className={`w-full p-3 sm:p-4 text-xs sm:text-sm border rounded-xl focus:ring-2 outline-none h-48 resize-y transition leading-relaxed ${wordCount >= MIN_WORDS && wordCount <= MAX_WORDS ? "border-slate-200 dark:border-slate-800 focus:border-blue-500 focus:ring-blue-100" : "border-red-300 focus:border-red-500 focus:ring-red-100"}`}
               placeholder={`Provide a detailed description (${MIN_WORDS}-${MAX_WORDS} words)...`}
               required
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
               onClick={() => navigate(-1)}

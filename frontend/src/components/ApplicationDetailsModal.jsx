@@ -147,7 +147,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
         };
       default: // applied
         return {
-          color: "bg-slate-50 text-slate-700 border-slate-200",
+          color: "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700",
           icon: <AlertCircle size={24} />,
           title: "Application Under Review",
           message:
@@ -232,7 +232,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                     e.stopPropagation();
                     if (job.postedBy) navigate(`/company/${job.postedBy}`);
                   }}
-                  className="text-slate-700 hover:text-indigo-600 hover:underline cursor-pointer"
+                  className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 hover:underline cursor-pointer"
                 >
                   <CompanyDisplay job={job} fallback="Confidential Employer" />
                 </span>
@@ -317,7 +317,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                     ) : !isRescheduling ? (
                       <button
                         onClick={() => setIsRescheduling(true)}
-                        className="mt-3 flex items-center gap-2 bg-white border border-purple-200 text-purple-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-purple-50 transition-colors"
+                        className="mt-3 flex items-center gap-2 bg-white dark:bg-slate-800 border border-purple-200 text-purple-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-purple-50 transition-colors"
                       >
                         <CalendarClock size={16} /> Request Reschedule
                       </button>
@@ -331,9 +331,9 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className="bg-white rounded-3xl p-6 border border-purple-100 shadow-sm overflow-hidden"
+                  className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-purple-100 shadow-sm overflow-hidden"
                 >
-                  <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4">
                     <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
                       <CalendarClock size={18} />
                     </div>{" "}
@@ -361,7 +361,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                             })
                           }
                           placeholder="E.g., I have an unexpected medical appointment..."
-                          className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 transition-all resize-none font-medium"
+                          className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:bg-white dark:bg-slate-800 focus:ring-2 focus:ring-purple-500 transition-all resize-none font-medium"
                           rows="2"
                         />
                       </div>
@@ -380,7 +380,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                             })
                           }
                           placeholder="E.g., Tomorrow at 3:00 PM EST"
-                          className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 transition-all font-medium"
+                          className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:bg-white dark:bg-slate-800 focus:ring-2 focus:ring-purple-500 transition-all font-medium"
                         />
                       </div>
 
@@ -425,7 +425,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                     <MessageSquare size={16} className="text-indigo-500" />{" "}
                     Message from Employer
                   </h3>
-                  <div className="text-indigo-900/90 font-medium whitespace-pre-wrap leading-relaxed text-sm bg-white p-4 rounded-xl border border-indigo-50 shadow-sm">
+                  <div className="text-indigo-900/90 font-medium whitespace-pre-wrap leading-relaxed text-sm bg-white dark:bg-slate-800 p-4 rounded-xl border border-indigo-50 shadow-sm">
                     {employerMessage}
                   </div>
                 </div>
@@ -433,14 +433,14 @@ export default function ApplicationDetailsModal({ application, onClose }) {
 
               {/* Cover Letter Block */}
               {applicantMessage && (
-                <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-4 flex items-center gap-3 border-b border-slate-100 pb-4">
+                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                     <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                       <FileText size={18} />
                     </div>{" "}
                     Cover Letter / Pitch
                   </h2>
-                  <div className="bg-slate-50 rounded-xl p-5 text-sm text-slate-600 font-medium leading-relaxed whitespace-pre-wrap border border-slate-100">
+                  <div className="bg-slate-50 rounded-xl p-5 text-sm text-slate-600 font-medium leading-relaxed whitespace-pre-wrap border border-slate-100 dark:border-slate-800">
                     {applicantMessage}
                   </div>
                 </section>
@@ -466,8 +466,8 @@ export default function ApplicationDetailsModal({ application, onClose }) {
               )}
 
               {/* Candidate Requirements */}
-              <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-4 flex items-center gap-3 border-b border-slate-100 pb-4">
+              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                   <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
                     <UserCircle2 size={18} />
                   </div>{" "}
@@ -479,7 +479,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                       <GraduationCap size={12} className="text-indigo-400" />{" "}
                       Education
                     </p>
-                    <p className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
                       {renderArray(job.qualifications)}
                       {job.courses?.length > 0 && (
                         <span className="text-[11px] text-slate-500 font-medium">
@@ -494,7 +494,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                       <Languages size={12} className="text-indigo-400" />{" "}
                       Languages
                     </p>
-                    <p className="text-sm font-bold text-slate-800">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">
                       {renderArray(job.languages)}
                     </p>
                   </div>
@@ -503,7 +503,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mb-1">
                       <Users size={12} className="text-indigo-400" /> Age Limit
                     </p>
-                    <p className="text-sm font-bold text-slate-800">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">
                       {job.ageLimit?.isAny
                         ? "Any Age"
                         : job.ageLimit?.min
@@ -517,7 +517,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                       <UserCircle2 size={12} className="text-indigo-400" />{" "}
                       Gender
                     </p>
-                    <p className="text-sm font-bold text-slate-800">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">
                       {job.genderPreference || "No Preference"}
                     </p>
                   </div>
@@ -526,8 +526,8 @@ export default function ApplicationDetailsModal({ application, onClose }) {
 
               {/* Required Skills */}
               {job.skillsRequired?.length > 0 && (
-                <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-4 border-b border-slate-100 pb-4 flex items-center gap-3">
+                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-3">
                     <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
                       <CheckCircle2 size={18} />
                     </div>{" "}
@@ -548,8 +548,8 @@ export default function ApplicationDetailsModal({ application, onClose }) {
 
               {/* Application Assessment (Responses) */}
               {screeningAnswers && screeningAnswers.length > 0 && (
-                <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-4 border-b border-slate-100 pb-4 flex items-center gap-3">
+                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-3">
                     <div className="p-2 bg-rose-50 rounded-lg text-rose-600">
                       <HelpCircle size={18} />
                     </div>{" "}
@@ -562,13 +562,13 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                     {screeningAnswers.map((item, index) => (
                       <div
                         key={index}
-                        className="bg-slate-50 rounded-2xl border border-slate-100 p-5 overflow-hidden"
+                        className="bg-slate-50 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 overflow-hidden"
                       >
-                        <h4 className="text-sm font-extrabold text-slate-800 mb-3 flex items-start gap-2">
+                        <h4 className="text-sm font-extrabold text-slate-800 dark:text-white mb-3 flex items-start gap-2">
                           <span className="text-rose-500">Q{index + 1}.</span>{" "}
                           <span>{item.question}</span>
                         </h4>
-                        <div className="bg-white rounded-xl p-4 text-sm font-medium text-slate-700 border border-slate-100 shadow-sm">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 text-sm font-medium text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800 shadow-sm">
                           {item.answer}
                         </div>
                       </div>
@@ -635,9 +635,9 @@ export default function ApplicationDetailsModal({ application, onClose }) {
               </section>
 
               {/* Schedule & Timings */}
-              <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                <div className="flex justify-between items-center mb-5 sm:mb-6 border-b border-slate-100 pb-3">
-                  <h3 className="text-[10px] sm:text-xs font-extrabold text-slate-800 flex items-center gap-2">
+              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="flex justify-between items-center mb-5 sm:mb-6 border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <h3 className="text-[10px] sm:text-xs font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
                     <div className="p-1.5 bg-purple-50 rounded-lg text-purple-600">
                       <Clock size={16} />
                     </div>{" "}
@@ -654,7 +654,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">
                     Working Days
                   </p>
-                  <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700">
+                  <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
                     {job.workDaysPattern === "Custom"
                       ? job.customWorkDaysDescription
                       : job.workDaysPattern || renderArray(job.workDays)}
@@ -668,12 +668,12 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                   {job.shifts?.map((shift, i) => (
                     <div
                       key={i}
-                      className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200"
+                      className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200 dark:border-slate-800"
                     >
-                      <span className="font-bold text-slate-800 text-xs truncate mr-2">
+                      <span className="font-bold text-slate-800 dark:text-white text-xs truncate mr-2">
                         {shift.shiftName}
                       </span>
-                      <span className="font-mono text-xs font-bold text-slate-600 bg-white px-2 py-1 border border-slate-200 rounded-md shadow-sm shrink-0">
+                      <span className="font-mono text-xs font-bold text-slate-600 bg-white dark:bg-slate-900 px-2 py-1 border border-slate-200 dark:border-slate-800 rounded-md shadow-sm shrink-0">
                         {shift.startTime || "--:--"} -{" "}
                         {shift.endTime || "--:--"}
                       </span>
@@ -683,8 +683,8 @@ export default function ApplicationDetailsModal({ application, onClose }) {
               </section>
 
               {/* Job Overview */}
-              <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                <div className="flex items-center justify-between mb-5 sm:mb-6 border-b border-slate-100 pb-3">
+              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center justify-between mb-5 sm:mb-6 border-b border-slate-100 dark:border-slate-800 pb-3">
                   <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                     Job Overview
                   </h3>
@@ -757,7 +757,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
         </div>
 
         {/* --- FOOTER ACTION --- */}
-        <div className="p-4 sm:p-6 bg-white border-t border-slate-200 shrink-0 flex justify-end items-center">
+        <div className="p-4 sm:p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end items-center">
           <button
             onClick={onClose}
             className="px-8 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-lg active:scale-95"
@@ -775,7 +775,7 @@ function DetailRow({ icon, label, value }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 shadow-sm">
+        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
           {icon}
         </div>
         <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
@@ -783,7 +783,7 @@ function DetailRow({ icon, label, value }) {
         </span>
       </div>
       <span
-        className="text-slate-900 font-extrabold text-xs sm:text-sm text-right truncate max-w-[45%]"
+        className="text-slate-900 dark:text-white font-extrabold text-xs sm:text-sm text-right truncate max-w-[45%]"
         title={value}
       >
         {value}

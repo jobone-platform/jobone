@@ -104,7 +104,7 @@ export default function MyApplications() {
         );
       default:
         return (
-          <span className="flex items-center gap-1 bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-slate-200">
+          <span className="flex items-center gap-1 bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-slate-200 dark:border-slate-800">
             <AlertCircle size={12} /> Applied
           </span>
         );
@@ -127,7 +127,7 @@ export default function MyApplications() {
           <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
             <SearchX className="text-slate-400" size={40} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
             No Applications Yet
           </h2>
           <p className="text-slate-500 mb-8 leading-relaxed">
@@ -251,7 +251,7 @@ export default function MyApplications() {
                 </div>
 
                 {/* Footer */}
-                <div className="mt-auto px-6 py-4 bg-slate-50 border-t border-slate-100 rounded-b-2xl flex justify-between items-center">
+                <div className="mt-auto px-6 py-4 bg-slate-50 border-t border-slate-100 dark:border-slate-800 rounded-b-2xl flex justify-between items-center">
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
                     <Calendar size={14} />
                     Applied: {new Date(app.appliedAt).toLocaleDateString()}
@@ -260,7 +260,7 @@ export default function MyApplications() {
                   {/* BUTTON TO OPEN MODAL */}
                   <button
                     onClick={() => handleViewApplication(app)}
-                    className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-sm font-bold text-blue-600 hover:text-blue-800 dark:text-blue-300 transition-colors"
                   >
                     View Status →
                   </button>

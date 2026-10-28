@@ -76,7 +76,7 @@ export default function JobPreviewCard({ job, onClose }) {
             {job.title || "Job Title"}
           </h1>
           <div className="flex flex-wrap gap-2">
-            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 text-slate-700 text-xs font-bold rounded-lg border border-slate-200">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-800">
               <MapPin size={14} className="text-slate-400" />{" "}
               <span className="truncate max-w-[200px]">{locationText}</span>
             </span>
@@ -139,7 +139,7 @@ export default function JobPreviewCard({ job, onClose }) {
         </div>
 
         {/* Job Overview (Dates & Openings) */}
-        <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+        <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 dark:border-slate-800 space-y-3">
           <DetailRow
             icon={<CalendarDays size={14} className="text-blue-500" />}
             label="Start Date"
@@ -182,7 +182,7 @@ export default function JobPreviewCard({ job, onClose }) {
         </div>
 
         {/* Schedule */}
-        <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+        <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 dark:border-slate-800">
           <div className="flex justify-between items-center mb-2">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
               <Clock size={12} /> Schedule
@@ -193,7 +193,7 @@ export default function JobPreviewCard({ job, onClose }) {
               </span>
             )}
           </div>
-          <p className="text-sm font-bold text-slate-800 mb-3">
+          <p className="text-sm font-bold text-slate-800 dark:text-white mb-3">
             {job.workDaysPattern === "Custom"
               ? job.customWorkDaysDescription
               : job.workDaysPattern || renderArray(job.workDays)}
@@ -207,12 +207,12 @@ export default function JobPreviewCard({ job, onClose }) {
                 {job.shifts.map((shift, i) => (
                   <div
                     key={i}
-                    className="flex justify-between items-center bg-slate-50 p-3 border border-slate-200 rounded-xl"
+                    className="flex justify-between items-center bg-slate-50 p-3 border border-slate-200 dark:border-slate-800 rounded-xl"
                   >
-                    <span className="text-xs font-bold text-slate-700">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                       {shift.shiftName}
                     </span>
-                    <span className="text-xs font-mono font-bold text-slate-500 bg-white px-2 py-1 rounded shadow-sm border border-slate-100">
+                    <span className="text-xs font-mono font-bold text-slate-500 bg-white dark:bg-slate-900 px-2 py-1 rounded shadow-sm border border-slate-100 dark:border-slate-800">
                       {shift.startTime || "--:--"} - {shift.endTime || "--:--"}
                     </span>
                   </div>
@@ -232,7 +232,7 @@ export default function JobPreviewCard({ job, onClose }) {
               <p className="text-[10px] text-indigo-400 font-bold uppercase mb-0.5">
                 <GraduationCap size={10} className="inline mr-1" /> Education
               </p>
-              <p className="text-sm text-slate-700 font-bold leading-tight">
+              <p className="text-sm text-slate-700 dark:text-slate-300 font-bold leading-tight">
                 {renderArray(job.qualifications)}
               </p>
               {job.courses?.length > 0 && (
@@ -245,7 +245,7 @@ export default function JobPreviewCard({ job, onClose }) {
               <p className="text-[10px] text-indigo-400 font-bold uppercase mb-0.5">
                 <Languages size={10} className="inline mr-1" /> Languages
               </p>
-              <p className="text-sm text-slate-700 font-bold leading-tight">
+              <p className="text-sm text-slate-700 dark:text-slate-300 font-bold leading-tight">
                 {renderArray(job.languages)}
               </p>
             </div>
@@ -253,7 +253,7 @@ export default function JobPreviewCard({ job, onClose }) {
               <p className="text-[10px] text-indigo-400 font-bold uppercase mb-0.5">
                 Age Limit
               </p>
-              <p className="text-sm text-slate-700 font-bold leading-tight">
+              <p className="text-sm text-slate-700 dark:text-slate-300 font-bold leading-tight">
                 {job.ageLimit?.isAny
                   ? "Any Age"
                   : job.ageLimit?.min
@@ -265,7 +265,7 @@ export default function JobPreviewCard({ job, onClose }) {
               <p className="text-[10px] text-indigo-400 font-bold uppercase mb-0.5">
                 Gender
               </p>
-              <p className="text-sm text-slate-700 font-bold leading-tight">
+              <p className="text-sm text-slate-700 dark:text-slate-300 font-bold leading-tight">
                 {job.genderPreference || "No Preference"}
               </p>
             </div>
@@ -301,7 +301,7 @@ export default function JobPreviewCard({ job, onClose }) {
               {job.screeningQuestions.map((q, i) => (
                 <li
                   key={i}
-                  className="text-xs font-medium text-slate-700 leading-tight"
+                  className="text-xs font-medium text-slate-700 dark:text-slate-300 leading-tight"
                 >
                   <span className="font-bold text-rose-500">Q{i + 1}.</span> {q}
                 </li>
@@ -314,7 +314,7 @@ export default function JobPreviewCard({ job, onClose }) {
         <div className="space-y-8 pb-6">
           {/* Job Summary */}
           <div>
-            <h2 className="text-sm font-extrabold text-blue-900 bg-blue-100 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg mb-3 shadow-sm border border-blue-200">
+            <h2 className="text-sm font-extrabold text-blue-900 dark:text-blue-300 bg-blue-100 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg mb-3 shadow-sm border border-blue-200">
               <Briefcase size={16} className="text-blue-700" /> Job Summary
             </h2>
             <div
@@ -328,7 +328,7 @@ export default function JobPreviewCard({ job, onClose }) {
           {/* Key Responsibilities (With Aggressive Bullet Forcer) */}
           {(job.keyResponsibilities ||
             job.description?.includes("Key Responsibilities")) && (
-            <div className="pt-6 border-t border-slate-100">
+            <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
               <h2 className="text-sm font-extrabold text-purple-900 bg-purple-100 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg mb-3 shadow-sm border border-purple-200">
                 <ListChecks size={16} className="text-purple-700" /> Key
                 Responsibilities
@@ -375,7 +375,7 @@ export default function JobPreviewCard({ job, onClose }) {
         </div>
       </div>
 
-      <div className="p-4 bg-white border-t border-slate-100 shrink-0">
+      <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shrink-0">
         <button
           disabled
           className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold opacity-50 cursor-not-allowed flex items-center justify-center gap-2"
@@ -391,7 +391,7 @@ function DetailRow({ icon, label, value }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <div className="p-1.5 bg-white rounded-lg border border-slate-200 shadow-sm">
+        <div className="p-1.5 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
           {icon}
         </div>
         <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
@@ -399,7 +399,7 @@ function DetailRow({ icon, label, value }) {
         </span>
       </div>
       <span
-        className="text-slate-900 font-extrabold text-xs text-right truncate max-w-[50%]"
+        className="text-slate-900 dark:text-white font-extrabold text-xs text-right truncate max-w-[50%]"
         title={value}
       >
         {value}
