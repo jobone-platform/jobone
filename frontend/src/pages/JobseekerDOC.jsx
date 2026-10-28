@@ -93,11 +93,11 @@ export default function JobseekerDocumentManager() {
       <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 flex items-start gap-4 mb-8 shadow-sm">
         <AlertCircle className="text-blue-600 shrink-0 mt-0.5" size={24} />
         <div>
-          <h3 className="font-bold text-blue-900 text-base">All Documents Are Optional By Default</h3>
-          <p className="text-sm text-blue-800 mt-1 leading-relaxed">
+          <h3 className="font-bold text-blue-900 dark:text-blue-300 text-base">All Documents Are Optional By Default</h3>
+          <p className="text-sm text-blue-800 dark:text-blue-200 mt-1 leading-relaxed">
             You do not need to upload all documents immediately. They are only required when applying to specific job postings where the employer has explicitly requested them in their checklist. Once uploaded here, you can apply to those jobs with a single click!
           </p>
-          <div className="mt-3 inline-flex items-center px-3 py-1 rounded-lg bg-blue-100 text-blue-800 text-xs font-bold">
+          <div className="mt-3 inline-flex items-center px-3 py-1 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-900/40 text-xs font-bold">
             Uploaded: {uploadedCount} / {DOCUMENT_CONFIG.length} documents
           </div>
         </div>
@@ -242,7 +242,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
             {isUploaded ? (
               <div className="mt-1">
                 <p className="text-sm font-bold text-emerald-600 flex items-center gap-1.5">
-                  ✓ Uploaded: <span className="text-slate-700 underline underline-offset-2">{fileName}</span>
+                  ✓ Uploaded: <span className="text-slate-700 dark:text-slate-200 underline underline-offset-2">{fileName}</span>
                 </p>
               </div>
             ) : (
@@ -275,7 +275,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
               <button onClick={handleView} className="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl font-bold hover:bg-blue-100 transition flex items-center gap-1.5 text-sm">
                 <Eye size={16} /> {viewUrl ? "Close" : "View"}
               </button>
-              <button onClick={handleDownload} className="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold hover:bg-slate-200 transition flex items-center gap-1.5 text-sm">
+              <button onClick={handleDownload} className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-1.5 text-sm">
                 <Download size={16} /> Download
               </button>
               

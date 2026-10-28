@@ -2,6 +2,43 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Semantic Theme Color Tokens */
+:root {
+  --theme-bg: #f8fafc;
+  --theme-surface: #ffffff;
+  --theme-surface-muted: #f1f5f9;
+  --theme-surface-elevated: #ffffff;
+  --theme-border: #e2e8f0;
+  --theme-border-muted: #f1f5f9;
+  --theme-text: #0f172a;
+  --theme-text-muted: #64748b;
+  --theme-text-subtle: #94a3b8;
+  --theme-card: #ffffff;
+  --theme-card-foreground: #0f172a;
+  --theme-input-bg: #ffffff;
+  --theme-input-border: #e2e8f0;
+  --theme-input-text: #0f172a;
+  --theme-input-placeholder: #94a3b8;
+}
+
+html.dark {
+  --theme-bg: #020617;
+  --theme-surface: #0f172a;
+  --theme-surface-muted: #1e293b;
+  --theme-surface-elevated: #1e293b;
+  --theme-border: #334155;
+  --theme-border-muted: #1e293b;
+  --theme-text: #f8fafc;
+  --theme-text-muted: #94a3b8;
+  --theme-text-subtle: #64748b;
+  --theme-card: #0f172a;
+  --theme-card-foreground: #f8fafc;
+  --theme-input-bg: #1e293b;
+  --theme-input-border: #334155;
+  --theme-input-text: #f8fafc;
+  --theme-input-placeholder: #64748b;
+}
+
 html {
     -webkit-text-size-adjust: 100%;
 }
@@ -17,9 +54,29 @@ html.dark body {
   color: #f8fafc;
 }
 
-.dark select option {
+/* Global Dark Form Control Safety & Standards */
+html.dark select {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+html.dark select option {
   background-color: #0f172a;
   color: #f8fafc;
+}
+
+/* Prevent native stark white inputs in dark mode */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="file"]):where(:not([class*="dark:bg-"])),
+html.dark textarea:where(:not([class*="dark:bg-"])) {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #94a3b8;
 }
 
 @keyframes live-ticker {
@@ -42,7 +99,6 @@ html.dark body {
   -webkit-backdrop-filter: blur(4px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
-
 
 /* Custom Scrollbar for Modals and Data Panels */
 .custom-scrollbar::-webkit-scrollbar {

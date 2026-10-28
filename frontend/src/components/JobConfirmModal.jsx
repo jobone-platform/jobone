@@ -121,14 +121,14 @@ export default function JobConfirmModal({
                 {modeStr}
               </span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-2 tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight leading-tight">
               {job.title || "Untitled Job"}
             </h1>
             <p className="text-indigo-600 font-bold flex items-center gap-2 mb-4">
               <CompanyDisplay job={job} fallback={employerProfileName || "Confidential Employer"} />
             </p>
             <div className="flex flex-wrap gap-2">
-              <span className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 text-slate-700 text-xs font-bold rounded-lg border border-slate-200">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-800">
                 <MapPin size={14} className="text-slate-400" />{" "}
                 <span className="truncate max-w-[200px]">{locationText}</span>
               </span>
@@ -162,8 +162,8 @@ export default function JobConfirmModal({
               )}
 
               {/* Candidate Profile */}
-              <section className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                <h2 className="text-base font-extrabold text-slate-800 mb-4 flex items-center gap-3 border-b border-slate-100 pb-4">
+              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h2 className="text-base font-extrabold text-slate-800 dark:text-white mb-4 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                   <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
                     <UserCircle2 size={18} />
                   </div>{" "}
@@ -174,7 +174,7 @@ export default function JobConfirmModal({
                     <p className="text-[10px] text-indigo-400 font-bold uppercase mb-0.5">
                       <Target size={10} className="inline mr-1" /> Experience
                     </p>
-                    <p className="text-sm text-slate-800 font-bold">
+                    <p className="text-sm text-slate-800 dark:text-white font-bold">
                       {renderExperience()}
                     </p>
                   </div>
@@ -183,7 +183,7 @@ export default function JobConfirmModal({
                       <GraduationCap size={12} className="text-indigo-400" />{" "}
                       Education
                     </p>
-                    <p className="text-sm font-bold text-slate-800">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">
                       {renderArray(job.qualifications)}
                       {job.courses?.length > 0 && (
                         <span className="block text-[11px] text-slate-500 font-medium">
@@ -197,7 +197,7 @@ export default function JobConfirmModal({
                       <Languages size={12} className="text-indigo-400" />{" "}
                       Languages
                     </p>
-                    <p className="text-sm font-bold text-slate-800">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">
                       {renderArray(job.languages)}
                     </p>
                   </div>
@@ -206,7 +206,7 @@ export default function JobConfirmModal({
                       <UserCircle2 size={12} className="text-indigo-400" />{" "}
                       Demographics
                     </p>
-                    <p className="text-sm font-bold text-slate-800">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">
                       {job.ageLimit?.isAny
                         ? "Any Age"
                         : job.ageLimit?.min
@@ -221,8 +221,8 @@ export default function JobConfirmModal({
 
               {/* Required Skills */}
               {job.skillsRequired?.length > 0 && (
-                <section className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                  <h2 className="text-base font-extrabold text-slate-800 mb-4 border-b border-slate-100 pb-4 flex items-center gap-3">
+                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                  <h2 className="text-base font-extrabold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-3">
                     <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
                       <CheckCircle2 size={18} />
                     </div>{" "}
@@ -245,7 +245,7 @@ export default function JobConfirmModal({
               {job.screeningQuestions?.length > 0 && (
                 <section className="bg-rose-50/50 rounded-3xl p-6 border border-rose-100">
                   <h2 className="text-base font-extrabold text-rose-900 mb-4 flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg text-rose-600 shadow-sm">
+                    <div className="p-2 bg-white dark:bg-slate-800 rounded-lg text-rose-600 shadow-sm">
                       <HelpCircle size={18} />
                     </div>{" "}
                     Assessment Questions
@@ -254,7 +254,7 @@ export default function JobConfirmModal({
                     {job.screeningQuestions.map((q, i) => (
                       <li
                         key={i}
-                        className="flex items-start gap-3 bg-white p-4 rounded-xl border border-rose-100 text-sm font-medium text-slate-700 shadow-sm"
+                        className="flex items-start gap-3 bg-white dark:bg-slate-800 p-4 rounded-xl border border-rose-100 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm"
                       >
                         <span className="font-extrabold text-rose-500">
                           Q{i + 1}.
@@ -267,9 +267,9 @@ export default function JobConfirmModal({
               )}
 
               {/* Description Split */}
-              <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-8">
+              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
                 <div>
-                  <h2 className="text-sm sm:text-base font-extrabold text-blue-900 bg-blue-100 inline-flex items-center gap-2 px-4 py-2 rounded-xl mb-4 shadow-sm border border-blue-200">
+                  <h2 className="text-sm sm:text-base font-extrabold text-blue-900 dark:text-blue-300 bg-blue-100 inline-flex items-center gap-2 px-4 py-2 rounded-xl mb-4 shadow-sm border border-blue-200">
                     <Briefcase size={18} className="text-blue-700" /> Job
                     Summary
                   </h2>
@@ -280,7 +280,7 @@ export default function JobConfirmModal({
                 </div>
 
                 {responsibilities && (
-                  <div className="pt-6 border-t border-slate-100">
+                  <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
                     <h2 className="text-sm sm:text-base font-extrabold text-purple-900 bg-purple-100 inline-flex items-center gap-2 px-4 py-2 rounded-xl mb-4 shadow-sm border border-purple-200">
                       <ListChecks size={18} className="text-purple-700" /> Key
                       Responsibilities
@@ -382,8 +382,8 @@ export default function JobConfirmModal({
               </section>
 
               {/* Job Overview (Timeline & Openings) */}
-              <section className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                <div className="flex items-center justify-between mb-5 border-b border-slate-100 pb-3">
+              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center justify-between mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
                   <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                     Timeline & Openings
                   </h3>
@@ -443,8 +443,8 @@ export default function JobConfirmModal({
               </section>
 
               {/* Schedule */}
-              <section className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                <div className="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">
+              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="flex justify-between items-center mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
                   <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
                     <Clock size={12} /> Schedule
                   </h3>
@@ -458,7 +458,7 @@ export default function JobConfirmModal({
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">
                     Working Days
                   </p>
-                  <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700">
+                  <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
                     {job.workDaysPattern === "Custom"
                       ? job.customWorkDaysDescription
                       : job.workDaysPattern || renderArray(job.workDays)}
@@ -473,12 +473,12 @@ export default function JobConfirmModal({
                       {job.shifts.map((shift, i) => (
                         <div
                           key={i}
-                          className="flex justify-between items-center bg-slate-50 p-3 border border-slate-200 rounded-xl"
+                          className="flex justify-between items-center bg-slate-50 p-3 border border-slate-200 dark:border-slate-800 rounded-xl"
                         >
-                          <span className="text-xs font-bold text-slate-700">
+                          <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                             {shift.shiftName}
                           </span>
-                          <span className="text-xs font-mono font-bold text-slate-500 bg-white px-2 py-1 rounded shadow-sm border border-slate-100">
+                          <span className="text-xs font-mono font-bold text-slate-500 bg-white dark:bg-slate-900 px-2 py-1 rounded shadow-sm border border-slate-100 dark:border-slate-800">
                             {shift.startTime || "--:--"} -{" "}
                             {shift.endTime || "--:--"}
                           </span>
@@ -493,10 +493,10 @@ export default function JobConfirmModal({
         </div>
 
         {/* --- FOOTER ACTIONS --- */}
-        <div className="p-4 sm:p-6 bg-white border-t border-slate-200 shrink-0 flex justify-end items-center gap-4">
+        <div className="p-4 sm:p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end items-center gap-4">
           <button
             onClick={onClose}
-            className="px-6 py-3 font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
+            className="px-6 py-3 font-bold text-slate-500 hover:text-slate-800 dark:text-white hover:bg-slate-100 rounded-xl transition-colors"
           >
             Go Back & Edit
           </button>
@@ -518,7 +518,7 @@ function DetailRow({ icon, label, value }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 shadow-sm">
+        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
           {icon}
         </div>
         <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
@@ -526,7 +526,7 @@ function DetailRow({ icon, label, value }) {
         </span>
       </div>
       <span
-        className="text-slate-900 font-extrabold text-xs sm:text-sm text-right truncate max-w-[45%]"
+        className="text-slate-900 dark:text-white font-extrabold text-xs sm:text-sm text-right truncate max-w-[45%]"
         title={value}
       >
         {value}

@@ -425,7 +425,7 @@ export default function AdminDashboard() {
       </div>
       {badgeCount !== undefined && badgeCount > 0 && (
         <span
-          className={`text-xs px-2 py-0.5 rounded-full ${activeTab === id ? "bg-white text-indigo-600" : "bg-indigo-100 text-indigo-700"}`}
+          className={`text-xs px-2 py-0.5 rounded-full ${activeTab === id ? "bg-white dark:bg-slate-900 text-indigo-600" : "bg-indigo-100 text-indigo-700"}`}
         >
           {badgeCount}
         </span>
@@ -446,7 +446,7 @@ export default function AdminDashboard() {
       <span>{label}</span>
       {badgeCount !== undefined && badgeCount > 0 && (
         <span
-          className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === id ? "bg-white text-indigo-600" : "bg-indigo-200 text-indigo-700"}`}
+          className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === id ? "bg-white dark:bg-slate-900 text-indigo-600" : "bg-indigo-200 text-indigo-700"}`}
         >
           {badgeCount}
         </span>
@@ -552,7 +552,7 @@ export default function AdminDashboard() {
           <SidebarItem id="exportDB" icon={Download} label="Database Export" />
         </div>
 
-        <div className="p-4 border-t border-slate-100 space-y-2">
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
           <button
             onClick={() => {
               localStorage.removeItem("adminInfo");
@@ -627,7 +627,7 @@ export default function AdminDashboard() {
           {/* EXPORT DB VIEW */}
           {activeTab === "contacts" && (
             <div className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-200 pb-4">
+              <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
                 <div className="bg-indigo-100 p-2.5 rounded-xl">
                   <MessageSquare size={24} className="text-indigo-600" />
                 </div>
@@ -655,7 +655,7 @@ export default function AdminDashboard() {
                       className={`relative flex flex-col p-6 rounded-2xl border transition-all duration-300 ${
                         contact.isRead
                           ? "bg-slate-50/50 border-slate-200 shadow-none opacity-80"
-                          : "bg-white border-indigo-200 shadow-md shadow-indigo-100/50 -translate-y-0.5"
+                          : "bg-white dark:bg-slate-800 border-indigo-200 dark:border-indigo-800/40 shadow-md shadow-indigo-100/50 dark:shadow-slate-950/40 -translate-y-0.5"
                       }`}
                     >
                       {!contact.isRead && (
@@ -669,7 +669,7 @@ export default function AdminDashboard() {
                             {contact.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <h3 className="font-bold text-slate-800 leading-tight">
+                            <h3 className="font-bold text-slate-800 dark:text-white leading-tight">
                               {contact.name}
                             </h3>
                             <a href={`mailto:${contact.email}`} className="text-xs text-indigo-500 font-medium hover:underline">
@@ -686,11 +686,11 @@ export default function AdminDashboard() {
                         </span>
                       </div>
                       
-                      <div className={`flex-1 p-4 rounded-xl mb-4 text-sm whitespace-pre-wrap ${contact.isRead ? "bg-white text-slate-600 border border-slate-200" : "bg-indigo-50/50 text-slate-700"}`}>
+                      <div className={`flex-1 p-4 rounded-xl mb-4 text-sm whitespace-pre-wrap ${contact.isRead ? "bg-white dark:bg-slate-800 text-slate-600 border border-slate-200 dark:border-slate-800" : "bg-indigo-50/50 text-slate-700 dark:text-slate-300"}`}>
                         {contact.message}
                       </div>
 
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100/80">
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-800/80">
                         <span className="text-xs text-slate-400 font-medium">
                           {new Date(contact.createdAt).toLocaleString(undefined, {
                             dateStyle: "medium",
@@ -719,7 +719,7 @@ export default function AdminDashboard() {
 
           {activeTab === "exportDB" && (
             <div>
-              <h2 className="text-2xl font-black text-slate-800 mb-2 flex items-center gap-2">
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
                 <Download className="text-emerald-600" /> Database Export
               </h2>
               <p className="text-slate-500 mb-8 font-medium">
@@ -733,7 +733,7 @@ export default function AdminDashboard() {
                   <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Total Jobs
                   </p>
-                  <p className="text-4xl font-black text-slate-800">
+                  <p className="text-4xl font-black text-slate-800 dark:text-white">
                     {dbStats.jobs}
                   </p>
                 </div>
@@ -742,7 +742,7 @@ export default function AdminDashboard() {
                   <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Total Jobseekers
                   </p>
-                  <p className="text-4xl font-black text-slate-800">
+                  <p className="text-4xl font-black text-slate-800 dark:text-white">
                     {dbStats.jobseekers}
                   </p>
                 </div>
@@ -751,7 +751,7 @@ export default function AdminDashboard() {
                   <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Total Employers
                   </p>
-                  <p className="text-4xl font-black text-slate-800">
+                  <p className="text-4xl font-black text-slate-800 dark:text-white">
                     {dbStats.employers}
                   </p>
                 </div>
@@ -781,9 +781,9 @@ export default function AdminDashboard() {
 
                 {(adminRole === "superAdmin" ||
                   adminRole === "employerAdmin") && (
-                  <div className="bg-white border border-slate-200 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:shadow-md transition">
+                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:shadow-md transition">
                     <div>
-                      <h3 className="font-bold text-lg text-slate-800">
+                      <h3 className="font-bold text-lg text-slate-800 dark:text-white">
                         Employers & Jobs Data
                       </h3>
                       <p className="text-slate-500 text-sm mt-1">
@@ -802,9 +802,9 @@ export default function AdminDashboard() {
 
                 {(adminRole === "superAdmin" ||
                   adminRole === "jobseekerAdmin") && (
-                  <div className="bg-white border border-slate-200 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:shadow-md transition">
+                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:shadow-md transition">
                     <div>
-                      <h3 className="font-bold text-lg text-slate-800">
+                      <h3 className="font-bold text-lg text-slate-800 dark:text-white">
                         Jobseekers & Jobs Data
                       </h3>
                       <p className="text-slate-500 text-sm mt-1">
@@ -827,7 +827,7 @@ export default function AdminDashboard() {
           {/* PENDING JOBS */}
           {activeTab === "pendingJobs" && canManageEmployers && (
             <div>
-              <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                 <Briefcase className="text-indigo-600" /> Pending Jobs Approval
               </h2>
               <div className="space-y-4">
@@ -839,10 +839,10 @@ export default function AdminDashboard() {
                   pendingJobs.map((job) => (
                     <div
                       key={job._id}
-                      className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition"
+                      className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition"
                     >
                       <div>
-                        <h3 className="font-bold text-lg text-slate-800">
+                        <h3 className="font-bold text-lg text-slate-800 dark:text-white">
                           {job.title}
                         </h3>
                         <p className="text-sm text-slate-500 mt-1 flex items-center gap-1">
@@ -857,7 +857,7 @@ export default function AdminDashboard() {
                           onClick={() =>
                             window.open(`/admin/job/${job._id}`, "_blank")
                           }
-                          className="px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-sm font-bold transition"
+                          className="px-4 py-2 bg-slate-100 text-slate-700 dark:text-slate-300 hover:bg-slate-200 rounded-lg text-sm font-bold transition"
                         >
                           View Details
                         </button>
@@ -884,7 +884,7 @@ export default function AdminDashboard() {
           {/* PENDING EMPLOYERS */}
           {activeTab === "pendingEmployers" && canManageEmployers && (
             <div>
-              <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                 <Building2 className="text-indigo-600" /> Pending Employers
               </h2>
               <div className="space-y-4">
@@ -896,10 +896,10 @@ export default function AdminDashboard() {
                   pendingEmployers.map((emp) => (
                     <div
                       key={emp._id}
-                      className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition"
+                      className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition"
                     >
                       <div>
-                        <h3 className="font-bold text-lg text-slate-800">
+                        <h3 className="font-bold text-lg text-slate-800 dark:text-white">
                           {emp.companyName || emp.name}
                         </h3>
                         <p className="text-sm text-slate-500 mt-1">
@@ -911,7 +911,7 @@ export default function AdminDashboard() {
                           onClick={() =>
                             window.open(`/admin/employer/${emp._id}`, "_blank")
                           }
-                          className="px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-sm font-bold transition"
+                          className="px-4 py-2 bg-slate-100 text-slate-700 dark:text-slate-300 hover:bg-slate-200 rounded-lg text-sm font-bold transition"
                         >
                           Deep Dive
                         </button>
@@ -942,7 +942,7 @@ export default function AdminDashboard() {
           {/* ALL JOBS */}
           {activeTab === "allJobs" && canManageEmployers && (
             <div>
-              <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                 <FileText className="text-indigo-600" /> All Jobs Database
               </h2>
               <div className="space-y-4">
@@ -954,10 +954,10 @@ export default function AdminDashboard() {
                   allJobs.map((job) => (
                     <div
                       key={job._id}
-                      className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition"
+                      className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition"
                     >
                       <div>
-                        <h3 className="font-bold text-lg text-slate-800">
+                        <h3 className="font-bold text-lg text-slate-800 dark:text-white">
                           {job.title}
                         </h3>
                         <p className="text-sm text-slate-500 mt-1 flex items-center gap-1">
@@ -967,7 +967,7 @@ export default function AdminDashboard() {
                             : job.location}
                         </p>
                         <span
-                          className={`inline-block mt-2 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${job.status === "active" ? "bg-emerald-100 text-emerald-700" : job.status === "pending_approval" ? "bg-amber-100 text-amber-700" : "bg-slate-200 text-slate-700"}`}
+                          className={`inline-block mt-2 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${job.status === "active" ? "bg-emerald-100 text-emerald-700" : job.status === "pending_approval" ? "bg-amber-100 text-amber-700" : "bg-slate-200 text-slate-700 dark:text-slate-300"}`}
                         >
                           {job.status.replace("_", " ")}
                         </span>
@@ -992,7 +992,7 @@ export default function AdminDashboard() {
           {/* ALL EMPLOYERS */}
           {activeTab === "allEmployers" && canManageEmployers && (
             <div>
-              <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                 <Building2 className="text-indigo-600" /> All Employers Database
               </h2>
               <div className="space-y-4">
@@ -1004,10 +1004,10 @@ export default function AdminDashboard() {
                   allEmployers.map((emp) => (
                     <div
                       key={emp._id}
-                      className={`bg-white p-6 rounded-2xl border ${emp.isFrozen ? "border-rose-300 bg-rose-50/30" : "border-slate-200"} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition`}
+                      className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border ${emp.isFrozen ? "border-rose-300 bg-rose-50/30" : "border-slate-200 dark:border-slate-800"} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition`}
                     >
                       <div>
-                        <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
+                        <h3 className="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
                           {emp.companyName || emp.name}
                           {emp.isFrozen && (
                             <span className="bg-rose-100 text-rose-600 text-[10px] px-2 py-0.5 rounded-md uppercase tracking-wider font-black">
@@ -1029,7 +1029,7 @@ export default function AdminDashboard() {
                           onClick={() =>
                             window.open(`/company/${emp._id}`, "_blank")
                           }
-                          className="px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-bold transition flex items-center gap-2"
+                          className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 rounded-lg text-sm font-bold transition flex items-center gap-2"
                         >
                           <ExternalLink size={16} /> Public View
                         </button>
@@ -1052,7 +1052,7 @@ export default function AdminDashboard() {
           {/* ALL JOBSEEKERS */}
           {activeTab === "allJobseekers" && canManageJobseekers && (
             <div>
-              <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                 <Users className="text-indigo-600" /> All Jobseekers Database
               </h2>
               <div className="space-y-4">
@@ -1064,7 +1064,7 @@ export default function AdminDashboard() {
                   allJobseekers.map((user) => (
                     <div
                       key={user._id}
-                      className={`bg-white p-6 rounded-2xl border ${user.isFrozen ? "border-rose-300 bg-rose-50/30" : "border-slate-200"} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition`}
+                      className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border ${user.isFrozen ? "border-rose-300 bg-rose-50/30" : "border-slate-200 dark:border-slate-800"} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition`}
                     >
                       <div className="flex items-center gap-4">
                         {user.profilePicture ? (
@@ -1074,12 +1074,12 @@ export default function AdminDashboard() {
                             className="w-12 h-12 rounded-full object-cover shadow-sm"
                           />
                         ) : (
-                          <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
+                          <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400">
                             <User size={20} />
                           </div>
                         )}
                         <div>
-                          <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
+                          <h3 className="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
                             {user.name}
                             {user.isFrozen && (
                               <span className="bg-rose-100 text-rose-600 text-[10px] px-2 py-0.5 rounded-md uppercase tracking-wider font-black">
@@ -1100,7 +1100,7 @@ export default function AdminDashboard() {
                           onClick={() =>
                             window.open(`/profile/${user._id}`, "_blank")
                           }
-                          className="px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-bold transition flex items-center gap-2"
+                          className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 rounded-lg text-sm font-bold transition flex items-center gap-2"
                         >
                           <ExternalLink size={16} /> Public View
                         </button>
@@ -1124,7 +1124,7 @@ export default function AdminDashboard() {
           {(activeTab === "searchJobseekers" ||
             activeTab === "searchEmployers") && (
             <div>
-              <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                 <Search className="text-indigo-600" /> Security & Freeze Control
               </h2>
               <form
@@ -1136,7 +1136,7 @@ export default function AdminDashboard() {
                   placeholder={`Search by name, email${activeTab === "searchEmployers" ? ", or company" : ""}...`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all font-medium"
+                  className="flex-1 p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:bg-slate-800 transition-all font-medium"
                 />
                 <button
                   type="submit"
@@ -1163,10 +1163,10 @@ export default function AdminDashboard() {
                 {searchResults.map((result) => (
                   <div
                     key={result._id}
-                    className={`bg-white p-6 rounded-2xl border ${result.isFrozen ? "border-rose-300 bg-rose-50" : "border-slate-200"} flex flex-col sm:flex-row justify-between items-center gap-4 shadow-sm`}
+                    className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border ${result.isFrozen ? "border-rose-300 bg-rose-50" : "border-slate-200 dark:border-slate-800"} flex flex-col sm:flex-row justify-between items-center gap-4 shadow-sm`}
                   >
                     <div>
-                      <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800">
+                      <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800 dark:text-white">
                         {result.companyName || result.name}
                         {result.isFrozen && (
                           <span className="bg-rose-100 text-rose-600 text-[10px] px-2 py-0.5 rounded-md uppercase tracking-wider font-black">
@@ -1189,7 +1189,7 @@ export default function AdminDashboard() {
                             "_blank",
                           )
                         }
-                        className="px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-sm font-bold flex items-center gap-2 transition"
+                        className="px-4 py-2 bg-slate-100 text-slate-700 dark:text-slate-300 hover:bg-slate-200 rounded-xl text-sm font-bold flex items-center gap-2 transition"
                       >
                         <ExternalLink size={16} /> Admin Deep Dive
                       </button>
@@ -1225,12 +1225,12 @@ export default function AdminDashboard() {
           {/* MANAGE ADMINS PANEL (Super Admin Only) */}
           {activeTab === "manageAdmins" && adminRole === "superAdmin" && (
             <div className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-200 pb-4">
+              <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
                 <div className="bg-indigo-100 p-2.5 rounded-xl">
                   <ShieldAlert size={24} className="text-indigo-600" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black text-slate-800">
+                  <h2 className="text-2xl font-black text-slate-800 dark:text-white">
                     Manage Admins
                   </h2>
                   <p className="text-slate-500 font-medium">
@@ -1242,9 +1242,9 @@ export default function AdminDashboard() {
               <div className="flex flex-col lg:flex-row gap-8 items-start">
                 {/* LEFT: ADMIN DIRECTORY */}
                 <div className="flex-1 w-full space-y-4">
-                  <h3 className="text-lg font-bold text-slate-700">Admin Directory</h3>
+                  <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300">Admin Directory</h3>
                   {allAdmins.length === 0 ? (
-                    <div className="p-8 text-center bg-white border border-slate-200 rounded-3xl shadow-sm text-slate-400 font-medium">
+                    <div className="p-8 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm text-slate-400 font-medium">
                       Loading admins...
                     </div>
                   ) : (
@@ -1261,7 +1261,7 @@ export default function AdminDashboard() {
                               {admin.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <p className="font-bold text-slate-800">{admin.name}</p>
+                              <p className="font-bold text-slate-800 dark:text-white">{admin.name}</p>
                               <p className="text-xs text-slate-500 font-medium">{admin.email}</p>
                             </div>
                           </div>
@@ -1298,13 +1298,13 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* RIGHT: CREATE ADMIN FORM */}
-                <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 w-full lg:w-[400px] shrink-0">
-                  <h3 className="text-lg font-bold mb-6 text-slate-700">
+                <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 w-full lg:w-[400px] shrink-0">
+                  <h3 className="text-lg font-bold mb-6 text-slate-700 dark:text-slate-300">
                     Provision New Admin
                   </h3>
                   <form onSubmit={handleCreateAdmin} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase tracking-wider">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 ml-1 uppercase tracking-wider">
                         Name
                       </label>
                       <input
@@ -1312,12 +1312,12 @@ export default function AdminDashboard() {
                         required
                         value={newAdminName}
                         onChange={(e) => setNewAdminName(e.target.value)}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm"
                         placeholder="John Doe"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase tracking-wider">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 ml-1 uppercase tracking-wider">
                         Email
                       </label>
                       <input
@@ -1325,12 +1325,12 @@ export default function AdminDashboard() {
                         required
                         value={newAdminEmail}
                         onChange={(e) => setNewAdminEmail(e.target.value)}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm"
                         placeholder="admin@jobone.com"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase tracking-wider">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 ml-1 uppercase tracking-wider">
                         Password
                       </label>
                       <input
@@ -1338,18 +1338,18 @@ export default function AdminDashboard() {
                         required
                         value={newAdminPassword}
                         onChange={(e) => setNewAdminPassword(e.target.value)}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm"
                         placeholder="••••••••"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase tracking-wider">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 ml-1 uppercase tracking-wider">
                         Role
                       </label>
                       <select
                         value={newAdminRole}
                         onChange={(e) => setNewAdminRole(e.target.value)}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 text-sm"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 dark:text-white text-sm"
                       >
                         <option value="employerAdmin">Employer Admin</option>
                         <option value="jobseekerAdmin">Jobseeker Admin</option>

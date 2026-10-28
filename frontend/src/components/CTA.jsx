@@ -26,7 +26,7 @@ export default function CTASection() {
                 Filter by role, location, and salary.
               </p>
               <Link to="/jobs">
-                <button className="bg-white text-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-50 transition-colors flex items-center gap-2 shadow-sm">
+                <button className="bg-white dark:bg-slate-800 text-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-50 transition-colors flex items-center gap-2 shadow-sm">
                   Explore All Jobs <FaArrowRight size={12} />
                 </button>
               </Link>

@@ -147,11 +147,11 @@ export default function UserRegister() {
                 <form className="space-y-4" onSubmit={handleSubmit} noValidate>
                     {/* Name */}
                     <div>
-                        <label className="block mb-1 text-sm font-semibold text-gray-700">Full Name *</label>
+                        <label className="block mb-1 text-sm font-semibold text-gray-700 dark:text-slate-300">Full Name *</label>
                         <input
                             type="text"
                             placeholder="e.g. Rahul Sharma"
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-sm"
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white text-sm"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
@@ -160,11 +160,11 @@ export default function UserRegister() {
 
                     {/* Email */}
                     <div>
-                        <label className="block mb-1 text-sm font-semibold text-gray-700">Email Address *</label>
+                        <label className="block mb-1 text-sm font-semibold text-gray-700 dark:text-slate-300">Email Address *</label>
                         <input
                             type="email"
                             placeholder="e.g. rahul@example.com"
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-sm"
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white text-sm"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -173,11 +173,11 @@ export default function UserRegister() {
 
                     {/* Password */}
                     <div>
-                        <label className="block mb-1 text-sm font-semibold text-gray-700">Password * (min. 6 chars)</label>
+                        <label className="block mb-1 text-sm font-semibold text-gray-700 dark:text-slate-300">Password * (min. 6 chars)</label>
                         <input
                             type="password"
                             placeholder="Enter a secure password"
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-sm"
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white text-sm"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
@@ -186,14 +186,14 @@ export default function UserRegister() {
 
                     {/* Phone */}
                     <div>
-                        <label className="block mb-1 text-sm font-semibold text-gray-700">
+                        <label className="block mb-1 text-sm font-semibold text-gray-700 dark:text-slate-300">
                             Mobile Number * {countryCode === "+91" && <span className="text-xs font-normal text-gray-500">(10 digits)</span>}
                         </label>
                         <div className="flex gap-2">
                             <select
                                 value={countryCode}
                                 onChange={handleCountryCodeChange}
-                                className="w-28 sm:w-32 shrink-0 border border-gray-300 rounded-lg px-2 py-2.5 bg-white text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-28 sm:w-32 shrink-0 border border-gray-300 rounded-lg px-2 py-2.5 bg-white dark:bg-slate-800 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 {countryCodes.map((country) => (
                                     <option key={country.name} value={country.code}>
@@ -206,7 +206,7 @@ export default function UserRegister() {
                                 inputMode="numeric"
                                 pattern="[0-9]*"
                                 placeholder={countryCode === "+91" ? "10-digit number" : "Mobile number"}
-                                className="flex-1 min-w-0 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-sm tracking-wide"
+                                className="flex-1 min-w-0 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white text-sm tracking-wide"
                                 value={phone}
                                 onChange={handlePhoneChange}
                                 maxLength={countryCode === "+91" ? 10 : 15}

@@ -63,7 +63,7 @@ export default function ChatWidget() {
 
       {/* Chat panel */}
       {isOpen && (
-        <div role="region" aria-label="JobOne Assistant" className="fixed bottom-36 sm:bottom-24 right-6 w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col z-50 overflow-hidden">
+        <div role="region" aria-label="JobOne Assistant" className="fixed bottom-36 sm:bottom-24 right-6 w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col z-50 overflow-hidden">
           {/* Header */}
           <div className="bg-indigo-600 p-4 text-white flex items-center gap-3">
             <Bot size={24} />
@@ -135,7 +135,7 @@ export default function ChatWidget() {
                 <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
                   <Bot size={14} className="text-indigo-600" />
                 </div>
-                <div className="p-3 bg-white border border-slate-200 rounded-2xl rounded-bl-none shadow-sm flex items-center">
+                <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl rounded-bl-none shadow-sm flex items-center">
                   <Loader2 size={14} className="animate-spin text-slate-400" />
                 </div>
               </div>
@@ -152,7 +152,7 @@ export default function ChatWidget() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about jobs..."
               disabled={isLoading}
-              className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="flex-1 p-2.5 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
             />
             <button
               type="submit"

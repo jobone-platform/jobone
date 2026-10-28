@@ -165,7 +165,7 @@ const Profile = () => {
             <div className="flex flex-col gap-3 shrink-0 w-full md:w-auto mt-4 md:mt-0">
               <button
                 onClick={() => navigate("/editprofile")}
-                className="w-full md:w-auto px-6 py-3 bg-white text-slate-900 rounded-xl font-bold hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95"
+                className="w-full md:w-auto px-6 py-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl font-bold hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95"
               >
                 <Edit size={18} /> Edit Profile
               </button>
@@ -211,7 +211,7 @@ const Profile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* About Me */}
           <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800">
-            <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-4">
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
               <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
                 <UserIcon size={20} />
               </div>
@@ -228,7 +228,7 @@ const Profile = () => {
 
           {/* Skills */}
           <div className="lg:col-span-1 bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800">
-            <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 mb-6">
               <div className="p-2 bg-orange-50 rounded-xl text-orange-600">
                 <Award size={20} />
               </div>
@@ -255,7 +255,7 @@ const Profile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Experience Timeline */}
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800">
-            <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 mb-6">
               <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600">
                 <Briefcase size={20} />
               </div>
@@ -270,7 +270,7 @@ const Profile = () => {
                   >
                     <div className="absolute left-[-5px] top-2 w-3 h-3 rounded-full bg-indigo-500 ring-4 ring-indigo-50"></div>
                     <div className="flex flex-wrap justify-between items-start gap-2 mb-1">
-                      <h3 className="text-base font-bold text-slate-900">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-white">
                         {exp.role}
                       </h3>
                       <span className="px-2.5 py-1 bg-slate-100 text-slate-500 text-[10px] font-extrabold uppercase tracking-widest rounded-md">
@@ -293,7 +293,7 @@ const Profile = () => {
 
           {/* Projects */}
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-            <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 mb-6">
               <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
                 <FileText size={20} />
               </div>
@@ -304,10 +304,10 @@ const Profile = () => {
                 {profile.projects.map((proj, i) => (
                   <div
                     key={i}
-                    className="group p-4 sm:p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:border-emerald-200 hover:shadow-md transition-all"
+                    className="group p-4 sm:p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 hover:border-emerald-200 dark:hover:border-emerald-700 hover:shadow-md transition-all"
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                      <h3 className="font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                         {proj.title}
                       </h3>
                       {proj.link && (
@@ -337,7 +337,7 @@ const Profile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Education */}
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-            <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 mb-6">
               <div className="p-2 bg-rose-50 rounded-xl text-rose-600">
                 <GraduationCap size={20} />
               </div>
@@ -350,7 +350,7 @@ const Profile = () => {
                     key={i}
                     className="p-4 rounded-2xl bg-rose-50/30 border border-rose-100/50"
                   >
-                    <h3 className="font-bold text-slate-900 text-sm mb-1">
+                    <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-1">
                       {edu.degree}
                     </h3>
                     <p className="text-xs font-semibold text-rose-600 mb-2">
@@ -361,7 +361,7 @@ const Profile = () => {
                         {edu.started} - {edu.ended}
                       </span>
                       {edu.CGPA && (
-                        <span className="bg-white px-2 py-1 rounded shadow-sm border border-slate-100">
+                        <span className="bg-white dark:bg-slate-800 px-2 py-1 rounded shadow-sm border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200">
                           CGPA: {edu.CGPA}
                         </span>
                       )}
@@ -376,7 +376,7 @@ const Profile = () => {
 
           {/* Certifications & Volunteering */}
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-            <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 mb-6">
               <div className="p-2 bg-amber-50 rounded-xl text-amber-600">
                 <Award size={20} />
               </div>
@@ -396,7 +396,7 @@ const Profile = () => {
                       className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100"
                     >
                       <div>
-                        <p className="text-sm font-bold text-slate-800">
+                        <p className="text-sm font-bold text-slate-800 dark:text-white">
                           {cert.name}
                         </p>
                         <p className="text-xs text-slate-500">
@@ -408,7 +408,7 @@ const Profile = () => {
                           href={cert.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2 bg-white rounded-lg shadow-sm hover:text-amber-600 transition-colors"
+                          className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-amber-600 transition-colors"
                         >
                           <ExternalLink size={14} />
                         </a>
@@ -433,7 +433,7 @@ const Profile = () => {
                       key={i}
                       className="p-3 rounded-xl bg-slate-50 border border-slate-100"
                     >
-                      <p className="text-sm font-bold text-slate-800">
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">
                         {vol.role}
                       </p>
                       <p className="text-xs text-slate-500 mb-1">
@@ -453,7 +453,7 @@ const Profile = () => {
 
           {/* Portfolio Links */}
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-            <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 mb-6">
               <div className="p-2 bg-purple-50 rounded-xl text-purple-600">
                 <Globe size={20} />
               </div>
@@ -469,7 +469,7 @@ const Profile = () => {
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-slate-50 hover:bg-purple-50 hover:border-purple-200 hover:shadow-sm transition-all group"
                   >
-                    <span className="font-bold text-slate-700 group-hover:text-purple-700 transition-colors">
+                    <span className="font-bold text-slate-700 dark:text-slate-200 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">
                       {link.platform}
                     </span>
                     <ChevronRight
@@ -493,7 +493,7 @@ const Profile = () => {
 function EmptyState({ text }) {
   return (
     <div className="flex flex-col items-center justify-center py-10 px-4 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
-      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
+      <div className="w-12 h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full flex items-center justify-center shadow-sm mb-3">
         <FileText size={20} className="text-slate-300" />
       </div>
       <p className="text-sm font-medium text-slate-500 text-center">{text}</p>

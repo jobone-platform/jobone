@@ -230,7 +230,7 @@ export default function EmployerAdminView() {
                   <p className="text-xs text-slate-500 font-bold uppercase">
                     Entity Type
                   </p>
-                  <p className="font-medium text-slate-900 flex items-center gap-2 mt-1">
+                  <p className="font-medium text-slate-900 dark:text-white flex items-center gap-2 mt-1">
                     {currentType === "company" ? (
                       <Building size={16} />
                     ) : (
@@ -244,7 +244,7 @@ export default function EmployerAdminView() {
                     <p className="text-xs text-slate-500 font-bold uppercase">
                       Nature of Business
                     </p>
-                    <p className="font-medium text-slate-900">
+                    <p className="font-medium text-slate-900 dark:text-white">
                       {employer.natureOfBusiness || "N/A"}
                     </p>
                   </div>
@@ -253,10 +253,10 @@ export default function EmployerAdminView() {
                   <p className="text-xs text-slate-500 font-bold uppercase">
                     Contact
                   </p>
-                  <p className="font-medium text-slate-900 flex items-center gap-2 mt-1">
+                  <p className="font-medium text-slate-900 dark:text-white flex items-center gap-2 mt-1">
                     <Mail size={14} /> {employer.email}
                   </p>
-                  <p className="font-medium text-slate-900 flex items-center gap-2 mt-1">
+                  <p className="font-medium text-slate-900 dark:text-white flex items-center gap-2 mt-1">
                     <Phone size={14} /> {employer.phone}
                   </p>
                 </div>
@@ -264,7 +264,7 @@ export default function EmployerAdminView() {
                   <p className="text-xs text-slate-500 font-bold uppercase">
                     Location
                   </p>
-                  <p className="font-medium text-slate-900 flex items-center gap-2 mt-1">
+                  <p className="font-medium text-slate-900 dark:text-white flex items-center gap-2 mt-1">
                     <MapPin size={14} />{" "}
                     {employer.officeLocation?.address || employer.location}
                   </p>
@@ -273,8 +273,8 @@ export default function EmployerAdminView() {
             </div>
 
             {/* Master Action Block */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4">
                 Final Decision
               </h2>
               {!allRequiredVerified && employer.isApproved === "pending" && (
@@ -304,8 +304,8 @@ export default function EmployerAdminView() {
 
           {/* Right Column: Documents and Jobs */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                 <FileText className="text-blue-600" /> Document Verification
                 Checklist
               </h2>
@@ -318,7 +318,7 @@ export default function EmployerAdminView() {
                   return (
                     <div
                       key={doc.field}
-                      className={`p-4 rounded-xl border ${isVerified ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-slate-50"} flex flex-col sm:flex-row justify-between items-center gap-4 transition-colors`}
+                      className={`p-4 rounded-xl border ${isVerified ? "border-emerald-200 bg-emerald-50" : "border-slate-200 dark:border-slate-800 bg-slate-50"} flex flex-col sm:flex-row justify-between items-center gap-4 transition-colors`}
                     >
                       <div className="flex items-center gap-3 w-full sm:w-auto">
                         <input
@@ -329,7 +329,7 @@ export default function EmployerAdminView() {
                           onChange={() => toggleDocVerification(doc.field)}
                         />
                         <div>
-                          <p className="font-bold text-slate-800">
+                          <p className="font-bold text-slate-800 dark:text-white">
                             {doc.label}{" "}
                             {doc.optional && (
                               <span className="text-xs text-slate-400 font-normal ml-1">
@@ -352,7 +352,7 @@ export default function EmployerAdminView() {
                       {isUploaded && (
                         <button
                           onClick={() => handleViewDocument(doc.field)}
-                          className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-100 flex items-center gap-2 w-full sm:w-auto justify-center"
+                          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-100 flex items-center gap-2 w-full sm:w-auto justify-center"
                         >
                           <Eye size={16} /> View
                         </button>
@@ -377,7 +377,7 @@ export default function EmployerAdminView() {
                   <iframe
                     src={viewUrl}
                     title="Employer verification document"
-                    className="w-full h-full rounded-xl bg-white"
+                    className="w-full h-full rounded-xl bg-white dark:bg-slate-800"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center p-4 bg-slate-900 rounded-xl">
@@ -392,8 +392,8 @@ export default function EmployerAdminView() {
             )}
 
             {/* Jobs Section */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                 <Building className="text-indigo-600" /> Jobs Posted ({employerJobs.length})
               </h2>
               {employerJobs.length === 0 ? (
@@ -401,10 +401,10 @@ export default function EmployerAdminView() {
               ) : (
                 <div className="space-y-4">
                   {employerJobs.map((job) => (
-                    <div key={job._id} className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div key={job._id} className="p-4 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-bold text-slate-800 text-lg">{job.title}</h3>
+                          <h3 className="font-bold text-slate-800 dark:text-white text-lg">{job.title}</h3>
                           <p className="text-sm text-slate-500">{job.location} • Status: {job.status}</p>
                           <p className="text-sm font-semibold text-indigo-600 mt-2">
                             Total Applications: {job.applications?.length || 0}
@@ -412,7 +412,7 @@ export default function EmployerAdminView() {
                         </div>
                         <button
                           onClick={() => window.open(`/admin/job/${job._id}`, "_blank")}
-                          className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-lg text-sm font-bold"
+                          className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 text-slate-700 dark:text-slate-300 hover:bg-slate-100 rounded-lg text-sm font-bold"
                         >
                           View Job Details
                         </button>

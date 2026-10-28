@@ -820,7 +820,7 @@ export default function CreateJob() {
         {step === 1 && (
           <div className="space-y-8">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
                 Job Title <span className="text-red-500">*</span>
               </label>
               <ElasticTitleDropdown
@@ -854,7 +854,7 @@ export default function CreateJob() {
                   }}
                   className="w-5 h-5 text-blue-600 rounded border-blue-300 focus:ring-blue-500"
                 />
-                <span className="text-sm font-bold text-gray-800">
+                <span className="text-sm font-bold text-gray-800 dark:text-white">
                   I am recruiting on behalf of another company (Agency/Third-Party)
                 </span>
               </label>
@@ -862,7 +862,7 @@ export default function CreateJob() {
               {job.isThirdPartyRecruiting && (
                 <div className="mt-4 pl-8 space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1">
                       Client Company Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -889,7 +889,7 @@ export default function CreateJob() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
                 Skills Required
               </label>
               <SkillSuggestionsDropdown
@@ -913,7 +913,7 @@ export default function CreateJob() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
                   Industry / Sector <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -945,7 +945,7 @@ export default function CreateJob() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
                   Subdomain Speciality <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -972,7 +972,7 @@ export default function CreateJob() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
                 Work Mode <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-wrap gap-3">
@@ -985,7 +985,7 @@ export default function CreateJob() {
                   return (
                     <label
                       key={m.val}
-                      className={`flex-1 min-w-[120px] cursor-pointer border rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${isSelected ? "bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+                      className={`flex-1 min-w-[120px] cursor-pointer border rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${isSelected ? "bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500" : "border-gray-200 dark:border-slate-800 text-gray-600 hover:bg-gray-50"}`}
                     >
                       <input
                         type="checkbox"
@@ -1003,7 +1003,7 @@ export default function CreateJob() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
                 Job Type <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-wrap gap-2">
@@ -1021,7 +1021,7 @@ export default function CreateJob() {
                   return (
                     <label
                       key={type}
-                      className={`cursor-pointer px-3 py-1.5 text-xs font-bold rounded-lg border transition-all capitalize ${isSelected ? "bg-indigo-600 text-white border-indigo-600 shadow-md" : "bg-white text-gray-600 border-gray-200 hover:bg-indigo-50"}`}
+                      className={`cursor-pointer px-3 py-1.5 text-xs font-bold rounded-lg border transition-all capitalize ${isSelected ? "bg-indigo-600 text-white border-indigo-600 shadow-md" : "bg-white dark:bg-slate-800 text-gray-600 border-gray-200 dark:border-slate-800 hover:bg-indigo-50"}`}
                     >
                       <input
                         type="checkbox"
@@ -1035,8 +1035,8 @@ export default function CreateJob() {
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
+            <div className="p-4 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">
                 Work Days <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
@@ -1044,7 +1044,7 @@ export default function CreateJob() {
                   (pattern) => (
                     <label
                       key={pattern}
-                      className={`cursor-pointer py-2 px-1 text-center text-[11px] font-extrabold uppercase tracking-wide rounded-lg border transition-all ${job.workDaysPattern === pattern ? "bg-slate-800 text-white border-slate-800 shadow-md" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"}`}
+                      className={`cursor-pointer py-2 px-1 text-center text-[11px] font-extrabold uppercase tracking-wide rounded-lg border transition-all ${job.workDaysPattern === pattern ? "bg-slate-800 text-white border-slate-800 shadow-md" : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100"}`}
                     >
                       <input
                         type="radio"
@@ -1106,7 +1106,7 @@ export default function CreateJob() {
                   <button
                     type="button"
                     onClick={() => setCurrencyOpen((o) => !o)}
-                    className="flex items-center gap-1.5 h-11 px-3 border border-green-200 rounded-xl bg-white text-sm font-bold text-gray-700 hover:bg-green-50 min-w-[88px]"
+                    className="flex items-center gap-1.5 h-11 px-3 border border-green-200 rounded-xl bg-white dark:bg-slate-800 text-sm font-bold text-gray-700 dark:text-slate-300 hover:bg-green-50 min-w-[88px]"
                   >
                     <img
                       src={flagUrl(
@@ -1121,14 +1121,14 @@ export default function CreateJob() {
                     <span>{job.salaryCurrency}</span>
                   </button>
                   {currencyOpen && (
-                    <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-gray-200 rounded-xl shadow-lg w-56 max-h-64 overflow-y-auto">
+                    <div className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-800 rounded-xl shadow-lg w-56 max-h-64 overflow-y-auto">
                       <input
                         autoFocus
                         type="text"
                         value={currencySearch}
                         onChange={(e) => setCurrencySearch(e.target.value)}
                         placeholder="Search..."
-                        className="w-full px-3 py-2 text-xs border-b border-gray-100 outline-none"
+                        className="w-full px-3 py-2 text-xs border-b border-gray-100 dark:border-slate-800 outline-none"
                       />
                       {TOP_CURRENCIES.filter(
                         (c) =>
@@ -1164,7 +1164,7 @@ export default function CreateJob() {
                           <span className="text-gray-400">{c.name}</span>
                         </button>
                       ))}
-                      <div className="border-t border-gray-100 my-1" />
+                      <div className="border-t border-gray-100 dark:border-slate-800 my-1" />
                       {REST_CURRENCIES.filter(
                         (c) =>
                           c.code
@@ -1235,7 +1235,7 @@ export default function CreateJob() {
                       salaryFrequency: e.target.value,
                     }))
                   }
-                  className="p-2.5 border border-green-200 rounded-xl outline-none bg-white text-sm font-bold text-green-800"
+                  className="p-2.5 border border-green-200 rounded-xl outline-none bg-white dark:bg-slate-800 text-sm font-bold text-green-800"
                 >
                   <option value="Month">/ Month</option>
                   <option value="Year">/ Year</option>
@@ -1264,7 +1264,7 @@ export default function CreateJob() {
                               : [...prev.incentives, perk.value],
                           }))
                         }
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${isSelected ? "bg-green-600 text-white border-green-600 shadow-sm" : "bg-white text-green-700 border-green-200 hover:bg-green-50"}`}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${isSelected ? "bg-green-600 text-white border-green-600 shadow-sm" : "bg-white dark:bg-slate-900 text-green-700 border-green-200 hover:bg-green-50"}`}
                       >
                         <span>{perk.icon}</span> {perk.value}
                       </button>
@@ -1391,7 +1391,7 @@ export default function CreateJob() {
                          setJob(prev => ({ ...prev, screeningQuestions: [...prev.screeningQuestions, q] }));
                       }
                     }}
-                    className="text-[11px] font-bold bg-white border border-purple-200 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors"
+                    className="text-[11px] font-bold bg-white dark:bg-slate-900 border border-purple-200 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors"
                   >
                     + Add: {q}
                   </button>
@@ -1402,7 +1402,7 @@ export default function CreateJob() {
                   {job.screeningQuestions.map((q, idx) => (
                     <li
                       key={idx}
-                      className="flex justify-between items-center bg-white p-3 border border-purple-100 rounded-lg text-sm text-purple-900"
+                      className="flex justify-between items-center bg-white dark:bg-slate-800 p-3 border border-purple-100 rounded-lg text-sm text-purple-900"
                     >
                       <span className="font-medium">
                         {idx + 1}. {q}
@@ -1466,7 +1466,7 @@ export default function CreateJob() {
                     ].map((q) => (
                       <label
                         key={q}
-                        className={`cursor-pointer px-2 py-1 text-[10px] font-bold rounded border transition-all ${job.qualifications.includes(q) ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-100"}`}
+                        className={`cursor-pointer px-2 py-1 text-[10px] font-bold rounded border transition-all ${job.qualifications.includes(q) ? "bg-indigo-600 text-white border-indigo-600" : "bg-white dark:bg-slate-900 text-indigo-700 border-indigo-200 hover:bg-indigo-100"}`}
                       >
                         <input
                           type="checkbox"
@@ -1553,7 +1553,7 @@ export default function CreateJob() {
                     Experience Required
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-3 bg-white border border-indigo-100 rounded-xl space-y-2">
+                    <div className="p-3 bg-white dark:bg-slate-800 border border-indigo-100 rounded-xl space-y-2">
                       <p className="text-xs font-bold text-indigo-700">
                         Relevant Field Experience
                       </p>
@@ -1617,7 +1617,7 @@ export default function CreateJob() {
                       </label>
                     </div>
 
-                    <div className="p-3 bg-white border border-indigo-100 rounded-xl space-y-2">
+                    <div className="p-3 bg-white dark:bg-slate-800 border border-indigo-100 rounded-xl space-y-2">
                       <p className="text-xs font-bold text-indigo-700">
                         Total Work Experience
                       </p>
@@ -1694,7 +1694,7 @@ export default function CreateJob() {
                     ].map((option) => (
                       <label
                         key={option.value}
-                        className={`cursor-pointer px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all ${job.genderPreference === option.value ? "bg-indigo-600 text-white border-indigo-600 shadow-sm" : "bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"}`}
+                        className={`cursor-pointer px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all ${job.genderPreference === option.value ? "bg-indigo-600 text-white border-indigo-600 shadow-sm" : "bg-white dark:bg-slate-800 text-indigo-700 border-indigo-200 hover:bg-indigo-50"}`}
                       >
                         <input
                           type="radio"
@@ -1767,7 +1767,7 @@ export default function CreateJob() {
                           className={`px-3 py-1.5 text-[11px] font-bold rounded-lg border transition-all flex items-center gap-1.5 ${
                             isSelected
                               ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
-                              : "bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                              : "bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/40 hover:bg-indigo-50 dark:hover:bg-slate-700"
                           }`}
                         >
                           <span>{isSelected ? "✓" : "+"}</span> {docName}
@@ -1781,7 +1781,7 @@ export default function CreateJob() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Duration & Dates Block */}
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+              <div className="p-4 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide">
                     Duration & Dates
@@ -1809,7 +1809,7 @@ export default function CreateJob() {
                         name="startDate"
                         value={job.startDate}
                         onChange={handleChange}
-                        className="w-full p-2 border border-gray-200 rounded text-xs outline-none focus:ring-2 focus:ring-blue-200 bg-white"
+                        className="w-full p-2 border border-gray-200 dark:border-slate-800 rounded text-xs outline-none focus:ring-2 focus:ring-blue-200 bg-white dark:bg-slate-900"
                       />
                     </div>
                     <div className="flex-1">
@@ -1822,12 +1822,12 @@ export default function CreateJob() {
                         value={job.isLongTerm ? "" : job.endDate}
                         onChange={handleChange}
                         disabled={job.isLongTerm}
-                        className="w-full p-2 border border-gray-200 rounded text-xs outline-none disabled:bg-gray-100 bg-white"
+                        className="w-full p-2 border border-gray-200 dark:border-slate-800 rounded text-xs outline-none disabled:bg-gray-100 bg-white dark:bg-slate-900"
                       />
                     </div>
                   </div>
                   {/* FACT: Restored Long Term Checkbox */}
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
                     <input
                       type="checkbox"
                       name="isLongTerm"
@@ -1838,7 +1838,7 @@ export default function CreateJob() {
                     Long Term Role (No fixed end date)
                   </label>
 
-                  <div className="pt-2 border-t border-gray-200">
+                  <div className="pt-2 border-t border-gray-200 dark:border-slate-800">
                     <label className="text-[10px] text-rose-500 font-bold uppercase mb-1 block flex items-center gap-1">
                       <Calendar size={12} /> Application Deadline (Optional)
                     </label>
@@ -1854,7 +1854,7 @@ export default function CreateJob() {
               </div>
 
               {/* Timings Block */}
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+              <div className="p-4 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-3">
                 <div className="flex justify-between items-center">
                   <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1">
                     Expected Timings {!job.isFlexibleShifts && <span className="text-red-500">*</span>}
@@ -1876,7 +1876,7 @@ export default function CreateJob() {
                   {job.shifts.map((shift, index) => (
                     <div
                       key={index}
-                      className="flex gap-1 items-center bg-white p-1 rounded border border-slate-200"
+                      className="flex gap-1 items-center bg-white dark:bg-slate-900 p-1 rounded border border-slate-200 dark:border-slate-800"
                     >
                       <input
                         type="time"
@@ -1976,9 +1976,9 @@ export default function CreateJob() {
                   )}
                 </button>
               </div>
-              <div className="p-4 space-y-6 bg-white">
+              <div className="p-4 space-y-6 bg-white dark:bg-slate-900">
                 <div>
-                  <label className="inline-block text-sm font-extrabold text-blue-900 bg-blue-100 px-3 py-1.5 rounded-lg mb-2 shadow-sm border border-blue-200">
+                  <label className="inline-block text-sm font-extrabold text-blue-900 dark:text-blue-300 bg-blue-100 px-3 py-1.5 rounded-lg mb-2 shadow-sm border border-blue-200">
                     Job Summary <span className="text-red-500">*</span>
                   </label>
                   {/* FACT: Replaced WYSIWYG with a clean Textarea */}
@@ -1986,7 +1986,7 @@ export default function CreateJob() {
                     value={jobSummary}
                     onChange={(e) => setJobSummary(e.target.value)}
                     placeholder="Enter a professional summary for this role..."
-                    className="w-full p-4 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium min-h-[150px] resize-y bg-slate-50 focus:bg-white transition-colors"
+                    className="w-full p-4 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium min-h-[150px] resize-y bg-slate-50 focus:bg-white dark:bg-slate-800 transition-colors"
                   />
                 </div>
                 <div>
@@ -1998,7 +1998,7 @@ export default function CreateJob() {
                     value={keyResponsibilities}
                     onChange={(e) => setKeyResponsibilities(e.target.value)}
                     placeholder="• Enter key responsibilities here&#10;• Hit enter for a new line"
-                    className="w-full p-4 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-500 font-medium min-h-[150px] resize-y bg-slate-50 focus:bg-white transition-colors leading-relaxed"
+                    className="w-full p-4 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-500 font-medium min-h-[150px] resize-y bg-slate-50 focus:bg-white dark:bg-slate-800 transition-colors leading-relaxed"
                   />
                 </div>
               </div>
@@ -2007,7 +2007,7 @@ export default function CreateJob() {
             {(job.mode.includes("Work from office") ||
               job.mode.includes("Work from field")) && (
               <div className="space-y-4">
-                <h3 className="font-bold text-gray-800 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 justify-between text-base sm:text-lg">
+                <h3 className="font-bold text-gray-800 dark:text-white flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 justify-between text-base sm:text-lg">
                   <span className="flex items-center gap-2">
                     <MapPin className="text-blue-600" /> Job Location{" "}
                     <span className="text-red-500 text-sm">*</span>
@@ -2025,7 +2025,7 @@ export default function CreateJob() {
                 </h3>
                 {!job.useOfficeLocation && (
                   <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
-                    <p className="text-sm text-blue-800 mb-3 font-medium">
+                    <p className="text-sm text-blue-800 dark:text-blue-300 mb-3 font-medium">
                       Search & Drop a pin on the map
                     </p>
                     <div className="rounded-lg overflow-hidden border border-blue-200 mb-3">
@@ -2044,7 +2044,7 @@ export default function CreateJob() {
               </div>
             )}
 
-            <div className="flex gap-4 justify-end mt-8 pt-6 border-t border-gray-100">
+            <div className="flex gap-4 justify-end mt-8 pt-6 border-t border-gray-100 dark:border-slate-800">
               <button
                 type="button"
                 onClick={(e) => {
@@ -2058,7 +2058,7 @@ export default function CreateJob() {
                   }));
                   setPreview(true);
                 }}
-                className="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold transition-colors"
+                className="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 dark:text-slate-300 font-bold transition-colors"
               >
                 Preview
               </button>
@@ -2077,7 +2077,7 @@ export default function CreateJob() {
           </div>
         )}
 
-        <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
+        <div className="flex justify-between mt-8 pt-6 border-t border-gray-100 dark:border-slate-800">
           <button
             onClick={() => {
               setStep(1);
@@ -2104,7 +2104,7 @@ export default function CreateJob() {
           <JobPreviewCard job={job} onClose={() => setPreview(false)} />
         ) : (
           <div className="flex flex-col items-center justify-center h-[400px] text-gray-400 dark:text-slate-500 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-2xl bg-gray-50/50 dark:bg-slate-900/50">
-            <div className="p-4 bg-white rounded-full shadow-sm mb-4">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-full shadow-sm mb-4">
               <FileText size={32} className="text-gray-300" />
             </div>
             <p className="font-medium">Live Preview</p>

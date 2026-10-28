@@ -186,7 +186,7 @@ const EmployerRegister = () => {
                     transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
                 />
                 <motion.div
-                    className="absolute top-1/2 left-1/3 w-20 h-20 bg-white rounded-full filter blur-lg opacity-20"
+                    className="absolute top-1/2 left-1/3 w-20 h-20 bg-white dark:bg-slate-900 rounded-full filter blur-lg opacity-20"
                     animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.3, 0.2] }}
                     transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                 />
@@ -231,7 +231,7 @@ const EmployerRegister = () => {
                     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">First Name *</label>
+                                <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">First Name *</label>
                                 <input
                                     type="text"
                                     name="firstName"
@@ -243,7 +243,7 @@ const EmployerRegister = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">Last Name *</label>
+                                <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">Last Name *</label>
                                 <input
                                     type="text"
                                     name="lastName"
@@ -257,7 +257,7 @@ const EmployerRegister = () => {
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">Email Address *</label>
+                            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">Email Address *</label>
                             <input
                                 type="email"
                                 name="email"
@@ -270,14 +270,14 @@ const EmployerRegister = () => {
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">
+                            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">
                                 Mobile Number * {countryCode === "+91" && <span className="font-normal text-gray-500">(10 digits)</span>}
                             </label>
                             <div className="flex gap-2">
                                 <select
                                     value={countryCode}
                                     onChange={handleCountryCodeChange}
-                                    className="w-28 sm:w-32 shrink-0 border border-gray-300 rounded-lg px-2 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-28 sm:w-32 shrink-0 border border-gray-300 rounded-lg px-2 py-2.5 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     {countryCodes.map((country) => (
                                         <option key={country.name} value={country.code}>
@@ -300,7 +300,7 @@ const EmployerRegister = () => {
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">Employer Type *</label>
+                            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">Employer Type *</label>
                             <div className="grid grid-cols-2 gap-2 border border-gray-300 rounded-lg p-1.5 bg-gray-50">
                                 <button
                                     type="button"
@@ -308,7 +308,7 @@ const EmployerRegister = () => {
                                     className={`py-2 px-1 text-[11px] sm:text-xs font-bold rounded-md transition leading-tight ${
                                         formData.userType === "Company"
                                             ? "bg-blue-600 text-white shadow-sm"
-                                            : "text-gray-700 hover:bg-gray-200"
+                                            : "text-gray-700 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-700"
                                     }`}
                                 >
                                     🏢 Registered Company
@@ -319,7 +319,7 @@ const EmployerRegister = () => {
                                     className={`py-2 px-1 text-[11px] sm:text-xs font-bold rounded-md transition leading-tight ${
                                         formData.userType === "Recruiter"
                                             ? "bg-blue-600 text-white shadow-sm"
-                                            : "text-gray-700 hover:bg-gray-200"
+                                            : "text-gray-700 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-700"
                                     }`}
                                 >
                                     👤 Individual Recruiter
@@ -329,7 +329,7 @@ const EmployerRegister = () => {
 
                         {formData.userType === "Company" && (
                             <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">Company / Organization Name *</label>
+                                <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">Company / Organization Name *</label>
                                 <input
                                     type="text"
                                     name="companyName"
@@ -343,7 +343,7 @@ const EmployerRegister = () => {
                         )}
 
                         <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">Password * (min. 6 characters)</label>
+                            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">Password * (min. 6 characters)</label>
                             <input
                                 type="password"
                                 name="password"

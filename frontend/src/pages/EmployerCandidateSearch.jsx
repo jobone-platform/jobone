@@ -106,7 +106,7 @@ export default function Candidates() {
       <div className="max-w-6xl mx-auto">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-6 transition-colors font-bold text-sm uppercase tracking-wide"
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:text-white mb-6 transition-colors font-bold text-sm uppercase tracking-wide"
         >
           <ArrowLeft size={16} /> Back
         </button>
@@ -164,7 +164,7 @@ export default function Candidates() {
                     }
                   }}
                   placeholder="Type a skill and press Enter..."
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-bold shadow-inner"
+                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-white font-bold shadow-inner"
                 />
               </div>
 
@@ -172,7 +172,7 @@ export default function Candidates() {
                 <button
                   type="button"
                   onClick={handleAddSkill}
-                  className="flex-1 sm:flex-initial bg-slate-200 text-slate-700 px-4 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold hover:bg-slate-300 transition-colors shrink-0 text-center"
+                  className="flex-1 sm:flex-initial bg-slate-200 text-slate-700 dark:text-slate-300 px-4 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold hover:bg-slate-300 transition-colors shrink-0 text-center"
                 >
                   Add
                 </button>
@@ -233,7 +233,7 @@ export default function Candidates() {
                           : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
                       }
                       alt={candidate.name}
-                      className="w-16 h-16 rounded-full object-cover border border-slate-100 shrink-0"
+                      className="w-16 h-16 rounded-full object-cover border border-slate-100 dark:border-slate-800 shrink-0"
                     />
                     <div className="min-w-0">
                       <h3 className="font-extrabold text-lg text-slate-900 dark:text-white line-clamp-1">
@@ -269,7 +269,7 @@ export default function Candidates() {
                       {candidate.skills?.slice(0, 5).map((skill, idx) => (
                         <span
                           key={idx}
-                          className="px-2 py-1 bg-slate-100 text-slate-700 text-[10px] font-bold rounded-md border border-slate-200"
+                          className="px-2 py-1 bg-slate-100 text-slate-700 dark:text-slate-300 text-[10px] font-bold rounded-md border border-slate-200 dark:border-slate-800"
                         >
                           {skill}
                         </span>
@@ -312,19 +312,19 @@ export default function Candidates() {
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1 || loading}
-                  className="p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronLeft size={20} />
                 </button>
 
-                <span className="text-sm font-bold text-slate-700">
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
                   Page {page} of {totalPages}
                 </span>
 
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages || loading}
-                  className="p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronRight size={20} />
                 </button>

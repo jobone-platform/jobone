@@ -266,7 +266,7 @@ export default function LanguageSuggestionsDropdown({ languages, onAdd, onRemove
                                                     type="button"
                                                     onMouseDown={(e) => e.preventDefault()}
                                                     onClick={() => handleSelect(lang)}
-                                                    className="w-full text-left px-5 py-1.5 text-xs text-gray-700 hover:bg-indigo-50 hover:text-indigo-800 transition-colors flex items-center gap-2"
+                                                    className="w-full text-left px-5 py-1.5 text-xs text-gray-700 dark:text-slate-300 hover:bg-indigo-50 hover:text-indigo-800 transition-colors flex items-center gap-2"
                                                 >
                                                     <span className="w-1 h-1 rounded-full bg-indigo-300 flex-shrink-0" />
                                                     {lang}

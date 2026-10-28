@@ -96,7 +96,7 @@ export default function CompanyProfile() {
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center items-center p-4">
         <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 text-center max-w-md w-full">
           <Building2 className="mx-auto text-slate-300 mb-4" size={64} />
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
             Profile Not Found
           </h2>
           <p className="text-slate-500 mb-6 font-medium">
@@ -222,7 +222,7 @@ export default function CompanyProfile() {
                     className="mx-auto text-slate-300 mb-4"
                     size={48}
                   />
-                  <h3 className="text-lg font-bold text-slate-800">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-white">
                     No active listings
                   </h3>
                   <p className="text-slate-500 font-medium mt-1">
@@ -247,7 +247,7 @@ export default function CompanyProfile() {
                             {job.title}
                           </h3>
                           <div className="flex flex-wrap gap-2 text-xs font-bold text-slate-600">
-                            <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                            <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-800">
                               <MapPin size={14} className="text-slate-400" />{" "}
                               <span className="truncate max-w-[120px] sm:max-w-[200px]">
                                 {jobLocation}
@@ -264,7 +264,7 @@ export default function CompanyProfile() {
                             </span>
                           </div>
                         </div>
-                        <div className="flex flex-row sm:flex-col justify-between items-center sm:items-end min-w-fit pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                        <div className="flex flex-row sm:flex-col justify-between items-center sm:items-end min-w-fit pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
                             <Clock size={12} />{" "}
                             {formatTimeAgo(job.postedAt || job.createdAt)}

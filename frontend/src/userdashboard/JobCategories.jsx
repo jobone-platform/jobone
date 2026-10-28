@@ -24,7 +24,7 @@ export default function DashboardCategories() {
         <section className="py-12 max-w-7xl mx-auto px-4">
             <div className="flex justify-between items-end mb-8">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
                         Explore Categories
                     </h2>
                     <p className="text-gray-500 mt-1">Discover your next career move by industry</p>
@@ -40,7 +40,7 @@ export default function DashboardCategories() {
                         key={index}
                         onClick={() => handleClick(cat.name)}
                         className={`${cat.span} group relative overflow-hidden flex flex-col justify-end p-6 
-                        bg-white border border-gray-100 rounded-3xl shadow-sm 
+                        bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl shadow-sm 
                         hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer`}
                     >
                         {/* Background Decoration */}
@@ -50,7 +50,7 @@ export default function DashboardCategories() {
                             <div className={`w-12 h-12 mb-3 rounded-2xl flex items-center justify-center text-2xl shadow-inner ${cat.color}`}>
                                 {cat.icon}
                             </div>
-                            <h3 className="text-lg font-bold text-gray-800">
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-white">
                                 {cat.name}
                             </h3>
                         </div>

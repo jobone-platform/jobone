@@ -1066,7 +1066,7 @@ export default function ElasticTitleDropdown({ value, onChange, hasError }) {
     <div className="relative w-full" ref={dropdownRef}>
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full p-3 pl-10 bg-white border rounded-xl flex items-center justify-between cursor-pointer focus-within:ring-2 transition-all ${
+        className={`w-full p-3 pl-10 bg-white dark:bg-slate-800 border rounded-xl flex items-center justify-between cursor-pointer focus-within:ring-2 transition-all ${
           hasError
             ? "border-red-500 bg-red-50 focus-within:ring-red-200"
             : "border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-800 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/40 focus-within:border-blue-500"
@@ -1095,7 +1095,7 @@ export default function ElasticTitleDropdown({ value, onChange, hasError }) {
               placeholder="Search roles or categories..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-transparent outline-none text-sm text-gray-700 placeholder:text-gray-400"
+              className="w-full bg-transparent outline-none text-sm text-gray-700 dark:text-slate-300 placeholder:text-gray-400"
             />
           </div>
 
@@ -1143,7 +1143,7 @@ export default function ElasticTitleDropdown({ value, onChange, hasError }) {
                       className={`px-3 py-2 text-sm rounded-lg cursor-pointer flex items-center justify-between transition-colors ${
                         value === title
                           ? "bg-blue-600 text-white font-bold"
-                          : "text-gray-700 hover:bg-gray-100 font-medium"
+                          : "text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 font-medium"
                       }`}
                     >
                       {title}

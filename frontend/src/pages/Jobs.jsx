@@ -474,12 +474,12 @@ export default function Jobs() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-3xl h-40 animate-pulse shadow-sm border border-slate-100"
+                className="bg-white dark:bg-slate-900 rounded-3xl h-40 animate-pulse shadow-sm border border-slate-100 dark:border-slate-800"
               ></div>
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-rose-100 shadow-sm">
+          <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-rose-100 shadow-sm">
             <p className="text-rose-500 font-bold">{error}</p>
           </div>
         ) : filteredJobs.length === 0 ? (

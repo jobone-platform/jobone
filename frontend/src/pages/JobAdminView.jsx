@@ -187,7 +187,7 @@ export default function JobAdminView() {
                     <button
                       onClick={() => handleStatusChange("hidden")}
                       disabled={actionLoading}
-                      className="w-full mt-2 bg-slate-100 text-slate-700 border border-slate-200 py-3 rounded-xl font-bold hover:bg-slate-200 transition flex items-center justify-center gap-2"
+                      className="w-full mt-2 bg-slate-100 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 py-3 rounded-xl font-bold hover:bg-slate-200 transition flex items-center justify-center gap-2"
                     >
                       <EyeOff size={18} /> Hide Job
                     </button>
@@ -200,7 +200,7 @@ export default function JobAdminView() {
                   </h2>
                   <div className="flex flex-col gap-3">
                     <select
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={job.status}
                       onChange={(e) => handleStatusChange(e.target.value, true)}
                       disabled={actionLoading}
@@ -219,7 +219,7 @@ export default function JobAdminView() {
             </div>
 
             {/* Core Details Card */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">
                 Core Details
               </h2>
@@ -246,7 +246,7 @@ export default function JobAdminView() {
             </div>
 
             {/* Schedule & Deadlines Card */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">
                 Schedule & Deadlines
               </h2>
@@ -269,7 +269,7 @@ export default function JobAdminView() {
                 <p className="text-xs text-slate-500 font-bold uppercase mb-1">
                   Work Days
                 </p>
-                <p className="font-medium text-slate-900 text-sm">
+                <p className="font-medium text-slate-900 dark:text-white text-sm">
                   {job.workDaysPattern === "Custom"
                     ? job.customWorkDaysDescription
                     : job.workDaysPattern}
@@ -290,10 +290,10 @@ export default function JobAdminView() {
                     job.shifts.map((s, i) => (
                       <div
                         key={i}
-                        className="flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-700"
+                        className="flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
                       >
                         <span>{s.shiftName}</span>
-                        <span className="font-mono bg-white px-2 py-1 rounded border border-slate-200">
+                        <span className="font-mono bg-white dark:bg-slate-900 px-2 py-1 rounded border border-slate-200 dark:border-slate-800">
                           {s.startTime} - {s.endTime}
                         </span>
                       </div>
@@ -309,31 +309,31 @@ export default function JobAdminView() {
           {/* --- RIGHT MAIN CONTENT --- */}
           <div className="lg:col-span-2 space-y-6">
             {/* Description & Responsibilities */}
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-8">
+            <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
               <div>
-                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-3">
+                <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2 border-b pb-3">
                   <FileText className="text-blue-600" /> Job Summary
                 </h2>
                 <div
-                  className="prose prose-sm max-w-none text-slate-600 prose-headings:text-slate-800 prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
+                  className="prose prose-sm max-w-none text-slate-600 prose-headings:text-slate-800 dark:text-white prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
                   dangerouslySetInnerHTML={{ __html: job.jobSummary }}
                 />
               </div>
               
               <div>
-                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-3">
+                <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2 border-b pb-3">
                   <Briefcase className="text-blue-600" /> Key Responsibilities
                 </h2>
                 <div
-                  className="prose prose-sm max-w-none text-slate-600 prose-headings:text-slate-800 prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
+                  className="prose prose-sm max-w-none text-slate-600 prose-headings:text-slate-800 dark:text-white prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
                   dangerouslySetInnerHTML={{ __html: job.keyResponsibilities }}
                 />
               </div>
             </div>
 
             {/* Candidate Requirements */}
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2 border-b pb-3">
+            <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b pb-3">
                 <UserCircle2 className="text-indigo-600" /> Candidate
                 Demographics
               </h2>
@@ -343,7 +343,7 @@ export default function JobAdminView() {
                   <p className="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 mb-1">
                     <GraduationCap size={12} /> Qualifications
                   </p>
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-slate-800 dark:text-white">
                     {renderArray(job.qualifications)}
                   </p>
                 </div>
@@ -351,7 +351,7 @@ export default function JobAdminView() {
                   <p className="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 mb-1">
                     <FileText size={12} /> Courses
                   </p>
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-slate-800 dark:text-white">
                     {renderArray(job.courses)}
                   </p>
                 </div>
@@ -359,7 +359,7 @@ export default function JobAdminView() {
                   <p className="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 mb-1">
                     <Languages size={12} /> Languages
                   </p>
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-slate-800 dark:text-white">
                     {renderArray(job.languages)}
                   </p>
                 </div>
@@ -367,18 +367,18 @@ export default function JobAdminView() {
                   <p className="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 mb-1">
                     <Users size={12} /> Gender
                   </p>
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-slate-800 dark:text-white">
                     {job.genderPreference}
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
                 <div>
                   <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">
                     Age Limit
                   </p>
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-slate-800 dark:text-white">
                     {job.ageLimit?.isAny
                       ? "Any Age"
                       : job.ageLimit?.min
@@ -390,7 +390,7 @@ export default function JobAdminView() {
                   <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">
                     Experience (Relevant / Total)
                   </p>
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-slate-800 dark:text-white">
                     {job.experience?.relevantExperience?.isAny
                       ? "Any / Fresher"
                       : `${job.experience?.relevantExperience?.min}-${job.experience?.relevantExperience?.max} Yrs`}
@@ -406,7 +406,7 @@ export default function JobAdminView() {
             {/* Arrays: Skills, Perks, Features, Questions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Skills */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">
                   Skills Required
                 </h2>
@@ -429,7 +429,7 @@ export default function JobAdminView() {
               </div>
 
               {/* Highlights */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <h2 className="text-sm font-extrabold text-amber-500 uppercase tracking-widest mb-4 border-b border-amber-100 pb-2 flex items-center gap-2">
                   <Zap size={14} /> Job Highlights
                 </h2>
@@ -455,7 +455,7 @@ export default function JobAdminView() {
               </div>
 
               {/* Perks */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <h2 className="text-sm font-extrabold text-emerald-500 uppercase tracking-widest mb-4 border-b border-emerald-100 pb-2 flex items-center gap-2">
                   <CheckCircle size={14} /> Perks & Incentives
                 </h2>
@@ -478,7 +478,7 @@ export default function JobAdminView() {
               </div>
 
               {/* Screening Questions */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <h2 className="text-sm font-extrabold text-purple-500 uppercase tracking-widest mb-4 border-b border-purple-100 pb-2 flex items-center gap-2">
                   <HelpCircle size={14} /> Screening Questions
                 </h2>
@@ -488,7 +488,7 @@ export default function JobAdminView() {
                     job.screeningQuestions.map((q, index) => (
                       <li
                         key={index}
-                        className="text-sm font-medium text-slate-700 bg-purple-50/50 p-2 rounded-lg border border-purple-100"
+                        className="text-sm font-medium text-slate-700 dark:text-slate-300 bg-purple-50/50 p-2 rounded-lg border border-purple-100"
                       >
                         <span className="font-bold text-purple-600 mr-2">
                           Q{index + 1}.
@@ -515,7 +515,7 @@ export default function JobAdminView() {
 const DetailItem = ({ icon, label, children }) => (
   <div>
     <p className="text-xs text-slate-500 font-bold uppercase mb-1">{label}</p>
-    <p className="font-medium text-slate-900 flex items-start gap-2 mt-1 text-sm">
+    <p className="font-medium text-slate-900 dark:text-white flex items-start gap-2 mt-1 text-sm">
       <span className="text-slate-400 mt-0.5 shrink-0">
         {React.cloneElement(icon, { size: 14 })}
       </span>

@@ -136,7 +136,7 @@ export default function GlobalNotificationPopup() {
             initial={{ opacity: 0, x: 50, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-            className="pointer-events-auto bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 overflow-hidden flex flex-col"
+            className="pointer-events-auto bg-white dark:bg-slate-900 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col"
           >
             {/* Toast Header */}
             <div className="flex items-center justify-between px-4 py-2.5 bg-indigo-600 text-white">
@@ -160,7 +160,7 @@ export default function GlobalNotificationPopup() {
             <div className="p-4">
               <div className="mb-3">
                 {/* Job Title */}
-                <p className="text-sm font-extrabold text-slate-900 leading-tight truncate">
+                <p className="text-sm font-extrabold text-slate-900 dark:text-white leading-tight truncate">
                   {app.job?.title || "Job Title Unavailable"}
                 </p>
 
@@ -191,11 +191,11 @@ export default function GlobalNotificationPopup() {
               <div className="mb-3">{getStatusBadge(app.status)}</div>
 
               {app.employerMessage && (
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 mb-3">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                     <MessageCircle size={10} /> Note from Employer
                   </p>
-                  <p className="text-xs text-slate-700 font-medium line-clamp-3">
+                  <p className="text-xs text-slate-700 dark:text-slate-300 font-medium line-clamp-3">
                     {app.employerMessage}
                   </p>
                 </div>

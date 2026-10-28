@@ -79,7 +79,7 @@ export default function JobApplicants() {
           <div>
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-slate-400 hover:text-slate-800 mb-4 transition-colors font-bold text-sm"
+              className="flex items-center gap-2 text-slate-400 hover:text-slate-800 dark:text-white mb-4 transition-colors font-bold text-sm"
             >
               <ArrowLeft size={16} /> Back to Job
             </button>
@@ -95,7 +95,7 @@ export default function JobApplicants() {
 
         {applicants.length === 0 ? (
           <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-5 border border-slate-100">
+            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-5 border border-slate-100 dark:border-slate-800">
               <User className="text-slate-400" size={32} />
             </div>
             <h3 className="text-xl font-extrabold text-slate-800 dark:text-white mb-2">
@@ -128,7 +128,7 @@ export default function JobApplicants() {
                             : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
                         }
                         alt="Avatar"
-                        className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-sm bg-slate-50 shrink-0"
+                        className="w-16 h-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-800 shadow-sm bg-slate-50 shrink-0"
                       />
                       <div className="min-w-0">
                         <h3 className="font-extrabold text-lg text-slate-900 dark:text-white leading-tight truncate">
@@ -146,11 +146,11 @@ export default function JobApplicants() {
                     <div className="mb-5">{getStatusBadge(app.status)}</div>
 
                     <div className="space-y-3 text-sm font-bold text-slate-600 mb-6">
-                      <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                      <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
                         <Mail size={16} className="text-indigo-400 shrink-0" />
                         <span className="truncate">{candidate.email}</span>
                       </div>
-                      <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                      <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
                         <Phone size={16} className="text-indigo-400 shrink-0" />
                         <span>{candidate.phone || "Not Provided"}</span>
                       </div>
@@ -173,14 +173,14 @@ export default function JobApplicants() {
                     )}
                   </div>
 
-                  <div className="mt-auto border-t border-slate-100 p-5 bg-slate-50">
+                  <div className="mt-auto border-t border-slate-100 dark:border-slate-800 p-5 bg-slate-50">
                     <button
                       onClick={() =>
                         navigate(`/application/${app._id}`, {
                           state: { application: app },
                         })
                       }
-                      className="w-full flex items-center justify-center gap-2 bg-white border border-slate-200 text-indigo-600 font-bold py-3 rounded-xl hover:bg-indigo-50 hover:border-indigo-200 transition-all shadow-sm active:scale-[0.98]"
+                      className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-indigo-600 font-bold py-3 rounded-xl hover:bg-indigo-50 hover:border-indigo-200 transition-all shadow-sm active:scale-[0.98]"
                     >
                       Review Full Profile <ChevronRight size={18} />
                     </button>

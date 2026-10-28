@@ -244,11 +244,11 @@ export default function EmployerDashboard() {
           </div>
         ) : approvalStatus === "rejected" ? (
           /* FACT: The Rejected Lock Screen */
-          <div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-16 text-center flex flex-col items-center justify-center max-w-3xl mx-auto mt-10">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm p-16 text-center flex flex-col items-center justify-center max-w-3xl mx-auto mt-10">
             <div className="w-24 h-24 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mb-6 border-8 border-rose-100/50">
               <XOctagon size={40} />
             </div>
-            <h2 className="text-2xl font-extrabold text-slate-900 mb-3">
+            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-3">
               Registration Denied
             </h2>
             <p className="text-slate-500 font-medium leading-relaxed max-w-lg">
@@ -326,7 +326,7 @@ export default function EmployerDashboard() {
                       <tr className="bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         <th className="p-3 sm:p-4 font-bold">Job Title & Details</th>
                         <th className="p-3 sm:p-4 font-bold text-center">Status</th>
-                        <th className="p-4 font-bold text-center border-l border-slate-100 bg-slate-50/50">
+                        <th className="p-4 font-bold text-center border-l border-slate-100 dark:border-slate-800 bg-slate-50/50">
                           Total
                         </th>
                         <th className="p-4 font-bold text-center text-blue-600 bg-blue-50/30">
@@ -347,7 +347,7 @@ export default function EmployerDashboard() {
                         <th className="p-4 font-bold text-center text-rose-600 bg-rose-50/30">
                           NCTT
                         </th>
-                        <th className="p-4 font-bold text-right border-l border-slate-100">
+                        <th className="p-4 font-bold text-right border-l border-slate-100 dark:border-slate-800">
                           Actions
                         </th>
                       </tr>
@@ -387,7 +387,7 @@ export default function EmployerDashboard() {
                           </td>
 
                           {/* Metrics */}
-                          <td className="p-4 text-center font-extrabold text-slate-700 border-l border-slate-100 bg-slate-50/50">
+                          <td className="p-4 text-center font-extrabold text-slate-700 dark:text-slate-300 border-l border-slate-100 dark:border-slate-800 bg-slate-50/50">
                             <span
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -408,7 +408,7 @@ export default function EmployerDashboard() {
                                   `/job/${job._id}/applicants?status=shortlisted`,
                                 );
                               }}
-                              className="cursor-pointer hover:text-blue-900 hover:underline transition-colors block w-full"
+                              className="cursor-pointer hover:text-blue-900 dark:text-blue-300 hover:underline transition-colors block w-full"
                               title="View Shortlisted"
                             >
                               {job.stats?.shortlisted || 0}
@@ -438,7 +438,7 @@ export default function EmployerDashboard() {
                                   `/job/${job._id}/applicants?status=Interview Conducted`,
                                 );
                               }}
-                              className="cursor-pointer hover:text-orange-900 hover:underline transition-colors block w-full"
+                              className="cursor-pointer hover:text-orange-900 dark:hover:text-orange-300 hover:underline transition-colors block w-full"
                               title="View Interview Conducted"
                             >
                               {job.stats?.interviewConducted || 0}
@@ -491,7 +491,7 @@ export default function EmployerDashboard() {
                           </td>
 
                           {/* Actions */}
-                          <td className="p-4 text-right border-l border-slate-100">
+                          <td className="p-4 text-right border-l border-slate-100 dark:border-slate-800">
                             <div className="flex items-center justify-end gap-2">
                               <button
                                 onClick={(e) => {
@@ -574,7 +574,7 @@ function StatCard({ label, value, color }) {
 
 function MetricBox({ title, value, color, onClick }) {
   const colors = {
-    slate: "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100",
+    slate: "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700",
     blue: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100",
     purple: "bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100",
     orange: "bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100",

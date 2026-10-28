@@ -108,7 +108,7 @@ export default function EmployerJobDetails() {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
         <div className="text-center p-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-md shadow-xl mx-4">
-          <h2 className="text-2xl font-extrabold text-slate-800 mb-2">
+          <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white mb-2">
             Job Not Found
           </h2>
           <p className="text-slate-500 mb-6">
@@ -149,7 +149,7 @@ export default function EmployerJobDetails() {
           <div className="relative z-10 w-full lg:w-auto">
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <span
-                className={`px-3 py-1.5 rounded-md text-[10px] font-extrabold uppercase tracking-widest border ${job.status === "active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-600 border-slate-200"}`}
+                className={`px-3 py-1.5 rounded-md text-[10px] font-extrabold uppercase tracking-widest border ${job.status === "active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-600 border-slate-200 dark:border-slate-800"}`}
               >
                 {job.status?.replace("_", " ") || "Active"}
               </span>
@@ -185,7 +185,7 @@ export default function EmployerJobDetails() {
             </button>
             <button
               onClick={() => navigate(`/editjob/${job._id}`)}
-              className="flex-1 lg:flex-none justify-center flex items-center gap-2 bg-white text-slate-700 px-5 sm:px-6 py-3 rounded-xl font-bold hover:bg-slate-50 border border-slate-200 transition-colors shadow-sm"
+              className="flex-1 lg:flex-none justify-center flex items-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-5 sm:px-6 py-3 rounded-xl font-bold hover:bg-slate-50 border border-slate-200 dark:border-slate-800 transition-colors shadow-sm"
             >
               <Pencil size={18} /> Edit
             </button>
@@ -230,11 +230,11 @@ export default function EmployerJobDetails() {
               </h2>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6">
-                <div className="col-span-2 sm:col-span-3 border-b border-slate-100 pb-4">
+                <div className="col-span-2 sm:col-span-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                   <p className="text-[10px] text-indigo-400 font-bold uppercase mb-0.5">
                     <Target size={12} className="inline mr-1" /> Experience
                   </p>
-                  <p className="text-sm text-slate-800 font-bold">
+                  <p className="text-sm text-slate-800 dark:text-white font-bold">
                     {renderExperience()}
                   </p>
                 </div>
@@ -243,7 +243,7 @@ export default function EmployerJobDetails() {
                     <GraduationCap size={12} className="text-indigo-400" />{" "}
                     Education
                   </p>
-                  <p className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                  <p className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
                     {renderArray(job.qualifications)}
                     {job.courses?.length > 0 && (
                       <span className="text-[11px] text-slate-500 font-medium">
@@ -258,7 +258,7 @@ export default function EmployerJobDetails() {
                     <Languages size={12} className="text-indigo-400" />{" "}
                     Languages
                   </p>
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-slate-800 dark:text-white">
                     {renderArray(job.languages)}
                   </p>
                 </div>
@@ -268,7 +268,7 @@ export default function EmployerJobDetails() {
                     <UserCircle2 size={12} className="text-indigo-400" />{" "}
                     Demographics
                   </p>
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-slate-800 dark:text-white">
                     {job.ageLimit?.isAny
                       ? "Any Age"
                       : job.ageLimit?.min
@@ -283,8 +283,8 @@ export default function EmployerJobDetails() {
 
             {/* Required Skills */}
             {job.skillsRequired?.length > 0 && (
-              <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-4 border-b border-slate-100 pb-4 flex items-center gap-3">
+              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-3">
                   <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
                     <CheckCircle2 size={18} sm:size={20} />
                   </div>{" "}
@@ -307,7 +307,7 @@ export default function EmployerJobDetails() {
             {job.screeningQuestions?.length > 0 && (
               <section className="bg-rose-50/50 rounded-3xl p-6 sm:p-8 border border-rose-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                 <h2 className="text-base sm:text-lg font-extrabold text-rose-900 mb-4 flex items-center gap-3">
-                  <div className="p-2 bg-white rounded-lg text-rose-600 shadow-sm">
+                  <div className="p-2 bg-white dark:bg-slate-800 rounded-lg text-rose-600 shadow-sm">
                     <HelpCircle size={18} />
                   </div>{" "}
                   Assessment Questions
@@ -320,7 +320,7 @@ export default function EmployerJobDetails() {
                   {job.screeningQuestions.map((q, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-3 bg-white p-3 sm:p-4 rounded-xl border border-rose-100 text-[11px] sm:text-xs font-medium text-slate-700 shadow-sm"
+                      className="flex items-start gap-3 bg-white dark:bg-slate-800 p-3 sm:p-4 rounded-xl border border-rose-100 text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-300 shadow-sm"
                     >
                       <span className="font-extrabold text-rose-500">
                         Q{i + 1}.
@@ -333,9 +333,9 @@ export default function EmployerJobDetails() {
             )}
 
             {/* Description (Job Summary & Key Responsibilities) */}
-            <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-8">
+            <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-8">
               <div>
-                <h2 className="text-sm sm:text-base font-extrabold text-blue-900 bg-blue-100 inline-flex items-center gap-2 px-4 py-2 rounded-xl mb-4 shadow-sm border border-blue-200">
+                <h2 className="text-sm sm:text-base font-extrabold text-blue-900 dark:text-blue-300 bg-blue-100 inline-flex items-center gap-2 px-4 py-2 rounded-xl mb-4 shadow-sm border border-blue-200">
                   <Briefcase size={18} className="text-blue-700" />
                   Job Summary
                 </h2>
@@ -349,7 +349,7 @@ export default function EmployerJobDetails() {
 
               {(job.keyResponsibilities ||
                 job.description?.includes("Key Responsibilities")) && (
-                <div className="pt-6 border-t border-slate-100">
+                <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
                   <h2 className="text-sm sm:text-base font-extrabold text-purple-900 bg-purple-100 inline-flex items-center gap-2 px-4 py-2 rounded-xl mb-4 shadow-sm border border-purple-200">
                     <ListChecks size={18} className="text-purple-700" />
                     Key Responsibilities
@@ -454,7 +454,7 @@ export default function EmployerJobDetails() {
 
             {/* Job Overview (Timeline & Openings) */}
             <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div className="flex items-center justify-between mb-5 sm:mb-6 border-b border-slate-100 pb-3">
+              <div className="flex items-center justify-between mb-5 sm:mb-6 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                   Timeline & Openings
                 </h3>
@@ -521,9 +521,9 @@ export default function EmployerJobDetails() {
             </section>
 
             {/* Schedule & Shifts */}
-            <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-              <div className="flex justify-between items-center mb-5 sm:mb-6 border-b border-slate-100 pb-3">
-                <h3 className="text-[10px] sm:text-xs font-extrabold text-slate-800 flex items-center gap-2">
+            <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex justify-between items-center mb-5 sm:mb-6 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 className="text-[10px] sm:text-xs font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
                   <div className="p-1.5 bg-purple-50 rounded-lg text-purple-600">
                     <Clock size={16} />
                   </div>{" "}
@@ -556,12 +556,12 @@ export default function EmployerJobDetails() {
                     {job.shifts.map((shift, i) => (
                       <div
                         key={i}
-                        className="flex justify-between items-center bg-slate-50 p-3 border border-slate-200 rounded-xl"
+                        className="flex justify-between items-center bg-slate-50 p-3 border border-slate-200 dark:border-slate-800 rounded-xl"
                       >
-                        <span className="text-xs font-bold text-slate-700">
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                           {shift.shiftName}
                         </span>
-                        <span className="text-xs font-mono font-bold text-slate-500 bg-white px-2 py-1 rounded shadow-sm border border-slate-100">
+                        <span className="text-xs font-mono font-bold text-slate-500 bg-white dark:bg-slate-900 px-2 py-1 rounded shadow-sm border border-slate-100 dark:border-slate-800">
                           {shift.startTime || "--:--"} -{" "}
                           {shift.endTime || "--:--"}
                         </span>
@@ -583,7 +583,7 @@ function DetailRow({ icon, label, value }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 shadow-sm">
+        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
           {icon}
         </div>
         <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
@@ -591,7 +591,7 @@ function DetailRow({ icon, label, value }) {
         </span>
       </div>
       <span
-        className="text-slate-900 font-extrabold text-xs sm:text-sm text-right truncate max-w-[45%]"
+        className="text-slate-900 dark:text-white font-extrabold text-xs sm:text-sm text-right truncate max-w-[45%]"
         title={value}
       >
         {value}
