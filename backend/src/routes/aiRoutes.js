@@ -5,6 +5,7 @@ import {protect} from "../middleware/authorization.js";
 import { generateJobDetails , parseResume} from "../controllers/aiControllers.js";
 import { recommendJobs } from "../controllers/aiControllers.js";
 import { handleChatBot } from "../controllers/aiChatControllers.js";
+import { aiChatLimiter } from "../middleware/rateLimiter.js";
 
 
 const router = express.Router();
@@ -24,8 +25,9 @@ router.get("/recommend-jobs", protect, recommendJobs);
 
 
 
-// Note: Ensure your Express app has express.json() middleware enabled
-router.post("/chat", handleChatBot);
+// Note: Rate limited to prevent external API cost abuse
+router.post("/chat", aiChatLimiter, handleChatBot);
+
 
 
 export default router;

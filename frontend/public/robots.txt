@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+Allow: /jobs
+Allow: /companies
+Allow: /about
+Allow: /services
+Allow: /contact
+
+# Protect private application and dashboard areas
+Disallow: /admin/
+Disallow: /userdashboard/
+Disallow: /employerdashboard/
+Disallow: /myapplications/
+Disallow: /profile/
+Disallow: /editprofile/
+Disallow: /employerprofile/
+Disallow: /employereditprofile/
+Disallow: /candidates/
+Disallow: /my-candidates/
+Disallow: /createjob/
+Disallow: /editjob/
+

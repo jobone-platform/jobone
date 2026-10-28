@@ -5,7 +5,10 @@ import axios from "axios";
 import "./index.css";
 import App from "./App.jsx";
 
-import { ThemeProvider } from "./routes/Context.jsx";
+import { ThemeProvider, AuthProvider } from "./routes/Context.jsx";
+
+// Configure reasonable request timeout (15s)
+axios.defaults.timeout = 15000;
 
 // Global interceptor for expired/invalid tokens
 axios.interceptors.response.use(
@@ -39,7 +42,9 @@ createRoot(document.getElementById("root")).render(
   <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}>
     <StrictMode>
       <ThemeProvider>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </ThemeProvider>
     </StrictMode>
   </GoogleOAuthProvider>

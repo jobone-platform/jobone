@@ -23,7 +23,7 @@ import CTA from "../components/CTA";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans selection:bg-blue-200 selection:text-blue-900">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-blue-200 selection:text-blue-900 transition-colors duration-150">
       <header className="relative overflow-hidden bg-slate-900">
         <Hero />
       </header>
@@ -34,13 +34,13 @@ export default function Home() {
         <JobCategories />
 
         {/* Visual Break with subtle border */}
-        <div className="w-full border-t border-slate-200/60 bg-white">
+        <div className="w-full border-t border-slate-200/60 dark:border-slate-800/80 bg-white dark:bg-slate-950">
           <CompanyCard />
         </div>
 
         <FeaturedJobs />
 
-        <div className="w-full border-t border-slate-200/60 bg-white">
+        <div className="w-full border-t border-slate-200/60 dark:border-slate-800/80 bg-white dark:bg-slate-950">
           <ProcessBento />
         </div>
 

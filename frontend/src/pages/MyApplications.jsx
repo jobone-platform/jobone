@@ -138,22 +138,22 @@ export default function MyApplications() {
   if (applications.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-4">
-        <div className="bg-white p-10 rounded-3xl shadow-sm border border-slate-200 text-center max-w-md w-full">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 p-10 rounded-3xl shadow-sm text-center max-w-md w-full">
           <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
             <SearchX className="text-slate-400" size={40} />
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-2">
-            No Applications Yet
+            No Applications Submitted Yet
           </h2>
           <p className="text-slate-500 mb-8 leading-relaxed">
-            You haven't applied to any jobs yet. Your next career move is just a
-            click away!
+            You have not applied to any job openings yet. Explore open roles across
+            verified employers to submit your first application.
           </p>
           <Link
             to="/jobs"
             className="block w-full py-3.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
           >
-            Browse Jobs
+            Browse Open Jobs
           </Link>
         </div>
       </div>
@@ -161,7 +161,7 @@ export default function MyApplications() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-20 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-20 px-4 sm:px-6 lg:px-8 font-sans transition-colors duration-150">
       <div className="max-w-6xl mx-auto mt-10">
         <button
           onClick={() => navigate(-1)}
@@ -170,16 +170,16 @@ export default function MyApplications() {
           <ArrowLeft size={18} /> Back
         </button>
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 bg-white dark:bg-slate-900 p-5 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-slate-950/40 border border-slate-100 dark:border-slate-800">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               My Applications
             </h1>
             <p className="text-slate-500 mt-1 font-medium">
-              Track and manage your job applications.
+              Track and manage your job applications and employer interview updates in real time.
             </p>
           </div>
-          <div className="bg-indigo-50 px-5 py-3 rounded-xl border border-indigo-100 text-sm font-bold text-indigo-800">
+          <div className="bg-indigo-50 dark:bg-indigo-950/60 px-5 py-3 rounded-xl border border-indigo-100 dark:border-indigo-800/60 text-sm font-bold text-indigo-800 dark:text-indigo-300">
             Total Active Applications:{" "}
             <span className="text-indigo-600 text-lg ml-1">
               {applications.length}
@@ -206,13 +206,13 @@ export default function MyApplications() {
                 key={app.applicationId || app._id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all duration-300 flex flex-col h-full overflow-hidden"
+                className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-slate-950/40 hover:shadow-xl dark:hover:border-indigo-500/50 transition-all duration-300 flex flex-col h-full overflow-hidden"
               >
                 {/* Card Header */}
                 <div className="p-5">
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
                     <div className="flex gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 flex items-center justify-center text-lg font-extrabold text-indigo-600 shadow-sm shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-50 dark:from-slate-800 to-purple-50 dark:to-slate-800 border border-indigo-100 dark:border-slate-700 flex items-center justify-center text-lg font-extrabold text-indigo-600 dark:text-indigo-400 shadow-sm shrink-0">
                         {companyImage ? (
                           <img
                             src={companyImage}
@@ -225,7 +225,7 @@ export default function MyApplications() {
                       </div>
                       <div className="min-w-0">
                         <h3
-                          className="font-bold text-slate-900 text-lg leading-tight truncate pr-2"
+                          className="font-bold text-slate-900 dark:text-white text-lg leading-tight truncate pr-2"
                           title={job.title}
                         >
                           {job.title || "Job Title Unavailable"}
@@ -258,7 +258,7 @@ export default function MyApplications() {
 
                   {/* Job Details mapped to new Schema */}
                   <div className="flex flex-wrap gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
                       <MapPin size={14} className="text-slate-400" />
                       <span
                         className="text-xs font-semibold text-slate-700 truncate max-w-[120px]"
@@ -287,7 +287,7 @@ export default function MyApplications() {
                 </div>
 
                 {/* Footer */}
-                <div className="mt-auto px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex justify-between items-center">
+                <div className="mt-auto px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold tracking-wide">
                     <Calendar size={14} className="text-slate-400" /> Applied{" "}
                     {new Date(app.appliedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -318,7 +318,7 @@ export default function MyApplications() {
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative overflow-hidden"
+              className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
 
@@ -328,7 +328,7 @@ export default function MyApplications() {
                     <MessageCircle size={24} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-extrabold text-slate-900 leading-tight">
+                    <h3 className="text-xl font-extrabold text-slate-900 dark:text-white leading-tight">
                       Update Details
                     </h3>
                     <p className="text-sm font-bold text-indigo-600 uppercase tracking-wide mt-0.5">
@@ -344,11 +344,11 @@ export default function MyApplications() {
                 </button>
               </div>
 
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 relative z-10">
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative z-10">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
                   Message from Employer
                 </p>
-                <div className="text-slate-700 whitespace-pre-wrap leading-relaxed text-sm font-medium">
+                <div className="text-slate-700 dark:text-slate-200 whitespace-pre-wrap leading-relaxed text-sm font-medium">
                   {messagePopup.message}
                 </div>
               </div>

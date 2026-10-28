@@ -30,6 +30,8 @@ export default function Candidates() {
   const [totalCandidates, setTotalCandidates] = useState(0);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchCandidates = async () => {
       setLoading(true);
       try {
@@ -38,13 +40,19 @@ export default function Candidates() {
 
         const { data } = await axios.get(
           `${API_BASE_URL}/employer/search-candidates?skills=${encodeURIComponent(appliedQuery)}&page=${page}&limit=20`,
-          { headers: { Authorization: `Bearer ${token}` } },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: controller.signal,
+          },
         );
 
         setCandidates(data.candidates || []);
         setTotalPages(data.totalPages || 1);
         setTotalCandidates(data.totalCandidates || 0);
       } catch (error) {
+        if (axios.isCancel(error) || error.name === "CanceledError" || error.name === "AbortError") {
+          return;
+        }
         console.error("Search failed:", error);
       } finally {
         setLoading(false);
@@ -52,6 +60,9 @@ export default function Candidates() {
     };
 
     fetchCandidates();
+    return () => {
+      controller.abort();
+    };
   }, [page, appliedQuery]);
 
   // FACT: Adds a skill to the visual array
@@ -91,7 +102,7 @@ export default function Candidates() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 font-sans mt-16 sm:mt-20">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-12 px-4 sm:px-6 font-sans mt-16 sm:mt-20">
       <div className="max-w-6xl mx-auto">
         <button
           onClick={() => navigate(-1)}
@@ -100,11 +111,11 @@ export default function Candidates() {
           <ArrowLeft size={16} /> Back
         </button>
         {/* Header & Search Bar */}
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 mb-8 text-center">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800 mb-8 text-center">
           <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search size={28} />
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-2">
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
             Candidate Database
           </h1>
           <p className="text-slate-500 font-medium mb-8">
@@ -157,11 +168,11 @@ export default function Candidates() {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
                 <button
                   type="button"
                   onClick={handleAddSkill}
-                  className="bg-slate-200 text-slate-700 px-6 py-4 rounded-xl font-bold hover:bg-slate-300 transition-colors shrink-0"
+                  className="flex-1 sm:flex-initial bg-slate-200 text-slate-700 px-4 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold hover:bg-slate-300 transition-colors shrink-0 text-center"
                 >
                   Add
                 </button>
@@ -172,7 +183,7 @@ export default function Candidates() {
                   disabled={
                     loading || (searchSkills.length === 0 && !skillInput.trim())
                   }
-                  className="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-md shrink-0"
+                  className="flex-1 sm:flex-initial bg-blue-600 text-white px-5 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-md shrink-0 text-center"
                 >
                   Search
                 </button>
@@ -181,7 +192,7 @@ export default function Candidates() {
                   <button
                     type="button"
                     onClick={handleClear}
-                    className="bg-rose-50 text-rose-600 px-6 py-4 rounded-xl font-bold hover:bg-rose-100 transition-colors border border-rose-100 shrink-0"
+                    className="w-full sm:w-auto bg-rose-50 text-rose-600 px-4 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold hover:bg-rose-100 transition-colors border border-rose-100 shrink-0 text-center"
                   >
                     Clear
                   </button>
@@ -197,8 +208,8 @@ export default function Candidates() {
             <Loader2 className="animate-spin text-blue-600" size={40} />
           </div>
         ) : candidates.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm">
-            <h3 className="text-xl font-bold text-slate-800">
+          <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">
               No candidates found
             </h3>
             <p className="text-slate-500 mt-2">
@@ -211,7 +222,7 @@ export default function Candidates() {
               {candidates.map((candidate) => (
                 <div
                   key={candidate._id}
-                  className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col"
+                  className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <img
@@ -225,7 +236,7 @@ export default function Candidates() {
                       className="w-16 h-16 rounded-full object-cover border border-slate-100 shrink-0"
                     />
                     <div className="min-w-0">
-                      <h3 className="font-extrabold text-lg text-slate-900 line-clamp-1">
+                      <h3 className="font-extrabold text-lg text-slate-900 dark:text-white line-clamp-1">
                         {candidate.name}
                       </h3>
                       <p className="text-xs text-slate-500 flex items-center gap-1 mt-1 font-medium truncate">

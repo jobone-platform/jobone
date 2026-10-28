@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 /**
  * Shared validation utilities for JobOne Backend
  */
@@ -7,9 +9,20 @@ export const sanitizeString = (str) => {
   return str.trim();
 };
 
+export const normalizeEmail = (email) => {
+  if (!email || typeof email !== 'string') return '';
+  return email.trim().toLowerCase();
+};
+
+export const generateSecureOTP = (length = 6) => {
+  const min = Math.pow(10, length - 1);
+  const max = Math.pow(10, length);
+  return crypto.randomInt(min, max).toString();
+};
+
 export const isValidEmail = (email) => {
   if (!email || typeof email !== 'string') return false;
-  const trimmed = email.trim().toLowerCase();
+  const trimmed = normalizeEmail(email);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(trimmed) && trimmed.length <= 100;
 };
@@ -28,7 +41,7 @@ export const validatePasswordStrength = (password) => {
 };
 
 export const validatePhone = (rawPhone, countryCode = '+91') => {
-  if (!rawPhone || typeof rawPhone !== 'string') {
+  if (!rawPhone || typeof rawPhone !== 'string' || !rawPhone.trim()) {
     return { isValid: false, message: 'Phone number is required' };
   }
 
@@ -62,11 +75,11 @@ export const validatePhone = (rawPhone, countryCode = '+91') => {
         message: `Indian mobile number must be exactly 10 digits. Entered: ${digitsOnly.length} digits.`
       };
     }
-    // Must start with 5, 6, 7, 8, or 9 for valid Indian mobile
-    if (!/^[5-9]\d{9}$/.test(digitsOnly)) {
+    // Must start with 6, 7, 8, or 9 for valid Indian mobile
+    if (!/^[6-9]\d{9}$/.test(digitsOnly)) {
       return {
         isValid: false,
-        message: 'Invalid Indian mobile number. It must start with 5, 6, 7, 8, or 9.'
+        message: 'Invalid Indian mobile number. It must start with 6, 7, 8, or 9.'
       };
     }
   } else {
@@ -104,3 +117,32 @@ export const validateName = (name, fieldName = 'Name') => {
   }
   return { isValid: true, value: trimmed };
 };
+
+/**
+ * Escapes regex characters to prevent ReDoS and regex injection attacks
+ */
+export const escapeRegex = (string) => {
+  if (typeof string !== 'string') return '';
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
+/**
+ * Validates, trims, and bounds search query input
+ */
+export const sanitizeSearchString = (str, maxLength = 80) => {
+  if (typeof str !== 'string') return '';
+  const cleaned = str.trim().slice(0, maxLength);
+  return escapeRegex(cleaned);
+};
+
+/**
+ * Bounds pagination parameters to safe defaults
+ */
+export const clampPagination = (page, limit, defaultLimit = 10, maxLimit = 50) => {
+  const parsedPage = Math.max(parseInt(page, 10) || 1, 1);
+  const rawLimit = parseInt(limit, 10) || defaultLimit;
+  const parsedLimit = Math.min(Math.max(rawLimit, 1), maxLimit);
+  const skip = (parsedPage - 1) * parsedLimit;
+  return { page: parsedPage, limit: parsedLimit, skip };
+};
+

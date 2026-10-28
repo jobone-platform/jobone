@@ -3,9 +3,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
+import { useAuth } from "../routes/Context";
+
 const EmployerVerifyOTP = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { loginEmployer } = useAuth();
 
   const initialEmail = location.state?.email || "";
 
@@ -36,6 +39,7 @@ const EmployerVerifyOTP = () => {
   };
 
   const handleResend = async () => {
+    if (resending) return;
     if (!email.trim()) {
       setMessage("Please provide your email address to resend OTP.");
       setIsError(true);
@@ -65,6 +69,7 @@ const EmployerVerifyOTP = () => {
 
   const handleVerify = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setMessage("");
     setIsError(false);
 
@@ -88,7 +93,7 @@ const EmployerVerifyOTP = () => {
         otp: otp.trim(),
       });
 
-      // Save token & employerInfo in localStorage with standardized fields
+      // Save token & employerInfo in centralized AuthContext & localStorage with standardized fields
       const employerData = {
         ...res.data,
         id: res.data.employerId || res.data.id,
@@ -96,8 +101,7 @@ const EmployerVerifyOTP = () => {
         email: email.trim().toLowerCase(),
       };
 
-      localStorage.setItem("employerToken", res.data.token);
-      localStorage.setItem("employerInfo", JSON.stringify(employerData));
+      loginEmployer(res.data.token, employerData);
 
       setMessage(
         res.data.alreadyVerified
@@ -106,7 +110,7 @@ const EmployerVerifyOTP = () => {
       );
       setIsError(false);
 
-      setTimeout(() => navigate(res.data.alreadyVerified ? "/employer-dashboard" : "/employereditprofile"), 1200);
+      setTimeout(() => navigate(res.data.isProfileComplete ? "/employerdashboard" : "/employereditprofile"), 1200);
     } catch (err) {
       setMessage(
         err.response?.data?.message || "Invalid or expired OTP. Please try again."
@@ -119,7 +123,7 @@ const EmployerVerifyOTP = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-100 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4 transition-colors">
-      <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8 w-full max-w-md border border-gray-100 dark:border-gray-700 transition-colors">
+      <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-5 sm:p-8 w-full max-w-md border border-gray-100 dark:border-gray-700 transition-colors">
         <h2 className="text-2xl font-extrabold text-center text-indigo-600 dark:text-indigo-400 mb-2">
           Verify Employer Account
         </h2>

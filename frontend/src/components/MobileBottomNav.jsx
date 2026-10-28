@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Home, Briefcase, LayoutDashboard, User, LogIn, PlusCircle, Building, Menu, PhoneCall, X, FileText, Star, LogOut, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../routes/Context';
 
 export default function MobileBottomNav() {
   const [isTauri, setIsTauri] = useState(false);
@@ -9,6 +10,7 @@ export default function MobileBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const menuRef = useRef(null);
+  const { user, employer, admin, logout } = useAuth();
 
   useEffect(() => {
     if (window.__TAURI__) {
@@ -42,22 +44,24 @@ export default function MobileBottomNav() {
     "/verify-otp",
     "/login",
     "/register",
+    "/signup",
     "/userregister",
+    "/jobseeker/register",
     "/employerregister",
     "/employer-register",
+    "/employer/register",
+    "/employer/signup",
     "/employerregisteroption",
+    "/forgot-password",
+    "/reset-password",
     "/admin/login",
   ];
   if (standaloneRoutes.includes(currentPath)) return null;
 
   // Determine active role
-  const userInfoStr = localStorage.getItem("userInfo");
-  const employerInfoStr = localStorage.getItem("employerInfo");
-  const adminInfoStr = localStorage.getItem("adminInfo");
-  
-  const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
-  const employerInfo = employerInfoStr ? JSON.parse(employerInfoStr) : null;
-  const adminInfo = adminInfoStr ? JSON.parse(adminInfoStr) : null;
+  const userInfo = user;
+  const employerInfo = employer;
+  const adminInfo = admin;
 
   let activeRole = "guest";
   if (adminInfo && location.pathname.startsWith("/admin")) {
@@ -78,12 +82,7 @@ export default function MobileBottomNav() {
   if (activeRole === "admin") return null;
 
   const handleLogout = () => {
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("userInfo");
-    localStorage.removeItem("employerToken");
-    localStorage.removeItem("employerInfo");
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminInfo");
+    logout();
     setShowMoreMenu(false);
     navigate("/login");
   };
@@ -172,7 +171,7 @@ export default function MobileBottomNav() {
           >
             <div className="flex justify-between items-center px-3 py-2 border-b border-white/10 mb-2">
               <span className="text-white/80 font-semibold text-sm">More Options</span>
-              <button onClick={() => setShowMoreMenu(false)} className="text-white/50 hover:text-white transition-colors">
+              <button onClick={() => setShowMoreMenu(false)} aria-label="Close more options menu" className="text-white/50 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none rounded-lg p-1">
                 <X size={16} />
               </button>
             </div>
@@ -216,7 +215,9 @@ export default function MobileBottomNav() {
             <button
               key={link.name}
               onClick={() => handleLinkClick(link)}
-              className={`relative flex items-center justify-center h-12 transition-all duration-500 ease-out rounded-full ${
+              aria-label={link.name}
+              aria-current={isActive ? "page" : undefined}
+              className={`relative flex items-center justify-center h-12 transition-all duration-500 ease-out rounded-full focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none ${
                 isActive 
                   ? "px-4 bg-blue-600 text-white shadow-[0_4px_14px_rgba(37,99,235,0.4)] flex-row gap-2" 
                   : "w-16 flex-col gap-1 text-white/60 hover:text-white hover:bg-white/10"

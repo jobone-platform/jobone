@@ -36,10 +36,15 @@ export default function JobConfirmModal({
   // Prevent background scrolling
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = "auto";
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [onClose]);
 
   if (!job) return null;
 
@@ -78,12 +83,15 @@ export default function JobConfirmModal({
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-[#F8FAFC] w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="job-confirm-title"
+        className="bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative"
       >
         {/* --- CONFIRMATION HEADER --- */}
         <div className="bg-slate-900 px-6 sm:px-8 py-5 flex justify-between items-center text-white shrink-0 border-b border-slate-800">
           <div>
-            <h2 className="text-xl sm:text-2xl font-extrabold flex items-center gap-2">
+            <h2 id="job-confirm-title" className="text-xl sm:text-2xl font-extrabold flex items-center gap-2">
               <CheckCircle2 className="text-emerald-400" size={24} /> Final
               Review & Publish
             </h2>
@@ -94,7 +102,8 @@ export default function JobConfirmModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-800 rounded-full transition-colors"
+            aria-label="Close review modal"
+            className="p-2 hover:bg-slate-800 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <X size={24} className="text-slate-400 hover:text-white" />
           </button>

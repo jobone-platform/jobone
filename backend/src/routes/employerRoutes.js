@@ -15,16 +15,18 @@ const rules = [
 ];
 
 
-router.post("/register", rules, registerEmployer);
+import { authLimiter, otpVerifyLimiter, otpResendLimiter } from "../middleware/rateLimiter.js";
 
-router.post("/verifyotp", verifyOTP);
+router.post("/register", authLimiter, rules, registerEmployer);
 
-router.post("/resend-otp", resendOTP);
+router.post("/verifyotp", otpVerifyLimiter, verifyOTP);
 
-router.post("/login", loginEmployer);
+router.post("/resend-otp", otpResendLimiter, resendOTP);
 
-router.post("/forgot-password", forgotPasswordEmployer);
-router.post("/reset-password", resetPasswordEmployer);
+router.post("/login", authLimiter, loginEmployer);
+
+router.post("/forgot-password", otpResendLimiter, forgotPasswordEmployer);
+router.post("/reset-password", otpVerifyLimiter, resetPasswordEmployer);
 
 router.post("/updateProfile",protectEmployer,updateEmployerProfile)
 

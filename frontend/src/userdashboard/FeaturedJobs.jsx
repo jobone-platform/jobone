@@ -68,7 +68,7 @@ export default function FeaturedJobs() {
 
     return (
         <section className="w-full max-w-6xl mx-auto px-4 mt-10 mb-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6">
                 Latest Jobs for You
             </h2>
 
@@ -78,7 +78,7 @@ export default function FeaturedJobs() {
                     <div
                         key={job._id}
                         onClick={() => setSelectedJob(job)}
-                        className="relative bg-white rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden"
+                        className="relative bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-200 dark:border-slate-800 shadow-sm dark:shadow-slate-950/40 hover:shadow-lg dark:hover:border-indigo-500/50 transition-all cursor-pointer overflow-hidden"
                     >
                         {/* Curved Gradient Accent */}
                         <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-bl-[100px]" />
@@ -89,7 +89,7 @@ export default function FeaturedJobs() {
                                 We are hiring for
                             </p>
 
-                            <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-2">
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white leading-snug mb-2">
                                 {job.title}
                             </h3>
 

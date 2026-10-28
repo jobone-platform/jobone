@@ -5,11 +5,21 @@ const errorHandler = (err, req, res, next) => {
     return next(err);
   }
 
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  let statusCode = err.status || err.statusCode || (res.statusCode && res.statusCode !== 200 ? res.statusCode : 500);
   let message = err.message || "Something went wrong";
 
+  // Handle Payload Too Large (413)
+  if (err.type === "entity.too.large" || statusCode === 413) {
+    statusCode = 413;
+    message = "Request payload too large. Maximum allowed size is 2MB.";
+  }
+  // Handle JSON parse errors (400)
+  else if (err instanceof SyntaxError && "body" in err) {
+    statusCode = 400;
+    message = "Malformed JSON payload in request body.";
+  }
   // Handle MongoDB Duplicate Key Error (E11000)
-  if (err.code === 11000) {
+  else if (err.code === 11000) {
     statusCode = 400;
     const duplicateFields = Object.keys(err.keyPattern || err.keyValue || {});
     const fieldName = duplicateFields[0] || "field";

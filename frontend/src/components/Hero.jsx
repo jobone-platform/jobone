@@ -14,7 +14,12 @@ import heroVideo from "../assets/herovideo.mp4";
 import MobileHeroBg from "./MobileHeroBg";
 
 const Typewriter = () => {
-  const words = ["Dream Career", "Future Role", "Remote Gig", "Next Chapter"];
+  const words = [
+    "Next Career Role",
+    "Engineering Position",
+    "Management Opportunity",
+    "Remote Job Opening",
+  ];
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -23,7 +28,7 @@ const Typewriter = () => {
   useEffect(() => {
     // Disable continuous JS typing loops on Android/mobile to save massive power
     if (window.innerWidth <= 768) {
-      setDisplayText("Dream Career");
+      setDisplayText("Next Career Role");
       return;
     }
 
@@ -85,46 +90,85 @@ export default function HeroSection() {
   };
 
   const handleRegChange = (e) => {
-    setRegData({ ...regData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "phone") {
+      const digits = value.replace(/\D/g, "").slice(0, 10);
+      setRegData((prev) => ({ ...prev, phone: digits }));
+    } else {
+      setRegData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleQuickRegister = async (e) => {
     e.preventDefault();
+    if (regLoading) return;
     setRegError("");
+
+    const trimmedName = regData.name.trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      setRegError("Please enter your full name (minimum 2 characters).");
+      return;
+    }
+
+    const normalizedEmail = regData.email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!normalizedEmail || !emailRegex.test(normalizedEmail)) {
+      setRegError("Please enter a valid email address.");
+      return;
+    }
+
+    const cleanPhone = regData.phone.replace(/\D/g, "");
+    if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      setRegError("Indian mobile number must be exactly 10 digits starting with 6, 7, 8, or 9.");
+      return;
+    }
+
+    if (!regData.password || regData.password.length < 6) {
+      setRegError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (regTab === "employer" && regData.userType === "Company" && !regData.companyName.trim()) {
+      setRegError("Company Name is required for company registrations.");
+      return;
+    }
+
     setRegLoading(true);
 
     try {
       if (regTab === "jobseeker") {
-        const { data } = await axios.post(
+        await axios.post(
           `${API_BASE_URL}/user/register`,
           {
-            name: regData.name,
-            email: regData.email,
+            name: trimmedName,
+            email: normalizedEmail,
             password: regData.password,
-            phone: regData.phone,
+            phone: cleanPhone,
+            countryCode: "+91",
           },
         );
-        navigate("/userotp", { state: { email: data.email } });
+        navigate("/userotp", { state: { email: normalizedEmail } });
       } else {
-        const { data } = await axios.post(
+        await axios.post(
           `${API_BASE_URL}/employer/register`,
           {
-            name: regData.name,
-            email: regData.email,
+            name: trimmedName,
+            email: normalizedEmail,
             password: regData.password,
-            phone: regData.phone,
+            phone: cleanPhone,
+            countryCode: "+91",
+            userType: regData.userType,
             companyName:
-              regData.userType === "Company" ? regData.companyName : "",
+              regData.userType === "Company" ? regData.companyName.trim() : "",
           },
         );
-        localStorage.setItem("employerInfo", JSON.stringify(data));
-        navigate("/employerotp");
+        navigate("/employerotp", { state: { email: normalizedEmail } });
       }
     } catch (err) {
       setRegError(
         err.response?.data?.message ||
           err.response?.data?.error ||
-          "Registration failed. Please try again.",
+          "Registration failed. Please check your details and try again.",
       );
     } finally {
       setRegLoading(false);
@@ -184,7 +228,7 @@ export default function HeroSection() {
               variants={itemVariants}
               className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs md:text-sm font-semibold mb-6 tracking-wider shadow-[0_0_15px_rgba(59,130,246,0.15)] backdrop-blur-md"
             >
-              ✨ Your first step to the future
+              💼 Verified Job Listings & Direct Hiring
             </motion.span>
 
             {/* FACT: Toned down mobile text sizes to prevent horizontal clipping */}
@@ -203,8 +247,8 @@ export default function HeroSection() {
               variants={itemVariants}
               className={`hidden md:block text-slate-300 text-sm sm:text-base md:text-lg font-medium mb-8 leading-relaxed ${!isLoggedIn ? "lg:mx-0" : "mx-auto"} max-w-2xl px-2 md:px-0`}
             >
-              Stop searching and start growing. Discover the roles that
-              perfectly fit your life, skills, and ambitions.
+              Search thousands of verified job listings from employers actively
+              hiring across technology, finance, operations, and creative fields.
             </motion.p>
 
             <motion.form
@@ -262,7 +306,7 @@ export default function HeroSection() {
                   Create an Account
                 </h3>
                 <p className="text-slate-400 text-xs sm:text-sm mb-6">
-                  Join thousands of professionals and top companies.
+                  Sign up to search open positions or hire verified talent.
                 </p>
 
                 {/* Tabs */}

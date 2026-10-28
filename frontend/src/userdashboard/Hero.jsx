@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config/api";
+import { cachedGet } from "../utils/apiCache";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -18,20 +19,26 @@ const Hero = () => {
   });
 
   useEffect(() => {
+    let isMounted = true;
     const fetchStats = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/jobs/public-stats`);
-        setStats({
-          liveJobs: res.data.liveJobs + "+",
-          companies: res.data.companies + "+",
-          candidates: res.data.candidates + "+",
-          locations: res.data.locations + "+"
-        });
+        const data = await cachedGet(axios, `${API_BASE_URL}/jobs/public-stats`);
+        if (isMounted && data) {
+          setStats({
+            liveJobs: data.liveJobs + "+",
+            companies: data.companies + "+",
+            candidates: data.candidates + "+",
+            locations: data.locations + "+"
+          });
+        }
       } catch (err) {
         console.error("Failed to fetch stats", err);
       }
     };
     fetchStats();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleSearch = (e) => {
@@ -79,8 +86,8 @@ const Hero = () => {
           </h1>
 
           <p className="md:mt-6 text-blue-50 text-base md:text-lg max-w-xl font-medium drop-shadow-sm">
-            Create an impressive profile, showcase your skills, and get
-            discovered by top employers in a dynamic tech-driven ecosystem.
+            Build your professional profile, showcase verified skills, and connect
+            directly with hiring employers across top industries.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center lg:justify-start gap-3 items-center w-full max-w-2xl">

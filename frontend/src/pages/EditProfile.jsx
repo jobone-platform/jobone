@@ -416,7 +416,7 @@ export default function EditProfile() {
     );
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans relative overflow-hidden selection:bg-orange-500/30">
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans relative overflow-hidden selection:bg-orange-500/30 transition-colors duration-150">
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -438,7 +438,7 @@ export default function EditProfile() {
         }}
       />
 
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-white">
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-white dark:bg-slate-950">
         <div className="absolute -bottom-[20%] left-[-10%] w-[60vw] h-[60vw] bg-blue-500/60 filter blur-[100px] animate-lava-rise"></div>
         <div className="absolute -top-[10%] right-[-20%] w-[55vw] h-[55vw] bg-blue-700/50 filter blur-[160px] animate-lava-fall animation-delay-2000"></div>
         <div className="absolute top-[20%] left-[10%] w-[50vw] h-[50vw] bg-cyan-500/40 filter blur-[125px] animate-lava-rise animation-delay-5000"></div>
@@ -1182,7 +1182,7 @@ export default function EditProfile() {
 // FACT: Reusable Smart Glass Components for White Mode
 const GlassCard = ({ children, className = "" }) => (
   <div
-    className={`bg-white/40  border border-white/60 rounded-3xl p-6 md:p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] ${className}`}
+    className={`bg-white/70 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.06)] dark:shadow-slate-950/40 ${className}`}
   >
     {children}
   </div>
@@ -1190,7 +1190,7 @@ const GlassCard = ({ children, className = "" }) => (
 
 const InputGroup = ({ label, name, value, onChange, disabled = false }) => (
   <div className="space-y-2">
-    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
       {label}
     </label>
     <input
@@ -1198,7 +1198,7 @@ const InputGroup = ({ label, name, value, onChange, disabled = false }) => (
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className={`w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 text-slate-900 placeholder-slate-400 transition-all shadow-sm ${disabled ? "opacity-60 bg-slate-100 cursor-not-allowed" : "bg-white"}`}
+      className={`w-full p-3 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 text-slate-900 dark:text-white placeholder-slate-400 transition-all shadow-sm ${disabled ? "opacity-60 bg-slate-100 dark:bg-slate-800 cursor-not-allowed" : "bg-white dark:bg-slate-800"}`}
     />
   </div>
 );
@@ -1208,6 +1208,6 @@ const GlassInput = ({ value, onChange, placeholder }) => (
     value={value}
     onChange={onChange}
     placeholder={placeholder}
-    className="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 text-slate-900 placeholder-slate-400 transition-all shadow-sm"
+    className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 text-slate-900 dark:text-white placeholder-slate-400 transition-all shadow-sm"
   />
 );

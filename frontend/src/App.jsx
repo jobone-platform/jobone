@@ -1,5 +1,6 @@
+import React, { Suspense, lazy } from "react";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 // --- COMPONENTS & GUARDS ---
 import Navbar from "./components/NavBar";
@@ -9,54 +10,62 @@ import EmployerProtectedRoute from "./components/EmployerProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import GlobalNotificationPopup from "./components/GlobalNotificationPopup";
 
-// --- PUBLIC PAGES ---
+// Lightweight fallback spinner for code-split route transitions
+const RouteFallback = () => (
+  <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 bg-transparent">
+    <div className="w-9 h-9 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-3" />
+    <span className="text-xs font-semibold tracking-wider uppercase text-slate-400">Loading JobOne...</span>
+  </div>
+);
+
+// --- PUBLIC PAGES (Home loaded statically for instant landing render) ---
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import UserRegister from "./pages/UserRegister";
-import EmployerRegister from "./pages/EmployerRegister";
-import EmployerRegisterOption from "./pages/EmployerRegisterOption";
-import About from "./pages/About";
-import Services from "./pages/Services";
-import Jobs from "./pages/Jobs";
-import PublicProfile from "./pages/PublicProfile";
-import CompanyProfile from "./pages/CompanyProfile";
-import Contact from "./pages/Contact";
-import ForgotPassword from "./pages/ForgotPassword";
-import ExploreCompanies from "./pages/ExploreCompanies";
-import RecommendedJobs from "./pages/RecommendedJobs";
-import NotFound from "./pages/NotFound";
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const UserRegister = lazy(() => import("./pages/UserRegister"));
+const EmployerRegister = lazy(() => import("./pages/EmployerRegister"));
+const EmployerRegisterOption = lazy(() => import("./pages/EmployerRegisterOption"));
+const About = lazy(() => import("./pages/About"));
+const Services = lazy(() => import("./pages/Services"));
+const Jobs = lazy(() => import("./pages/Jobs"));
+const PublicProfile = lazy(() => import("./pages/PublicProfile"));
+const CompanyProfile = lazy(() => import("./pages/CompanyProfile"));
+const Contact = lazy(() => import("./pages/Contact"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ExploreCompanies = lazy(() => import("./pages/ExploreCompanies"));
+const RecommendedJobs = lazy(() => import("./pages/RecommendedJobs"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
-// --- USER / CANDIDATE PAGES ---
-import UserDashboard from "./pages/UserDashboard";
-import Profile from "./pages/Profile";
-import EditProfile from "./pages/EditProfile";
-import EditProfile2 from "./pages/EditProfile2";
-import MyApplications from "./pages/MyApplications";
-import UserOTP from "./pages/UserOTP";
-import ApplyPage from "./pages/ApplyPage";
-import JobseekerDOC from "./pages/JobseekerDOC";
+// --- USER / CANDIDATE PAGES (Role-split) ---
+const UserDashboard = lazy(() => import("./pages/UserDashboard"));
+const Profile = lazy(() => import("./pages/Profile"));
+const EditProfile = lazy(() => import("./pages/EditProfile"));
+const EditProfile2 = lazy(() => import("./pages/EditProfile2"));
+const MyApplications = lazy(() => import("./pages/MyApplications"));
+const UserOTP = lazy(() => import("./pages/UserOTP"));
+const ApplyPage = lazy(() => import("./pages/ApplyPage"));
+const JobseekerDOC = lazy(() => import("./pages/JobseekerDOC"));
 
-// --- EMPLOYER PAGES ---
-import EmployerDashboard from "./pages/EmployerDashboard";
-import EmployerProfile from "./pages/EmployerProfile";
-import EmployerEditProfile from "./pages/EmployerEditProfile";
-import EmployerEditProfile2 from "./pages/EmployerEditProfile2";
-import CreateJob from "./pages/CreateJob";
-import EmployerJobDetails from "./pages/EmployerJobDetails";
-import DocumentUploadPage from "./pages/EmployerDOC";
-import EmployerOTP from "./pages/EmployerOTP";
-import EditJob from "./pages/EditJob1";
-import JobApplicants from "./pages/JobApplicants";
-import Candidates from "./pages/EmployerCandidateSearch";
-import MyCandidates from "./pages/EmployerMyCandidates";
+// --- EMPLOYER PAGES (Role-split) ---
+const EmployerDashboard = lazy(() => import("./pages/EmployerDashboard"));
+const EmployerProfile = lazy(() => import("./pages/EmployerProfile"));
+const EmployerEditProfile = lazy(() => import("./pages/EmployerEditProfile"));
+const EmployerEditProfile2 = lazy(() => import("./pages/EmployerEditProfile2"));
+const CreateJob = lazy(() => import("./pages/CreateJob"));
+const EmployerJobDetails = lazy(() => import("./pages/EmployerJobDetails"));
+const DocumentUploadPage = lazy(() => import("./pages/EmployerDOC"));
+const EmployerOTP = lazy(() => import("./pages/EmployerOTP"));
+const EditJob = lazy(() => import("./pages/EditJob1"));
+const JobApplicants = lazy(() => import("./pages/JobApplicants"));
+const Candidates = lazy(() => import("./pages/EmployerCandidateSearch"));
+const MyCandidates = lazy(() => import("./pages/EmployerMyCandidates"));
 
-// --- ADMIN PAGES ---
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminLogin from "./pages/AdminLogin";
-import EmployerAdminView from "./pages/EmployerAdminView";
-import AdminJobseekerView from "./pages/AdminJobseekerView";
-import JobAdminView from "./pages/JobAdminView";
+// --- ADMIN PAGES (Role-split) ---
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const EmployerAdminView = lazy(() => import("./pages/EmployerAdminView"));
+const AdminJobseekerView = lazy(() => import("./pages/AdminJobseekerView"));
+const JobAdminView = lazy(() => import("./pages/JobAdminView"));
 
 // Helper to identify standalone authentication and verification routes
 const isStandaloneAuthRoute = (pathname) => {
@@ -69,10 +78,16 @@ const isStandaloneAuthRoute = (pathname) => {
     "/verify-otp",
     "/login",
     "/register",
+    "/signup",
     "/userregister",
+    "/jobseeker/register",
     "/employerregister",
     "/employer-register",
+    "/employer/register",
+    "/employer/signup",
     "/employerregisteroption",
+    "/forgot-password",
+    "/reset-password",
     "/admin/login",
   ].includes(clean);
 };
@@ -91,10 +106,16 @@ const AppLayout = ({ children }) => {
     "/verify-otp",
     "/login",
     "/register",
+    "/signup",
     "/userregister",
+    "/jobseeker/register",
     "/employerregister",
     "/employer-register",
+    "/employer/register",
+    "/employer/signup",
     "/employerregisteroption",
+    "/forgot-password",
+    "/reset-password",
   ];
   const cleanPath = location.pathname.toLowerCase().split("?")[0].split("#")[0].replace(/\/+$/, "") || "/";
   const hasPadding = !noPaddingRoutes.includes(cleanPath) && !isStandalone;
@@ -102,12 +123,19 @@ const AppLayout = ({ children }) => {
 
   return (
     <>
+      {/* Accessible skip link for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:font-bold focus:rounded-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-white"
+      >
+        Skip to main content
+      </a>
       {!isStandalone && <Navbar />}
       {!isStandalone && <MobileBottomNav />}
       {!isStandalone && <GlobalNotificationPopup />}
-      <div className={actualPadding}>
+      <main id="main-content" tabIndex="-1" className={`outline-none min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-150 ${actualPadding}`}>
         {children}
-      </div>
+      </main>
     </>
   );
 };
@@ -116,9 +144,10 @@ function App() {
   return (
     <Router>
       <AppLayout>
-        <Routes>
-          {/* ================= PUBLIC ROUTES ================= */}
-          <Route path="/" element={<Home />} />
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            {/* ================= PUBLIC ROUTES ================= */}
+            <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           <Route path="/jobs" element={<Jobs />} />
@@ -136,6 +165,16 @@ function App() {
           <Route path="/employerotp" element={<EmployerOTP />} />
           <Route path="/recommended-jobs" element={<RecommendedJobs />} />
           <Route path="/profile/:userId" element={<PublicProfile />} />
+
+          {/* ================= CANONICAL REDIRECTS ================= */}
+          <Route path="/signup" element={<Navigate to="/register" replace />} />
+          <Route path="/jobseeker/register" element={<Navigate to="/userregister" replace />} />
+          <Route path="/employer/register" element={<Navigate to="/employerregister" replace />} />
+          <Route path="/employer/signup" element={<Navigate to="/employerregister" replace />} />
+          <Route path="/verifyotp" element={<Navigate to="/userotp" replace />} />
+          <Route path="/verify-otp" element={<Navigate to="/userotp" replace />} />
+          <Route path="/reset-password" element={<Navigate to="/forgot-password" replace />} />
+          <Route path="/employer-dashboard" element={<Navigate to="/employerdashboard" replace />} />
 
           {/* ================= ADMIN AUTH ================= */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -331,8 +370,9 @@ function App() {
           {/* ================= CATCH-ALL 404 NOT FOUND ================= */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </AppLayout>
-    </Router>
+      </Suspense>
+    </AppLayout>
+  </Router>
   );
 }
 

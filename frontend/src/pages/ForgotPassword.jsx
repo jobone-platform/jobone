@@ -18,6 +18,15 @@ export default function ForgotPassword() {
 
   const handleRequestOTP = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!normalizedEmail || !emailRegex.test(normalizedEmail)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setMessage("");
@@ -28,11 +37,11 @@ export default function ForgotPassword() {
           ? `${API_BASE_URL}/employer/forgot-password`
           : `${API_BASE_URL}/user/forgot-password`;
 
-      const { data } = await axios.post(endpoint, { email });
-      setMessage(data.message);
+      const { data } = await axios.post(endpoint, { email: normalizedEmail });
+      setMessage(data.message || "If this email is registered, a password reset code has been sent.");
       setStep(2);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to send OTP.");
+      setError(err.response?.data?.message || "Failed to send reset code. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -40,6 +49,24 @@ export default function ForgotPassword() {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const cleanOtp = otp.replace(/\D/g, "");
+
+    if (!normalizedEmail) {
+      setError("Email address is required.");
+      return;
+    }
+    if (cleanOtp.length !== 6) {
+      setError("Please enter the complete 6-digit OTP reset code.");
+      return;
+    }
+    if (!newPassword || newPassword.length < 6) {
+      setError("New password must be at least 6 characters long.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setMessage("");
@@ -50,16 +77,16 @@ export default function ForgotPassword() {
           ? `${API_BASE_URL}/employer/reset-password`
           : `${API_BASE_URL}/user/reset-password`;
 
-      const { data } = await axios.post(endpoint, { email, otp, newPassword });
-      setMessage(data.message);
+      const { data } = await axios.post(endpoint, { email: normalizedEmail, otp: cleanOtp, newPassword });
+      setMessage(data.message || "Password has been successfully reset! Redirecting to login...");
       
       // Redirect to login after a short delay
       setTimeout(() => {
         navigate("/login");
-      }, 2000);
+      }, 1800);
       
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to reset password.");
+      setError(err.response?.data?.message || "Failed to reset password. Please verify your OTP code and try again.");
     } finally {
       setLoading(false);
     }
@@ -73,7 +100,7 @@ export default function ForgotPassword() {
         </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl mt-8 mb-8">
+      <div className="relative z-10 w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl mt-8 mb-8">
         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
@@ -121,13 +148,13 @@ export default function ForgotPassword() {
           )}
 
           {error && (
-            <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs p-3 rounded-xl mb-4 text-center">
+            <div role="alert" className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs p-3 rounded-xl mb-4 text-center">
               {error}
             </div>
           )}
           
           {message && (
-            <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs p-3 rounded-xl mb-4 text-center">
+            <div role="status" className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs p-3 rounded-xl mb-4 text-center">
               {message}
             </div>
           )}
@@ -148,7 +175,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={loading || !email}
-                className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-2 transition-all shadow-lg ${
+                className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-2 transition-all shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none ${
                   activeTab === "user"
                     ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/30"
                     : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30"
@@ -162,10 +189,13 @@ export default function ForgotPassword() {
               <div>
                 <input
                   type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  autoComplete="one-time-code"
                   placeholder="Enter 6-digit OTP"
                   className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   maxLength={6}
                   required
                 />
@@ -185,7 +215,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={loading || !otp || !newPassword}
-                className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-2 transition-all shadow-lg ${
+                className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-2 transition-all shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none ${
                   activeTab === "user"
                     ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/30"
                     : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30"

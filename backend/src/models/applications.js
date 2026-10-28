@@ -32,5 +32,14 @@ const applicationSchema = new mongoose.Schema({
   appliedAt: { type: Date, default: Date.now },
 }); 
 
+// Query indexes for fast ATS lookup and candidate history
+applicationSchema.index({ job_id: 1, appliedAt: -1 });
+applicationSchema.index({ appliedBy: 1, appliedAt: -1 });
+applicationSchema.index({ jobHost: 1, appliedAt: -1 });
+applicationSchema.index({ jobHost: 1, appliedBy: 1 });
+
+// Prevent duplicate applications at DB layer
+applicationSchema.index({ job_id: 1, appliedBy: 1 }, { unique: true });
+
 const Application = mongoose.model("Application", applicationSchema);
-export default Application;
+export default Application;

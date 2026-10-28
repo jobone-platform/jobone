@@ -18,7 +18,7 @@ export default function ProcessBento() {
     {
       num: "01",
       title: "Create Profile",
-      desc: "Upload your resume and let our AI instantly parse your skills and experience.",
+      desc: "Upload your resume and build your profile to showcase verified skills to hiring teams.",
       icon: <FaUserPlus size={32} />,
       circleColor: "bg-blue-500",
       iconColor: "text-blue-500",
@@ -29,8 +29,8 @@ export default function ProcessBento() {
     },
     {
       num: "02",
-      title: "Smart Search",
-      desc: "Our matching engine automatically filters roles that fit your exact expertise.",
+      title: "Search Openings",
+      desc: "Filter verified job openings by industry, technical skills, location, and salary.",
       icon: <FaSearchDollar size={32} />,
       circleColor: "bg-indigo-500",
       iconColor: "text-indigo-500",
@@ -41,8 +41,8 @@ export default function ProcessBento() {
     },
     {
       num: "03",
-      title: "Quick Apply",
-      desc: "Submit your profile to verified employers instantly with a single click.",
+      title: "One-Click Apply",
+      desc: "Submit your candidate profile and resume directly to active employer listings.",
       icon: <FaPaperPlane size={32} />,
       circleColor: "bg-emerald-500",
       iconColor: "text-emerald-500",
@@ -53,8 +53,8 @@ export default function ProcessBento() {
     },
     {
       num: "04",
-      title: "Get Hired",
-      desc: "Track application statuses in real-time and chat directly with HRs.",
+      title: "Track & Interview",
+      desc: "Monitor your application status in real-time and coordinate interviews with recruiters.",
       icon: <FaCheckDouble size={32} />,
       circleColor: "bg-amber-500",
       iconColor: "text-amber-500",
@@ -89,7 +89,7 @@ export default function ProcessBento() {
   }, [steps.length]);
 
   return (
-    <section className="relative py-24 bg-[#F8FAFC] font-sans overflow-hidden border-t border-slate-200/60">
+    <section className="relative py-24 bg-[#F8FAFC] dark:bg-slate-950 font-sans overflow-hidden border-t border-slate-200/60 dark:border-slate-800/80 transition-colors duration-150">
       {/* FREEROAMING LAVA LAMP BACKGROUNDS (Desktop Only for Performance) */}
       <div className="hidden md:block absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <motion.div
@@ -125,19 +125,19 @@ export default function ProcessBento() {
           <div className="flex items-center justify-center gap-2 mb-3">
             <span className="w-6 h-[2px] bg-blue-600 rounded-full"></span>
             <span className="text-blue-600 font-bold tracking-widest uppercase text-[10px]">
-              How it works
+              Hiring & Application Process
             </span>
             <span className="w-6 h-[2px] bg-blue-600 rounded-full"></span>
           </div>
-          <h2 className="text-5xl font-extrabold text-slate-900 tracking-tight">
-            Your path to a{" "}
+          <h2 className="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            A Streamlined{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">
-              new career
+              Application Process
             </span>
           </h2>
-          <p className="text-slate-500 mt-4 font-medium text-lg max-w-xl mx-auto">
-            Simplified, automated, and designed for maximum speed. Skip the long
-            forms and get straight to the interviews.
+          <p className="text-slate-500 dark:text-slate-400 mt-4 font-medium text-lg max-w-xl mx-auto">
+            Search verified openings, submit your profile in seconds, and track
+            interview updates directly with employers.
           </p>
         </motion.div>
 
@@ -146,19 +146,19 @@ export default function ProcessBento() {
           <div className="flex items-center justify-center gap-2 mb-2">
             <span className="w-4 h-[1px] bg-blue-600 rounded-full"></span>
             <span className="text-blue-600 font-bold tracking-widest uppercase text-[9px]">
-              How it works
+              Hiring & Application Process
             </span>
             <span className="w-4 h-[1px] bg-blue-600 rounded-full"></span>
           </div>
-          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-            Your path to a{" "}
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            A Streamlined{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">
-              new career
+              Application Process
             </span>
           </h2>
-          <p className="text-slate-500 mt-3 font-medium text-sm max-w-xl mx-auto px-2">
-            Simplified, automated, and designed for maximum speed. Skip the long
-            forms and get straight to the interviews.
+          <p className="text-slate-500 dark:text-slate-400 mt-3 font-medium text-sm max-w-xl mx-auto px-2">
+            Search verified openings, submit your profile in seconds, and track
+            interview updates directly with employers.
           </p>
         </div>
 
@@ -205,11 +205,11 @@ export default function ProcessBento() {
                      {React.cloneElement(step.icon, { size: 20 })}
                   </div>
 
-                  <h3 className="font-extrabold text-sm md:text-xl text-slate-900 mb-2 md:mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+                  <h3 className="font-extrabold text-sm md:text-xl text-slate-900 dark:text-white mb-2 md:mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
                     {step.title}
                   </h3>
 
-                  <p className="text-[10px] md:text-sm text-slate-500 font-medium leading-snug md:leading-relaxed">
+                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-medium leading-snug md:leading-relaxed">
                     {step.desc}
                   </p>
                 </div>
@@ -233,7 +233,7 @@ export default function ProcessBento() {
                     setActiveBlobs({ b1: step.blob1, b2: step.blob2 })
                   }
                   whileHover={{ y: -4, scale: 1.02 }}
-                  className="hidden md:flex relative bg-white/80 backdrop-blur-sm shadow-[0_4px_15px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_30px_-4px_rgba(0,0,0,0.08)] border border-slate-200/80 hover:border-slate-300 p-8 pt-10 rounded-[2rem] overflow-hidden group transition-colors duration-300 flex-col h-full cursor-default"
+                  className="hidden md:flex relative bg-white/80 dark:bg-slate-900/90 backdrop-blur-sm shadow-[0_4px_15px_-4px_rgba(0,0,0,0.03)] dark:shadow-slate-950/40 hover:shadow-[0_12px_30px_-4px_rgba(0,0,0,0.08)] border border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 p-8 pt-10 rounded-[2rem] overflow-hidden group transition-colors duration-300 flex-col h-full cursor-default"
                 >
                   {cardContent}
                 </motion.div>
@@ -241,7 +241,7 @@ export default function ProcessBento() {
                 {/* Mobile Static Card (No animations) */}
                 <div
                   onClick={() => setActiveBlobs({ b1: step.blob1, b2: step.blob2 })}
-                  className="flex md:hidden relative bg-white shadow-[0_2px_10px_-4px_rgba(0,0,0,0.03)] border border-slate-200/80 p-4 pt-5 rounded-2xl overflow-hidden group flex-col h-full cursor-default"
+                  className="flex md:hidden relative bg-white dark:bg-slate-900 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.03)] dark:shadow-slate-950/40 border border-slate-200/80 dark:border-slate-800 p-4 pt-5 rounded-2xl overflow-hidden group flex-col h-full cursor-default"
                 >
                   {cardContent}
                 </div>

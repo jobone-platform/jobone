@@ -43,7 +43,7 @@ const Profile = () => {
           navigate("/login");
           return;
         }
-        const id = storedUser?.userId;
+        const id = storedUser?.userId || storedUser?.id || storedUser?.user?.id || storedUser?.user?._id || storedUser?._id;
 
         if (!storedUser?.token || !id) {
           navigate("/login");
@@ -101,7 +101,7 @@ const Profile = () => {
     );
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 font-sans selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20 font-sans selection:bg-blue-100 selection:text-blue-900 transition-colors duration-150">
       {/* --- HERO SECTION (Glassmorphic) --- */}
       <div className="relative bg-slate-900 overflow-hidden pt-24 pb-32">
         {/* Animated Background Elements */}
@@ -210,7 +210,7 @@ const Profile = () => {
         {/* TOP ROW: About & Skills */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* About Me */}
-          <div className="lg:col-span-2 bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
+          <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800">
             <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-4">
               <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
                 <UserIcon size={20} />
@@ -227,7 +227,7 @@ const Profile = () => {
           </div>
 
           {/* Skills */}
-          <div className="lg:col-span-1 bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
+          <div className="lg:col-span-1 bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800">
             <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
               <div className="p-2 bg-orange-50 rounded-xl text-orange-600">
                 <Award size={20} />
@@ -254,7 +254,7 @@ const Profile = () => {
         {/* MIDDLE ROW: Experience & Projects */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Experience Timeline */}
-          <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800">
             <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
               <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600">
                 <Briefcase size={20} />
@@ -292,7 +292,7 @@ const Profile = () => {
           </div>
 
           {/* Projects */}
-          <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
             <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
               <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
                 <FileText size={20} />
@@ -336,7 +336,7 @@ const Profile = () => {
         {/* BOTTOM ROW: Education, Certs, Links */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Education */}
-          <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
             <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
               <div className="p-2 bg-rose-50 rounded-xl text-rose-600">
                 <GraduationCap size={20} />
@@ -375,7 +375,7 @@ const Profile = () => {
           </div>
 
           {/* Certifications & Volunteering */}
-          <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
             <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
               <div className="p-2 bg-amber-50 rounded-xl text-amber-600">
                 <Award size={20} />
@@ -452,7 +452,7 @@ const Profile = () => {
           </div>
 
           {/* Portfolio Links */}
-          <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
             <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 mb-6">
               <div className="p-2 bg-purple-50 rounded-xl text-purple-600">
                 <Globe size={20} />

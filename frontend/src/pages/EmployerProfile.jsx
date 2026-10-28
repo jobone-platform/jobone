@@ -91,9 +91,9 @@ export default function EmployerProfile() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-15 font-sans pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-4 sm:py-15 font-sans pb-20">
       {/* ---------------- Header Section ---------------- */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-4 sm:gap-6 text-center md:text-left">
             <img
@@ -104,7 +104,7 @@ export default function EmployerProfile() {
 
             <div className="flex-1 w-full flex flex-col items-center md:items-start">
               <div className="flex flex-wrap justify-center md:justify-start items-center gap-2 mb-2">
-                <h1 className="text-xl sm:text-3xl font-bold text-gray-900">
+                <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                   {profile.employerType === 'company' ? (profile.companyName || profile.name) : profile.name}
                 </h1>
                 
@@ -154,8 +154,8 @@ export default function EmployerProfile() {
         <div className="lg:col-span-1 space-y-4 sm:space-y-6">
           
           {/* Business Details Card */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">Business Details</h3>
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mb-3 sm:mb-4">Business Details</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <Briefcase className="w-5 h-5 text-blue-600 mt-0.5" />
@@ -179,7 +179,7 @@ export default function EmployerProfile() {
 
           {/* Contact Card */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">Contact Info</h3>
+            <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mb-3 sm:mb-4">Contact Info</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <User className="w-5 h-5 text-blue-600 mt-0.5" />
@@ -257,7 +257,7 @@ export default function EmployerProfile() {
         <div className="lg:col-span-2 space-y-4 sm:space-y-8">
           
           {/* About Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-8">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-4 sm:p-8">
             <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">About</h2>
             <p className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-wrap">
               {profile.description || "No description provided yet."}

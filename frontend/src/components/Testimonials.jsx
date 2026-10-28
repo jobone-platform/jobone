@@ -39,7 +39,7 @@ export default function Testimonials() {
   ];
 
   return (
-    <section className="bg-[#F8FAFC] py-20 overflow-hidden font-sans border-t border-slate-200/60">
+    <section className="bg-[#F8FAFC] dark:bg-slate-950 py-20 overflow-hidden font-sans border-t border-slate-200/60 dark:border-slate-800/80 transition-colors duration-150">
       <div className="max-w-6xl mx-auto px-6 relative">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="text-left">
@@ -49,7 +49,7 @@ export default function Testimonials() {
                 Testimonials
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               What the{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">
                 Community
@@ -59,10 +59,10 @@ export default function Testimonials() {
           </div>
 
           <div className="flex gap-2">
-            <button className="prev-btn w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors shadow-sm">
+            <button aria-label="Previous testimonial" className="prev-btn w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">
               <FaChevronLeft size={14} />
             </button>
-            <button className="next-btn w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors shadow-sm">
+            <button aria-label="Next testimonial" className="next-btn w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">
               <FaChevronRight size={14} />
             </button>
           </div>
@@ -84,8 +84,8 @@ export default function Testimonials() {
         >
           {testimonials.map((item, index) => (
             <SwiperSlide key={index} className="h-auto">
-              <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-[0_4px_15px_-4px_rgba(0,0,0,0.03)] relative h-full flex flex-col justify-between group transition-colors duration-300">
-                <FaQuoteLeft className="absolute top-8 right-8 text-slate-100 text-5xl group-hover:text-blue-50 transition-colors duration-300" />
+              <div className="bg-white dark:bg-slate-900 p-5 sm:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_15px_-4px_rgba(0,0,0,0.03)] dark:shadow-slate-950/40 relative h-full flex flex-col justify-between group transition-colors duration-300">
+                <FaQuoteLeft className="absolute top-8 right-8 text-slate-100 dark:text-slate-800 text-5xl group-hover:text-blue-50 dark:group-hover:text-slate-700 transition-colors duration-300" />
 
                 <div className="relative z-10">
                   <div className="flex gap-1 mb-4 text-amber-400">
@@ -93,10 +93,10 @@ export default function Testimonials() {
                       <FaStar key={i} size={14} />
                     ))}
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-3">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                     {item.title}
                   </h3>
-                  <p className="text-slate-500 text-base leading-relaxed font-medium">
+                  <p className="text-slate-500 dark:text-slate-400 text-base leading-relaxed font-medium">
                     "{item.text}"
                   </p>
                 </div>
@@ -106,6 +106,8 @@ export default function Testimonials() {
                     <img
                       src={item.img}
                       alt={item.name}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover"
                     />
                   </div>

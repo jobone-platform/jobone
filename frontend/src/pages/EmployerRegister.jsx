@@ -98,8 +98,8 @@ const EmployerRegister = () => {
             if (formData.mobile.length !== 10) {
                 return `Indian mobile number must be exactly 10 digits. Entered: ${formData.mobile.length} digit(s).`;
             }
-            if (!/^[5-9]\d{9}$/.test(formData.mobile)) {
-                return "Invalid Indian mobile number. Mobile numbers must start with 5, 6, 7, 8, or 9.";
+            if (!/^[6-9]\d{9}$/.test(formData.mobile)) {
+                return "Invalid Indian mobile number. Mobile numbers must start with 6, 7, 8, or 9.";
             }
         } else {
             if (formData.mobile.length < 7 || formData.mobile.length > 15) {
@@ -122,6 +122,7 @@ const EmployerRegister = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (loading) return;
         setError("");
         setSuccess("");
 
@@ -167,9 +168,9 @@ const EmployerRegister = () => {
     };
 
     return (
-        <div className="min-h-screen grid md:grid-cols-2 bg-white">
+        <div className="min-h-screen grid md:grid-cols-2 bg-white dark:bg-slate-950">
             {/* LEFT SECTION: Animated background + heading */}
-            <div className="relative flex flex-col justify-center items-center overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 text-white p-10">
+            <div className="relative flex flex-col justify-center items-center overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 text-white p-6 sm:p-10">
                 <Link to="/" className="absolute top-6 left-8 z-20 text-3xl font-extrabold tracking-wide hover:opacity-90 transition">
                     JOBONE
                 </Link>
@@ -198,18 +199,18 @@ const EmployerRegister = () => {
                     className="relative z-10 text-center"
                 >
                     <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-                        Build Your Dream Team
+                        Hire Qualified Talent Faster
                     </h1>
                     <p className="text-lg md:text-xl text-blue-100 max-w-md mx-auto">
-                        Join hundreds of verified companies hiring faster with intelligent applicant matching.
+                        Join verified employers hiring faster with structured applicant pipelines and direct screening.
                     </p>
                 </motion.div>
             </div>
 
             {/* RIGHT SECTION: Form */}
-            <div className="flex items-center justify-center p-6 sm:p-10 bg-gray-50">
-                <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                    <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">
+            <div className="flex items-center justify-center p-6 sm:p-10 bg-gray-50 dark:bg-slate-950">
+                <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-5 sm:p-8 border border-gray-100 dark:border-slate-800 text-slate-900 dark:text-slate-100">
+                    <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
                         Create Employer Account
                     </h2>
                     <p className="text-center text-sm text-gray-500 mb-6">
@@ -217,12 +218,12 @@ const EmployerRegister = () => {
                     </p>
 
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg mb-4 text-sm text-center">
+                        <div role="alert" className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg mb-4 text-sm text-center">
                             {error}
                         </div>
                     )}
                     {success && (
-                        <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded-lg mb-4 text-sm text-center">
+                        <div role="status" className="bg-green-50 border border-green-200 text-green-700 p-3 rounded-lg mb-4 text-sm text-center">
                             {success}
                         </div>
                     )}
@@ -276,7 +277,7 @@ const EmployerRegister = () => {
                                 <select
                                     value={countryCode}
                                     onChange={handleCountryCodeChange}
-                                    className="w-32 border border-gray-300 rounded-lg px-2 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-28 sm:w-32 shrink-0 border border-gray-300 rounded-lg px-2 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     {countryCodes.map((country) => (
                                         <option key={country.name} value={country.code}>
@@ -293,7 +294,7 @@ const EmployerRegister = () => {
                                     onChange={handleMobileChange}
                                     maxLength={countryCode === "+91" ? 10 : 15}
                                     required
-                                    className="flex-1 border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 tracking-wide"
+                                    className="flex-1 min-w-0 border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 tracking-wide"
                                 />
                             </div>
                         </div>
@@ -304,7 +305,7 @@ const EmployerRegister = () => {
                                 <button
                                     type="button"
                                     onClick={() => setFormData({ ...formData, userType: "Company" })}
-                                    className={`py-2 text-xs font-bold rounded-md transition ${
+                                    className={`py-2 px-1 text-[11px] sm:text-xs font-bold rounded-md transition leading-tight ${
                                         formData.userType === "Company"
                                             ? "bg-blue-600 text-white shadow-sm"
                                             : "text-gray-700 hover:bg-gray-200"
@@ -315,7 +316,7 @@ const EmployerRegister = () => {
                                 <button
                                     type="button"
                                     onClick={() => setFormData({ ...formData, userType: "Recruiter" })}
-                                    className={`py-2 text-xs font-bold rounded-md transition ${
+                                    className={`py-2 px-1 text-[11px] sm:text-xs font-bold rounded-md transition leading-tight ${
                                         formData.userType === "Recruiter"
                                             ? "bg-blue-600 text-white shadow-sm"
                                             : "text-gray-700 hover:bg-gray-200"
@@ -358,7 +359,7 @@ const EmployerRegister = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 active:scale-[0.99] transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                            className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 active:scale-[0.99] transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                         >
                             {loading ? "Creating Account..." : "Create Employer Account"}
                         </button>

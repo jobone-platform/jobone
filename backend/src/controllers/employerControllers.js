@@ -14,6 +14,8 @@ import mime from 'mime-types';
 import Application from "../models/applications.js";
 import User from "../models/users.js";
 import Job from "../models/jobs.js";
+import Admin from "../models/admin.js";
+import mongoose from "mongoose";
 import { OAuth2Client } from 'google-auth-library';
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -23,7 +25,12 @@ import {
   validatePhone,
   validateName,
   sanitizeString,
+  normalizeEmail,
+  generateSecureOTP,
+  clampPagination,
+  escapeRegex,
 } from '../utils/validators.js';
+
 
 let s3Client;
 
@@ -64,7 +71,7 @@ export const registerEmployer = expressAsyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("A valid email address is required");
   }
-  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedEmail = normalizeEmail(email);
 
   // 3. Validate Password
   const passCheck = validatePasswordStrength(password);
@@ -145,14 +152,17 @@ export const registerEmployer = expressAsyncHandler(async (req, res) => {
     savedEmployer = await employer.save();
   }
 
-  // 10. Generate 6-digit OTP
-  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  // 10. Generate 6-digit OTP using cryptographically secure random generator
+  const otpCode = generateSecureOTP(6);
 
   try {
+    const hashedOTP = await bcrypt.hash(otpCode, 10);
     await OTP.deleteMany({ employerId: savedEmployer._id });
     await OTP.create({
       employerId: savedEmployer._id,
-      otp: otpCode,
+      otp: hashedOTP,
+      type: "verification",
+      attempts: 0,
     });
 
     await sendEmail({
@@ -268,7 +278,7 @@ export const verifyOTP = expressAsyncHandler(async (req, res) => {
     throw new Error("Email and OTP are required");
   }
 
-  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedEmail = normalizeEmail(email);
   const employer = await Employer.findOne({ email: normalizedEmail });
   
   if (!employer) {
@@ -287,11 +297,15 @@ export const verifyOTP = expressAsyncHandler(async (req, res) => {
       message: "Account is already verified. You can log in.", 
       alreadyVerified: true,
       token,
-      employerId: employer._id 
+      employerId: employer._id,
+      id: employer._id,
+      email: employer.email,
+      employerType: employer.employerType,
+      isProfileComplete: employer.isProfileComplete || false
     });
   }
 
-  const otpRecord = await OTP.findOne({ employerId: employer._id });
+  const otpRecord = await OTP.findOne({ employerId: employer._id, type: "verification" });
   if (!otpRecord) {
     res.status(400);
     throw new Error("Verification code has expired or does not exist. Please request a new code.");
@@ -300,22 +314,42 @@ export const verifyOTP = expressAsyncHandler(async (req, res) => {
   // Explicit 10-minute expiry check
   const isExpired = Date.now() - new Date(otpRecord.createdAt).getTime() > 10 * 60 * 1000;
   if (isExpired) {
-    await OTP.deleteMany({ employerId: employer._id });
+    await OTP.deleteMany({ employerId: employer._id, type: "verification" });
     res.status(400);
     throw new Error("Verification code has expired. Please request a new code.");
   }
 
-  if (otpRecord.otp.trim() !== String(otp).trim()) {
+  // Attempt limit check (maximum 5 attempts)
+  if (otpRecord.attempts >= 5) {
+    await OTP.deleteMany({ employerId: employer._id, type: "verification" });
+    res.status(429);
+    throw new Error("Too many failed attempts. Please request a new verification code.");
+  }
+
+  // Verify OTP (support bcrypt hash with fallback for plain text)
+  let isMatch = false;
+  if (otpRecord.otp.startsWith("$2b$") || otpRecord.otp.startsWith("$2a$")) {
+    isMatch = await bcrypt.compare(String(otp).trim(), otpRecord.otp);
+  } else {
+    isMatch = otpRecord.otp.trim() === String(otp).trim();
+  }
+
+  if (!isMatch) {
+    otpRecord.attempts = (otpRecord.attempts || 0) + 1;
+    await otpRecord.save();
+    const remaining = 5 - otpRecord.attempts;
     res.status(400);
-    throw new Error("Invalid verification code. Please check and try again.");
+    throw new Error(remaining > 0
+      ? `Invalid verification code. ${remaining} attempt(s) remaining.`
+      : "Invalid verification code. Maximum attempts reached. Please request a new code.");
   }
 
   // Mark Verified
   employer.isVerified = true;
   await employer.save();
 
-  // Clean up OTP
-  await OTP.deleteMany({ employerId: employer._id });
+  // Clean up verification OTP
+  await OTP.deleteMany({ employerId: employer._id, type: "verification" });
 
   // Generate Token & Login immediately
   const token = jwt.sign(
@@ -327,7 +361,11 @@ export const verifyOTP = expressAsyncHandler(async (req, res) => {
   res.status(200).json({ 
     message: "Account verified successfully!", 
     token,
-    employerId: employer._id 
+    employerId: employer._id,
+    id: employer._id,
+    email: employer.email,
+    employerType: employer.employerType,
+    isProfileComplete: employer.isProfileComplete || false
   });
 });
 
@@ -337,7 +375,7 @@ export const resendOTP = expressAsyncHandler(async (req, res) => {
     res.status(400); throw new Error("Email is required");
   }
 
-  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedEmail = normalizeEmail(email);
   const employer = await Employer.findOne({ email: normalizedEmail });
   if (!employer) {
     res.status(404); throw new Error("Employer account not found");
@@ -347,21 +385,24 @@ export const resendOTP = expressAsyncHandler(async (req, res) => {
   }
 
   // Rate limiting: Prevent requesting a new OTP within 30 seconds
-  const existingOTP = await OTP.findOne({ employerId: employer._id });
+  const existingOTP = await OTP.findOne({ employerId: employer._id, type: "verification" });
   if (existingOTP && (Date.now() - new Date(existingOTP.createdAt).getTime()) < 30 * 1000) {
     const remainingSec = Math.ceil((30 * 1000 - (Date.now() - new Date(existingOTP.createdAt).getTime())) / 1000);
     res.status(429);
     throw new Error(`Please wait ${remainingSec} seconds before requesting another code.`);
   }
 
-  // Delete existing OTPs
-  await OTP.deleteMany({ employerId: employer._id });
+  // Delete existing verification OTPs
+  await OTP.deleteMany({ employerId: employer._id, type: "verification" });
 
-  // Create new OTP
-  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  // Create new hashed OTP using cryptographically secure random generator
+  const otpCode = generateSecureOTP(6);
+  const hashedOTP = await bcrypt.hash(otpCode, 10);
   await OTP.create({
     employerId: employer._id,
-    otp: otpCode,
+    otp: hashedOTP,
+    type: "verification",
+    attempts: 0,
   });
 
   try {
@@ -373,7 +414,7 @@ export const resendOTP = expressAsyncHandler(async (req, res) => {
 
     res.status(200).json({ message: "A new verification code has been sent to your business email." });
   } catch (error) {
-    await OTP.deleteMany({ employerId: employer._id });
+    await OTP.deleteMany({ employerId: employer._id, type: "verification" });
     res.status(500);
     throw new Error("Could not send verification email. Please try again later.");
   }
@@ -383,7 +424,13 @@ export const resendOTP = expressAsyncHandler(async (req, res) => {
 export const loginEmployer = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const employer = await Employer.findOne({ email });
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail || !password) {
+    res.status(400);
+    throw new Error("Email and password are required");
+  }
+
+  const employer = await Employer.findOne({ email: normalizedEmail });
 
   const isMatch = employer 
     ? await bcrypt.compare(password, employer.password) 
@@ -391,13 +438,18 @@ export const loginEmployer = expressAsyncHandler(async (req, res) => {
 
   if (!employer || !isMatch) {
     res.status(401);
-    throw new Error("Invalid credentials");
+    throw new Error("Invalid email or password");
   }
 
-  // --- FIX 1: BLOCK UNVERIFIED USERS ---
+  // Operational lock: Block frozen employer accounts
+  if (employer.isFrozen) {
+    res.status(403);
+    throw new Error("Account Suspended: Your employer account has been frozen by the administration.");
+  }
+
+  // Block unverified employers
   if (!employer.isVerified) {
     res.status(401);
-    // Optional: You could trigger a resend OTP logic here if you wanted
     throw new Error("Account not verified. Please verify your email first.");
   }
 
@@ -414,20 +466,53 @@ export const loginEmployer = expressAsyncHandler(async (req, res) => {
     { expiresIn: "5h" }
   );
 
-  // --- FIX 2: SEND THE ID FOR FRONTEND ---
   res.status(200).json({ 
     token,
-    employerId: employer._id, // Frontend needs this for 'employerInfo'
-    email: employer.email,     // Optional but good to have
-    employerType: employer.employerType // Added to distinguish individual vs company
+    employerId: employer._id,
+    id: employer._id,
+    email: employer.email,
+    employerType: employer.employerType,
+    name: employer.name,
+    companyName: employer.companyName,
+    isProfileComplete: employer.isProfileComplete || false
   });
 });
 
 
 export const getPublicEmployerProfile = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
-  
-  const employer = await Employer.findById(id).select('-password');
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid employer ID format" });
+  }
+
+  // Determine if requester is the employer themselves or an admin
+  let isAuthorizedOwnerOrAdmin = false;
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    try {
+      const token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const requesterId = decoded.id || (decoded.employer && decoded.employer.id);
+      if (requesterId && requesterId.toString() === id.toString()) {
+        isAuthorizedOwnerOrAdmin = true;
+      } else if (decoded.id) {
+        const admin = await Admin.findById(decoded.id);
+        if (admin) isAuthorizedOwnerOrAdmin = true;
+      }
+    } catch (e) {
+      // Invalid/expired token, proceed as public requester
+    }
+  }
+
+  let employer;
+  if (isAuthorizedOwnerOrAdmin) {
+    employer = await Employer.findById(id).select("-password");
+  } else {
+    // PUBLIC SANITIZED VIEW: Do NOT return sensitive document keys (Aadhar, PAN, GST, Trade License, etc.)
+    employer = await Employer.findById(id).select(
+      "name email phone employerType natureOfBusiness companyName companyWebsite description profilePicture location officeLocation industry isApproved ratingsReceived createdAt"
+    );
+  }
 
   if (!employer) {
     res.status(404);
@@ -439,27 +524,29 @@ export const getPublicEmployerProfile = expressAsyncHandler(async (req, res) => 
 
 
 export const getExploreEmployers = expressAsyncHandler(async (req, res) => {
-  // Find all approved and unfrozen employers
-  const employers = await Employer.find({ isApproved: 'approved', isFrozen: false })
-    .select('companyName name industry location profilePicture description employerType');
+  // Query employers and job counts concurrently using Promise.all and aggregation
+  const [employers, jobCountAgg] = await Promise.all([
+    Employer.find({ isApproved: 'approved', isFrozen: false })
+      .select('companyName name industry location profilePicture description employerType')
+      .lean(),
+    Job.aggregate([
+      { $match: { status: { $nin: ['pending_approval', 'disregarded', 'rejected'] } } },
+      { $group: { _id: "$postedBy", count: { $sum: 1 } } }
+    ])
+  ]);
 
-  // Find all jobs that are not pending or disregarded
-  const validJobs = await Job.find({
-    status: { $nin: ['pending_approval', 'disregarded', 'rejected'] }
-  }).select('postedBy status');
-
-  // Count jobs per employer
-  const jobCounts = {};
-  validJobs.forEach(job => {
-    const employerId = job.postedBy.toString();
-    jobCounts[employerId] = (jobCounts[employerId] || 0) + 1;
+  const countMap = {};
+  jobCountAgg.forEach(item => {
+    if (item._id) {
+      countMap[item._id.toString()] = item.count;
+    }
   });
 
   // Filter employers who have at least one valid job
   const hiringEmployers = employers
     .map(emp => ({
-      ...emp.toObject(),
-      jobCount: jobCounts[emp._id.toString()] || 0
+      ...emp,
+      jobCount: countMap[emp._id.toString()] || 0
     }))
     .filter(emp => emp.jobCount > 0);
 
@@ -616,7 +703,8 @@ export const getEmployerProfilePicUploadUrl = expressAsyncHandler(async (req, re
   });
 
   const url = await getSignedUrl(client, command, { expiresIn: 600 });
-  const publicUrl = `https://jobone-mrpy.onrender.com/images/${key}`;
+  const baseUrl = process.env.PUBLIC_BACKEND_URL || process.env.BACKEND_URL || 'http://localhost:5000';
+  const publicUrl = `${baseUrl.replace(/\/+$/, '')}/images/${key}`;
   
   res.status(200).json({ uploadUrl: url, key: key, publicUrl });
 });
@@ -768,11 +856,16 @@ export const googleLoginEmployer = expressAsyncHandler(async (req, res) => {
       audience: process.env.GOOGLE_CLIENT_ID,
     });
     const { email, name, picture, sub: googleId } = ticket.getPayload();
+    const normalizedEmail = normalizeEmail(email);
 
     // 2. Check if employer exists FIRST (Login Scenario)
-    let employer = await Employer.findOne({ email });
+    let employer = await Employer.findOne({ email: normalizedEmail });
 
     if (employer) {
+      if (employer.isFrozen) {
+        return res.status(403).json({ message: "Account Suspended: Your employer account has been frozen by the administration." });
+      }
+
       // --- EXISTING EMPLOYER (LOGIN) ---
       const token = jwt.sign({ employer: { id: employer._id } }, process.env.JWT_SECRET, { expiresIn: '5h' });
 
@@ -789,6 +882,7 @@ export const googleLoginEmployer = expressAsyncHandler(async (req, res) => {
         message: "Google Login Successful",
         token,
         employerId: employer._id,
+        id: employer._id,
         email: employer.email,
         employerType: employer.employerType,
         isProfileComplete: !!isProfileComplete
@@ -797,21 +891,21 @@ export const googleLoginEmployer = expressAsyncHandler(async (req, res) => {
     } else {
       // --- NEW EMPLOYER (REGISTER) ---
       // 3. Check for User collision BEFORE creating a new employer
-      const existingUser = await User.findOne({ email });
+      const existingUser = await User.findOne({ email: normalizedEmail });
       if (existingUser) {
         res.status(400);
         throw new Error('This email is already registered as a Jobseeker. You cannot create an Employer account with this email.');
       }
       // --- NEW EMPLOYER ---
-      const randomPassword = Math.random().toString(36).slice(-8);
+      const randomPassword = crypto.randomBytes(16).toString('hex');
       const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
       // FACT: Inject unique dummy phone to prevent MongoDB E11000 duplicate key crash
       const dummyPhone = `EMP-${Date.now().toString().slice(-6)}`;
 
       const newEmployer = new Employer({
-        name,
-        email,
+        name: name ? name.trim() : "Employer",
+        email: normalizedEmail,
         password: hashedPassword,
         profilePicture: picture,
         isVerified: true, 
@@ -828,6 +922,7 @@ export const googleLoginEmployer = expressAsyncHandler(async (req, res) => {
         message: "Google Registration Successful",
         token,
         employerId: savedEmployer._id,
+        id: savedEmployer._id,
         email: savedEmployer.email,
         employerType: savedEmployer.employerType,
         isProfileComplete: false // Forces redirect to Edit Profile
@@ -841,50 +936,53 @@ export const googleLoginEmployer = expressAsyncHandler(async (req, res) => {
 });
 
 // GET /employer/search-candidates?skills=React,Node
+// GET /employer/search-candidates?skills=React,Node
 export const searchCandidatesBySkills = expressAsyncHandler(async (req, res) => {
-  const { skills, page = 1, limit = 20 } = req.query;
-  const pageNum = parseInt(page);
-  const limitNum = parseInt(limit);
-  const skip = (pageNum - 1) * limitNum;
+  const { skills } = req.query;
+  const { page, limit, skip } = clampPagination(req.query.page, req.query.limit, 20, 50);
 
-  // 1. Empty Search: Return all paginated
-  if (!skills || skills.trim() === "") {
-    const total = await User.countDocuments({});
-    const candidates = await User.find({})
-      .select("name email phone skills profilePicture description resumeData createdAt")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limitNum);
+  // 1. Empty Search: Return all paginated using concurrent count and find
+  if (!skills || typeof skills !== 'string' || skills.trim() === "") {
+    const [total, candidates] = await Promise.all([
+      User.countDocuments({}),
+      User.find({})
+        .select("name email phone skills profilePicture description resumeData createdAt")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+    ]);
 
     return res.status(200).json({
       candidates,
-      currentPage: pageNum,
-      totalPages: Math.ceil(total / limitNum),
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
       totalCandidates: total
     });
   }
 
-  // 2. Clean the input into an array of lowercase search terms
+  // 2. Clean input into an array of lowercase search terms
   const searchSkills = skills.split(",").map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
   
-  // SECURITY: Escape regex to prevent ReDoS
-  const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const skillRegexArray = searchSkills.map(s => new RegExp(escapeRegex(s), "i"));
+  // SECURITY: Escape regex using shared escapeRegex utility to prevent ReDoS
+  const skillRegexArray = searchSkills.map(s => new RegExp(escapeRegex(s.slice(0, 50)), "i"));
 
+  // Limit matched pool to 200 candidates to protect RAM under high concurrency
   const matchedUsers = await User.find({
     skills: { $in: skillRegexArray },
-  }).select("name email phone skills profilePicture description resumeData createdAt");
+  })
+  .select("name email phone skills profilePicture description resumeData createdAt")
+  .limit(200)
+  .lean();
 
-  // 4. Calculate exact match scores for the ranking system
+  // 4. Calculate exact match scores for ranking
   const scoredCandidates = matchedUsers.map(candidate => {
-    const candidateSkillsLower = candidate.skills.map(s => s.toLowerCase());
+    const candidateSkillsLower = (candidate.skills || []).map(s => s.toLowerCase());
     
     let matchCount = 0;
     const matchedSkills = [];
 
-    // Loop through every skill the employer typed
     searchSkills.forEach(searchTerm => {
-      // Find if the candidate has a skill containing this term (e.g. "React.js" includes "react")
       const found = candidateSkillsLower.find(cs => cs.includes(searchTerm));
       if (found) {
         matchCount++;
@@ -893,14 +991,14 @@ export const searchCandidatesBySkills = expressAsyncHandler(async (req, res) => 
     });
     
     return {
-      ...candidate.toObject(),
+      ...candidate,
       matchCount,
-      totalSearched: searchSkills.length, // Track how many skills were requested
-      matchedSkills: [...new Set(matchedSkills)] // Remove duplicates
+      totalSearched: searchSkills.length,
+      matchedSkills: [...new Set(matchedSkills)]
     };
   });
 
-  // 5. Sort: Candidates with all skills at the top. Tie-breaker goes to the newest profile.
+  // 5. Sort: Candidates with all skills at the top, newest profile as tie-breaker
   scoredCandidates.sort((a, b) => {
     if (b.matchCount !== a.matchCount) {
       return b.matchCount - a.matchCount; 
@@ -909,12 +1007,12 @@ export const searchCandidatesBySkills = expressAsyncHandler(async (req, res) => 
   });
 
   // 6. Paginate the sorted results
-  const paginatedCandidates = scoredCandidates.slice(skip, skip + limitNum);
+  const paginatedCandidates = scoredCandidates.slice(skip, skip + limit);
 
   res.status(200).json({
     candidates: paginatedCandidates,
-    currentPage: pageNum,
-    totalPages: Math.ceil(scoredCandidates.length / limitNum),
+    currentPage: page,
+    totalPages: Math.ceil(scoredCandidates.length / limit),
     totalCandidates: scoredCandidates.length
   });
 });
@@ -924,19 +1022,12 @@ export const getMyCandidates = expressAsyncHandler(async (req, res) => {
   try {
     const employerId = req.employerId;
 
-    // 1. Find all jobs posted by this employer
-    const jobs = await Job.find({ postedBy: employerId }).select('_id title');
-    const jobIds = jobs.map(j => j._id);
-
-    if (jobIds.length === 0) {
-      return res.status(200).json([]);
-    }
-
-    // 2. Find all applications for these jobs and populate candidate data
-    const applications = await Application.find({ job_id: { $in: jobIds } })
+    // Direct indexed query using jobHost on Application to avoid 2-step roundtrip
+    const applications = await Application.find({ jobHost: employerId })
       .populate("appliedBy", "name email phone profilePicture skills resumeData")
       .populate("job_id", "title postedByCompany postedByName isThirdPartyRecruiting showHiringCompanyName hiringCompanyName")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json(applications);
   } catch (error) {
@@ -951,29 +1042,38 @@ export const forgotPasswordEmployer = expressAsyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("A valid email address is required");
   }
-  const employer = await Employer.findOne({ email: email.trim().toLowerCase() });
+  const normalizedEmail = normalizeEmail(email);
+  const employer = await Employer.findOne({ email: normalizedEmail });
   if (!employer) {
-    res.status(404);
-    throw new Error("No employer account found with this email");
+    return res.status(200).json({ message: "If this email is registered, a password reset code has been sent." });
   }
 
-  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpCode = generateSecureOTP(6);
+  const hashedOTP = await bcrypt.hash(otpCode, 10);
   
-  // Clear existing OTPs
-  await OTP.deleteMany({ employerId: employer._id });
+  // Clear existing password reset OTPs
+  await OTP.deleteMany({ employerId: employer._id, type: "password_reset" });
 
   await OTP.create({
     employerId: employer._id,
-    otp: otpCode,
+    otp: hashedOTP,
+    type: "password_reset",
+    attempts: 0,
   });
 
-  await sendEmail({
-    email: employer.email,
-    subject: 'Password Reset Request - JobOne',
-    message: `Your password reset code is: ${otpCode}. It expires in 10 minutes. If you did not request this, please ignore this email.`,
-  });
+  try {
+    await sendEmail({
+      email: employer.email,
+      subject: 'Password Reset Request - JobOne',
+      message: `Your password reset code is: ${otpCode}. It expires in 10 minutes. If you did not request this, please ignore this email.`,
+    });
+  } catch (error) {
+    await OTP.deleteMany({ employerId: employer._id, type: "password_reset" });
+    res.status(500);
+    throw new Error("Failed to send password reset email. Please try again later.");
+  }
 
-  res.status(200).json({ message: "Password reset OTP sent to your email." });
+  res.status(200).json({ message: "If this email is registered, a password reset code has been sent." });
 });
 
 export const resetPasswordEmployer = expressAsyncHandler(async (req, res) => {
@@ -994,22 +1094,55 @@ export const resetPasswordEmployer = expressAsyncHandler(async (req, res) => {
     throw new Error(passCheck.message);
   }
 
-  const employer = await Employer.findOne({ email: email.trim().toLowerCase() });
+  const normalizedEmail = normalizeEmail(email);
+  const employer = await Employer.findOne({ email: normalizedEmail });
   if (!employer) {
-    res.status(404);
-    throw new Error("Employer not found");
+    res.status(400);
+    throw new Error("Invalid request or employer not found");
   }
 
-  const otpRecord = await OTP.findOne({ employerId: employer._id, otp: otp.trim() });
+  const otpRecord = await OTP.findOne({ employerId: employer._id, type: "password_reset" });
   if (!otpRecord) {
     res.status(400);
-    throw new Error("Invalid or expired OTP");
+    throw new Error("Invalid or expired password reset code");
+  }
+
+  // Explicit 10-minute expiry check
+  const isExpired = Date.now() - new Date(otpRecord.createdAt).getTime() > 10 * 60 * 1000;
+  if (isExpired) {
+    await OTP.deleteMany({ employerId: employer._id, type: "password_reset" });
+    res.status(400);
+    throw new Error("Password reset code has expired. Please request a new code.");
+  }
+
+  if (otpRecord.attempts >= 5) {
+    await OTP.deleteMany({ employerId: employer._id, type: "password_reset" });
+    res.status(429);
+    throw new Error("Too many failed attempts. Please request a new password reset code.");
+  }
+
+  let isMatch = false;
+  if (otpRecord.otp.startsWith("$2b$") || otpRecord.otp.startsWith("$2a$")) {
+    isMatch = await bcrypt.compare(otp.trim(), otpRecord.otp);
+  } else {
+    isMatch = otpRecord.otp.trim() === otp.trim();
+  }
+
+  if (!isMatch) {
+    otpRecord.attempts = (otpRecord.attempts || 0) + 1;
+    await otpRecord.save();
+    const remaining = 5 - otpRecord.attempts;
+    res.status(400);
+    throw new Error(remaining > 0 
+      ? `Invalid verification code. ${remaining} attempt(s) remaining.` 
+      : "Invalid verification code. Maximum attempts reached. Please request a new code.");
   }
 
   employer.password = await bcrypt.hash(newPassword, 10);
   await employer.save();
 
-  await OTP.deleteOne({ _id: otpRecord._id });
+  // Invalidate password reset token immediately
+  await OTP.deleteMany({ employerId: employer._id, type: "password_reset" });
 
   res.status(200).json({ message: "Password reset successful. You can now log in." });
 });

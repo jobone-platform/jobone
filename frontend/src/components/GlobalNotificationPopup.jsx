@@ -127,7 +127,7 @@ export default function GlobalNotificationPopup() {
   };
 
   return (
-    <div className="fixed top-24 right-6 z-[100] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+    <div role="region" aria-label="Notifications" aria-live="polite" className="fixed top-24 right-6 z-[100] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
       <AnimatePresence>
         {unreadQueue.map((app) => (
           <motion.div
@@ -148,7 +148,8 @@ export default function GlobalNotificationPopup() {
               </div>
               <button
                 onClick={() => handleDismissLocal(app.applicationId)}
-                className="text-indigo-200 hover:text-white transition-colors p-1"
+                aria-label="Dismiss notification"
+                className="text-indigo-200 hover:text-white transition-colors p-1 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none rounded"
                 title="Dismiss for now (will remind later)"
               >
                 <X size={16} />

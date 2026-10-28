@@ -14,6 +14,8 @@ import { S3Client } from '@aws-sdk/client-s3';
 import Employer from '../models/employer.js';
 import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+import { escapeRegex } from "../utils/validators.js";
+
 
 // Helper to get S3 Client (duplicate this if it's not already in this file)
 const getS3Client = () => {
@@ -59,26 +61,26 @@ const generateToken = (id) => {
 export const authAdmin = errorHandler(async (req, res) => {
   const { email, password } = req.body;
   
-  // Make email search case-insensitive just in case
-  const admin = await Admin.findOne({ email: new RegExp('^' + email + '$', 'i') });
-
-  if (!admin) {
-    res.status(401);
-    throw new Error("Invalid email. No admin found with this email.");
+  if (!email || !password) {
+    res.status(400);
+    throw new Error("Admin email and password are required");
   }
 
-  if (await admin.matchPassword(password)) {
-    res.json({
-      _id: admin._id,
-      name: admin.name,
-      email: admin.email,
-      role: admin.role,
-      token: generateToken(admin._id),
-    });
-  } else {
+  const normalizedEmail = email.trim().toLowerCase();
+  const admin = await Admin.findOne({ email: normalizedEmail });
+
+  if (!admin || !(await admin.matchPassword(password))) {
     res.status(401);
-    throw new Error("Invalid password for this admin account.");
+    throw new Error("Invalid admin email or password");
   }
+
+  res.json({
+    _id: admin._id,
+    name: admin.name,
+    email: admin.email,
+    role: admin.role,
+    token: generateToken(admin._id),
+  });
 });
 
 // @desc    Create a new admin
@@ -87,72 +89,91 @@ export const authAdmin = errorHandler(async (req, res) => {
 export const createAdmin = expressAsyncHandler(async (req, res) => {
   const { name, email, password, role } = req.body;
 
-  if (!['jobseekerAdmin', 'employerAdmin','superAdmin'].includes(role)) {
+  if (!name || !email || !password || !role) {
     res.status(400);
-    throw new Error('Invalid role. Must be jobseekerAdmin or employerAdmin');
+    throw new Error("All fields (name, email, password, role) are required");
   }
 
-  const existingAdmin = await Admin.findOne({ email });
+  if (!['jobseekerAdmin', 'employerAdmin','superAdmin'].includes(role)) {
+    res.status(400);
+    throw new Error('Invalid role. Must be jobseekerAdmin, employerAdmin, or superAdmin');
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const existingAdmin = await Admin.findOne({ email: normalizedEmail });
   if (existingAdmin) {
     res.status(400);
-    throw new Error('Admin already exists');
+    throw new Error('Admin already exists with this email');
   }
 
   const newAdmin = new Admin({
-    name, email, password, role
+    name: name.trim(),
+    email: normalizedEmail,
+    password,
+    role
   });
 
   await newAdmin.save();
-  res.status(201).json({ message: "Admin created successfully", admin: { name, email, role } });
+  res.status(201).json({ message: "Admin created successfully", admin: { name: newAdmin.name, email: newAdmin.email, role: newAdmin.role } });
 });
 
 // @desc    Get all pending employers
 // @route   GET /api/admin/employers/pending
 export const getPendingEmployers = errorHandler(async (req, res) => {
-  const employers = await Employer.find({ isApproved: "pending" }).select("-password");
+  const employers = await Employer.find({ isApproved: "pending" }).select("-password").lean();
   res.json(employers);
 });
 
 // @desc    Get all employers (for admin view)
 // @route   GET /api/admin/employers
 export const getAllEmployersForAdmin = errorHandler(async (req, res) => {
-  const employers = await Employer.find({}).select("-password").sort({ createdAt: -1 });
+  const employers = await Employer.find({}).select("-password").sort({ createdAt: -1 }).lean();
   res.json(employers);
 });
 
 // @desc    Get all jobseekers (for admin view)
 // @route   GET /api/admin/users
 export const getAllJobseekersForAdmin = errorHandler(async (req, res) => {
-  const users = await User.find({}).select("-password").sort({ createdAt: -1 });
+  const users = await User.find({}).select("-password").sort({ createdAt: -1 }).lean();
   res.json(users);
 });
 
 // @desc    Get all pending jobs
 // @route   GET /api/admin/jobs/pending
 export const getPendingJobs = errorHandler(async (req, res) => {
-  const jobs = await Job.find({ status: "pending_approval" }).populate("postedBy", "name email companyName");
+  const jobs = await Job.find({ status: "pending_approval" }).populate("postedBy", "name email companyName").lean();
   res.json(jobs);
 });
 
 // @desc    Get ALL jobs (for admin view)
 // @route   GET /api/admin/jobs
 export const getAllJobsForAdmin = errorHandler(async (req, res) => {
-  const jobs = await Job.find({}).populate("postedBy", "name email companyName").sort({ createdAt: -1 });
+  const jobs = await Job.find({}).populate("postedBy", "name email companyName").sort({ createdAt: -1 }).lean();
   res.json(jobs);
 });
 
 // @desc    Get jobs created by a specific employer along with their applications
 // @route   GET /api/admin/employers/:id/jobs
 export const getEmployerJobsWithApplications = errorHandler(async (req, res) => {
-  const jobs = await Job.find({ postedBy: req.params.id }).sort({ createdAt: -1 });
-  
-  // Also get applications for each job to give the admin a full view
-  const jobsWithApps = await Promise.all(
-    jobs.map(async (job) => {
-      const applications = await Application.find({ job: job._id }).populate('appliedBy', 'name email phone');
-      return { ...job.toObject(), applications };
-    })
-  );
+  const jobs = await Job.find({ postedBy: req.params.id }).sort({ createdAt: -1 }).lean();
+  const jobIds = jobs.map(j => j._id);
+
+  // Single batch query with correct field name (job_id) instead of N+1 database requests
+  const applications = await Application.find({ job_id: { $in: jobIds } })
+    .populate('appliedBy', 'name email phone')
+    .lean();
+
+  const appMap = {};
+  applications.forEach(app => {
+    const jId = app.job_id.toString();
+    if (!appMap[jId]) appMap[jId] = [];
+    appMap[jId].push(app);
+  });
+
+  const jobsWithApps = jobs.map(job => ({
+    ...job,
+    applications: appMap[job._id.toString()] || []
+  }));
 
   res.json(jobsWithApps);
 });
@@ -478,31 +499,39 @@ export const freezeEmployer = expressAsyncHandler(async (req, res) => {
 
 export const searchJobseekers = expressAsyncHandler(async (req, res) => {
   const { q } = req.query;
-  // Search by name or email
-  const query = q ? { $or: [{ name: { $regex: q, $options: 'i' } }, { email: { $regex: q, $options: 'i' } }] } : {};
-  const users = await User.find(query).select('name email phone isFrozen createdAt').limit(20);
+  let query = {};
+  if (typeof q === 'string' && q.trim()) {
+    const safeQ = escapeRegex(q.trim().slice(0, 80));
+    query = { $or: [{ name: { $regex: safeQ, $options: 'i' } }, { email: { $regex: safeQ, $options: 'i' } }] };
+  }
+  const users = await User.find(query).select('name email phone isFrozen createdAt').limit(20).lean();
   res.status(200).json(users);
 });
 
 export const searchEmployers = expressAsyncHandler(async (req, res) => {
   const { q } = req.query;
-  // Search by company name, contact name, or email
-  const query = q ? { $or: [{ companyName: { $regex: q, $options: 'i' } }, { name: { $regex: q, $options: 'i' } }, { email: { $regex: q, $options: 'i' } }] } : {};
-  const employers = await Employer.find(query).select('name email companyName isFrozen createdAt').limit(20);
+  let query = {};
+  if (typeof q === 'string' && q.trim()) {
+    const safeQ = escapeRegex(q.trim().slice(0, 80));
+    query = { $or: [{ companyName: { $regex: safeQ, $options: 'i' } }, { name: { $regex: safeQ, $options: 'i' } }, { email: { $regex: safeQ, $options: 'i' } }] };
+  }
+  const employers = await Employer.find(query).select('name email companyName isFrozen createdAt').limit(20).lean();
   res.status(200).json(employers);
 });
 
 export const getAdminDashboardStats = expressAsyncHandler(async (req, res) => {
-  const totalJobs = await Job.countDocuments();
-  const totalJobseekers = await User.countDocuments();
-  const totalEmployers = await Employer.countDocuments();
+  const [totalJobs, totalJobseekers, totalEmployers] = await Promise.all([
+    Job.countDocuments(),
+    User.countDocuments(),
+    Employer.countDocuments()
+  ]);
   res.json({ jobs: totalJobs, jobseekers: totalJobseekers, employers: totalEmployers });
 });
 
 // @desc    Get all contact messages for admins
 // @route   GET /api/admin/contacts
 export const getAllContactsForAdmin = expressAsyncHandler(async (req, res) => {
-  const contacts = await Contact.find({}).sort({ createdAt: -1 });
+  const contacts = await Contact.find({}).sort({ createdAt: -1 }).lean();
   res.status(200).json(contacts);
 });
 
@@ -522,7 +551,7 @@ export const markContactAsRead = expressAsyncHandler(async (req, res) => {
 // @desc    Get all admins
 // @route   GET /api/admin/all-admins
 export const getAllAdmins = expressAsyncHandler(async (req, res) => {
-  const admins = await Admin.find({}).select("-password");
+  const admins = await Admin.find({}).select("-password").lean();
   res.status(200).json(admins);
 });
 

@@ -135,7 +135,7 @@ export default function JobsAroundMe({ onJobClick }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-800 overflow-hidden">
       {/* Header Section */}
       <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -231,7 +231,7 @@ export default function JobsAroundMe({ onJobClick }) {
       )}
 
       {/* Jobs List */}
-      <div className="p-6 bg-gray-50">
+      <div className="p-6 bg-gray-50 dark:bg-slate-950">
         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">
           {userLocation
             ? `${jobs.length} Jobs Found Nearby`
@@ -239,7 +239,7 @@ export default function JobsAroundMe({ onJobClick }) {
         </h3>
 
         {!userLocation ? (
-          <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-8 flex flex-col items-center justify-center text-center shadow-sm h-64 hover:border-blue-300 transition-colors">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 p-8 flex flex-col items-center justify-center text-center shadow-sm h-64 hover:border-blue-300 dark:hover:border-blue-500 transition-colors">
             <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-4 shadow-sm shadow-blue-100 animate-pulse">
               <MapPin size={28} />
             </div>
@@ -265,7 +265,7 @@ export default function JobsAroundMe({ onJobClick }) {
               <div
                 key={job._id}
                 onClick={() => onJobClick ? onJobClick(job) : navigate(`/job/${job._id}`)}
-                className="bg-white hover:bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 hover:border-blue-200 transition-all duration-300 cursor-pointer group flex flex-col h-full relative overflow-hidden"
+                className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-slate-950/40 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-600 transition-all duration-300 cursor-pointer group flex flex-col h-full relative overflow-hidden"
               >
                 {/* Top highlight bar */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-cyan-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

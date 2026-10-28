@@ -241,8 +241,9 @@ export const recommendJobs = expressAsyncHandler(async (req, res) => {
 
     // 2. Fetch jobs (optimized)
     const jobs = await Job.find({ status: "active" })
-        .select("title description skillsRequired mode salaryAmount")
-        .limit(15);
+        .select("title jobSummary skillsRequired mode salaryMin salaryMax")
+        .limit(20)
+        .lean();
 
     if (!jobs.length) {
         return res.json({ recommendedJobs: [] });
@@ -257,11 +258,11 @@ export const recommendJobs = expressAsyncHandler(async (req, res) => {
 
     const jobsToSend = filteredJobs.length > 0 ? filteredJobs : jobs;
 
-    // 4. Trim data (VERY IMPORTANT for cost)
+    // 4. Trim data (VERY IMPORTANT for cost and memory)
     const cleanJobs = jobsToSend.map(job => ({
         _id: job._id,
         title: job.title,
-        description: job.description?.substring(0, 300),
+        description: (job.jobSummary || job.description || "").substring(0, 300),
         skillsRequired: job.skillsRequired
     }));
 

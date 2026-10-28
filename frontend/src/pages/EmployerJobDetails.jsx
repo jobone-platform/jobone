@@ -99,7 +99,7 @@ export default function EmployerJobDetails() {
 
   if (loading)
     return (
-      <div className="flex h-screen items-center justify-center text-slate-500 bg-slate-50">
+      <div className="flex h-screen items-center justify-center text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950">
         <Loader2 className="animate-spin mb-4 text-indigo-600" size={40} />
       </div>
     );
@@ -107,7 +107,7 @@ export default function EmployerJobDetails() {
   if (!job)
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
-        <div className="text-center p-10 bg-white rounded-3xl border border-slate-200 max-w-md shadow-xl mx-4">
+        <div className="text-center p-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-md shadow-xl mx-4">
           <h2 className="text-2xl font-extrabold text-slate-800 mb-2">
             Job Not Found
           </h2>
@@ -136,14 +136,14 @@ export default function EmployerJobDetails() {
     job.jobFeatures?.filter((f) => f && f.trim() !== "") || [];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-8 sm:py-12 px-4 sm:px-6 lg:px-8 mt-10 sm:mt-10">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 mt-10 sm:mt-10">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="max-w-6xl mx-auto space-y-6"
       >
         {/* --- PREMIUM HEADER --- */}
-        <header className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative overflow-hidden">
+        <header className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none -mt-20 -mr-20"></div>
 
           <div className="relative z-10 w-full lg:w-auto">
@@ -160,7 +160,7 @@ export default function EmployerJobDetails() {
                 {renderArray(job.jobType)}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-2 leading-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2 leading-tight">
               {job.title}
             </h1>
             <div className="flex flex-wrap items-center text-slate-500 text-xs sm:text-sm font-bold gap-3 mt-2">
@@ -221,8 +221,8 @@ export default function EmployerJobDetails() {
             )}
 
             {/* Candidate Requirements Grid */}
-            <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-              <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-4 flex items-center gap-3 border-b border-slate-100 pb-4">
+            <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+              <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
                   <UserCircle2 size={18} />
                 </div>{" "}
@@ -453,7 +453,7 @@ export default function EmployerJobDetails() {
             </section>
 
             {/* Job Overview (Timeline & Openings) */}
-            <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+            <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
               <div className="flex items-center justify-between mb-5 sm:mb-6 border-b border-slate-100 pb-3">
                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                   Timeline & Openings
@@ -540,7 +540,7 @@ export default function EmployerJobDetails() {
                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">
                   Working Days
                 </p>
-                <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700">
+                <div className="inline-block px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-200">
                   {job.workDaysPattern === "Custom"
                     ? job.customWorkDaysDescription
                     : job.workDaysPattern || renderArray(job.workDays)}

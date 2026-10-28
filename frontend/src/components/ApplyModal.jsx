@@ -19,6 +19,18 @@ const DOC_FIELD_MAP = {
 
 export default function ApplyModal({ job, onClose, onSuccess }) {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "auto";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
   const [pitch, setPitch] = useState("");
   const [answers, setAnswers] = useState(
     job.screeningQuestions?.map((q) => ({ question: q, answer: "" })) || [],
@@ -64,6 +76,7 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     if (answers.some((a) => !a.answer.trim())) {
       setError("Please provide an answer for all screening questions.");
       return;
@@ -109,16 +122,20 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
   const hasResume = userProfile && (userProfile.resumeFileKey || userProfile.resume);
 
   return (
-    <div className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="apply-modal-title"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+        <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/60 shrink-0">
           <div>
-            <h2 className="text-xl font-extrabold text-slate-900">
+            <h2 id="apply-modal-title" className="text-xl font-extrabold text-slate-900 dark:text-white">
               Apply for {job.title}
             </h2>
             <p className="text-sm text-slate-500 font-medium">
@@ -127,13 +144,14 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-200 rounded-full text-slate-500 transition-colors"
+            aria-label="Close application form"
+            className="p-2 hover:bg-slate-200 rounded-full text-slate-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <X size={20} />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
           {error && (
             <div className="bg-rose-50 text-rose-600 p-4 rounded-xl text-sm font-bold border border-rose-100 flex items-center gap-2">
               <X size={16} /> {error}
@@ -297,18 +315,18 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
           </div>
         </div>
 
-        <div className="p-6 border-t border-slate-100 bg-white shrink-0 flex justify-end gap-3">
+        <div className="p-4 sm:p-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-6 py-3 font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors"
+            className="w-full sm:w-auto px-6 py-2.5 sm:py-3 font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors text-center"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading || !hasResume || profileLoading}
-            className={`px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg ${
+            className={`w-full sm:w-auto justify-center px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg ${
               !hasResume 
                 ? 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none'
                 : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200'

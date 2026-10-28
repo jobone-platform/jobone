@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../config/api";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -66,16 +66,15 @@ export default function JobApplicants() {
 
         const { token } = JSON.parse(stored);
 
-        const { data } = await axios.get(
-          `${API_BASE_URL}/applications/job/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        setApplicants(data);
+        const headers = { Authorization: `Bearer ${token}` };
 
-        const jobRes = await axios.get(
-          `${API_BASE_URL}/jobs/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
+        // Fetch applications and job title concurrently
+        const [appRes, jobRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/applications/job/${id}`, { headers }),
+          axios.get(`${API_BASE_URL}/jobs/${id}`, { headers }),
+        ]);
+
+        setApplicants(appRes.data || []);
         setJobTitle(jobRes.data.title || jobRes.data.job?.title || "Job");
       } catch (err) {
         console.error("Failed to load applicants", err);
@@ -87,14 +86,16 @@ export default function JobApplicants() {
     fetchApplicants();
   }, [id, navigate]);
 
-  // FACT: Dynamically filter the applicants based on Search Query and Status
-  const displayApplicants = applicants.filter((app) => {
-    const candidate = app.appliedBy || app.applicant;
-    const candidateName = candidate?.name?.toLowerCase() || "";
-    const matchesSearch = candidateName.includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // Memoize filtered applicants to prevent recalculation on every render
+  const displayApplicants = useMemo(() => {
+    return applicants.filter((app) => {
+      const candidate = app.appliedBy || app.applicant;
+      const candidateName = candidate?.name?.toLowerCase() || "";
+      const matchesSearch = candidateName.includes(searchQuery.toLowerCase());
+      const matchesStatus = statusFilter === "all" || app.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [applicants, searchQuery, statusFilter]);
 
   const handleSelectAll = () => {
     if (selectedApps.length === displayApplicants.length) setSelectedApps([]);
@@ -242,13 +243,13 @@ export default function JobApplicants() {
 
   if (loading)
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
+      <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
         <Loader2 className="animate-spin text-indigo-600" size={40} />
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 font-sans pb-32">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 px-4 sm:px-6 font-sans pb-32">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
@@ -258,21 +259,21 @@ export default function JobApplicants() {
             >
               <ArrowLeft size={16} /> Back
             </button>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Applicants for {jobTitle}
             </h1>
 
             {/* Unified Filter UI */}
-            <div className="mt-6 flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <div className="mt-6 flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
               <input
                 type="text"
                 placeholder="Search by candidate name..."
-                className="flex-1 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white transition-all"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <select
-                className="bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium text-slate-700"
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium text-slate-700 dark:text-slate-200"
                 value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value);
@@ -295,7 +296,7 @@ export default function JobApplicants() {
               </select>
             </div>
           </div>
-          <div className="bg-white px-5 py-2.5 rounded-xl border border-slate-200 shadow-sm text-sm font-bold text-slate-600">
+          <div className="bg-white dark:bg-slate-900 px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-sm font-bold text-slate-600 dark:text-slate-300">
             Filtered Candidates:{" "}
             <span className="text-indigo-600 text-lg ml-1">
               {displayApplicants.length}
@@ -404,11 +405,11 @@ export default function JobApplicants() {
 
         {/* DATA TABLE */}
         {displayApplicants.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
               <User className="text-slate-400" size={32} />
             </div>
-            <h3 className="text-xl font-extrabold text-slate-900">
+            <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
               No candidates found
             </h3>
             <p className="text-slate-500 mt-2 font-medium">
@@ -416,11 +417,11 @@ export default function JobApplicants() {
             </p>
           </div>
         ) : (
-          <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
+                  <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800">
                     <th className="p-4 w-12 text-center">
                       <input
                         type="checkbox"

@@ -19,10 +19,11 @@ import {
   getAllAdmins, updateAdminRole, deleteAdmin
 } from "../controllers/adminControllers.js";
 import { protectAdmin, restrictTo } from "../middleware/authorization.js";
+import { authLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 
-router.post("/login", authAdmin);
+router.post("/login", authLimiter, authAdmin);
 
 // Super Admin Only Route
 router.post("/create-admin", protectAdmin, restrictTo("superAdmin"), createAdmin);

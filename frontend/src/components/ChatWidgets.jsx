@@ -54,14 +54,16 @@ export default function ChatWidget() {
       {/* Floating toggle button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 p-4 bg-indigo-600 text-white rounded-full shadow-2xl hover:bg-indigo-700 hover:scale-105 transition-all z-50"
+        aria-label={isOpen ? "Close AI chat assistant" : "Open AI chat assistant"}
+        aria-expanded={isOpen}
+        className="fixed bottom-20 sm:bottom-6 right-6 p-4 bg-indigo-600 text-white rounded-full shadow-2xl hover:bg-indigo-700 hover:scale-105 transition-all z-50 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
       >
         {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
       </button>
 
       {/* Chat panel */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-[350px] h-[500px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col z-50 overflow-hidden">
+        <div role="region" aria-label="JobOne Assistant" className="fixed bottom-36 sm:bottom-24 right-6 w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col z-50 overflow-hidden">
           {/* Header */}
           <div className="bg-indigo-600 p-4 text-white flex items-center gap-3">
             <Bot size={24} />
@@ -96,7 +98,7 @@ export default function ChatWidget() {
                   className={`p-3 rounded-2xl max-w-[80%] text-sm ${
                     m.role === "user"
                       ? "bg-indigo-600 text-white rounded-br-none"
-                      : "bg-white border border-slate-200 text-slate-700 rounded-bl-none shadow-sm"
+                      : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-bl-none shadow-sm"
                   }`}
                 >
                   {/* v6: messages use message.parts[] — each part has a `type`.
@@ -143,7 +145,7 @@ export default function ChatWidget() {
           {/* Input form */}
           <form
             onSubmit={handleSend}
-            className="p-3 bg-white border-t border-slate-200 flex gap-2"
+            className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex gap-2"
           >
             <input
               value={input}
@@ -155,7 +157,8 @@ export default function ChatWidget() {
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="p-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              aria-label="Send message"
+              className="p-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
             >
               <Send size={18} />
             </button>

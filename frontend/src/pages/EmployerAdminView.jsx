@@ -189,7 +189,7 @@ export default function EmployerAdminView() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 px-4 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         {/* Header */}
@@ -221,8 +221,8 @@ export default function EmployerAdminView() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Data */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
                 Profile Data
               </h2>
               <div className="space-y-4">
@@ -368,19 +368,22 @@ export default function EmployerAdminView() {
               <div className="bg-slate-800 rounded-2xl p-2 h-[600px] border-4 border-slate-700 shadow-2xl relative">
                 <button
                   onClick={() => setViewUrl(null)}
-                  className="absolute top-4 right-4 bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 shadow-lg z-10"
+                  aria-label="Close document viewer"
+                  className="absolute top-4 right-4 bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 shadow-lg z-10 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
                 >
                   <XCircle size={20} />
                 </button>
                 {viewUrl.includes(".pdf") ? (
                   <iframe
                     src={viewUrl}
+                    title="Employer verification document"
                     className="w-full h-full rounded-xl bg-white"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center p-4 bg-slate-900 rounded-xl">
                     <img
                       src={viewUrl}
+                      alt="Employer verification document"
                       className="max-h-full max-w-full object-contain"
                     />
                   </div>

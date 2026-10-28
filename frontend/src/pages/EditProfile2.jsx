@@ -266,11 +266,11 @@ export default function EditProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans text-slate-900 relative">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 font-sans text-slate-900 dark:text-slate-100 relative transition-colors duration-150">
       {/* --- POPUP MODAL --- */}
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative border-t-4 border-orange-500 transform scale-100 transition-all">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full p-6 relative border-t-4 border-orange-500 transform scale-100 transition-all border border-slate-200 dark:border-slate-800">
             <button
               onClick={() => setShowPopup(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
@@ -308,7 +308,7 @@ export default function EditProfile() {
         {/* HEADER */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Edit Profile
             </h1>
             <p className="text-slate-500 mt-1">
@@ -317,7 +317,7 @@ export default function EditProfile() {
           </div>
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-900 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm transition-colors"
           >
             <ArrowLeft size={16} /> Cancel
           </button>
@@ -325,7 +325,7 @@ export default function EditProfile() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* 1. PERSONAL DETAILS CARD */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
             <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
               <User className="text-blue-600" size={20} /> Personal Details
             </h2>
@@ -428,7 +428,7 @@ export default function EditProfile() {
           </div>
 
           {/* 2. SUMMARY CARD */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
             <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
               <FileText className="text-purple-600" size={20} /> Professional
               Summary
@@ -444,7 +444,7 @@ export default function EditProfile() {
           </div>
 
           {/* 3. SKILLS CARD */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
             <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
               <span className="p-1 bg-orange-100 rounded-md text-orange-600">
                 <User size={16} />
@@ -497,7 +497,7 @@ export default function EditProfile() {
           </div>
 
           {/* 4. WORK EXPERIENCE CARD */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
             <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
               <span className="p-1 bg-blue-100 rounded-md text-blue-600">
                 <Briefcase size={16} />
@@ -573,7 +573,7 @@ export default function EditProfile() {
           </div>
 
           {/* 5. EDUCATION CARD */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
             <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
               <span className="p-1 bg-green-100 rounded-md text-green-600">
                 <GraduationCap size={16} />
@@ -711,7 +711,7 @@ const InputGroup = ({
         onChange={onChange}
         disabled={disabled}
         placeholder={placeholder}
-        className={`w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
+        className={`w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
       />
     </div>
   </div>

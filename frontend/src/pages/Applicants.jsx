@@ -28,18 +28,15 @@ export default function JobApplicants() {
 
         const { token } = JSON.parse(stored);
 
-        // 1. Get Applications
-        const { data } = await axios.get(
-          `${API_BASE_URL}/applications/job/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        setApplicants(data);
+        const headers = { Authorization: `Bearer ${token}` };
 
-        // 2. Get Job Title
-        const jobRes = await axios.get(
-          `${API_BASE_URL}/jobs/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
+        // Fetch applications and job title concurrently
+        const [appRes, jobRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/applications/job/${id}`, { headers }),
+          axios.get(`${API_BASE_URL}/jobs/${id}`, { headers }),
+        ]);
+
+        setApplicants(appRes.data || []);
         setJobTitle(jobRes.data.title || jobRes.data.job?.title || "Job");
       } catch (err) {
         console.error("Failed to load applicants", err);
@@ -70,13 +67,13 @@ export default function JobApplicants() {
 
   if (loading)
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
+      <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
         <Loader2 className="animate-spin text-indigo-600" size={48} />
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 font-sans mt-10">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-12 px-4 sm:px-6 font-sans mt-10">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
           <div>
@@ -86,22 +83,22 @@ export default function JobApplicants() {
             >
               <ArrowLeft size={16} /> Back to Job
             </button>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
               Applicants for <span className="text-indigo-600">{jobTitle}</span>
             </h1>
           </div>
-          <div className="bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm text-sm font-bold text-slate-600 flex items-center gap-2 shrink-0">
+          <div className="bg-white dark:bg-slate-900 px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-sm font-bold text-slate-600 dark:text-slate-300 flex items-center gap-2 shrink-0">
             Total Applicants:{" "}
             <span className="text-indigo-600 text-lg">{applicants.length}</span>
           </div>
         </div>
 
         {applicants.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-5 border border-slate-100">
               <User className="text-slate-400" size={32} />
             </div>
-            <h3 className="text-xl font-extrabold text-slate-800 mb-2">
+            <h3 className="text-xl font-extrabold text-slate-800 dark:text-white mb-2">
               No applications yet
             </h3>
             <p className="text-slate-500 font-medium">
@@ -119,7 +116,7 @@ export default function JobApplicants() {
                   key={app._id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all duration-300 overflow-hidden flex flex-col"
+                  className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-500/40 transition-all duration-300 overflow-hidden flex flex-col"
                 >
                   <div className="p-6 sm:p-8">
                     <div className="flex items-center gap-4 mb-5">
@@ -134,7 +131,7 @@ export default function JobApplicants() {
                         className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-sm bg-slate-50 shrink-0"
                       />
                       <div className="min-w-0">
-                        <h3 className="font-extrabold text-lg text-slate-900 leading-tight truncate">
+                        <h3 className="font-extrabold text-lg text-slate-900 dark:text-white leading-tight truncate">
                           {candidate.name}
                         </h3>
                         <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-wider">

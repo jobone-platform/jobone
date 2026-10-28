@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../config/api";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
@@ -56,23 +56,28 @@ export default function MyCandidates() {
     );
   };
 
+  const filteredApplications = useMemo(() => {
+    if (!Array.isArray(applications)) return [];
+    return applications.filter((app) => {
+      const candidateName = app.appliedBy?.name?.toLowerCase() || "";
+      const jobTitle = app.job_id?.title?.toLowerCase() || "";
+      const matchesSearch =
+        candidateName.includes(searchQuery.toLowerCase()) ||
+        jobTitle.includes(searchQuery.toLowerCase());
+      const matchesStatus = statusFilter === "all" || app.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [applications, searchQuery, statusFilter]);
+
   if (loading)
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
+      <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
         <Loader2 className="animate-spin text-blue-600" size={48} />
       </div>
     );
 
-  const filteredApplications = applications.filter((app) => {
-    const candidateName = app.appliedBy?.name?.toLowerCase() || "";
-    const jobTitle = app.job_id?.title?.toLowerCase() || "";
-    const matchesSearch = candidateName.includes(searchQuery.toLowerCase()) || jobTitle.includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 font-sans mt-16 sm:mt-20">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-12 px-4 sm:px-6 font-sans mt-16 sm:mt-20">
       <div className="max-w-6xl mx-auto">
         <button
           onClick={() => navigate(-1)}
@@ -80,7 +85,7 @@ export default function MyCandidates() {
         >
           <ArrowLeft size={16} /> Back
         </button>
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 mb-8 text-center">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-slate-200 dark:border-slate-800 mb-8 text-center">
           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <UserCheck size={28} />
           </div>
@@ -93,7 +98,7 @@ export default function MyCandidates() {
         </div>
 
         {/* FACT: New Candidate Filtering UI */}
-        <div className="mb-8 flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <div className="mb-8 flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
           <input
             type="text"
             placeholder="Search by name or job title..."
@@ -117,8 +122,8 @@ export default function MyCandidates() {
         </div>
 
         {filteredApplications.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm">
-            <h3 className="text-xl font-bold text-slate-800">
+          <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">
               No candidates yet
             </h3>
             <p className="text-slate-500 mt-2">
@@ -134,7 +139,7 @@ export default function MyCandidates() {
               return (
                 <div
                   key={app._id}
-                  className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col"
+                  className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <img
@@ -148,7 +153,7 @@ export default function MyCandidates() {
                       className="w-16 h-16 rounded-full object-cover border border-slate-100 shrink-0"
                     />
                     <div className="min-w-0">
-                      <h3 className="font-extrabold text-lg text-slate-900 line-clamp-1">
+                      <h3 className="font-extrabold text-lg text-slate-900 dark:text-white line-clamp-1">
                         {candidate.name}
                       </h3>
                       <p className="text-xs text-slate-500 font-medium truncate flex items-center gap-1 mt-1">

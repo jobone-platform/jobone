@@ -6,6 +6,8 @@ import { validationResult } from "express-validator";
 import Employer from "../models/employer.js";
 import Application from "../models/applications.js";
 import jwt from "jsonwebtoken";
+import { escapeRegex, clampPagination } from "../utils/validators.js";
+
 
 
 export const createJob = expressAsyncHandler(async (req, res) => {
@@ -203,55 +205,71 @@ export const getJobs = expressAsyncHandler(async (req, res) => {
   const queryObj = { ...req.query };
   const filters = {};
 
-  if (queryObj.title) {
-    filters.title = { $regex: queryObj.title, $options: 'i' };
+  if (queryObj.title && typeof queryObj.title === 'string' && queryObj.title.trim()) {
+    filters.title = { $regex: escapeRegex(queryObj.title.trim().slice(0, 100)), $options: 'i' };
   }
-  if (queryObj.location) {
-    filters.location = { $regex: queryObj.location, $options: 'i' };
+  if (queryObj.location && typeof queryObj.location === 'string' && queryObj.location.trim()) {
+    const locRegex = { $regex: escapeRegex(queryObj.location.trim().slice(0, 100)), $options: 'i' };
+    filters.$or = [
+      { "location.address": locRegex },
+      { location: locRegex }
+    ];
   }
-  if (queryObj.jobType) {
-    filters.jobType = queryObj.jobType;
+  if (queryObj.jobType && typeof queryObj.jobType === 'string') {
+    filters.jobType = queryObj.jobType.trim();
   }
-  if (queryObj.status) {
-    filters.status = queryObj.status;
+  // Backend filtering for Industry and Subdomain
+  if (queryObj.industry && typeof queryObj.industry === 'string') {
+    filters.industry = queryObj.industry.trim();
   }
-  // FACT: Added Backend filtering for Industry and Subdomain
-  if (queryObj.industry) {
-    filters.industry = queryObj.industry;
+  if (queryObj.subdomain && typeof queryObj.subdomain === 'string') {
+    filters.subdomain = queryObj.subdomain.trim();
   }
-  if (queryObj.subdomain) {
-    filters.subdomain = queryObj.subdomain;
-  }
-  if (queryObj.skillsRequired) {
-    const skills = queryObj.skillsRequired.split(',');
-    filters.skillsRequired = { $in: skills };
+  if (queryObj.skillsRequired && typeof queryObj.skillsRequired === 'string') {
+    const skills = queryObj.skillsRequired.split(',').map(s => s.trim()).filter(Boolean);
+    if (skills.length > 0) {
+      filters.skillsRequired = { $in: skills };
+    }
   }
 
-  // FACT: Updated salary filtering logic to check the new Range
-  if (queryObj.salary) {
-    if (queryObj.salary.gte) {
+  // Validated salary filtering logic
+  if (queryObj.salary && typeof queryObj.salary === 'object') {
+    if (queryObj.salary.gte !== undefined && isFinite(Number(queryObj.salary.gte))) {
       filters.salaryMax = { $gte: Number(queryObj.salary.gte) }; 
     }
-    if (queryObj.salary.lte) {
+    if (queryObj.salary.lte !== undefined && isFinite(Number(queryObj.salary.lte))) {
       filters.salaryMin = { $lte: Number(queryObj.salary.lte) };
     }
   }
 
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
+  // Enforce server-side maximum pagination limits (max 50 per page)
+  const { page, limit, skip } = clampPagination(req.query.page, req.query.limit, 10, 50);
+
+  // Whitelist safe sort fields to prevent unindexed full scans or injection
+  const allowedSortFields = {
+    postedAt: "postedAt",
+    createdAt: "postedAt",
+    salaryMin: "salaryMin",
+    salaryMax: "salaryMax",
+    title: "title"
+  };
 
   let sortBy = { postedAt: -1 }; 
-  if (req.query.sort) {
-    const sortField = req.query.sort.startsWith('-') ? req.query.sort.substring(1) : req.query.sort;
-    const sortOrder = req.query.sort.startsWith('-') ? -1 : 1;
-    sortBy = { [sortField]: sortOrder };
+  if (typeof req.query.sort === 'string') {
+    const isDesc = req.query.sort.startsWith('-');
+    const rawField = isDesc ? req.query.sort.substring(1) : req.query.sort;
+    if (allowedSortFields[rawField]) {
+      sortBy = { [allowedSortFields[rawField]]: isDesc ? -1 : 1 };
+    }
   }
 
   const finalQuery = { ...filters, status: "active" };
 
-  const jobs = await Job.find(finalQuery).sort(sortBy).skip(skip).limit(limit);
-  const totalJobs = await Job.countDocuments(finalQuery);
+  // Run data query and count concurrently via Promise.all
+  const [jobs, totalJobs] = await Promise.all([
+    Job.find(finalQuery).sort(sortBy).skip(skip).limit(limit).lean(),
+    Job.countDocuments(finalQuery)
+  ]);
 
   res.status(200).json({
     results: jobs.length,
@@ -328,9 +346,13 @@ export const getEmployerCreatedJobs = expressAsyncHandler(async (req, res) => {
 
 export const jobCreatedByUser = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
-  const jobs = await Job.find({ postedBy: id });
 
-  // This is the correct way to check if no jobs were found
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid employer ID format" });
+  }
+
+  const jobs = await Job.find({ postedBy: id }).sort({ postedAt: -1 }).lean();
+
   if (!jobs || jobs.length === 0) {
     return res.status(404).json({ message: "No jobs found for this user" });
   }
@@ -392,16 +414,25 @@ export const updateJob = expressAsyncHandler(async (req, res) => {
 
 export const deleteJob = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
-  const job = await Job.findById(id);
 
-  if (!req.admin) {
-    return res.status(403).json({ message: "Only administrators can delete jobs." });
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid job ID format" });
   }
-  
-  if (!job) return res.status(404).json({ message: "Job not found" });
 
-  // Cascade delete all applications associated with this job
-  await Application.deleteMany({ job: id });
+  const job = await Job.findById(id);
+  if (!job) {
+    return res.status(404).json({ message: "Job not found" });
+  }
+
+  const isAdmin = Boolean(req.admin);
+  const isOwner = req.employerId && job.postedBy && req.employerId.toString() === job.postedBy.toString();
+
+  if (!isAdmin && !isOwner) {
+    return res.status(403).json({ message: "Forbidden: You are not authorized to delete this job." });
+  }
+
+  // Cascade delete all applications associated with this job (using correct field: job_id)
+  await Application.deleteMany({ job_id: id });
 
   await Job.deleteOne({ _id: id });
 
@@ -418,19 +449,15 @@ export const deleteJob = expressAsyncHandler(async (req, res) => {
 export const getEmployerMetrics = expressAsyncHandler(async (req, res) => {
   const employerId = req.employerId;
 
-  // Total Jobs Posted
-  const totalJobsCount = await Job.countDocuments({ postedBy: employerId });
+  // Execute independent metrics queries concurrently via Promise.all
+  const [totalJobsCount, activeJobsCount, employerJobs, totalApplications] = await Promise.all([
+    Job.countDocuments({ postedBy: employerId }),
+    Job.countDocuments({ postedBy: employerId, status: "active" }),
+    Job.find({ postedBy: employerId }).select('_id views').lean(),
+    Application.countDocuments({ jobHost: employerId })
+  ]);
 
-  // Active Jobs
-  const activeJobsCount = await Job.countDocuments({ postedBy: employerId, status: "active" });
-
-  // Applications Received (Aggregate over all employer's jobs)
-  const employerJobs = await Job.find({ postedBy: employerId }).select('_id views');
-  const jobIds = employerJobs.map(job => job._id);
-  
-  const totalApplications = await Application.countDocuments({ job: { $in: jobIds } });
-
-  // Total Job Views
+  // Total Job Views calculated from lean job data
   const totalViews = employerJobs.reduce((sum, job) => sum + (job.views || 0), 0);
 
   res.status(200).json({
@@ -551,12 +578,8 @@ export const getNearbyJobs = expressAsyncHandler(async (req, res) => {
           },
           { $unset: { location: "" } }
         );
-        
-        // 2. Force index rebuild
-        await Job.syncIndexes();
-        console.log("--> [getNearbyJobs] Indexes synced. Retrying query...");
 
-        // 3. Retry the query
+        // 2. Retry the query
         const retryJobs = await Job.find({
           status: "active",
           location: {
@@ -572,41 +595,31 @@ export const getNearbyJobs = expressAsyncHandler(async (req, res) => {
         console.log(`--> [getNearbyJobs] Retry successful! Found ${retryJobs.length} jobs.`);
         return res.status(200).json(retryJobs);
       } catch (retryError) {
-        console.error("--> [getNearbyJobs] Auto-fix failed:", retryError);
+        console.error("--> [getNearbyJobs] Retry failed:", retryError.message);
         return res.status(500).json({
-          message: "Database error during geospatial query auto-fix.",
-          error: retryError.message,
-          stack: retryError.stack
+          message: "Database error during geospatial query retry."
         });
       }
     }
 
     res.status(500).json({
-      message: "Database error during geospatial query.",
-      error: error.message,
-      stack: error.stack
+      message: "Database error during geospatial query."
     });
   }
 });
 
 export const getPublicStats = expressAsyncHandler(async (req, res) => {
-  // 1. Live Jobs
-  const liveJobsCount = await Job.countDocuments({ status: { $nin: ['closed', 'inactive', 'pending_approval', 'rejected', 'disregarded'] } });
-
-  // 2. Companies (Approved employers)
-  const companiesCount = await Employer.countDocuments({ isApproved: "approved" });
-
-  // 3. Candidates (Users)
-  const candidatesCount = await User.countDocuments({});
-
-  // 4. Locations
-  const locations = await Job.distinct('location');
-  const locationsCount = locations.length;
+  const [liveJobsCount, companiesCount, candidatesCount, locations] = await Promise.all([
+    Job.countDocuments({ status: { $nin: ['closed', 'inactive', 'pending_approval', 'rejected', 'disregarded'] } }),
+    Employer.countDocuments({ isApproved: "approved" }),
+    User.countDocuments({}),
+    Job.distinct('location.address', { status: "active" })
+  ]);
 
   res.json({
     liveJobs: liveJobsCount,
     companies: companiesCount,
     candidates: candidatesCount,
-    locations: locationsCount
+    locations: locations.filter(Boolean).length
   });
 });
