@@ -234,6 +234,29 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleBulkReviewJobs = async (status) => {
+    if (selectedJobIds.length === 0) return;
+    try {
+      const token = adminInfo?.token;
+      await Promise.all(
+        selectedJobIds.map((id) =>
+          axios.patch(
+            `${API_BASE_URL}/admin/jobs/${id}/review`,
+            { status },
+            { headers: { Authorization: `Bearer ${token}` } },
+          ),
+        ),
+      );
+      setAllJobs((prev) =>
+        prev.map((j) => (selectedJobIds.includes(j._id) ? { ...j, status } : j)),
+      );
+      setPendingJobs((prev) => prev.filter((j) => !selectedJobIds.includes(j._id)));
+      setSelectedJobIds([]);
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to perform bulk action.");
+    }
+  };
+
   const handleReviewEmployer = async (id, status) => {
     try {
       const token = adminInfo?.token;
@@ -489,26 +512,36 @@ export default function AdminDashboard() {
             </div>
 
             {/* Right: Pending Approvals Card (~35% width) */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6 sm:p-7 transition-colors flex flex-col justify-between min-h-[380px]">
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6 sm:p-7 transition-colors flex flex-col justify-between min-h-[400px]">
               <div>
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
-                  <h3 className="text-xl font-black text-slate-900 dark:text-white">
-                    Pending Approvals
-                  </h3>
+                <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                      Pending Approvals
+                    </h3>
+                    {pendingApprovalsList.length > 0 && (
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300">
+                        {pendingApprovalsList.length}
+                      </span>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={() => handleSelectTab("pendingJobs")}
-                    className="text-sm font-bold text-slate-900 dark:text-white hover:underline cursor-pointer"
+                    className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hover:underline cursor-pointer"
                   >
                     View All
                   </button>
                 </div>
 
                 {pendingApprovalsList.length === 0 ? (
-                  <div className="py-12 text-center text-slate-400">
-                    <CheckCircle2 size={36} className="mx-auto text-emerald-500 mb-3" />
-                    <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
-                      All caught up! No pending approvals.
+                  <div className="py-14 text-center text-slate-400">
+                    <CheckCircle2 size={40} className="mx-auto text-emerald-500 mb-3" />
+                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                      All caught up!
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      No pending jobs or employer registrations.
                     </p>
                   </div>
                 ) : (
@@ -516,10 +549,10 @@ export default function AdminDashboard() {
                     {pendingApprovalsList.slice(0, 4).map((item) => (
                       <div
                         key={`${item.type}-${item.id}`}
-                        className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/60 flex items-center justify-between gap-3.5"
+                        className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/60 flex items-center justify-between gap-3"
                       >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-10 h-10 rounded-full bg-slate-200/80 dark:bg-slate-700 flex items-center justify-center font-black text-sm shrink-0 text-slate-700 dark:text-slate-200">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-full bg-slate-200/80 dark:bg-slate-700 flex items-center justify-center font-black text-sm shrink-0 text-slate-700 dark:text-slate-200 shadow-xs">
                             {item.title.charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0">
@@ -533,9 +566,6 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="shrink-0 flex items-center gap-1.5">
-                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300">
-                            Pending
-                          </span>
                           <button
                             type="button"
                             onClick={() =>
@@ -543,10 +573,22 @@ export default function AdminDashboard() {
                                 ? handleReviewJob(item.id, "active")
                                 : handleReviewEmployer(item.id, "approved")
                             }
-                            className="p-1.5 rounded-lg bg-slate-950 dark:bg-white text-white dark:text-slate-950 hover:opacity-90 transition-opacity cursor-pointer"
+                            className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors cursor-pointer shadow-xs"
                             title="Quick Approve"
                           >
                             <Check size={15} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              item.type === "job"
+                                ? handleReviewJob(item.id, "rejected")
+                                : handleReviewEmployer(item.id, "rejected")
+                            }
+                            className="p-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-950/70 dark:hover:bg-rose-900/80 dark:text-rose-300 transition-colors cursor-pointer"
+                            title="Quick Reject"
+                          >
+                            <XCircle size={15} />
                           </button>
                         </div>
                       </div>
@@ -564,13 +606,41 @@ export default function AdminDashboard() {
           </div>
 
           {/* Bottom Row: Manage Jobs (Reference Table Card) */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
             {/* Card Header: Title on Left, Status & Export on Right */}
             <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
+              <div className="flex items-center gap-3">
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Manage Jobs
                 </h3>
+                {selectedJobIds.length > 0 && (
+                  <div className="flex items-center gap-1.5 bg-slate-900 text-white dark:bg-white dark:text-slate-950 px-3 py-1 rounded-full text-xs font-bold animate-in fade-in">
+                    <span>{selectedJobIds.length} selected</span>
+                    <button
+                      type="button"
+                      onClick={() => handleBulkReviewJobs("active")}
+                      className="ml-1 text-emerald-400 hover:text-emerald-300 underline cursor-pointer"
+                    >
+                      Approve
+                    </button>
+                    <span>•</span>
+                    <button
+                      type="button"
+                      onClick={() => handleBulkReviewJobs("rejected")}
+                      className="text-rose-400 hover:text-rose-300 underline cursor-pointer"
+                    >
+                      Reject
+                    </button>
+                    <span>•</span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedJobIds([])}
+                      className="text-slate-400 hover:text-white cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5">
