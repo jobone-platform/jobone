@@ -21,12 +21,7 @@ const EmployerRegisterOption = () => {
             });
 
             loginEmployer(data.token, data);
-
-            if (data.isProfileComplete === false) {
-                navigate("/employereditprofile", { state: { showWarning: true } });
-            } else {
-                navigate("/employerdashboard");
-            }
+            navigate("/employerdashboard");
         } catch (err) {
             console.error("Google Login Error:", err);
             setError("Google Registration failed. Please try again.");

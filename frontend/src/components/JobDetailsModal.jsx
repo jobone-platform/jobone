@@ -368,7 +368,7 @@ export default function JobDetailsModal({ job, onClose }) {
                       {job.screeningQuestions.map((q, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2 sm:gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 text-[11px] sm:text-sm font-medium text-slate-700 dark:text-slate-300"
+                          className="flex items-start gap-2 sm:gap-3 bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-100 dark:border-slate-700 text-[11px] sm:text-sm font-medium text-slate-700 dark:text-slate-200"
                         >
                           <span className="font-extrabold text-rose-500">
                             Q{i + 1}.
@@ -459,7 +459,7 @@ export default function JobDetailsModal({ job, onClose }) {
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">
                       Working Days
                     </p>
-                    <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
+                    <div className="inline-block px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
                       {job.workDaysPattern === "Custom"
                         ? job.customWorkDaysDescription
                         : job.workDaysPattern || renderArray(job.workDays)}
@@ -473,12 +473,12 @@ export default function JobDetailsModal({ job, onClose }) {
                     {job.shifts?.map((shift, i) => (
                       <div
                         key={i}
-                        className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200 dark:border-slate-800"
+                        className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700"
                       >
                         <span className="font-bold text-slate-800 dark:text-white text-xs truncate mr-2">
                           {shift.shiftName}
                         </span>
-                        <span className="font-mono text-xs font-bold text-slate-600 bg-white dark:bg-slate-900 px-2 py-1 border border-slate-200 dark:border-slate-800 rounded-md shadow-sm shrink-0">
+                        <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 px-2 py-1 border border-slate-200 dark:border-slate-700 rounded-md shadow-sm shrink-0">
                           {shift.startTime || "--:--"} -{" "}
                           {shift.endTime || "--:--"}
                         </span>
@@ -494,7 +494,7 @@ export default function JobDetailsModal({ job, onClose }) {
                       Job Overview
                     </h3>
                     {job.isFlexibleDuration && (
-                      <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">
+                      <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold rounded border border-transparent dark:border-slate-700">
                         Flexible Dates
                       </span>
                     )}
@@ -534,7 +534,7 @@ export default function JobDetailsModal({ job, onClose }) {
 
                     {job.applicationDeadline && (
                       <>
-                        <div className="h-px bg-slate-100 my-2"></div>
+                        <div className="h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
                         <DetailRow
                           icon={<Clock size={16} className="text-amber-500" />}
                           label="Apply Before"
@@ -576,7 +576,7 @@ export default function JobDetailsModal({ job, onClose }) {
                       {job.screeningQuestions.map((q, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-[10px] sm:text-sm font-medium text-slate-700 dark:text-slate-300"
+                          className="flex items-start gap-2 bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700 text-[10px] sm:text-sm font-medium text-slate-700 dark:text-slate-200"
                         >
                           <span className="font-extrabold text-rose-500">
                             Q{i + 1}.
@@ -630,7 +630,7 @@ function DetailRow({ icon, label, value }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
+        <div className="p-1.5 sm:p-2 bg-slate-50 dark:bg-slate-800/80 rounded-lg border border-slate-100 dark:border-slate-700 shadow-sm">
           {icon}
         </div>
         <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">

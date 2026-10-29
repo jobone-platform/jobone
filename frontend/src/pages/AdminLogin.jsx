@@ -2,7 +2,7 @@ import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Loader2, ShieldAlert, Lock } from "lucide-react";
+import { Loader2, ShieldAlert, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "../routes/Context";
 
 export default function AdminLogin() {
@@ -47,40 +47,46 @@ export default function AdminLogin() {
       const redirectPath = location.state?.from?.pathname;
       navigate(redirectPath || "/admin/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid Admin Credentials");
+      setError(err.response?.data?.message || "Invalid Admin Credentials (Check email and password case sensitivity)");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-900 flex justify-center items-center p-4 py-12 font-sans relative overflow-y-auto">
-      {/* Background styling for Admin area */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-rose-500/20 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none"></div>
+  const handleQuickFill = () => {
+    setEmail("admin@gmail.com");
+    setPassword("Admin@123");
+    setError("");
+  };
 
-      <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 sm:p-10 rounded-3xl w-full max-w-md shadow-2xl relative z-10">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-rose-500/20 text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-500/30">
-            <ShieldAlert size={32} />
+  return (
+    <div className="min-h-screen bg-slate-950 flex justify-center items-center p-4 py-12 font-sans relative overflow-y-auto">
+      {/* Background styling for Admin area */}
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-rose-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <div className="bg-slate-900/90 backdrop-blur-2xl border border-slate-800 p-8 sm:p-12 rounded-3xl w-full max-w-lg shadow-2xl relative z-10">
+        <div className="text-center mb-10">
+          <div className="w-20 h-20 bg-rose-500/15 text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-rose-500/30 shadow-inner">
+            <ShieldAlert size={42} />
           </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
             Admin Portal
           </h1>
-          <p className="text-slate-400 text-sm font-medium mt-1">
-            Authorized personnel only.
+          <p className="text-slate-400 text-base font-medium mt-2">
+            Secure administrative console. Authorized personnel only.
           </p>
         </div>
 
         {error && (
-          <div role="alert" className="bg-rose-500/10 border border-rose-500/50 text-rose-400 text-sm font-bold p-3 rounded-xl mb-6 text-center">
+          <div role="alert" className="bg-rose-500/15 border border-rose-500/50 text-rose-300 text-sm font-bold p-4 rounded-2xl mb-8 text-center">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+            <label className="block text-xs font-bold text-slate-300 uppercase tracking-widest mb-2">
               Admin Email
             </label>
             <input
@@ -88,12 +94,12 @@ export default function AdminLogin() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white outline-none focus:ring-2 focus:ring-rose-500 transition-all text-sm"
-              placeholder="admin@jobone.com"
+              className="w-full p-4 bg-slate-800/80 border border-slate-700 rounded-2xl text-white outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all text-base placeholder-slate-500 font-medium"
+              placeholder="admin@gmail.com"
             />
           </div>
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+            <label className="block text-xs font-bold text-slate-300 uppercase tracking-widest mb-2">
               Master Password
             </label>
             <div className="relative">
@@ -102,12 +108,12 @@ export default function AdminLogin() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3.5 pl-10 bg-slate-800/50 border border-slate-700 rounded-xl text-white outline-none focus:ring-2 focus:ring-rose-500 transition-all text-sm"
+                className="w-full p-4 pl-12 bg-slate-800/80 border border-slate-700 rounded-2xl text-white outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all text-base placeholder-slate-500 font-medium"
                 placeholder="••••••••"
               />
               <Lock
-                size={16}
-                className="absolute left-3.5 top-3.5 text-slate-500"
+                size={20}
+                className="absolute left-4 top-4.5 text-slate-500"
               />
             </div>
           </div>
@@ -115,15 +121,36 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-rose-600 text-white font-extrabold rounded-xl hover:bg-rose-700 transition-all shadow-lg shadow-rose-600/20 flex items-center justify-center gap-2 mt-2 disabled:opacity-70 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-rose-500 focus-visible:outline-none"
+            className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white font-black text-base rounded-2xl transition-all shadow-xl shadow-rose-600/25 flex items-center justify-center gap-2 mt-4 disabled:opacity-70 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-rose-500 focus-visible:outline-none cursor-pointer"
           >
             {loading ? (
-              <Loader2 size={18} className="animate-spin" />
+              <Loader2 size={22} className="animate-spin" />
             ) : (
-              "Secure Login"
+              "Sign In to Dashboard"
             )}
           </button>
         </form>
+
+        {/* Credentials Helper Box */}
+        <div className="mt-8 pt-6 border-t border-slate-800 text-center">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              Active Credentials
+            </span>
+            <button
+              type="button"
+              onClick={handleQuickFill}
+              className="text-xs font-bold text-rose-400 hover:text-rose-300 transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <KeyRound size={13} /> Auto-fill Default
+            </button>
+          </div>
+          <div className="bg-slate-800/60 border border-slate-700/80 rounded-xl p-3 text-xs text-slate-300 flex flex-col sm:flex-row sm:justify-between items-center gap-1 font-mono">
+            <span>admin@gmail.com</span>
+            <span className="text-slate-500 hidden sm:inline">•</span>
+            <span className="font-bold text-white">Admin@123</span>
+          </div>
+        </div>
       </div>
     </div>
   );

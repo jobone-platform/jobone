@@ -95,11 +95,11 @@ const UserVerifyOTP = () => {
       setMessage(
         res.data.alreadyVerified
           ? "Account is already verified! Redirecting to your dashboard..."
-          : "Account verified successfully! Redirecting to complete your profile..."
+          : "Account verified successfully! Redirecting to your dashboard..."
       );
       setIsError(false);
 
-      setTimeout(() => navigate(res.data.isProfileComplete ? "/userdashboard" : "/editprofile2"), 1200);
+      setTimeout(() => navigate("/userdashboard"), 1200);
     } catch (err) {
       setMessage(err.response?.data?.message || "Invalid or expired OTP. Please try again.");
       setIsError(true);

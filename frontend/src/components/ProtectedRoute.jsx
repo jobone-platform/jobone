@@ -3,7 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../routes/Context";
 
 export default function ProtectedRoute({ children }) {
-  const { authStatus, role, user, isProfileComplete, token } = useAuth();
+  const { authStatus, role, user, token } = useAuth();
   const location = useLocation();
 
   // 1. Wait for auth initialization before rendering or redirecting
@@ -34,13 +34,6 @@ export default function ProtectedRoute({ children }) {
   // 4. Operational Lock: If user is frozen
   if (user?.isFrozen) {
     return <Navigate to="/login" state={{ error: "Account Suspended: Your account has been frozen." }} replace />;
-  }
-
-  // 5. Incomplete Profile Guard (e.g., Google sign-in without phone)
-  if (isProfileComplete === false || user?.isProfileComplete === false) {
-    if (location.pathname !== "/editprofile" && location.pathname !== "/editprofile2") {
-      return <Navigate to="/editprofile" replace state={{ showWarning: true }} />;
-    }
   }
 
   return children;

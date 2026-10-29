@@ -388,7 +388,7 @@ export default function JobConfirmModal({
                     Timeline & Openings
                   </h3>
                   {job.isFlexibleDuration && (
-                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">
+                    <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold rounded border border-transparent dark:border-slate-700">
                       Flexible
                     </span>
                   )}
@@ -423,7 +423,7 @@ export default function JobConfirmModal({
                   )}
                   {job.applicationDeadline && (
                     <>
-                      <div className="h-px bg-slate-100 my-2"></div>
+                      <div className="h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
                       <DetailRow
                         icon={<Clock size={16} className="text-amber-500" />}
                         label="Apply Before"
@@ -433,7 +433,7 @@ export default function JobConfirmModal({
                       />
                     </>
                   )}
-                  <div className="h-px bg-slate-100 my-2"></div>
+                  <div className="h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
                   <DetailRow
                     icon={<Users size={16} className="text-purple-500" />}
                     label="Openings"
@@ -458,7 +458,7 @@ export default function JobConfirmModal({
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">
                     Working Days
                   </p>
-                  <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
+                  <div className="inline-block px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
                     {job.workDaysPattern === "Custom"
                       ? job.customWorkDaysDescription
                       : job.workDaysPattern || renderArray(job.workDays)}
@@ -473,7 +473,7 @@ export default function JobConfirmModal({
                       {job.shifts.map((shift, i) => (
                         <div
                           key={i}
-                          className="flex justify-between items-center bg-slate-50 p-3 border border-slate-200 dark:border-slate-800 rounded-xl"
+                          className="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-3 border border-slate-200 dark:border-slate-700 rounded-xl"
                         >
                           <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                             {shift.shiftName}
@@ -496,7 +496,7 @@ export default function JobConfirmModal({
         <div className="p-4 sm:p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end items-center gap-4">
           <button
             onClick={onClose}
-            className="px-6 py-3 font-bold text-slate-500 hover:text-slate-800 dark:text-white hover:bg-slate-100 rounded-xl transition-colors"
+            className="px-6 py-3 font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
           >
             Go Back & Edit
           </button>

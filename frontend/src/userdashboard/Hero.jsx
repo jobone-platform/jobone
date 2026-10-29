@@ -151,7 +151,7 @@ const Hero = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Job title, keyword, or company"
-                className="w-full bg-transparent outline-none text-white placeholder-blue-100/70 text-sm md:text-base font-medium"
+                className="w-full bg-transparent dark:bg-transparent outline-none text-white placeholder-blue-100/70 text-sm md:text-base font-medium"
               />
             </div>
 
@@ -162,7 +162,7 @@ const Hero = () => {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="City, state, or 'Remote'"
-                className="w-full bg-transparent outline-none text-white placeholder-blue-100/70 text-sm md:text-base font-medium"
+                className="w-full bg-transparent dark:bg-transparent outline-none text-white placeholder-blue-100/70 text-sm md:text-base font-medium"
               />
             </div>
 

@@ -107,7 +107,7 @@ export default function RecommendedJobs() {
                 <div className={`absolute top-0 right-0 px-4 py-2 rounded-bl-2xl font-bold flex items-center gap-1 text-sm border-b border-l ${
                   job.matchScore > 70 
                     ? "bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 border-amber-300 shadow-sm"
-                    : "bg-indigo-50 text-indigo-700 border-indigo-100"
+                    : "bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-800/60"
                 }`}>
                   <Sparkles size={14} /> {job.matchScore || 95}% Match
                 </div>
@@ -125,7 +125,7 @@ export default function RecommendedJobs() {
                     <h3 className="font-extrabold text-slate-800 dark:text-white text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
                       {job.title}
                     </h3>
-                    <div className="flex items-center gap-1.5 text-sm text-slate-500 font-medium mt-1">
+                    <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
                       <Building2 size={14} />
                       <CompanyDisplay job={job} fallback="Confidential" />
                     </div>
@@ -133,30 +133,30 @@ export default function RecommendedJobs() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="flex items-center gap-1.5 bg-slate-50 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-100">
+                  <span className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-100 dark:border-slate-700">
                     <MapPin size={12} /> {getLocationStr(job)}
                   </span>
-                  <span className="flex items-center gap-1.5 bg-slate-50 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-100">
+                  <span className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-100 dark:border-slate-700">
                     <Briefcase size={12} /> {job.jobType || "Full-Time"}
                   </span>
-                  <span className="flex items-center gap-1.5 bg-slate-50 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-100">
+                  <span className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-100 dark:border-slate-700">
                     <IndianRupee size={12} /> {job.salary || "Not Disclosed"}
                   </span>
                 </div>
 
                 {job.reason && (
-                  <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/50 mb-6 flex-1">
-                    <p className="text-xs text-indigo-800 leading-relaxed font-medium">
+                  <div className="bg-indigo-50/50 dark:bg-indigo-950/40 p-4 rounded-xl border border-indigo-100/50 dark:border-indigo-900/40 mb-6 flex-1">
+                    <p className="text-xs text-indigo-800 dark:text-indigo-300 leading-relaxed font-medium">
                       <span className="font-bold">Why you match:</span> {job.reason}
                     </p>
                   </div>
                 )}
 
-                <div className="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center">
+                <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
                   <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
                     <Clock size={12} /> {new Date(job.createdAt).toLocaleDateString()}
                   </span>
-                  <div className="text-indigo-600 font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                  <div className="text-indigo-600 dark:text-indigo-400 font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
                     View Details <ArrowRight size={16} />
                   </div>
                 </div>

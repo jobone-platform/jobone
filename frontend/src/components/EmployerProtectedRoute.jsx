@@ -5,7 +5,7 @@ import axios from "axios";
 import { useAuth } from "../routes/Context";
 
 const EmployerProtectedRoute = ({ children }) => {
-  const { authStatus, role, employer, isProfileComplete, token, logout } = useAuth();
+  const { authStatus, role, employer, token, logout } = useAuth();
   const [eligibilityCheck, setEligibilityCheck] = useState("checking");
   const location = useLocation();
 
@@ -72,19 +72,6 @@ const EmployerProtectedRoute = ({ children }) => {
   // 4. Operational Lock: If employer is frozen
   if (employer?.isFrozen) {
     return <Navigate to="/login" state={{ error: "Account Suspended: Your employer account has been frozen." }} replace />;
-  }
-
-  // 5. Incomplete Profile Guard (e.g., Google sign-in without company details)
-  if (isProfileComplete === false || employer?.isProfileComplete === false) {
-    const allowedPaths = [
-      "/employereditprofile",
-      "/employereditprofile2",
-      "/employerotp/employereditprofile2",
-      "/employerdocupload"
-    ];
-    if (!allowedPaths.includes(location.pathname)) {
-      return <Navigate to="/employereditprofile" replace state={{ showWarning: true }} />;
-    }
   }
 
   return children;

@@ -51,7 +51,7 @@ const RecommendedJobs = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 p-6">
+        <div className="min-h-screen bg-gray-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 transition-colors">
             <h1 className="text-2xl font-bold mb-6">Recommended Jobs For You</h1>
 
             {jobs.length === 0 ? (
@@ -65,7 +65,7 @@ const RecommendedJobs = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
-                            className="bg-white p-5 rounded-2xl shadow-md hover:shadow-lg transition"
+                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-md hover:shadow-lg transition text-slate-900 dark:text-slate-100"
                         >
                             <h2 className="text-lg font-semibold mb-2">{job.title}</h2>
 
@@ -74,7 +74,7 @@ const RecommendedJobs = () => {
                                 <p className="text-sm font-medium mb-1">
                                     Match: {job.matchScore}%
                                 </p>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div className="w-full bg-gray-200 dark:bg-slate-800 rounded-full h-2">
                                     <div
                                         className="bg-green-500 h-2 rounded-full"
                                         style={{ width: `${job.matchScore}%` }}

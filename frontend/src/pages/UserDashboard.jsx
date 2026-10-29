@@ -171,7 +171,7 @@ export default function Home() {
               </div>
             </div>
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-1.5 shadow-2xl relative z-0 border border-slate-200 dark:border-slate-800">
-              <div className="rounded-2xl overflow-hidden bg-slate-100 border border-slate-200">
+              <div className="rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                 <JobsAroundMe onJobClick={setSelectedJob} />
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function Home() {
         ) : recommendedJobs.length > 0 ? (
           <section
             id="ai-recommended-jobs"
-            className="py-16 px-4 sm:px-6 bg-indigo-50 border-y border-indigo-100"
+            className="py-16 px-4 sm:px-6 bg-indigo-50 dark:bg-slate-900/60 border-y border-indigo-100 dark:border-slate-800 transition-colors"
           >
             <div className="max-w-7xl mx-auto">
               <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -243,7 +243,7 @@ export default function Home() {
                   <button
                     onClick={handleRefreshAI}
                     disabled={loadingRecommendations}
-                    className="flex items-center gap-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-2 rounded-lg font-bold transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-950 hover:bg-indigo-200 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-transparent dark:border-indigo-800/60 px-4 py-2 rounded-lg font-bold transition-colors disabled:opacity-50"
                   >
                     <Sparkles
                       size={16}
@@ -339,11 +339,11 @@ export default function Home() {
         ) : null}
 
         {/* 5. FEATURED JOBS (REAL DATA) */}
-        <section className="py-20 px-4 sm:px-6 bg-slate-50">
+        <section className="py-20 px-4 sm:px-6 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 transition-colors duration-150">
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-end mb-10">
               <div>
-                <span className="text-indigo-600 font-bold text-xs uppercase tracking-wider bg-indigo-50 px-3 py-1 rounded-full flex items-center gap-2 w-fit">
+                <span className="text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 border border-transparent dark:border-indigo-800/60 px-3 py-1 rounded-full flex items-center gap-2 w-fit">
                   <Sparkles size={12} /> Hot Jobs
                 </span>
                 <h2 className="text-3xl font-bold text-slate-900 dark:text-white mt-3">
@@ -376,14 +376,14 @@ export default function Home() {
                     className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-900/40 transition-all cursor-pointer group flex flex-col h-full"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-xl font-bold text-blue-600">
+                      <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-transparent dark:border-blue-800/40 flex items-center justify-center text-xl font-bold text-blue-600 dark:text-blue-400">
                         {(
                           job.postedByCompany ||
                           job.postedByName ||
                           "C"
                         ).charAt(0)}
                       </div>
-                      <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md uppercase">
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border border-transparent dark:border-slate-700 px-2 py-1 rounded-md uppercase">
                         {job.jobType}
                       </span>
                     </div>
@@ -400,18 +400,18 @@ export default function Home() {
                     </p>
 
                     <div className="mt-auto space-y-3">
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                         <MapPin size={16} className="text-slate-400" />
                         <span className="truncate">{getLocationStr(job)}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                         <IndianRupee size={16} className="text-slate-400" />
                         <span>
                           {job.salary ? job.salary.toLocaleString() : "N/A"} /
                           month
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                         <Clock size={16} className="text-slate-400" />
                         <span>{job.dailyWorkingHours} hrs/day</span>
                       </div>
@@ -441,12 +441,12 @@ export default function Home() {
 function StatItem({ icon, label, value }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="p-3 bg-slate-100 rounded-xl text-xl">{icon}</div>
+      <div className="p-3 bg-slate-100 dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-xl text-xl">{icon}</div>
       <div className="text-left">
         <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">
           {value}
         </p>
-        <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold mt-1">
+        <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold mt-1">
           {label}
         </p>
       </div>

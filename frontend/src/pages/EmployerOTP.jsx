@@ -106,11 +106,11 @@ const EmployerVerifyOTP = () => {
       setMessage(
         res.data.alreadyVerified
           ? "Account is already verified! Redirecting to dashboard..."
-          : "Employer account verified successfully! Redirecting..."
+          : "Employer account verified successfully! Redirecting to dashboard..."
       );
       setIsError(false);
 
-      setTimeout(() => navigate(res.data.isProfileComplete ? "/employerdashboard" : "/employereditprofile"), 1200);
+      setTimeout(() => navigate("/employerdashboard"), 1200);
     } catch (err) {
       setMessage(
         err.response?.data?.message || "Invalid or expired OTP. Please try again."

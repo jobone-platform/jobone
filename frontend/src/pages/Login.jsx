@@ -64,20 +64,10 @@ export default function Login() {
 
       if (activeTab === "employer") {
         loginEmployer(data.token, data);
-
-        if (data.isProfileComplete === false) {
-          navigate("/employereditprofile", { state: { showWarning: true } });
-        } else {
-          navigate(redirectPath || "/employerdashboard");
-        }
+        navigate(redirectPath || "/employerdashboard");
       } else {
         loginUser(data.token, data);
-
-        if (data.isProfileComplete === false) {
-          navigate("/editprofile", { state: { showWarning: true } });
-        } else {
-          navigate(redirectPath || "/userdashboard");
-        }
+        navigate(redirectPath || "/userdashboard");
       }
     } catch (err) {
       console.error("Google Login Error:", err);

@@ -113,7 +113,7 @@ export default function ApplyPage() {
 
   if (jobLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex justify-center items-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex justify-center items-center transition-colors">
         <Loader2 className="animate-spin text-indigo-600 mb-4" size={48} />
       </div>
     );
@@ -121,13 +121,13 @@ export default function ApplyPage() {
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-slate-50 flex justify-center items-center p-4">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex justify-center items-center p-4 transition-colors">
         <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 text-center max-w-md w-full">
           <AlertCircle className="mx-auto text-rose-500 mb-4" size={48} />
           <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
             Job Unavailable
           </h2>
-          <p className="text-slate-500 mb-6 font-medium">
+          <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">
             This job may have been closed or removed by the employer.
           </p>
           <button

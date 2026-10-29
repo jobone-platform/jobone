@@ -253,7 +253,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
           <button
             onClick={onClose}
             aria-label="Close application details"
-            className="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-colors z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="absolute top-6 right-6 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 border border-transparent dark:border-slate-700 rounded-full transition-colors z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <X size={20} />
           </button>
@@ -300,7 +300,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                             : application.rescheduleRequest.requestStatus ===
                                 "approved"
                               ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                              : "bg-rose-50 border-rose-200 text-rose-700"
+                              : "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300"
                         }`}
                       >
                         <span className="uppercase tracking-wider text-[10px] font-bold block mb-1">
@@ -361,7 +361,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                             })
                           }
                           placeholder="E.g., I have an unexpected medical appointment..."
-                          className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:bg-white dark:bg-slate-800 focus:ring-2 focus:ring-purple-500 transition-all resize-none font-medium"
+                          className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:bg-white dark:focus:bg-slate-750 focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-slate-100 transition-all resize-none font-medium"
                           rows="2"
                         />
                       </div>
@@ -380,7 +380,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                             })
                           }
                           placeholder="E.g., Tomorrow at 3:00 PM EST"
-                          className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:bg-white dark:bg-slate-800 focus:ring-2 focus:ring-purple-500 transition-all font-medium"
+                          className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:bg-white dark:focus:bg-slate-750 focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-slate-100 transition-all font-medium"
                         />
                       </div>
 
@@ -394,7 +394,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                         <button
                           type="button"
                           onClick={() => setIsRescheduling(false)}
-                          className="px-5 py-2.5 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-colors text-sm"
+                          className="px-5 py-2.5 text-slate-500 dark:text-slate-400 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-sm"
                         >
                           Cancel
                         </button>
@@ -420,12 +420,12 @@ export default function ApplicationDetailsModal({ application, onClose }) {
 
               {/* Employer Message */}
               {employerMessage && (
-                <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-6 sm:p-8 shadow-sm">
-                  <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2 border-b border-indigo-100/50 pb-3">
+                <div className="bg-indigo-50 dark:bg-slate-900 border border-indigo-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+                  <h3 className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-3 flex items-center gap-2 border-b border-indigo-100/50 dark:border-slate-800 pb-3">
                     <MessageSquare size={16} className="text-indigo-500" />{" "}
                     Message from Employer
                   </h3>
-                  <div className="text-indigo-900/90 font-medium whitespace-pre-wrap leading-relaxed text-sm bg-white dark:bg-slate-800 p-4 rounded-xl border border-indigo-50 shadow-sm">
+                  <div className="text-indigo-900/90 dark:text-slate-200 font-medium whitespace-pre-wrap leading-relaxed text-sm bg-white dark:bg-slate-800 p-4 rounded-xl border border-indigo-50 dark:border-slate-700 shadow-sm">
                     {employerMessage}
                   </div>
                 </div>
@@ -440,7 +440,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                     </div>{" "}
                     Cover Letter / Pitch
                   </h2>
-                  <div className="bg-slate-50 rounded-xl p-5 text-sm text-slate-600 font-medium leading-relaxed whitespace-pre-wrap border border-slate-100 dark:border-slate-800">
+                  <div className="bg-slate-50 dark:bg-slate-800/80 rounded-xl p-5 text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed whitespace-pre-wrap border border-slate-100 dark:border-slate-700">
                     {applicantMessage}
                   </div>
                 </section>
@@ -562,7 +562,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                     {screeningAnswers.map((item, index) => (
                       <div
                         key={index}
-                        className="bg-slate-50 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 overflow-hidden"
+                        className="bg-slate-50 dark:bg-slate-850/60 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 overflow-hidden"
                       >
                         <h4 className="text-sm font-extrabold text-slate-800 dark:text-white mb-3 flex items-start gap-2">
                           <span className="text-rose-500">Q{index + 1}.</span>{" "}
@@ -654,7 +654,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">
                     Working Days
                   </p>
-                  <div className="inline-block px-3 py-1.5 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
+                  <div className="inline-block px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
                     {job.workDaysPattern === "Custom"
                       ? job.customWorkDaysDescription
                       : job.workDaysPattern || renderArray(job.workDays)}
@@ -668,12 +668,12 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                   {job.shifts?.map((shift, i) => (
                     <div
                       key={i}
-                      className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200 dark:border-slate-800"
+                      className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700"
                     >
                       <span className="font-bold text-slate-800 dark:text-white text-xs truncate mr-2">
                         {shift.shiftName}
                       </span>
-                      <span className="font-mono text-xs font-bold text-slate-600 bg-white dark:bg-slate-900 px-2 py-1 border border-slate-200 dark:border-slate-800 rounded-md shadow-sm shrink-0">
+                      <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 px-2 py-1 border border-slate-200 dark:border-slate-700 rounded-md shadow-sm shrink-0">
                         {shift.startTime || "--:--"} -{" "}
                         {shift.endTime || "--:--"}
                       </span>
@@ -775,7 +775,7 @@ function DetailRow({ icon, label, value }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-slate-50 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm">
+        <div className="p-1.5 sm:p-2 bg-slate-50 dark:bg-slate-800/80 rounded-lg border border-slate-100 dark:border-slate-700 shadow-sm">
           {icon}
         </div>
         <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
