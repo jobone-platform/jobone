@@ -1,27 +1,35 @@
-import { API_BASE_URL } from "../config/api";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import {
   Loader2,
-  CheckCircle,
-  XCircle,
   Building2,
   Briefcase,
   ShieldAlert,
   ExternalLink,
   Download,
   Search,
-  Snowflake,
-  Flame,
-  LayoutDashboard,
   Users,
-  LogOut,
   FileText,
-  User,
-  MessageSquare,
+  Mail,
+  UserPlus,
+  Clock,
+  ArrowRight,
+  Check,
+  XCircle,
+  MoreVertical,
+  CheckCircle2,
+  Layers,
+  BarChart3,
+  Settings,
+  ChevronRight,
+  Eye,
 } from "lucide-react";
-import CompanyDisplay from "../components/CompanyDisplay";
+import { API_BASE_URL } from "../config/api";
+import AdminLayout from "../components/admin/AdminLayout";
+import AdminStatCard from "../components/admin/AdminStatCard";
+import AdminChartPanel from "../components/admin/AdminChartPanel";
+import AdminConfirmDialog from "../components/admin/AdminConfirmDialog";
 
 export default function AdminDashboard() {
   const [pendingJobs, setPendingJobs] = useState([]);
@@ -32,8 +40,9 @@ export default function AdminDashboard() {
   const [allContacts, setAllContacts] = useState([]);
   const [allAdmins, setAllAdmins] = useState([]);
 
-  // Search States
+  // Search / Moderation States
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchType, setSearchType] = useState("users");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -44,54 +53,84 @@ export default function AdminDashboard() {
   const [newAdminRole, setNewAdminRole] = useState("employerAdmin");
   const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
 
+  // Confirmation Dialog State
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    confirmText: "Confirm",
+    variant: "danger",
+    action: null,
+    loading: false,
+  });
+
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("");
-  const [adminRole, setAdminRole] = useState(null);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [adminInfo, setAdminInfo] = useState(null);
   const [dbStats, setDbStats] = useState({
     jobs: 0,
     jobseekers: 0,
     employers: 0,
   });
 
+  // Table State for "Manage Jobs" Card
+  const [jobsSearch, setJobsSearch] = useState("");
+  const [jobsStatusFilter, setJobsStatusFilter] = useState("all");
+  const [jobsPage, setJobsPage] = useState(1);
+  const [jobsPageSize] = useState(10);
+  const [selectedJobIds, setSelectedJobIds] = useState([]);
+
+  // Row Action Dropdown Menu State
+  const [openActionMenuId, setOpenActionMenuId] = useState(null);
+
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     const storedAdmin = localStorage.getItem("adminInfo");
-    if (!storedAdmin) return navigate("/admin/login");
-
-    const parsedAdmin = JSON.parse(storedAdmin);
-    setAdminRole(parsedAdmin.role);
-
-    if (parsedAdmin.role === "jobseekerAdmin") {
-      setActiveTab("allJobseekers");
-    } else {
-      setActiveTab("pendingJobs");
+    if (!storedAdmin) {
+      navigate("/admin/login");
+      return;
     }
 
-    fetchInitialData(parsedAdmin);
+    try {
+      const parsed = JSON.parse(storedAdmin);
+      setAdminInfo(parsed);
+      fetchInitialData(parsed);
+    } catch {
+      navigate("/admin/login");
+    }
   }, [navigate]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const tabParam = searchParams.get("tab");
-
     if (tabParam) {
       setActiveTab(tabParam);
     }
   }, [location.search]);
 
-  // ─── API CALLS ──────────────────────────────────────────────────────────
+  const handleSelectTab = (tabId) => {
+    setActiveTab(tabId);
+    navigate(`/admin/dashboard?tab=${tabId}`, { replace: true });
+  };
+
+  // Close row action dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setOpenActionMenuId(null);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
+  // ─── DATA FETCHING ────────────────────────────────────────────────────────
 
   const fetchInitialData = async (admin) => {
     try {
-      setLoading(true);
       const headers = { Authorization: `Bearer ${admin.token}` };
       const isSuper = admin.role === "superAdmin";
-      const isEmployerAdmin = admin.role === "employerAdmin";
-      const isJobseekerAdmin = admin.role === "jobseekerAdmin";
+      const isEmployerAdmin = admin.role === "employerAdmin" || isSuper;
+      const isJobseekerAdmin = admin.role === "jobseekerAdmin" || isSuper;
 
-      // Execute all independent admin dashboard queries in a single parallel batch
       const [
         statsRes,
         contactsRes,
@@ -108,27 +147,27 @@ export default function AdminDashboard() {
         axios
           .get(`${API_BASE_URL}/admin/contacts`, { headers })
           .catch(() => ({ data: [] })),
-        isSuper || isEmployerAdmin
+        isEmployerAdmin
           ? axios
               .get(`${API_BASE_URL}/admin/jobs/pending`, { headers })
               .catch(() => ({ data: [] }))
           : Promise.resolve({ data: [] }),
-        isSuper || isEmployerAdmin
+        isEmployerAdmin
           ? axios
               .get(`${API_BASE_URL}/admin/jobs`, { headers })
               .catch(() => ({ data: [] }))
           : Promise.resolve({ data: [] }),
-        isSuper || isEmployerAdmin
+        isEmployerAdmin
           ? axios
               .get(`${API_BASE_URL}/admin/employers/pending`, { headers })
               .catch(() => ({ data: [] }))
           : Promise.resolve({ data: [] }),
-        isSuper || isEmployerAdmin
+        isEmployerAdmin
           ? axios
               .get(`${API_BASE_URL}/admin/employers`, { headers })
               .catch(() => ({ data: [] }))
           : Promise.resolve({ data: [] }),
-        isSuper || isJobseekerAdmin
+        isJobseekerAdmin
           ? axios
               .get(`${API_BASE_URL}/admin/users`, { headers })
               .catch(() => ({ data: [] }))
@@ -140,162 +179,49 @@ export default function AdminDashboard() {
           : Promise.resolve({ data: [] }),
       ]);
 
-      setDbStats(statsRes.data);
-      setAllContacts(contactsRes.data);
+      setDbStats(statsRes.data || { jobs: 0, jobseekers: 0, employers: 0 });
+      setAllContacts(Array.isArray(contactsRes.data) ? contactsRes.data : []);
 
-      if (isSuper || isEmployerAdmin) {
-        setPendingJobs(pJobsRes.data);
-        setAllJobs(aJobsRes.data);
-        setPendingEmployers(pEmpRes.data);
-        setAllEmployers(aEmpRes.data);
+      if (isEmployerAdmin) {
+        setPendingJobs(Array.isArray(pJobsRes.data) ? pJobsRes.data : []);
+        setAllJobs(Array.isArray(aJobsRes.data) ? aJobsRes.data : []);
+        setPendingEmployers(Array.isArray(pEmpRes.data) ? pEmpRes.data : []);
+        setAllEmployers(Array.isArray(aEmpRes.data) ? aEmpRes.data : []);
       }
 
-      if (isSuper || isJobseekerAdmin) {
-        setAllJobseekers(usersRes.data);
+      if (isJobseekerAdmin) {
+        setAllJobseekers(Array.isArray(usersRes.data) ? usersRes.data : []);
       }
 
       if (isSuper) {
-        setAllAdmins(adminsRes.data);
+        setAllAdmins(Array.isArray(adminsRes.data) ? adminsRes.data : []);
       }
     } catch (err) {
-      if (err.response?.status === 401) navigate("/admin/login");
+      if (err.response?.status === 401) {
+        localStorage.removeItem("adminInfo");
+        navigate("/admin/login");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleMarkContactAsRead = async (id) => {
-    try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
-      await axios.patch(
-        `${API_BASE_URL}/admin/contacts/${id}/read`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setAllContacts((prev) =>
-        prev.map((c) => (c._id === id ? { ...c, isRead: true } : c))
-      );
-    } catch (err) {
-      alert("Failed to mark message as read.");
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("adminInfo");
+    navigate("/admin/login");
   };
 
-  const handleChangeAdminRole = async (id, newRole) => {
-    try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
-      await axios.patch(
-        `${API_BASE_URL}/admin/${id}/role`,
-        { role: newRole },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setAllAdmins((prev) =>
-        prev.map((a) => (a._id === id ? { ...a, role: newRole } : a))
-      );
-      alert("Role updated successfully!");
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to update role");
-    }
-  };
-
-  const handleDeleteAdmin = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this admin?")) return;
-    try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
-      await axios.delete(`${API_BASE_URL}/admin/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setAllAdmins((prev) => prev.filter((a) => a._id !== id));
-      alert("Admin deleted successfully!");
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to delete admin");
-    }
-  };
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    setIsSearching(true);
-    try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
-      const endpoint =
-        activeTab === "searchJobseekers"
-          ? "/admin/search/users"
-          : "/admin/search/employers";
-      const { data } = await axios.get(
-        `${API_BASE_URL}${endpoint}?q=${searchQuery}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      setSearchResults(data);
-    } catch (err) {
-      alert("Search failed. Check permissions.");
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleFreezeToggle = async (id, isCurrentlyFrozen, type) => {
-    if (
-      !window.confirm(
-        `Are you sure you want to ${isCurrentlyFrozen ? "UNFREEZE" : "FREEZE"} this account?`,
-      )
-    )
-      return;
-    try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
-      const endpoint =
-        type === "user"
-          ? `/admin/freeze-user/${id}`
-          : `/admin/freeze-employer/${id}`;
-      await axios.put(
-        `${API_BASE_URL}${endpoint}`,
-        { freeze: !isCurrentlyFrozen },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
-      // Update Search Results locally
-      setSearchResults((prev) =>
-        prev.map((item) =>
-          item._id === id ? { ...item, isFrozen: !isCurrentlyFrozen } : item,
-        ),
-      );
-
-      // Update All Lists locally
-      if (type === "user") {
-        setAllJobseekers((prev) =>
-          prev.map((item) =>
-            item._id === id ? { ...item, isFrozen: !isCurrentlyFrozen } : item,
-          ),
-        );
-      } else {
-        setAllEmployers((prev) =>
-          prev.map((item) =>
-            item._id === id ? { ...item, isFrozen: !isCurrentlyFrozen } : item,
-          ),
-        );
-      }
-
-      alert(
-        `Account successfully ${isCurrentlyFrozen ? "unfrozen" : "frozen"}.`,
-      );
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to update freeze status.");
-    }
-  };
+  // ─── ACTIONS ─────────────────────────────────────────────────────────────
 
   const handleReviewJob = async (id, status) => {
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
+      const token = adminInfo?.token;
       await axios.patch(
         `${API_BASE_URL}/admin/jobs/${id}/review`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      setPendingJobs((prev) => prev.filter((job) => job._id !== id));
-
-      // Move it to allJobs conceptually or just refetch, but here we just update local state slightly
+      setPendingJobs((prev) => prev.filter((j) => j._id !== id));
       const reviewedJob = pendingJobs.find((j) => j._id === id);
       if (reviewedJob) {
         setAllJobs((prev) => [
@@ -304,20 +230,19 @@ export default function AdminDashboard() {
         ]);
       }
     } catch (err) {
-      alert("Failed to review job.");
+      alert(err.response?.data?.message || "Failed to update job review status.");
     }
   };
 
   const handleReviewEmployer = async (id, status) => {
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
+      const token = adminInfo?.token;
       await axios.patch(
         `${API_BASE_URL}/admin/employers/${id}/review`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      setPendingEmployers((prev) => prev.filter((emp) => emp._id !== id));
-
+      setPendingEmployers((prev) => prev.filter((e) => e._id !== id));
       const reviewedEmp = pendingEmployers.find((e) => e._id === id);
       if (reviewedEmp) {
         setAllEmployers((prev) => [
@@ -326,1055 +251,897 @@ export default function AdminDashboard() {
         ]);
       }
     } catch (err) {
-      alert("Failed to review employer.");
+      alert(err.response?.data?.message || "Failed to update employer status.");
     }
   };
 
-  const handleCreateAdmin = async (e) => {
-    e.preventDefault();
-    setIsCreatingAdmin(true);
-    try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
-      const res = await axios.post(
-        `${API_BASE_URL}/admin/create-admin`,
-        {
-          name: newAdminName,
-          email: newAdminEmail,
-          password: newAdminPassword,
-          role: newAdminRole,
-        },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      
-      if (res.data && res.data.admin) {
-        setAllAdmins((prev) => [...prev, res.data.admin]);
-      } else {
-        // Fallback fetch if API doesn't return the admin
-        const adminsRes = await axios.get(`${API_BASE_URL}/admin/all-admins`, { headers: { Authorization: `Bearer ${token}` } });
-        setAllAdmins(adminsRes.data);
-      }
+  const handleFreezeToggle = async (id, isCurrentlyFrozen, type) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: `${isCurrentlyFrozen ? "Unfreeze" : "Freeze"} Account`,
+      message: `Are you sure you want to ${
+        isCurrentlyFrozen ? "restore access for" : "freeze"
+      } this ${type === "user" ? "candidate" : "employer"} account?`,
+      confirmText: isCurrentlyFrozen ? "Unfreeze" : "Freeze",
+      variant: isCurrentlyFrozen ? "success" : "danger",
+      loading: false,
+      action: async () => {
+        try {
+          const token = adminInfo?.token;
+          const endpoint =
+            type === "user"
+              ? `/admin/freeze-user/${id}`
+              : `/admin/freeze-employer/${id}`;
+          await axios.put(
+            `${API_BASE_URL}${endpoint}`,
+            { freeze: !isCurrentlyFrozen },
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
 
-      alert("Admin created successfully!");
-      setNewAdminName("");
-      setNewAdminEmail("");
-      setNewAdminPassword("");
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to create admin.");
-    } finally {
-      setIsCreatingAdmin(false);
-    }
+          setSearchResults((prev) =>
+            prev.map((item) =>
+              item._id === id ? { ...item, isFrozen: !isCurrentlyFrozen } : item,
+            ),
+          );
+
+          if (type === "user") {
+            setAllJobseekers((prev) =>
+              prev.map((u) =>
+                u._id === id ? { ...u, isFrozen: !isCurrentlyFrozen } : u,
+              ),
+            );
+          } else {
+            setAllEmployers((prev) =>
+              prev.map((e) =>
+                e._id === id ? { ...e, isFrozen: !isCurrentlyFrozen } : e,
+              ),
+            );
+          }
+
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+        } catch (err) {
+          alert(err.response?.data?.message || "Freeze operation failed.");
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
-  const handleExportCustom = async (type) => {
+  const handleExport = async (type = "all") => {
     try {
-      const token = JSON.parse(localStorage.getItem("adminInfo")).token;
-      let url = "";
-      let filename = "";
-      if (type === "all") {
-        url = `${API_BASE_URL}/admin/export/all`;
-        filename = "Platform_Complete_DB.zip";
-      } else if (type === "employers") {
+      const token = adminInfo?.token;
+      let url = `${API_BASE_URL}/admin/export/all`;
+      let filename = "JobOne_Platform_DB.zip";
+
+      if (type === "employers") {
         url = `${API_BASE_URL}/admin/export/employers`;
-        filename = "Platform_Employers_Jobs.xlsx";
+        filename = "JobOne_Employers.xlsx";
       } else if (type === "jobseekers") {
         url = `${API_BASE_URL}/admin/export/jobseekers`;
-        filename = "Platform_Jobseekers_Jobs.xlsx";
+        filename = "JobOne_Jobseekers.xlsx";
       }
 
-      const response = await axios.get(url, {
+      const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: "blob",
       });
-      const objectUrl = window.URL.createObjectURL(new Blob([response.data]));
+
+      const blobUrl = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
-      link.href = objectUrl;
+      link.href = blobUrl;
       link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (err) {
-      alert("Failed to extract data. You may not have permission.");
+    } catch {
+      alert("Export failed. Please check permissions.");
     }
   };
 
-  if (loading || !adminRole) {
+  // ─── COMPUTED METRICS ───────────────────────────────────────────────────
+
+  const activeJobs = useMemo(
+    () => allJobs.filter((j) => j.status === "active"),
+    [allJobs],
+  );
+
+  const frozenAccountsCount = useMemo(() => {
+    const frozenUsers = allJobseekers.filter((u) => u.isFrozen).length;
+    const frozenEmps = allEmployers.filter((e) => e.isFrozen).length;
+    return frozenUsers + frozenEmps;
+  }, [allJobseekers, allEmployers]);
+
+  // Combined real pending items for the right-side card
+  const pendingApprovalsList = useMemo(() => {
+    const jobs = pendingJobs.map((j) => ({
+      id: j._id,
+      type: "job",
+      title: j.title,
+      secondary: j.postedByCompany || j.postedByName || "Company Confidential",
+      date: j.createdAt,
+      status: "Pending",
+      raw: j,
+    }));
+
+    const emps = pendingEmployers.map((e) => ({
+      id: e._id,
+      type: "employer",
+      title: e.companyName || e.name || "New Employer",
+      secondary: e.employerType === "individual" ? "Individual Recruiter" : "Company",
+      date: e.createdAt,
+      status: "Pending",
+      raw: e,
+    }));
+
+    return [...jobs, ...emps].sort(
+      (a, b) => new Date(b.date || 0) - new Date(a.date || 0),
+    );
+  }, [pendingJobs, pendingEmployers]);
+
+  // Filtered & Paginated Jobs for "Manage Jobs" Card
+  const filteredJobs = useMemo(() => {
+    return allJobs.filter((job) => {
+      const matchSearch =
+        !jobsSearch ||
+        job.title?.toLowerCase().includes(jobsSearch.toLowerCase()) ||
+        job.postedByCompany?.toLowerCase().includes(jobsSearch.toLowerCase()) ||
+        job.postedByName?.toLowerCase().includes(jobsSearch.toLowerCase());
+
+      const matchStatus =
+        jobsStatusFilter === "all" || job.status === jobsStatusFilter;
+
+      return matchSearch && matchStatus;
+    });
+  }, [allJobs, jobsSearch, jobsStatusFilter]);
+
+  const paginatedJobs = useMemo(() => {
+    const start = (jobsPage - 1) * jobsPageSize;
+    return filteredJobs.slice(start, start + jobsPageSize);
+  }, [filteredJobs, jobsPage, jobsPageSize]);
+
+  if (loading || !adminInfo) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex justify-center items-center">
-        <Loader2 className="animate-spin text-indigo-600" size={48} />
+      <div className="min-h-screen bg-[#f4f5f7] dark:bg-slate-950 flex flex-col justify-center items-center">
+        <Loader2 className="animate-spin text-slate-900 dark:text-white mb-2" size={32} />
+        <p className="text-xs font-semibold text-slate-500">Loading Admin Dashboard...</p>
       </div>
     );
   }
 
-  const canManageEmployers =
-    adminRole === "superAdmin" || adminRole === "employerAdmin";
-  const canManageJobseekers =
-    adminRole === "superAdmin" || adminRole === "jobseekerAdmin";
-
-  const SidebarItem = ({ id, icon: Icon, label, badgeCount }) => (
-    <button
-      onClick={() => {
-        setActiveTab(id);
-        setSearchResults([]);
-        setSearchQuery("");
-      }}
-      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all font-bold ${activeTab === id ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none" : "text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
-    >
-      <div className="flex items-center gap-3">
-        <Icon size={18} />
-        <span>{label}</span>
-      </div>
-      {badgeCount !== undefined && badgeCount > 0 && (
-        <span
-          className={`text-xs px-2 py-0.5 rounded-full ${activeTab === id ? "bg-white dark:bg-slate-900 text-indigo-600" : "bg-indigo-100 text-indigo-700"}`}
-        >
-          {badgeCount}
-        </span>
-      )}
-    </button>
-  );
-
-  const MobileTab = ({ id, icon: Icon, label, badgeCount }) => (
-    <button
-      onClick={() => {
-        setActiveTab(id);
-        setSearchResults([]);
-        setSearchQuery("");
-      }}
-      className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-sm transition-all shrink-0 ${activeTab === id ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 hover:text-indigo-600"}`}
-    >
-      <Icon size={16} />
-      <span>{label}</span>
-      {badgeCount !== undefined && badgeCount > 0 && (
-        <span
-          className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === id ? "bg-white dark:bg-slate-900 text-indigo-600" : "bg-indigo-200 text-indigo-700"}`}
-        >
-          {badgeCount}
-        </span>
-      )}
-    </button>
-  );
+  const unreadContacts = allContacts.filter((c) => !c.isRead);
 
   return (
-    <div className="h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex flex-col md:flex-row overflow-hidden transition-colors duration-150">
-      {/* ─── LEFT SIDEBAR ──────────────────────────────────────────────────────── */}
-      <aside className="w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 hidden md:flex flex-col h-screen sticky top-0 shadow-sm z-10">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 pt-[120px]">
-          <h1 className="text-2xl font-black flex items-center gap-3 text-slate-900 dark:text-white tracking-tight">
-            <LayoutDashboard className="text-indigo-600" size={28} /> Admin
-            Portal
-          </h1>
-          <div className="mt-4 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-            <ShieldAlert size={16} className="text-rose-500" />
-            Role:{" "}
-            <span className="text-indigo-600 capitalize">{adminRole}</span>
-          </div>
-        </div>
+    <AdminLayout
+      activeTab={activeTab}
+      onSelectTab={handleSelectTab}
+      adminInfo={adminInfo}
+      pendingJobs={pendingJobs}
+      pendingEmployers={pendingEmployers}
+      unreadContacts={unreadContacts}
+      onRefresh={() => fetchInitialData(adminInfo)}
+      onLogout={handleLogout}
+    >
+      {/* =========================================================================
+          VIEW: DASHBOARD (EXACT REFERENCE SPECIFICATION)
+      ========================================================================= */}
+      {activeTab === "overview" && (
+        <div className="space-y-6">
+          {/* Quick Stats Header & Horizontal KPI Row */}
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-4">
+              Quick Stats
+            </h2>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
-          {canManageEmployers && (
-            <>
-              <p className="text-xs font-black uppercase text-slate-400 tracking-widest pl-4 mb-2 mt-4">
-                Employers & Jobs
-              </p>
-              <SidebarItem
-                id="pendingJobs"
-                icon={Briefcase}
-                label="Pending Jobs"
-                badgeCount={pendingJobs.length}
-              />
-              <SidebarItem
-                id="pendingEmployers"
-                icon={Building2}
-                label="Pending Employers"
-                badgeCount={pendingEmployers.length}
-              />
-              <SidebarItem
-                id="allJobs"
-                icon={FileText}
-                label="All Jobs"
-                badgeCount={allJobs.length}
-              />
-              <SidebarItem
-                id="allEmployers"
-                icon={Building2}
-                label="All Employers"
-                badgeCount={allEmployers.length}
-              />
-              <SidebarItem
-                id="searchEmployers"
-                icon={Search}
-                label="Search / Freeze"
-              />
-            </>
-          )}
-
-          {canManageJobseekers && (
-            <>
-              <p className="text-xs font-black uppercase text-slate-400 tracking-widest pl-4 mb-2 mt-8">
-                Jobseekers
-              </p>
-              <SidebarItem
-                id="allJobseekers"
+            {/* Horizontal Row of Narrow, Tall, Rounded KPI Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4 sm:gap-5">
+              <AdminStatCard
+                title="Users"
+                value={dbStats.jobseekers || allJobseekers.length}
                 icon={Users}
-                label="All Jobseekers"
-                badgeCount={allJobseekers.length}
+                onClick={() => handleSelectTab("allJobseekers")}
               />
-              <SidebarItem
-                id="searchJobseekers"
-                icon={Search}
-                label="Search / Freeze"
+              <AdminStatCard
+                title="Companies"
+                value={dbStats.employers || allEmployers.length}
+                icon={Building2}
+                onClick={() => handleSelectTab("allEmployers")}
               />
-            </>
-          )}
-
-          {adminRole === "superAdmin" && (
-            <>
-              <p className="text-xs font-black uppercase text-slate-400 tracking-widest pl-4 mb-2 mt-8">
-                Super Admin
-              </p>
-              <SidebarItem
-                id="manageAdmins"
+              <AdminStatCard
+                title="Active"
+                value={activeJobs.length}
+                icon={Briefcase}
+                onClick={() => handleSelectTab("allJobs")}
+              />
+              <AdminStatCard
+                title="Jobs"
+                value={dbStats.jobs || allJobs.length}
+                icon={Layers}
+                onClick={() => handleSelectTab("allJobs")}
+              />
+              <AdminStatCard
+                title="Applications"
+                value={allJobs.reduce((acc, j) => acc + (j.applicants?.length || 0), 0)}
+                icon={FileText}
+                onClick={() => handleSelectTab("applications")}
+              />
+              <AdminStatCard
+                title="Pending"
+                value={pendingApprovalsList.length}
+                icon={Clock}
+                badge={pendingApprovalsList.length > 0 ? "Review" : null}
+                badgeVariant="warning"
+                onClick={() => handleSelectTab("pendingJobs")}
+              />
+              <AdminStatCard
+                title="Reported"
+                value={frozenAccountsCount}
                 icon={ShieldAlert}
-                label="Manage Admins"
+                onClick={() => handleSelectTab("searchFreeze")}
               />
-            </>
-          )}
+            </div>
+          </div>
 
-          <p className="text-xs font-black uppercase text-slate-400 tracking-widest pl-4 mb-2 mt-8">
-            Database
-          </p>
-          <SidebarItem
-            id="contacts"
-            icon={MessageSquare}
-            label="Contact Messages"
-            badgeCount={allContacts.filter((c) => !c.isRead).length}
-          />
-          <SidebarItem id="exportDB" icon={Download} label="Database Export" />
-        </div>
+          {/* Middle Row: Statistics (Left) & Pending Approvals (Right) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Left: Statistics Bar Chart (~65% width) */}
+            <div className="lg:col-span-8">
+              <AdminChartPanel jobs={allJobs} />
+            </div>
 
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
-          <button
-            onClick={() => {
-              localStorage.removeItem("adminInfo");
-              navigate("/admin/login");
-            }}
-            className="w-full bg-slate-900 text-white hover:bg-slate-800 px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition shadow-lg shadow-slate-200"
-          >
-            <LogOut size={18} /> Secure Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* ─── MOBILE TOP NAVIGATION ──────────────────────────────────────────────────────── */}
-      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-slate-900 shadow-sm border-b border-slate-200 dark:border-slate-800 pt-[100px] flex flex-col">
-        <div className="px-4 pb-2 flex justify-between items-center text-slate-400 w-full">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Options</span>
-          <span className="text-[10px] font-bold tracking-wider flex items-center gap-1 text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full animate-pulse">
-            Swipe to explore <span className="text-sm leading-none">→</span>
-          </span>
-        </div>
-        <div className="pb-4 px-4 flex gap-2 overflow-x-auto whitespace-nowrap hide-scrollbar">
-          {canManageEmployers && (
-            <>
-              <MobileTab id="pendingJobs" icon={Briefcase} label="Pending Jobs" badgeCount={pendingJobs.length} />
-              <MobileTab id="pendingEmployers" icon={Building2} label="Pending Employers" badgeCount={pendingEmployers.length} />
-              <MobileTab id="allJobs" icon={FileText} label="All Jobs" badgeCount={allJobs.length} />
-              <MobileTab id="allEmployers" icon={Building2} label="All Employers" badgeCount={allEmployers.length} />
-              <MobileTab id="searchEmployers" icon={Search} label="Search / Freeze" />
-            </>
-          )}
-          {canManageJobseekers && (
-            <>
-              <MobileTab id="allJobseekers" icon={Users} label="All Jobseekers" badgeCount={allJobseekers.length} />
-              <MobileTab id="searchJobseekers" icon={Search} label="Search / Freeze" />
-            </>
-          )}
-          {adminRole === "superAdmin" && (
-            <MobileTab id="manageAdmins" icon={ShieldAlert} label="Manage Admins" />
-          )}
-          <MobileTab
-            id="contacts"
-            icon={MessageSquare}
-            label="Contact Messages"
-            badgeCount={allContacts.filter((c) => !c.isRead).length}
-          />
-          <MobileTab id="exportDB" icon={Download} label="Database Export" />
-          <button
-            onClick={() => {
-              localStorage.removeItem("adminInfo");
-              navigate("/admin/login");
-            }}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-sm bg-slate-900 text-white shrink-0 ml-2 shadow-sm mr-4"
-          >
-            <LogOut size={16} /> Logout
-          </button>
-        </div>
-      </div>
-
-      <style>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
-
-      {/* ─── MAIN CONTENT AREA ──────────────────────────────────────────────────────── */}
-      <main className="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-slate-100">
-        <div className="max-w-5xl mx-auto space-y-6 pt-4 md:pt-[100px]">
-          {/* EXPORT DB VIEW */}
-          {activeTab === "contacts" && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
-                <div className="bg-indigo-100 p-2.5 rounded-xl">
-                  <MessageSquare size={24} className="text-indigo-600" />
+            {/* Right: Pending Approvals Card (~35% width) */}
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6 sm:p-7 transition-colors flex flex-col justify-between min-h-[380px]">
+              <div>
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                    Pending Approvals
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectTab("pendingJobs")}
+                    className="text-sm font-bold text-slate-900 dark:text-white hover:underline cursor-pointer"
+                  >
+                    View All
+                  </button>
                 </div>
-                <div>
-                  <h2 className="text-2xl font-black text-slate-800 dark:text-white">
-                    Contact Messages
-                  </h2>
-                  <p className="text-slate-500 font-medium">
-                    User inquiries, feedback, and complaints.
-                  </p>
-                </div>
+
+                {pendingApprovalsList.length === 0 ? (
+                  <div className="py-12 text-center text-slate-400">
+                    <CheckCircle2 size={36} className="mx-auto text-emerald-500 mb-3" />
+                    <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+                      All caught up! No pending approvals.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {pendingApprovalsList.slice(0, 4).map((item) => (
+                      <div
+                        key={`${item.type}-${item.id}`}
+                        className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/60 flex items-center justify-between gap-3.5"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-10 h-10 rounded-full bg-slate-200/80 dark:bg-slate-700 flex items-center justify-center font-black text-sm shrink-0 text-slate-700 dark:text-slate-200">
+                            {item.title.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                              {item.title}
+                            </p>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
+                              {item.secondary} • {item.date ? new Date(item.date).toLocaleDateString() : "Recent"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="shrink-0 flex items-center gap-1.5">
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300">
+                            Pending
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              item.type === "job"
+                                ? handleReviewJob(item.id, "active")
+                                : handleReviewEmployer(item.id, "approved")
+                            }
+                            className="p-1.5 rounded-lg bg-slate-950 dark:bg-white text-white dark:text-slate-950 hover:opacity-90 transition-opacity cursor-pointer"
+                            title="Quick Approve"
+                          >
+                            <Check size={15} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {allContacts.length === 0 ? (
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center text-slate-500 dark:text-slate-400">
-                  <MessageSquare size={48} className="mx-auto text-slate-300 mb-4" />
-                  <p className="font-bold text-lg">No messages found.</p>
-                  <p className="text-sm">You're all caught up!</p>
-                </div>
-              ) : (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {allContacts.map((contact) => (
-                    <div
-                      key={contact._id}
-                      className={`relative flex flex-col p-6 rounded-2xl border transition-all duration-300 ${
-                        contact.isRead
-                          ? "bg-slate-50/50 border-slate-200 shadow-none opacity-80"
-                          : "bg-white dark:bg-slate-800 border-indigo-200 dark:border-indigo-800/40 shadow-md shadow-indigo-100/50 dark:shadow-slate-950/40 -translate-y-0.5"
-                      }`}
-                    >
-                      {!contact.isRead && (
-                        <div className="absolute -top-2 -right-2 bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-sm">
-                          New
-                        </div>
-                      )}
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-lg ${contact.isRead ? "bg-slate-200 text-slate-500" : "bg-indigo-100 text-indigo-700"}`}>
-                            {contact.name.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-slate-800 dark:text-white leading-tight">
-                              {contact.name}
-                            </h3>
-                            <a href={`mailto:${contact.email}`} className="text-xs text-indigo-500 font-medium hover:underline">
-                              {contact.email}
-                            </a>
-                          </div>
-                        </div>
-                        <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-md ${
-                          contact.communicationType === "complaint" ? "bg-red-100 text-red-700" :
-                          contact.communicationType === "feedback" ? "bg-emerald-100 text-emerald-700" :
-                          "bg-amber-100 text-amber-700"
-                        }`}>
-                          {contact.communicationType}
-                        </span>
-                      </div>
-                      
-                      <div className={`flex-1 p-4 rounded-xl mb-4 text-sm whitespace-pre-wrap ${contact.isRead ? "bg-white dark:bg-slate-800 text-slate-600 border border-slate-200 dark:border-slate-800" : "bg-indigo-50/50 text-slate-700 dark:text-slate-300"}`}>
-                        {contact.message}
-                      </div>
-
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-800/80">
-                        <span className="text-xs text-slate-400 font-medium">
-                          {new Date(contact.createdAt).toLocaleString(undefined, {
-                            dateStyle: "medium",
-                            timeStyle: "short"
-                          })}
-                        </span>
-                        {!contact.isRead ? (
-                          <button
-                            onClick={() => handleMarkContactAsRead(contact._id)}
-                            className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 px-3 py-1.5 rounded-full transition-colors"
-                          >
-                            <CheckCircle size={14} /> Mark as Read
-                          </button>
-                        ) : (
-                          <span className="flex items-center gap-1 text-xs font-bold text-slate-400">
-                            <CheckCircle size={14} /> Viewed
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+              {pendingApprovalsList.length > 0 && (
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-medium text-slate-500 dark:text-slate-400 text-center">
+                  {pendingApprovalsList.length} total pending in review queues
                 </div>
               )}
             </div>
-          )}
+          </div>
 
-          {activeTab === "exportDB" && (
-            <div>
-              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
-                <Download className="text-emerald-600" /> Database Export
-              </h2>
-              <p className="text-slate-500 mb-8 font-medium">
-                Extract data safely based on your administrative privileges.
-              </p>
+          {/* Bottom Row: Manage Jobs (Reference Table Card) */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
+            {/* Card Header: Title on Left, Status & Export on Right */}
+            <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                  Manage Jobs
+                </h3>
+              </div>
 
-              {/* Stats Overview */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-center items-center text-center">
-                  <Briefcase size={32} className="text-blue-500 mb-3" />
-                  <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">
-                    Total Jobs
-                  </p>
-                  <p className="text-4xl font-black text-slate-800 dark:text-white">
-                    {dbStats.jobs}
-                  </p>
+              <div className="flex flex-wrap items-center gap-2.5">
+                {/* Integrated Compact Search */}
+                <div className="relative">
+                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={jobsSearch}
+                    onChange={(e) => {
+                      setJobsSearch(e.target.value);
+                      setJobsPage(1);
+                    }}
+                    placeholder="Search jobs..."
+                    className="pl-9 pr-3.5 py-2 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none w-44 sm:w-60"
+                  />
                 </div>
-                <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-center items-center text-center">
-                  <Users size={32} className="text-indigo-500 mb-3" />
-                  <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">
-                    Total Jobseekers
-                  </p>
-                  <p className="text-4xl font-black text-slate-800 dark:text-white">
-                    {dbStats.jobseekers}
-                  </p>
-                </div>
-                <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-center items-center text-center">
-                  <Building2 size={32} className="text-rose-500 mb-3" />
-                  <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">
-                    Total Employers
-                  </p>
-                  <p className="text-4xl font-black text-slate-800 dark:text-white">
-                    {dbStats.employers}
-                  </p>
-                </div>
-              </div>
 
-              {/* Export Options */}
-              <div className="space-y-4">
-                {adminRole === "superAdmin" && (
-                  <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div>
-                      <h3 className="font-bold text-lg text-emerald-900">
-                        Complete Database Backup
-                      </h3>
-                      <p className="text-emerald-700 text-sm mt-1">
-                        Export all Jobs, Employers, and Jobseekers into a
-                        multi-sheet Excel file.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleExportCustom("all")}
-                      className="shrink-0 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-200 transition flex items-center gap-2"
-                    >
-                      <Download size={18} /> Export Full DB
-                    </button>
-                  </div>
-                )}
-
-                {(adminRole === "superAdmin" ||
-                  adminRole === "employerAdmin") && (
-                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:shadow-md transition">
-                    <div>
-                      <h3 className="font-bold text-lg text-slate-800 dark:text-white">
-                        Employers & Jobs Data
-                      </h3>
-                      <p className="text-slate-500 text-sm mt-1">
-                        Export a detailed list of all registered employers and
-                        posted jobs.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleExportCustom("employers")}
-                      className="shrink-0 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md transition flex items-center gap-2"
-                    >
-                      <Download size={18} /> Export Employers Data
-                    </button>
-                  </div>
-                )}
-
-                {(adminRole === "superAdmin" ||
-                  adminRole === "jobseekerAdmin") && (
-                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:shadow-md transition">
-                    <div>
-                      <h3 className="font-bold text-lg text-slate-800 dark:text-white">
-                        Jobseekers & Jobs Data
-                      </h3>
-                      <p className="text-slate-500 text-sm mt-1">
-                        Export a detailed list of all registered jobseekers and
-                        available jobs.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleExportCustom("jobseekers")}
-                      className="shrink-0 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md shadow-indigo-200 transition flex items-center gap-2"
-                    >
-                      <Download size={18} /> Export Jobseekers Data
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* PENDING JOBS */}
-          {activeTab === "pendingJobs" && canManageEmployers && (
-            <div>
-              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-                <Briefcase className="text-indigo-600" /> Pending Jobs Approval
-              </h2>
-              <div className="space-y-4">
-                {pendingJobs.length === 0 ? (
-                  <p className="text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center font-medium">
-                    No pending jobs awaiting approval.
-                  </p>
-                ) : (
-                  pendingJobs.map((job) => (
-                    <div
-                      key={job._id}
-                      className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition"
-                    >
-                      <div>
-                        <h3 className="font-bold text-lg text-slate-800 dark:text-white">
-                          {job.title}
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-1 flex items-center gap-1">
-                          <CompanyDisplay job={job} fallback={job.postedByCompany || "Confidential"} /> •{" "}
-                          {typeof job.location === "object"
-                            ? job.location?.address
-                            : job.location}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                        <button
-                          onClick={() =>
-                            window.open(`/admin/job/${job._id}`, "_blank")
-                          }
-                          className="px-4 py-2 bg-slate-100 text-slate-700 dark:text-slate-300 hover:bg-slate-200 rounded-lg text-sm font-bold transition"
-                        >
-                          View Details
-                        </button>
-                        <button
-                          onClick={() => handleReviewJob(job._id, "active")}
-                          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-bold shadow-sm shadow-emerald-200 transition"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleReviewJob(job._id, "rejected")}
-                          className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-sm font-bold transition"
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* PENDING EMPLOYERS */}
-          {activeTab === "pendingEmployers" && canManageEmployers && (
-            <div>
-              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-                <Building2 className="text-indigo-600" /> Pending Employers
-              </h2>
-              <div className="space-y-4">
-                {pendingEmployers.length === 0 ? (
-                  <p className="text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center font-medium">
-                    No pending employers awaiting verification.
-                  </p>
-                ) : (
-                  pendingEmployers.map((emp) => (
-                    <div
-                      key={emp._id}
-                      className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition"
-                    >
-                      <div>
-                        <h3 className="font-bold text-lg text-slate-800 dark:text-white">
-                          {emp.companyName || emp.name}
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-1">
-                          {emp.email} • {emp.phone}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                        <button
-                          onClick={() =>
-                            window.open(`/admin/employer/${emp._id}`, "_blank")
-                          }
-                          className="px-4 py-2 bg-slate-100 text-slate-700 dark:text-slate-300 hover:bg-slate-200 rounded-lg text-sm font-bold transition"
-                        >
-                          Deep Dive
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleReviewEmployer(emp._id, "approved")
-                          }
-                          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-bold shadow-sm shadow-emerald-200 transition"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleReviewEmployer(emp._id, "rejected")
-                          }
-                          className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-sm font-bold transition"
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ALL JOBS */}
-          {activeTab === "allJobs" && canManageEmployers && (
-            <div>
-              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-                <FileText className="text-indigo-600" /> All Jobs Database
-              </h2>
-              <div className="space-y-4">
-                {allJobs.length === 0 ? (
-                  <p className="text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center font-medium">
-                    No jobs posted on the platform yet.
-                  </p>
-                ) : (
-                  allJobs.map((job) => (
-                    <div
-                      key={job._id}
-                      className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition"
-                    >
-                      <div>
-                        <h3 className="font-bold text-lg text-slate-800 dark:text-white">
-                          {job.title}
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-1 flex items-center gap-1">
-                          <CompanyDisplay job={job} fallback={job.postedByCompany || "Confidential"} /> •{" "}
-                          {typeof job.location === "object"
-                            ? job.location?.address
-                            : job.location}
-                        </p>
-                        <span
-                          className={`inline-block mt-2 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${job.status === "active" ? "bg-emerald-100 text-emerald-700" : job.status === "pending_approval" ? "bg-amber-100 text-amber-700" : "bg-slate-200 text-slate-700 dark:text-slate-300"}`}
-                        >
-                          {job.status.replace("_", " ")}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                        <button
-                          onClick={() =>
-                            window.open(`/admin/job/${job._id}`, "_blank")
-                          }
-                          className="px-5 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-sm font-bold transition"
-                        >
-                          Admin View
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ALL EMPLOYERS */}
-          {activeTab === "allEmployers" && canManageEmployers && (
-            <div>
-              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-                <Building2 className="text-indigo-600" /> All Employers Database
-              </h2>
-              <div className="space-y-4">
-                {allEmployers.length === 0 ? (
-                  <p className="text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center font-medium">
-                    No employers registered.
-                  </p>
-                ) : (
-                  allEmployers.map((emp) => (
-                    <div
-                      key={emp._id}
-                      className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border ${emp.isFrozen ? "border-rose-300 bg-rose-50/30" : "border-slate-200 dark:border-slate-800"} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition`}
-                    >
-                      <div>
-                        <h3 className="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
-                          {emp.companyName || emp.name}
-                          {emp.isFrozen && (
-                            <span className="bg-rose-100 text-rose-600 text-[10px] px-2 py-0.5 rounded-md uppercase tracking-wider font-black">
-                              Frozen
-                            </span>
-                          )}
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-1">
-                          {emp.email} • {emp.phone || "No phone"}
-                        </p>
-                        <span
-                          className={`inline-block mt-2 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${emp.isApproved === "approved" ? "bg-emerald-100 text-emerald-700" : emp.isApproved === "pending" ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"}`}
-                        >
-                          {emp.isApproved}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                        <button
-                          onClick={() =>
-                            window.open(`/company/${emp._id}`, "_blank")
-                          }
-                          className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 rounded-lg text-sm font-bold transition flex items-center gap-2"
-                        >
-                          <ExternalLink size={16} /> Public View
-                        </button>
-                        <button
-                          onClick={() =>
-                            window.open(`/admin/employer/${emp._id}`, "_blank")
-                          }
-                          className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-sm font-bold transition"
-                        >
-                          Admin Deep Dive
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ALL JOBSEEKERS */}
-          {activeTab === "allJobseekers" && canManageJobseekers && (
-            <div>
-              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-                <Users className="text-indigo-600" /> All Jobseekers Database
-              </h2>
-              <div className="space-y-4">
-                {allJobseekers.length === 0 ? (
-                  <p className="text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center font-medium">
-                    No jobseekers registered.
-                  </p>
-                ) : (
-                  allJobseekers.map((user) => (
-                    <div
-                      key={user._id}
-                      className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border ${user.isFrozen ? "border-rose-300 bg-rose-50/30" : "border-slate-200 dark:border-slate-800"} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm hover:shadow-md transition`}
-                    >
-                      <div className="flex items-center gap-4">
-                        {user.profilePicture ? (
-                          <img
-                            src={user.profilePicture}
-                            alt="Profile"
-                            className="w-12 h-12 rounded-full object-cover shadow-sm"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400">
-                            <User size={20} />
-                          </div>
-                        )}
-                        <div>
-                          <h3 className="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
-                            {user.name}
-                            {user.isFrozen && (
-                              <span className="bg-rose-100 text-rose-600 text-[10px] px-2 py-0.5 rounded-md uppercase tracking-wider font-black">
-                                Frozen
-                              </span>
-                            )}
-                          </h3>
-                          <p className="text-sm text-slate-500 mt-0.5">
-                            {user.email} • {user.phone || "No phone"}
-                          </p>
-                          <p className="text-xs font-semibold text-indigo-600 mt-1">
-                            {user.title || "No Title"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                        <button
-                          onClick={() =>
-                            window.open(`/profile/${user._id}`, "_blank")
-                          }
-                          className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 rounded-lg text-sm font-bold transition flex items-center gap-2"
-                        >
-                          <ExternalLink size={16} /> Public View
-                        </button>
-                        <button
-                          onClick={() =>
-                            window.open(`/admin/user/${user._id}`, "_blank")
-                          }
-                          className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-sm font-bold transition"
-                        >
-                          Admin Deep Dive
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* SEARCH & FREEZE PANELS */}
-          {(activeTab === "searchJobseekers" ||
-            activeTab === "searchEmployers") && (
-            <div>
-              <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-                <Search className="text-indigo-600" /> Security & Freeze Control
-              </h2>
-              <form
-                onSubmit={handleSearch}
-                className="flex gap-3 bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 mb-6"
-              >
-                <input
-                  type="text"
-                  placeholder={`Search by name, email${activeTab === "searchEmployers" ? ", or company" : ""}...`}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:bg-slate-800 transition-all font-medium"
-                />
-                <button
-                  type="submit"
-                  disabled={isSearching}
-                  className="bg-indigo-600 text-white px-8 font-bold rounded-xl flex items-center gap-2 hover:bg-indigo-700 transition disabled:opacity-70"
+                {/* Compact Status Dropdown */}
+                <select
+                  value={jobsStatusFilter}
+                  onChange={(e) => {
+                    setJobsStatusFilter(e.target.value);
+                    setJobsPage(1);
+                  }}
+                  className="px-3.5 py-2 text-sm font-bold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 outline-none cursor-pointer"
                 >
-                  {isSearching ? (
-                    <Loader2 className="animate-spin" size={18} />
-                  ) : (
-                    <Search size={18} />
-                  )}{" "}
-                  Search
+                  <option value="all">All Statuses</option>
+                  <option value="active">Active</option>
+                  <option value="pending">Pending</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+
+                {/* Export Action Button */}
+                <button
+                  type="button"
+                  onClick={() => handleExport("all")}
+                  className="px-4 py-2 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-xs flex items-center gap-2 cursor-pointer"
+                >
+                  <Download size={15} />
+                  <span>Export</span>
                 </button>
-              </form>
-
-              <div className="space-y-4">
-                {searchResults.length === 0 &&
-                  !isSearching &&
-                  searchQuery !== "" && (
-                    <p className="text-slate-500 p-4 text-center">
-                      No results found.
-                    </p>
-                  )}
-                {searchResults.map((result) => (
-                  <div
-                    key={result._id}
-                    className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border ${result.isFrozen ? "border-rose-300 bg-rose-50" : "border-slate-200 dark:border-slate-800"} flex flex-col sm:flex-row justify-between items-center gap-4 shadow-sm`}
-                  >
-                    <div>
-                      <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800 dark:text-white">
-                        {result.companyName || result.name}
-                        {result.isFrozen && (
-                          <span className="bg-rose-100 text-rose-600 text-[10px] px-2 py-0.5 rounded-md uppercase tracking-wider font-black">
-                            Frozen
-                          </span>
-                        )}
-                      </h3>
-                      <p className="text-sm text-slate-500 mt-1">
-                        {result.email} • {result.phone || "No phone"}
-                      </p>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() =>
-                          window.open(
-                            activeTab === "searchEmployers"
-                              ? `/admin/employer/${result._id}`
-                              : `/admin/user/${result._id}`,
-                            "_blank",
-                          )
-                        }
-                        className="px-4 py-2 bg-slate-100 text-slate-700 dark:text-slate-300 hover:bg-slate-200 rounded-xl text-sm font-bold flex items-center gap-2 transition"
-                      >
-                        <ExternalLink size={16} /> Admin Deep Dive
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleFreezeToggle(
-                            result._id,
-                            result.isFrozen,
-                            activeTab === "searchJobseekers"
-                              ? "user"
-                              : "employer",
-                          )
-                        }
-                        className={`px-5 py-2 rounded-xl text-sm font-bold flex items-center gap-2 text-white transition ${result.isFrozen ? "bg-emerald-500 hover:bg-emerald-600" : "bg-rose-500 hover:bg-rose-600 shadow-sm shadow-rose-200"}`}
-                      >
-                        {result.isFrozen ? (
-                          <>
-                            <Flame size={16} /> Unfreeze
-                          </>
-                        ) : (
-                          <>
-                            <Snowflake size={16} /> Freeze Account
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
-          )}
 
-          {/* MANAGE ADMINS PANEL (Super Admin Only) */}
-          {activeTab === "manageAdmins" && adminRole === "superAdmin" && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
-                <div className="bg-indigo-100 p-2.5 rounded-xl">
-                  <ShieldAlert size={24} className="text-indigo-600" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-black text-slate-800 dark:text-white">
-                    Manage Admins
-                  </h2>
-                  <p className="text-slate-500 font-medium">
-                    Directory and role management.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col lg:flex-row gap-8 items-start">
-                {/* LEFT: ADMIN DIRECTORY */}
-                <div className="flex-1 w-full space-y-4">
-                  <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300">Admin Directory</h3>
-                  {allAdmins.length === 0 ? (
-                    <div className="p-8 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm text-slate-400 font-medium">
-                      Loading admins...
-                    </div>
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+                  <tr>
+                    <th className="py-3.5 px-5 w-12">
+                      <input
+                        type="checkbox"
+                        checked={
+                          paginatedJobs.length > 0 &&
+                          selectedJobIds.length === paginatedJobs.length
+                        }
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedJobIds(paginatedJobs.map((j) => j._id));
+                          } else {
+                            setSelectedJobIds([]);
+                          }
+                        }}
+                        className="rounded border-slate-300 dark:border-slate-700 cursor-pointer"
+                      />
+                    </th>
+                    <th className="py-3.5 px-5">Job Title</th>
+                    <th className="py-3.5 px-5">Company</th>
+                    <th className="py-3.5 px-5">Location</th>
+                    <th className="py-3.5 px-5">Status</th>
+                    <th className="py-3.5 px-5">Posted Date</th>
+                    <th className="py-3.5 px-5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                  {paginatedJobs.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-10 text-center text-slate-400">
+                        No jobs found.
+                      </td>
+                    </tr>
                   ) : (
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden">
-                      {allAdmins.map((admin, index) => (
-                        <div
-                          key={admin._id}
-                          className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
-                            index !== allAdmins.length - 1 ? "border-b border-slate-100" : ""
-                          }`}
+                    paginatedJobs.map((job) => {
+                      const locationStr =
+                        typeof job.location === "object"
+                          ? job.location?.address || "Remote"
+                          : job.location || "Remote";
+
+                      const isMenuOpen = openActionMenuId === job._id;
+
+                      return (
+                        <tr
+                          key={job._id}
+                          className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold text-lg">
-                              {admin.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="font-bold text-slate-800 dark:text-white">{admin.name}</p>
-                              <p className="text-xs text-slate-500 font-medium">{admin.email}</p>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <select
-                              value={admin.role}
-                              onChange={(e) => handleChangeAdminRole(admin._id, e.target.value)}
-                              className={`text-xs font-bold px-3 py-1.5 rounded-lg outline-none cursor-pointer border-r-8 border-transparent ${
-                                admin.role === "superAdmin"
-                                  ? "bg-purple-100 text-purple-700"
-                                  : admin.role === "employerAdmin"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-emerald-100 text-emerald-700"
+                          <td className="py-4 px-5">
+                            <input
+                              type="checkbox"
+                              checked={selectedJobIds.includes(job._id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedJobIds((prev) => [...prev, job._id]);
+                                } else {
+                                  setSelectedJobIds((prev) =>
+                                    prev.filter((id) => id !== job._id),
+                                  );
+                                }
+                              }}
+                              className="rounded border-slate-300 dark:border-slate-700 cursor-pointer"
+                            />
+                          </td>
+                          <td className="py-4 px-5 font-bold text-slate-900 dark:text-white text-sm sm:text-base">
+                            <Link
+                              to={`/admin/job/${job._id}`}
+                              className="hover:underline flex items-center gap-1.5"
+                            >
+                              <span>{job.title}</span>
+                              <ExternalLink size={13} className="text-slate-400" />
+                            </Link>
+                          </td>
+                          <td className="py-4 px-5 font-medium text-slate-700 dark:text-slate-300">
+                            {job.postedByCompany || job.postedByName || "Company Confidential"}
+                          </td>
+                          <td className="py-4 px-5 font-medium text-slate-500 dark:text-slate-400">
+                            {locationStr}
+                          </td>
+                          <td className="py-4 px-5">
+                            <span
+                              className={`px-3 py-1 rounded-full font-black text-xs uppercase tracking-wider ${
+                                job.status === "active"
+                                  ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
+                                  : job.status === "pending"
+                                  ? "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60"
+                                  : "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60"
                               }`}
                             >
-                              <option value="superAdmin">Super Admin</option>
-                              <option value="employerAdmin">Employer Admin</option>
-                              <option value="jobseekerAdmin">Jobseeker Admin</option>
-                            </select>
-
-                            <button
-                              onClick={() => handleDeleteAdmin(admin._id)}
-                              className="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                              title="Delete Admin"
-                            >
-                              <XCircle size={18} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                              {job.status || "active"}
+                            </span>
+                          </td>
+                          <td className="py-4 px-5 text-slate-500 font-mono text-xs sm:text-sm">
+                            {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : "—"}
+                          </td>
+                          <td className="py-4 px-5 text-right relative">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <Link
+                                to={`/admin/job/${job._id}`}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                title="View Details"
+                              >
+                                <Eye size={16} />
+                              </Link>
+                              {job.status === "pending" && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleReviewJob(job._id, "active")}
+                                  className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors"
+                                  title="Approve"
+                                >
+                                  <Check size={16} />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
-                </div>
+                </tbody>
+              </table>
+            </div>
 
-                {/* RIGHT: CREATE ADMIN FORM */}
-                <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 w-full lg:w-[400px] shrink-0">
-                  <h3 className="text-lg font-bold mb-6 text-slate-700 dark:text-slate-300">
-                    Provision New Admin
-                  </h3>
-                  <form onSubmit={handleCreateAdmin} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 ml-1 uppercase tracking-wider">
-                        Name
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={newAdminName}
-                        onChange={(e) => setNewAdminName(e.target.value)}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm"
-                        placeholder="John Doe"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 ml-1 uppercase tracking-wider">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={newAdminEmail}
-                        onChange={(e) => setNewAdminEmail(e.target.value)}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm"
-                        placeholder="admin@jobone.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 ml-1 uppercase tracking-wider">
-                        Password
-                      </label>
-                      <input
-                        type="password"
-                        required
-                        value={newAdminPassword}
-                        onChange={(e) => setNewAdminPassword(e.target.value)}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm"
-                        placeholder="••••••••"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 ml-1 uppercase tracking-wider">
-                        Role
-                      </label>
-                      <select
-                        value={newAdminRole}
-                        onChange={(e) => setNewAdminRole(e.target.value)}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 dark:text-white text-sm"
-                      >
-                        <option value="employerAdmin">Employer Admin</option>
-                        <option value="jobseekerAdmin">Jobseeker Admin</option>
-                        <option value="superAdmin">Super Admin</option>
-                      </select>
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={isCreatingAdmin}
-                      className="w-full bg-indigo-600 text-white py-3 px-4 font-black rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-md mt-6 text-sm"
-                    >
-                      {isCreatingAdmin ? (
-                        <Loader2 className="animate-spin" size={18} />
-                      ) : (
-                        <ShieldAlert size={18} />
-                      )}{" "}
-                      Create Account
-                    </button>
-                  </form>
+            {/* Pagination Controls */}
+            {filteredJobs.length > jobsPageSize && (
+              <div className="p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-sm font-semibold text-slate-600 dark:text-slate-400">
+                <span>
+                  Showing {(jobsPage - 1) * jobsPageSize + 1}–
+                  {Math.min(jobsPage * jobsPageSize, filteredJobs.length)} of{" "}
+                  {filteredJobs.length}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setJobsPage((p) => Math.max(1, p - 1))}
+                    disabled={jobsPage === 1}
+                    className="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm disabled:opacity-40 cursor-pointer"
+                  >
+                    Previous
+                  </button>
+                  <span className="font-bold text-slate-800 dark:text-slate-200 px-1.5">
+                    {jobsPage}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setJobsPage((p) =>
+                        p * jobsPageSize < filteredJobs.length ? p + 1 : p,
+                      )
+                    }
+                    disabled={jobsPage * jobsPageSize >= filteredJobs.length}
+                    className="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm disabled:opacity-40 cursor-pointer"
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </main>
-    </div>
+      )}
+
+      {/* =========================================================================
+          VIEW: ALL JOBS / PENDING JOBS WORKSPACE
+      ========================================================================= */}
+      {(activeTab === "allJobs" || activeTab === "pendingJobs") && (
+        <div className="space-y-5">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+              {activeTab === "pendingJobs" ? "Pending Jobs Review" : "Manage Jobs"}
+            </h2>
+            <button
+              type="button"
+              onClick={() => handleExport("all")}
+              className="px-3 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:bg-slate-800 transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <Download size={13} />
+              <span>Export</span>
+            </button>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+                  <tr>
+                    <th className="py-3.5 px-5">Title</th>
+                    <th className="py-3.5 px-5">Company</th>
+                    <th className="py-3.5 px-5">Location</th>
+                    <th className="py-3.5 px-5">Status</th>
+                    <th className="py-3.5 px-5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                  {(activeTab === "pendingJobs" ? pendingJobs : allJobs).map((job) => (
+                    <tr key={job._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30">
+                      <td className="py-4 px-5 font-bold text-slate-900 dark:text-white text-base">
+                        <Link to={`/admin/job/${job._id}`} className="hover:underline">
+                          {job.title}
+                        </Link>
+                      </td>
+                      <td className="py-4 px-5 font-medium text-slate-700 dark:text-slate-300">
+                        {job.postedByCompany || job.postedByName || "Company Confidential"}
+                      </td>
+                      <td className="py-4 px-5 font-medium text-slate-500 dark:text-slate-400">
+                        {typeof job.location === "object" ? job.location?.address || "Remote" : job.location || "Remote"}
+                      </td>
+                      <td className="py-4 px-5">
+                        <span className="px-3 py-1 rounded-full font-black text-xs uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                          {job.status || "active"}
+                        </span>
+                      </td>
+                      <td className="py-4 px-5 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {job.status === "pending" && (
+                            <button
+                              type="button"
+                              onClick={() => handleReviewJob(job._id, "active")}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[11px] hover:bg-emerald-700 cursor-pointer"
+                            >
+                              Approve
+                            </button>
+                          )}
+                          <Link
+                            to={`/admin/job/${job._id}`}
+                            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-[11px] hover:bg-slate-200 dark:hover:bg-slate-700"
+                          >
+                            View
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          VIEW: APPLICATIONS
+      ========================================================================= */}
+      {activeTab === "applications" && (
+        <div className="space-y-5">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+              Platform Applications
+            </h2>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-8 shadow-xs text-center">
+            <FileText size={32} className="mx-auto text-slate-400 mb-2" />
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+              Applications Overview
+            </p>
+            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+              Candidate submissions are managed within each individual job posting view. Select a job from the Jobs directory to view candidates.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          VIEW: COMPANIES (ALL & PENDING EMPLOYERS)
+      ========================================================================= */}
+      {activeTab === "allEmployers" && (
+        <div className="space-y-5">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+              Companies & Employers
+            </h2>
+            <button
+              type="button"
+              onClick={() => handleExport("employers")}
+              className="px-3 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:bg-slate-800 transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <Download size={13} />
+              <span>Export</span>
+            </button>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+                  <tr>
+                    <th className="py-3.5 px-5">Company Name</th>
+                    <th className="py-3.5 px-5">Email</th>
+                    <th className="py-3.5 px-5">Approval</th>
+                    <th className="py-3.5 px-5">Status</th>
+                    <th className="py-3.5 px-5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                  {allEmployers.map((emp) => (
+                    <tr key={emp._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30">
+                      <td className="py-4 px-5 font-bold text-slate-900 dark:text-white text-base">
+                        <Link to={`/admin/employer/${emp._id}`} className="hover:underline">
+                          {emp.companyName || emp.name}
+                        </Link>
+                      </td>
+                      <td className="py-4 px-5 font-mono text-sm text-slate-600 dark:text-slate-400">{emp.email}</td>
+                      <td className="py-4 px-5">
+                        <span className="px-3 py-1 rounded-full font-black text-xs uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                          {emp.isApproved || "pending"}
+                        </span>
+                      </td>
+                      <td className="py-4 px-5">
+                        <span className="px-3 py-1 rounded-full font-black text-xs uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                          {emp.isFrozen ? "Frozen" : "Active"}
+                        </span>
+                      </td>
+                      <td className="py-4 px-5 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {emp.isApproved === "pending" && (
+                            <button
+                              type="button"
+                              onClick={() => handleReviewEmployer(emp._id, "approved")}
+                              className="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold text-[10px]"
+                            >
+                              Approve
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleFreezeToggle(emp._id, emp.isFrozen, "employer")}
+                            className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700 font-bold text-[10px]"
+                          >
+                            {emp.isFrozen ? "Unfreeze" : "Freeze"}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          VIEW: USERS (CANDIDATES DIRECTORY)
+      ========================================================================= */}
+      {activeTab === "allJobseekers" && (
+        <div className="space-y-5">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+              Users & Candidates
+            </h2>
+            <button
+              type="button"
+              onClick={() => handleExport("jobseekers")}
+              className="px-3 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:bg-slate-800 transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <Download size={13} />
+              <span>Export</span>
+            </button>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+                  <tr>
+                    <th className="py-3.5 px-5">Candidate</th>
+                    <th className="py-3.5 px-5">Email</th>
+                    <th className="py-3.5 px-5">Phone</th>
+                    <th className="py-3.5 px-5">Status</th>
+                    <th className="py-3.5 px-5 text-right">Moderation</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                  {allJobseekers.map((u) => (
+                    <tr key={u._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30">
+                      <td className="py-4 px-5 font-bold text-slate-900 dark:text-white text-base">
+                        <Link to={`/admin/user/${u._id}`} className="hover:underline">
+                          {u.name || "Candidate"}
+                        </Link>
+                      </td>
+                      <td className="py-4 px-5 font-mono text-sm text-slate-600 dark:text-slate-400">{u.email}</td>
+                      <td className="py-4 px-5 font-medium text-slate-500 dark:text-slate-400">{u.phone || "—"}</td>
+                      <td className="py-4 px-5">
+                        <span className="px-3 py-1 rounded-full font-black text-xs uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                          {u.isFrozen ? "Frozen" : "Active"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleFreezeToggle(u._id, u.isFrozen, "user")}
+                          className="px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 font-bold text-[11px] cursor-pointer"
+                        >
+                          {u.isFrozen ? "Unfreeze" : "Freeze"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          VIEW: CATEGORIES
+      ========================================================================= */}
+      {activeTab === "categories" && (
+        <div className="space-y-5">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+            Job Categories
+          </h2>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-8 shadow-xs text-center">
+            <Layers size={32} className="mx-auto text-slate-400 mb-2" />
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+              Taxonomy & Sectors
+            </p>
+            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+              Categories are assigned dynamically by employers during job creation and tracked in the Statistics chart.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          VIEW: REPORTS / EXPORT
+      ========================================================================= */}
+      {activeTab === "exportDB" && (
+        <div className="space-y-5">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+            Reports & Database Exports
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+              <div>
+                <h4 className="font-bold text-slate-900 dark:text-white text-sm">Full Platform Database</h4>
+                <p className="text-xs text-slate-400 mt-1 mb-4">Complete backup ZIP archive.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleExport("all")}
+                className="py-2 px-3 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold cursor-pointer"
+              >
+                Download ZIP
+              </button>
+            </div>
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+              <div>
+                <h4 className="font-bold text-slate-900 dark:text-white text-sm">Employers Directory</h4>
+                <p className="text-xs text-slate-400 mt-1 mb-4">Excel workbook of company profiles.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleExport("employers")}
+                className="py-2 px-3 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold cursor-pointer"
+              >
+                Download XLSX
+              </button>
+            </div>
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+              <div>
+                <h4 className="font-bold text-slate-900 dark:text-white text-sm">Candidates Directory</h4>
+                <p className="text-xs text-slate-400 mt-1 mb-4">Excel sheet of registered jobseekers.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleExport("jobseekers")}
+                className="py-2 px-3 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold cursor-pointer"
+              >
+                Download XLSX
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          VIEW: SETTINGS
+      ========================================================================= */}
+      {activeTab === "settings" && (
+        <div className="space-y-5 max-w-2xl">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+            Settings & Administrator Profile
+          </h2>
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+            <div className="grid grid-cols-2 gap-4 text-xs">
+              <div>
+                <span className="text-slate-400 block mb-1">Name</span>
+                <span className="font-bold text-slate-900 dark:text-white text-sm">
+                  {adminInfo?.name}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block mb-1">Email</span>
+                <span className="font-mono text-slate-900 dark:text-white">
+                  {adminInfo?.email}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block mb-1">Assigned Role</span>
+                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-bold uppercase text-[10px]">
+                  {adminInfo?.role}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      <AdminConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog((p) => ({ ...p, isOpen: false }))}
+        onConfirm={confirmDialog.action}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText={confirmDialog.confirmText}
+        variant={confirmDialog.variant}
+        loading={confirmDialog.loading}
+      />
+    </AdminLayout>
   );
 }

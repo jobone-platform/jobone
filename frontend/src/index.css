@@ -41,6 +41,11 @@ html.dark {
 
 html {
     -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
 }
 
 body {
@@ -56,19 +61,20 @@ html.dark body {
 
 /* Global Dark Form Control Safety & Standards */
 html.dark select {
-  background-color: #1e293b;
-  color: #f8fafc;
-  border-color: #334155;
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+  color-scheme: dark;
 }
 
 html.dark select option {
-  background-color: #0f172a;
-  color: #f8fafc;
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
 }
 
 /* Prevent native stark white inputs in dark mode */
-html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="file"]):where(:not([class*="dark:bg-"])),
-html.dark textarea:where(:not([class*="dark:bg-"])) {
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="file"]):where(:not([class*="dark:bg-"]):not([class*="bg-transparent"])),
+html.dark textarea:where(:not([class*="dark:bg-"]):not([class*="bg-transparent"])) {
   background-color: #1e293b;
   color: #f8fafc;
   border-color: #334155;
@@ -77,6 +83,13 @@ html.dark textarea:where(:not([class*="dark:bg-"])) {
 html.dark input::placeholder,
 html.dark textarea::placeholder {
   color: #94a3b8;
+}
+
+/* Ensure transparent search and form inputs stay transparent in dark mode */
+html.dark input.bg-transparent,
+html.dark input[class*="bg-transparent"],
+html.dark input[class*="dark:bg-transparent"] {
+  background-color: transparent !important;
 }
 
 @keyframes live-ticker {

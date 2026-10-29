@@ -131,7 +131,7 @@ export default function UserRegister() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: `url(${login})` }}>
+        <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-slate-950 bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: `url(${login})` }}>
             <div className="w-full max-w-md p-5 sm:p-8 space-y-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 text-slate-900 dark:text-slate-100">
                 <div className="text-center">
                     <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Candidate Registration</h2>

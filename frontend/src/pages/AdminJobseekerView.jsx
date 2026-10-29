@@ -122,13 +122,13 @@ export default function AdminJobseekerView() {
               </h2>
 
               {applications.length === 0 ? (
-                <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300 text-slate-500">
+                <div className="text-center py-10 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400">
                   <p>This candidate hasn't applied to any jobs yet.</p>
                 </div>
               ) : (
                 <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
                   {applications.map((app) => (
-                    <div key={app._id} className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl hover:shadow-md transition bg-slate-50">
+                    <div key={app._id} className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl hover:shadow-md transition bg-slate-50 dark:bg-slate-800/80">
                       <div className="flex justify-between items-start gap-4">
                         <div>
                           <h3 className="font-bold text-lg text-slate-800 dark:text-white">

@@ -21,12 +21,7 @@ const RegisterOption = () => {
             });
 
             loginUser(data.token, data);
-
-            if (data.isProfileComplete === false) {
-                navigate("/editprofile", { state: { showWarning: true } });
-            } else {
-                navigate("/userdashboard");
-            }
+            navigate("/userdashboard");
         } catch (err) {
             console.error("Google Login Error:", err);
             setError("Google Registration failed. Please try again.");

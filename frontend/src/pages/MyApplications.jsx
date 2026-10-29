@@ -128,7 +128,7 @@ export default function MyApplications() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-slate-50 text-slate-500">
+      <div className="min-h-screen flex flex-col justify-center items-center bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 transition-colors duration-150">
         <Loader2 className="w-10 h-10 animate-spin mb-4 text-indigo-600" />
         <p className="font-medium">Loading your applications...</p>
       </div>
@@ -137,21 +137,21 @@ export default function MyApplications() {
 
   if (applications.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 px-4 transition-colors duration-150">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 p-10 rounded-3xl shadow-sm text-center max-w-md w-full">
-          <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
             <SearchX className="text-slate-400" size={40} />
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
             No Applications Submitted Yet
           </h2>
-          <p className="text-slate-500 mb-8 leading-relaxed">
+          <p className="text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
             You have not applied to any job openings yet. Explore open roles across
             verified employers to submit your first application.
           </p>
           <Link
             to="/jobs"
-            className="block w-full py-3.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
+            className="block w-full py-3.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
           >
             Browse Open Jobs
           </Link>
@@ -175,7 +175,7 @@ export default function MyApplications() {
             <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               My Applications
             </h1>
-            <p className="text-slate-500 mt-1 font-medium">
+            <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
               Track and manage your job applications and employer interview updates in real time.
             </p>
           </div>
@@ -230,7 +230,7 @@ export default function MyApplications() {
                         >
                           {job.title || "Job Title Unavailable"}
                         </h3>
-                        <p className="text-sm text-slate-500 font-medium flex items-center gap-1.5 mt-0.5 truncate">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5 mt-0.5 truncate">
                           <Building2 size={14} className="text-slate-400" />{" "}
                           {companyName}
                         </p>
@@ -249,7 +249,7 @@ export default function MyApplications() {
                             message: app.employerMessage,
                           })
                         }
-                        className="flex w-full justify-center items-center gap-1.5 px-3 py-2 bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider rounded-lg border border-indigo-200 hover:bg-indigo-100 transition-colors"
+                        className="flex w-full justify-center items-center gap-1.5 px-3 py-2 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider rounded-lg border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors"
                       >
                         <MessageCircle size={14} /> View Employer Update
                       </button>
@@ -268,7 +268,7 @@ export default function MyApplications() {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
                       <IndianRupee size={14} className="text-slate-400" />
                       <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                         {job.salaryMin
@@ -277,7 +277,7 @@ export default function MyApplications() {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
                       {getModeIcon(Array.isArray(job.mode) ? job.mode.join(", ") : job.mode || "")}
                       <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
                         {Array.isArray(job.mode) ? job.mode.join(", ") : job.mode}
@@ -294,7 +294,7 @@ export default function MyApplications() {
                   </div>
                   <button
                     onClick={() => setSelectedApplication(app)}
-                    className="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-indigo-100"
+                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-indigo-100 dark:hover:border-indigo-800/60"
                   >
                     View Details
                   </button>
@@ -320,32 +320,32 @@ export default function MyApplications() {
               exit={{ scale: 0.95, y: 20 }}
               className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 dark:bg-indigo-950/40 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
 
               <div className="flex justify-between items-start mb-6 relative z-10">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
+                  <div className="p-3 bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 rounded-xl">
                     <MessageCircle size={24} />
                   </div>
                   <div>
                     <h3 className="text-xl font-extrabold text-slate-900 dark:text-white leading-tight">
                       Update Details
                     </h3>
-                    <p className="text-sm font-bold text-indigo-600 uppercase tracking-wide mt-0.5">
+                    <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide mt-0.5">
                       {messagePopup.status}
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setMessagePopup(null)}
-                  className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-colors"
+                  className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 border border-transparent dark:border-slate-700 rounded-full transition-colors"
                 >
                   <XCircle size={20} />
                 </button>
               </div>
 
               <div className="bg-slate-50 dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 relative z-10">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
+                <p className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3">
                   Message from Employer
                 </p>
                 <div className="text-slate-700 dark:text-slate-200 whitespace-pre-wrap leading-relaxed text-sm font-medium">
@@ -356,7 +356,7 @@ export default function MyApplications() {
               <div className="mt-8 flex justify-end relative z-10">
                 <button
                   onClick={() => setMessagePopup(null)}
-                  className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all transform active:scale-95"
+                  className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none transition-all transform active:scale-95"
                 >
                   Close
                 </button>

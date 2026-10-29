@@ -416,7 +416,7 @@ export default function EditProfile() {
     );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans relative overflow-hidden selection:bg-orange-500/30 transition-colors duration-150">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans relative overflow-hidden selection:bg-indigo-500/30 transition-colors duration-150">
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -438,10 +438,10 @@ export default function EditProfile() {
         }}
       />
 
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-white dark:bg-slate-950">
-        <div className="absolute -bottom-[20%] left-[-10%] w-[60vw] h-[60vw] bg-blue-500/60 filter blur-[100px] animate-lava-rise"></div>
-        <div className="absolute -top-[10%] right-[-20%] w-[55vw] h-[55vw] bg-blue-700/50 filter blur-[160px] animate-lava-fall animation-delay-2000"></div>
-        <div className="absolute top-[20%] left-[10%] w-[50vw] h-[50vw] bg-cyan-500/40 filter blur-[125px] animate-lava-rise animation-delay-5000"></div>
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute -bottom-[20%] left-[-10%] w-[50vw] h-[50vw] bg-indigo-300/20 dark:bg-indigo-600/10 filter blur-[120px] animate-lava-rise"></div>
+        <div className="absolute -top-[10%] right-[-20%] w-[45vw] h-[45vw] bg-blue-300/20 dark:bg-blue-600/10 filter blur-[140px] animate-lava-fall animation-delay-2000"></div>
+        <div className="absolute top-[20%] left-[10%] w-[40vw] h-[40vw] bg-sky-200/20 dark:bg-sky-500/10 filter blur-[100px] animate-lava-rise animation-delay-5000"></div>
       </div>
 
       <div className="max-w-4xl mx-auto py-12 px-4 relative z-10">
@@ -459,16 +459,14 @@ export default function EditProfile() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* AI MAGIC BANNER */}
-          <GlassCard className="border-orange-200 dark:border-orange-900/50 bg-orange-50/40 dark:bg-orange-950/20 shadow-[0_0_40px_rgba(249,115,22,0.08)]">
+          <GlassCard className="border-indigo-200 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-950/30">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
-                <h3 className="text-lg font-bold text-blue-700 dark:text-blue-400 flex items-center gap-2">
-                  <Sparkles className="text-blue-600" size={20} /> AI Resume
-                  Auto-Fill
+                <h3 className="text-lg font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-2">
+                  <Sparkles className="text-indigo-600 dark:text-indigo-400" size={20} /> AI Resume Auto-Fill
                 </h3>
-                <p className="text-sm text-orange-900/70 dark:text-orange-200/80 mt-1">
-                  Upload PDF/DOCX to securely save the file and auto-fill your
-                  details.
+                <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                  Upload PDF/DOCX to securely save the file and auto-fill your details.
                 </p>
               </div>
               <div className="relative group shrink-0">
@@ -482,7 +480,7 @@ export default function EditProfile() {
                 <button
                   type="button"
                   disabled={isParsing}
-                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-md transition-all w-full"
+                  className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-md transition-all w-full cursor-pointer"
                 >
                   {isParsing ? (
                     <>
@@ -497,19 +495,19 @@ export default function EditProfile() {
               </div>
             </div>
             {profile.resumeFileKey && (
-              <p className="mt-4 text-xs font-bold text-emerald-700 bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-full inline-block ">
+              <p className="mt-4 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-full inline-block">
                 ✓ Resume securely attached
               </p>
             )}
-            <div className="mt-4 pt-4 border-t border-blue-200/60 dark:border-slate-800 flex items-center justify-between">
+            <div className="mt-4 pt-4 border-t border-indigo-200/60 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-bold text-blue-950 dark:text-slate-100">Verification & Credential Documents</p>
-                <p className="text-xs text-blue-800 dark:text-slate-400">Upload optional marksheets, ID proofs, and salary slips.</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-slate-100">Verification & Credential Documents</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Upload optional marksheets, ID proofs, and salary slips.</p>
               </div>
               <button
                 type="button"
                 onClick={() => navigate("/jobseeker-documents")}
-                className="bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 border border-blue-300 dark:border-slate-700 px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm"
+                className="bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-700 px-4 py-2 rounded-xl font-bold text-sm transition shadow-xs w-fit cursor-pointer"
               >
                 Manage Documents →
               </button>
@@ -519,7 +517,7 @@ export default function EditProfile() {
           {/* 1. PERSONAL DETAILS */}
           <GlassCard>
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <User className="text-blue-600" size={22} /> Personal Details
+              <User className="text-indigo-600 dark:text-indigo-400" size={22} /> Personal Details
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InputGroup
@@ -535,37 +533,45 @@ export default function EditProfile() {
                 onChange={handleProfileChange}
               />
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                  Gender <span className="text-blue-600">*</span>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">
+                  Gender <span className="text-indigo-600 dark:text-indigo-400">*</span>
                 </label>
                 <select
                   name="gender"
                   value={profile.gender || ""}
                   onChange={handleProfileChange}
-                  className="w-full p-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 dark:focus:ring-blue-900/40 text-slate-900 dark:text-white transition-all appearance-none shadow-sm "
+                  className="w-full p-3.5 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 text-slate-900 dark:text-slate-100 transition-all shadow-xs cursor-pointer"
                 >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option value="" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Select Gender</option>
+                  <option value="Male" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Male</option>
+                  <option value="Female" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Female</option>
+                  <option value="Other" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Other</option>
                 </select>
               </div>
               <div className="md:col-span-2">
                 <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
                   Profile Picture
                 </label>
-                <div className="flex gap-4 mb-3 border-b border-gray-100 dark:border-slate-800 pb-2">
+                <div className="flex gap-4 mb-3 border-b border-slate-200 dark:border-slate-800 pb-2">
                   <button
                     type="button"
                     onClick={() => setImgUploadType("link")}
-                    className={`text-sm font-semibold transition-colors ${imgUploadType === "link" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-200"}`}
+                    className={`text-sm font-semibold transition-colors pb-1 cursor-pointer ${
+                      imgUploadType === "link"
+                        ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                    }`}
                   >
                     Provide Link
                   </button>
                   <button
                     type="button"
                     onClick={() => setImgUploadType("upload")}
-                    className={`text-sm font-semibold transition-colors ${imgUploadType === "upload" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-200"}`}
+                    className={`text-sm font-semibold transition-colors pb-1 cursor-pointer ${
+                      imgUploadType === "upload"
+                        ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                    }`}
                   >
                     Upload Image
                   </button>
@@ -599,8 +605,8 @@ export default function EditProfile() {
                 )}
                 {profile.profilePicture && !uploadingImage && (
                   <div className="mt-3 flex items-center gap-3">
-                    <img src={profile.profilePicture} alt="Profile Preview" className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-200" />
-                    <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded">Image ready</span>
+                    <img src={profile.profilePicture} alt="Profile Preview" className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-200 dark:border-slate-700" />
+                    <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2 py-1 rounded">Image ready</span>
                   </div>
                 )}
               </div>
@@ -616,8 +622,7 @@ export default function EditProfile() {
           {/* 2. SUMMARY */}
           <GlassCard>
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <FileText className="text-blue-600" size={22} /> Professional
-              Summary
+              <FileText className="text-indigo-600 dark:text-indigo-400" size={22} /> Professional Summary
             </h2>
             <textarea
               name="description"
@@ -632,7 +637,7 @@ export default function EditProfile() {
           {/* 3. SKILLS */}
           <GlassCard>
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <Code className="text-blue-600" size={22} /> Skills
+              <Code className="text-indigo-600 dark:text-indigo-400" size={22} /> Skills
             </h2>
             <div className="flex gap-3 mb-6">
               <input
@@ -656,15 +661,15 @@ export default function EditProfile() {
               {skills.map((skill, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg shadow-sm"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xs"
                 >
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
                     {skill}
                   </span>
                   <button
                     type="button"
                     onClick={() => setSkills(skills.filter((s) => s !== skill))}
-                    className="text-white/50 hover:text-rose-400 transition-colors"
+                    className="text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
                   >
                     <X size={14} />
                   </button>
@@ -676,7 +681,7 @@ export default function EditProfile() {
           {/* 4. WORK EXPERIENCE */}
           <GlassCard>
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <Briefcase className="text-blue-600" size={22} /> Work Experience
+              <Briefcase className="text-indigo-600 dark:text-indigo-400" size={22} /> Work Experience
             </h2>
             <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -727,7 +732,7 @@ export default function EditProfile() {
                     <h4 className="font-bold text-lg text-slate-900 dark:text-white">
                       {item.role}
                     </h4>
-                    <p className="text-sm text-red-600 font-medium mb-2">
+                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-2">
                       {item.company}{" "}
                       <span className="text-slate-300 px-2">•</span>{" "}
                       {item.duration}
@@ -755,7 +760,7 @@ export default function EditProfile() {
           {/* 5. EDUCATION */}
           <GlassCard>
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <GraduationCap className="text-blue-600" size={22} /> Education
+              <GraduationCap className="text-indigo-600 dark:text-indigo-400" size={22} /> Education
             </h2>
             <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -822,10 +827,10 @@ export default function EditProfile() {
                     <p className="text-sm text-blue-700 dark:text-blue-400 font-medium mb-1">
                       {item.university}
                     </p>
-                    <p className="text-xs text-slate-500 font-mono">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                       {item.started} - {item.ended}{" "}
                       {item.CGPA && (
-                        <span className="ml-2 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-slate-600">
+                        <span className="ml-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">
                           CGPA: {item.CGPA}
                         </span>
                       )}
@@ -848,7 +853,7 @@ export default function EditProfile() {
           {/* 6. PROJECTS */}
           <GlassCard>
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <FileText className="text-blue-600" size={22} /> Projects
+              <FileText className="text-indigo-600 dark:text-indigo-400" size={22} /> Projects
             </h2>
             <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -905,7 +910,7 @@ export default function EditProfile() {
                     <h4 className="font-bold text-lg text-slate-900 dark:text-white">
                       {item.title}
                     </h4>
-                    <p className="text-sm text-rose-600 font-medium my-1">
+                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium my-1">
                       {item.technologies}
                     </p>
                     {item.description && (
@@ -931,7 +936,7 @@ export default function EditProfile() {
           {/* 7. CERTIFICATIONS */}
           <GlassCard>
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <Award className="text-blue-600" size={22} /> Certifications
+              <Award className="text-indigo-600 dark:text-indigo-400" size={22} /> Certifications
             </h2>
             <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -986,7 +991,7 @@ export default function EditProfile() {
                     <h4 className="font-bold text-lg text-slate-900 dark:text-white">
                       {item.name}
                     </h4>
-                    <p className="text-sm text-red-600 font-medium mb-1">
+                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-1">
                       {item.issuer}{" "}
                       <span className="text-slate-300 px-1">•</span> {item.year}
                     </p>
@@ -1010,7 +1015,7 @@ export default function EditProfile() {
           {/* 8. ONLINE PRESENCE */}
           <GlassCard>
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <Globe className="text-blue-600" size={22} /> Online Presence
+              <Globe className="text-indigo-600 dark:text-indigo-400" size={22} /> Online Presence
             </h2>
             <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -1128,7 +1133,7 @@ export default function EditProfile() {
                     <h4 className="font-bold text-lg text-slate-900 dark:text-white">
                       {item.organization}
                     </h4>
-                    <p className="text-sm text-rose-600 font-medium my-1">
+                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium my-1">
                       {item.role} <span className="text-slate-300 px-1">•</span>{" "}
                       {item.duration}
                     </p>
@@ -1163,7 +1168,7 @@ export default function EditProfile() {
             <button
               type="submit"
               disabled={saving || isParsing}
-              className="flex-1 py-4 bg-blue-600 hover:bg-blue-700 border border-transparent text-white font-bold rounded-2xl flex justify-center items-center gap-2 transition-all shadow-md shadow-blue-200 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
+              className="flex-1 py-4 bg-indigo-600 hover:bg-indigo-700 border border-transparent text-white font-bold rounded-2xl flex justify-center items-center gap-2 transition-all shadow-md shadow-indigo-200 dark:shadow-none disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               {saving ? (
                 <Loader2 className="animate-spin" />
@@ -1182,23 +1187,30 @@ export default function EditProfile() {
 // FACT: Reusable Smart Glass Components for White Mode
 const GlassCard = ({ children, className = "" }) => (
   <div
-    className={`bg-white/70 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.06)] dark:shadow-slate-950/40 ${className}`}
+    className={`bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-xs dark:shadow-slate-950/40 transition-colors ${className}`}
   >
     {children}
   </div>
 );
 
-const InputGroup = ({ label, name, value, onChange, disabled = false }) => (
+const InputGroup = ({ label, name, value, onChange, disabled = false, placeholder = "" }) => (
   <div className="space-y-2">
-    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-      {label}
-    </label>
+    {label && (
+      <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">
+        {label}
+      </label>
+    )}
     <input
       name={name}
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className={`w-full p-3 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 text-slate-900 dark:text-white placeholder-slate-400 transition-all shadow-sm ${disabled ? "opacity-60 bg-slate-100 dark:bg-slate-800 cursor-not-allowed" : "bg-white dark:bg-slate-800"}`}
+      placeholder={placeholder}
+      className={`w-full p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-xs ${
+        disabled
+          ? "opacity-60 bg-slate-100 dark:bg-slate-800 cursor-not-allowed"
+          : "bg-slate-50 dark:bg-slate-800/90"
+      }`}
     />
   </div>
 );
@@ -1208,6 +1220,6 @@ const GlassInput = ({ value, onChange, placeholder }) => (
     value={value}
     onChange={onChange}
     placeholder={placeholder}
-    className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 text-slate-900 dark:text-white placeholder-slate-400 transition-all shadow-sm"
+    className="w-full p-3 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-xs"
   />
 );

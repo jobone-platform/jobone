@@ -180,14 +180,14 @@ export default function JobAdminView() {
                     <button
                       onClick={() => handleStatusChange("rejected")}
                       disabled={actionLoading}
-                      className="w-full bg-rose-50 text-rose-700 border border-rose-200 py-3 rounded-xl font-bold hover:bg-rose-100 transition flex items-center justify-center gap-2"
+                      className="w-full bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50 py-3 rounded-xl font-bold hover:bg-rose-100 dark:hover:bg-rose-900/60 transition flex items-center justify-center gap-2"
                     >
                       <XCircle size={18} /> Reject Job
                     </button>
                     <button
                       onClick={() => handleStatusChange("hidden")}
                       disabled={actionLoading}
-                      className="w-full mt-2 bg-slate-100 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 py-3 rounded-xl font-bold hover:bg-slate-200 transition flex items-center justify-center gap-2"
+                      className="w-full mt-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center gap-2"
                     >
                       <EyeOff size={18} /> Hide Job
                     </button>
@@ -200,7 +200,7 @@ export default function JobAdminView() {
                   </h2>
                   <div className="flex flex-col gap-3">
                     <select
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={job.status}
                       onChange={(e) => handleStatusChange(e.target.value, true)}
                       disabled={actionLoading}
@@ -290,7 +290,7 @@ export default function JobAdminView() {
                     job.shifts.map((s, i) => (
                       <div
                         key={i}
-                        className="flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
+                        className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 p-2 rounded-lg border border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200"
                       >
                         <span>{s.shiftName}</span>
                         <span className="font-mono bg-white dark:bg-slate-900 px-2 py-1 rounded border border-slate-200 dark:border-slate-800">
@@ -315,7 +315,7 @@ export default function JobAdminView() {
                   <FileText className="text-blue-600" /> Job Summary
                 </h2>
                 <div
-                  className="prose prose-sm max-w-none text-slate-600 prose-headings:text-slate-800 dark:text-white prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
+                  className="prose prose-sm max-w-none text-slate-600 dark:text-slate-300 prose-headings:text-slate-800 dark:text-white prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
                   dangerouslySetInnerHTML={{ __html: job.jobSummary }}
                 />
               </div>
@@ -325,7 +325,7 @@ export default function JobAdminView() {
                   <Briefcase className="text-blue-600" /> Key Responsibilities
                 </h2>
                 <div
-                  className="prose prose-sm max-w-none text-slate-600 prose-headings:text-slate-800 dark:text-white prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
+                  className="prose prose-sm max-w-none text-slate-600 dark:text-slate-300 prose-headings:text-slate-800 dark:text-white prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
                   dangerouslySetInnerHTML={{ __html: job.keyResponsibilities }}
                 />
               </div>
@@ -373,7 +373,7 @@ export default function JobAdminView() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
                 <div>
                   <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">
                     Age Limit
@@ -415,7 +415,7 @@ export default function JobAdminView() {
                     job.skillsRequired.map((skill, index) => (
                       <span
                         key={index}
-                        className="bg-slate-900 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow-sm"
+                        className="bg-slate-900 dark:bg-slate-800 text-white dark:text-slate-100 border border-transparent dark:border-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs shadow-sm"
                       >
                         {skill}
                       </span>
@@ -441,7 +441,7 @@ export default function JobAdminView() {
                       .map((feature, index) => (
                         <li
                           key={index}
-                          className="text-sm font-bold text-amber-900 bg-amber-50 p-2 rounded-lg border border-amber-100"
+                          className="text-sm font-bold text-amber-900 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 p-2 rounded-lg border border-amber-100 dark:border-amber-900/40"
                         >
                           {feature}
                         </li>
@@ -464,7 +464,7 @@ export default function JobAdminView() {
                     job.incentives.map((inc, index) => (
                       <span
                         key={index}
-                        className="bg-emerald-50 text-emerald-700 font-bold px-3 py-1.5 rounded-lg text-xs border border-emerald-100"
+                        className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-bold px-3 py-1.5 rounded-lg text-xs border border-emerald-100 dark:border-emerald-900/40"
                       >
                         {inc}
                       </span>
@@ -488,7 +488,7 @@ export default function JobAdminView() {
                     job.screeningQuestions.map((q, index) => (
                       <li
                         key={index}
-                        className="text-sm font-medium text-slate-700 dark:text-slate-300 bg-purple-50/50 p-2 rounded-lg border border-purple-100"
+                        className="text-sm font-medium text-slate-700 dark:text-slate-300 bg-purple-50/50 dark:bg-purple-950/40 p-2 rounded-lg border border-purple-100 dark:border-purple-900/40"
                       >
                         <span className="font-bold text-purple-600 mr-2">
                           Q{index + 1}.

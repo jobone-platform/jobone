@@ -90,10 +90,10 @@ const Profile = () => {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-slate-50 flex justify-center items-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex justify-center items-center transition-colors">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="animate-spin text-blue-600" size={40} />
-          <p className="text-slate-500 font-bold animate-pulse">
+          <p className="text-slate-500 dark:text-slate-400 font-bold animate-pulse">
             Loading your professional profile...
           </p>
         </div>
@@ -217,7 +217,7 @@ const Profile = () => {
               </div>
               About Me
             </h2>
-            <div className="prose prose-sm max-w-none text-slate-600 leading-relaxed whitespace-pre-wrap">
+            <div className="prose prose-sm max-w-none text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
               {profile.description || (
                 <span className="italic text-slate-400">
                   Update your profile to add a summary.
@@ -268,19 +268,19 @@ const Profile = () => {
                     key={i}
                     className="relative pl-6 before:absolute before:left-0 before:top-2 before:bottom-0 before:w-0.5 before:bg-slate-100 last:before:bottom-auto last:before:h-full"
                   >
-                    <div className="absolute left-[-5px] top-2 w-3 h-3 rounded-full bg-indigo-500 ring-4 ring-indigo-50"></div>
+                    <div className="absolute left-[-5px] top-2 w-3 h-3 rounded-full bg-indigo-500 ring-4 ring-indigo-50 dark:ring-indigo-950"></div>
                     <div className="flex flex-wrap justify-between items-start gap-2 mb-1">
                       <h3 className="text-base font-bold text-slate-900 dark:text-white">
                         {exp.role}
                       </h3>
-                      <span className="px-2.5 py-1 bg-slate-100 text-slate-500 text-[10px] font-extrabold uppercase tracking-widest rounded-md">
+                      <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] font-extrabold uppercase tracking-widest rounded-md">
                         {exp.duration}
                       </span>
                     </div>
-                    <p className="text-sm font-bold text-indigo-600 mb-2">
+                    <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 mb-2">
                       {exp.company}
                     </p>
-                    <p className="text-sm text-slate-600 leading-relaxed">
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                       {exp.description}
                     </p>
                   </div>
@@ -321,7 +321,7 @@ const Profile = () => {
                         </a>
                       )}
                     </div>
-                    <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3">
                       {proj.description}
                     </p>
                   </div>
@@ -393,13 +393,13 @@ const Profile = () => {
                   {profile.certifications.map((cert, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100"
+                      className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700"
                     >
                       <div>
                         <p className="text-sm font-bold text-slate-800 dark:text-white">
                           {cert.name}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
                           {cert.issuer} • {cert.year}
                         </p>
                       </div>
@@ -431,15 +431,15 @@ const Profile = () => {
                   {profile.volunteering.map((vol, i) => (
                     <div
                       key={i}
-                      className="p-3 rounded-xl bg-slate-50 border border-slate-100"
+                      className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700"
                     >
                       <p className="text-sm font-bold text-slate-800 dark:text-white">
                         {vol.role}
                       </p>
-                      <p className="text-xs text-slate-500 mb-1">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
                         {vol.organization}
                       </p>
-                      <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
                         {vol.description}
                       </p>
                     </div>
@@ -492,11 +492,11 @@ const Profile = () => {
 // --- SUB-COMPONENTS ---
 function EmptyState({ text }) {
   return (
-    <div className="flex flex-col items-center justify-center py-10 px-4 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
+    <div className="flex flex-col items-center justify-center py-10 px-4 bg-slate-50/50 dark:bg-slate-800/40 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <div className="w-12 h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full flex items-center justify-center shadow-sm mb-3">
-        <FileText size={20} className="text-slate-300" />
+        <FileText size={20} className="text-slate-400 dark:text-slate-500" />
       </div>
-      <p className="text-sm font-medium text-slate-500 text-center">{text}</p>
+      <p className="text-sm font-medium text-slate-500 dark:text-slate-400 text-center">{text}</p>
     </div>
   );
 }

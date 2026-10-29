@@ -94,7 +94,8 @@ const isStandaloneAuthRoute = (pathname) => {
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
-  const isStandalone = isStandaloneAuthRoute(location.pathname);
+  const isAdminRoute = location.pathname.toLowerCase().startsWith("/admin");
+  const isStandalone = isStandaloneAuthRoute(location.pathname) || isAdminRoute;
 
   const noPaddingRoutes = [
     "/",

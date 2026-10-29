@@ -263,7 +263,7 @@ export default function HeroSection() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Job title, keyword, or company"
-                  className="w-full bg-transparent outline-none text-white placeholder-slate-400 text-sm md:text-base font-medium"
+                  className="w-full bg-transparent dark:bg-transparent outline-none text-white placeholder-slate-400 text-sm md:text-base font-medium"
                 />
               </div>
 
@@ -275,7 +275,7 @@ export default function HeroSection() {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="City, state, or 'Remote'"
-                  className="w-full bg-transparent outline-none text-white placeholder-slate-400 text-sm md:text-base font-medium"
+                  className="w-full bg-transparent dark:bg-transparent outline-none text-white placeholder-slate-400 text-sm md:text-base font-medium"
                 />
               </div>
 

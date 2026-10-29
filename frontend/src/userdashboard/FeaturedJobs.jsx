@@ -52,7 +52,7 @@ export default function FeaturedJobs() {
 
     if (loading) {
         return (
-            <section className="py-12 text-center bg-gray-50">
+            <section className="py-12 text-center bg-gray-50 dark:bg-slate-950 text-gray-500 dark:text-gray-400 transition-colors">
                 <p className="text-gray-500">Loading featured jobs...</p>
             </section>
         );
@@ -60,7 +60,7 @@ export default function FeaturedJobs() {
 
     if (jobs.length === 0) {
         return (
-            <section className="py-12 text-center bg-gray-50">
+            <section className="py-12 text-center bg-gray-50 dark:bg-slate-950 text-gray-500 dark:text-gray-400 transition-colors">
                 <p className="text-gray-500">No jobs posted yet.</p>
             </section>
         );
@@ -94,7 +94,7 @@ export default function FeaturedJobs() {
                             </h3>
 
                             {/* Meta Row */}
-                            <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+                            <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mb-4">
                 <span className="flex items-center gap-1">
                   <FaMapMarkerAlt className="text-gray-400" />
                     {job.location || "Remote"}
@@ -111,7 +111,7 @@ export default function FeaturedJobs() {
                   {timeAgoFrom(job.postedAt)}
                 </span>
 
-                                <button className="px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition">
+                                <button className="px-4 py-2 text-sm border border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition">
                                     View
                                 </button>
                             </div>

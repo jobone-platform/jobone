@@ -318,7 +318,7 @@ export default function EmployerAdminView() {
                   return (
                     <div
                       key={doc.field}
-                      className={`p-4 rounded-xl border ${isVerified ? "border-emerald-200 bg-emerald-50" : "border-slate-200 dark:border-slate-800 bg-slate-50"} flex flex-col sm:flex-row justify-between items-center gap-4 transition-colors`}
+                      className={`p-4 rounded-xl border ${isVerified ? "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40" : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80"} flex flex-col sm:flex-row justify-between items-center gap-4 transition-colors`}
                     >
                       <div className="flex items-center gap-3 w-full sm:w-auto">
                         <input
@@ -401,7 +401,7 @@ export default function EmployerAdminView() {
               ) : (
                 <div className="space-y-4">
                   {employerJobs.map((job) => (
-                    <div key={job._id} className="p-4 bg-slate-50 border border-slate-200 dark:border-slate-800 rounded-xl">
+                    <div key={job._id} className="p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl">
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="font-bold text-slate-800 dark:text-white text-lg">{job.title}</h3>
