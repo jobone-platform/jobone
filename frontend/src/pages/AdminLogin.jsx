@@ -131,26 +131,7 @@ export default function AdminLogin() {
           </button>
         </form>
 
-        {/* Credentials Helper Box */}
-        <div className="mt-8 pt-6 border-t border-slate-800 text-center">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Active Credentials
-            </span>
-            <button
-              type="button"
-              onClick={handleQuickFill}
-              className="text-xs font-bold text-rose-400 hover:text-rose-300 transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              <KeyRound size={13} /> Auto-fill Default
-            </button>
-          </div>
-          <div className="bg-slate-800/60 border border-slate-700/80 rounded-xl p-3 text-xs text-slate-300 flex flex-col sm:flex-row sm:justify-between items-center gap-1 font-mono">
-            <span>admin@gmail.com</span>
-            <span className="text-slate-500 hidden sm:inline">•</span>
-            <span className="font-bold text-white">Admin@123</span>
-          </div>
-        </div>
+  
       </div>
     </div>
   );
