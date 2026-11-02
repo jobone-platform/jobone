@@ -13,7 +13,40 @@ export default function Login() {
   const location = useLocation();
   const { loginUser, loginEmployer, authStatus, role } = useAuth();
 
-  const [activeTab, setActiveTab] = useState("user");
+  const resolveTab = () => {
+    try {
+      const params = new URLSearchParams(location.search);
+      const queryTab = params.get("tab")?.toLowerCase();
+      const stateTab = location.state?.tab?.toLowerCase();
+      const candidateAliases = ["user", "candidate", "jobseeker"];
+      const employerAliases = ["employer", "recruiter", "company"];
+
+      if (employerAliases.includes(queryTab) || employerAliases.includes(stateTab)) {
+        return "employer";
+      }
+      if (candidateAliases.includes(queryTab) || candidateAliases.includes(stateTab)) {
+        return "user";
+      }
+    } catch {}
+    return "user";
+  };
+
+  const [activeTab, setActiveTab] = useState(resolveTab);
+
+  // Synchronize tab state if user navigates with query parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const queryTab = params.get("tab")?.toLowerCase();
+    const stateTab = location.state?.tab?.toLowerCase();
+    const target = queryTab || stateTab;
+    if (target) {
+      if (["employer", "recruiter", "company"].includes(target)) {
+        setActiveTab("employer");
+      } else if (["user", "candidate", "jobseeker"].includes(target)) {
+        setActiveTab("user");
+      }
+    }
+  }, [location.search, location.state]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
