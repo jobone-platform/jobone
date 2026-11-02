@@ -4,6 +4,7 @@ import AdminSidebar from "./AdminSidebar";
 import AdminCommandPalette from "./AdminCommandPalette";
 import AdminNotificationsModal from "./AdminNotificationsModal";
 import AdminSettingsModal from "./AdminSettingsModal";
+import AdminLogoutModal from "./AdminLogoutModal";
 import LogoJobOne from "../LogoJobOne";
 import { useTheme } from "../../routes/Context";
 
@@ -30,6 +31,7 @@ export default function AdminLayout({
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const { theme, setTheme, resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
@@ -42,6 +44,18 @@ export default function AdminLayout({
       } catch {}
       return next;
     });
+  };
+
+  // Intercept logout to display the modern animated confirmation and exit sequence
+  const handleRequestLogout = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleConfirmLogout = () => {
+    setIsLogoutModalOpen(false);
+    if (onLogout) {
+      onLogout();
+    }
   };
 
   // Global Ctrl+K / Cmd+K listener
@@ -70,7 +84,7 @@ export default function AdminLayout({
         isMobileOpen={isMobileOpen}
         onCloseMobile={() => setIsMobileOpen(false)}
         adminInfo={adminInfo}
-        onLogout={onLogout}
+        onLogout={handleRequestLogout}
         pendingJobsCount={pendingJobs.length}
         pendingEmployersCount={pendingEmployers.length}
       />
@@ -136,7 +150,7 @@ export default function AdminLayout({
           if (onRefresh) onRefresh();
           setIsCommandPaletteOpen(false);
         }}
-        onLogout={onLogout}
+        onLogout={handleRequestLogout}
         theme={theme}
         setTheme={setTheme}
       />
@@ -157,9 +171,17 @@ export default function AdminLayout({
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         adminInfo={adminInfo}
-        onLogout={onLogout}
+        onLogout={handleRequestLogout}
         theme={theme}
         setTheme={setTheme}
+      />
+
+      {/* Modern Animated Admin Logout Modal */}
+      <AdminLogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleConfirmLogout}
+        adminInfo={adminInfo}
       />
     </div>
   );

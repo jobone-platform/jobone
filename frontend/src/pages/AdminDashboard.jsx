@@ -26,6 +26,7 @@ import {
   Eye,
 } from "lucide-react";
 import { API_BASE_URL } from "../config/api";
+import { useAuth } from "../routes/Context";
 import AdminLayout from "../components/admin/AdminLayout";
 import AdminStatCard from "../components/admin/AdminStatCard";
 import AdminChartPanel from "../components/admin/AdminChartPanel";
@@ -206,9 +207,15 @@ export default function AdminDashboard() {
     }
   };
 
+  const { logout } = useAuth();
+
   const handleLogout = () => {
+    try {
+      logout();
+    } catch {}
     localStorage.removeItem("adminInfo");
-    navigate("/admin/login");
+    localStorage.removeItem("adminToken");
+    navigate("/admin/login", { replace: true, state: { loggedOut: true } });
   };
 
   // ─── ACTIONS ─────────────────────────────────────────────────────────────
