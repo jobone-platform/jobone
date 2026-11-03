@@ -124,7 +124,7 @@ export default function JobAdminView() {
     );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 font-sans text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-5 sm:py-10 px-3 sm:px-6 font-sans text-slate-900 dark:text-slate-100">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* --- HEADER --- */}
         <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
@@ -139,7 +139,7 @@ export default function JobAdminView() {
                 ID: {job._id}
               </span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-3 sm:mb-4 tracking-tight leading-tight">
               {job.title}
             </h1>
             <div className="flex flex-wrap items-center text-slate-400 font-bold gap-3 mb-6">
@@ -153,7 +153,7 @@ export default function JobAdminView() {
           </div>
           <button
             onClick={() => navigate("/admin/dashboard")}
-            className="bg-slate-800 px-5 py-2.5 rounded-xl font-bold hover:bg-slate-700 border border-slate-700 transition flex items-center gap-2"
+            className="w-full sm:w-auto justify-center bg-slate-800 px-5 py-2.5 rounded-xl font-bold hover:bg-slate-700 border border-slate-700 transition flex items-center gap-2 cursor-pointer shrink-0"
           >
             Back to Dashboard
           </button>

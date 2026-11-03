@@ -29,6 +29,7 @@ import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../routes/Context";
 import AdminLayout from "../components/admin/AdminLayout";
 import AdminStatCard from "../components/admin/AdminStatCard";
+import AdminKPISection from "../components/admin/AdminKPISection";
 import AdminChartPanel from "../components/admin/AdminChartPanel";
 import AdminConfirmDialog from "../components/admin/AdminConfirmDialog";
 
@@ -455,71 +456,31 @@ export default function AdminDashboard() {
           VIEW: DASHBOARD (EXACT REFERENCE SPECIFICATION)
       ========================================================================= */}
       {activeTab === "overview" && (
-        <div className="space-y-6">
-          {/* Quick Stats Header & Horizontal KPI Row */}
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-4">
-              Quick Stats
-            </h2>
-
-            {/* Horizontal Row of Narrow, Tall, Rounded KPI Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4 sm:gap-5">
-              <AdminStatCard
-                title="Users"
-                value={dbStats.jobseekers || allJobseekers.length}
-                icon={Users}
-                onClick={() => handleSelectTab("allJobseekers")}
-              />
-              <AdminStatCard
-                title="Companies"
-                value={dbStats.employers || allEmployers.length}
-                icon={Building2}
-                onClick={() => handleSelectTab("allEmployers")}
-              />
-              <AdminStatCard
-                title="Active"
-                value={activeJobs.length}
-                icon={Briefcase}
-                onClick={() => handleSelectTab("allJobs")}
-              />
-              <AdminStatCard
-                title="Jobs"
-                value={dbStats.jobs || allJobs.length}
-                icon={Layers}
-                onClick={() => handleSelectTab("allJobs")}
-              />
-              <AdminStatCard
-                title="Applications"
-                value={allJobs.reduce((acc, j) => acc + (j.applicants?.length || 0), 0)}
-                icon={FileText}
-                onClick={() => handleSelectTab("applications")}
-              />
-              <AdminStatCard
-                title="Pending"
-                value={pendingApprovalsList.length}
-                icon={Clock}
-                badge={pendingApprovalsList.length > 0 ? "Review" : null}
-                badgeVariant="warning"
-                onClick={() => handleSelectTab("pendingJobs")}
-              />
-              <AdminStatCard
-                title="Reported"
-                value={frozenAccountsCount}
-                icon={ShieldAlert}
-                onClick={() => handleSelectTab("searchFreeze")}
-              />
-            </div>
-          </div>
+        <div className="space-y-6 min-w-0 w-full">
+          {/* Redesigned Advanced Interactive KPI Widgets Section */}
+          <AdminKPISection
+            allJobs={allJobs}
+            allEmployers={allEmployers}
+            allJobseekers={allJobseekers}
+            pendingJobs={pendingJobs}
+            pendingEmployers={pendingEmployers}
+            unreadContacts={unreadContacts}
+            dbStats={dbStats}
+            onSelectTab={handleSelectTab}
+            onReviewJob={handleReviewJob}
+            onReviewEmployer={handleReviewEmployer}
+            loading={loading}
+          />
 
           {/* Middle Row: Statistics (Left) & Pending Approvals (Right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch">
             {/* Left: Statistics Bar Chart (~65% width) */}
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-7 xl:col-span-8">
               <AdminChartPanel jobs={allJobs} />
             </div>
 
             {/* Right: Pending Approvals Card (~35% width) */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6 sm:p-7 transition-colors flex flex-col justify-between min-h-[400px]">
+            <div className="lg:col-span-5 xl:col-span-4 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 md:p-7 transition-colors flex flex-col justify-between min-h-[350px] sm:min-h-[400px]">
               <div>
                 <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-2">
@@ -613,10 +574,10 @@ export default function AdminDashboard() {
           </div>
 
           {/* Bottom Row: Manage Jobs (Reference Table Card) */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
             {/* Card Header: Title on Left, Status & Export on Right */}
-            <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+            <div className="p-4 sm:p-5 md:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-3">
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Manage Jobs
                 </h3>
@@ -650,9 +611,9 @@ export default function AdminDashboard() {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 w-full md:w-auto">
                 {/* Integrated Compact Search */}
-                <div className="relative">
+                <div className="relative flex-1 sm:flex-initial">
                   <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
@@ -662,7 +623,7 @@ export default function AdminDashboard() {
                       setJobsPage(1);
                     }}
                     placeholder="Search jobs..."
-                    className="pl-9 pr-3.5 py-2 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none w-44 sm:w-60"
+                    className="pl-9 pr-3.5 py-2 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none w-full sm:w-56 md:w-60"
                   />
                 </div>
 
@@ -685,7 +646,7 @@ export default function AdminDashboard() {
                 <button
                   type="button"
                   onClick={() => handleExport("all")}
-                  className="px-4 py-2 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-xs flex items-center gap-2 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Download size={15} />
                   <span>Export</span>
@@ -694,8 +655,8 @@ export default function AdminDashboard() {
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full text-left text-sm min-w-[720px]">
                 <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                   <tr>
                     <th className="py-3.5 px-5 w-12">
@@ -822,7 +783,7 @@ export default function AdminDashboard() {
 
             {/* Pagination Controls */}
             {filteredJobs.length > jobsPageSize && (
-              <div className="p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-sm font-semibold text-slate-600 dark:text-slate-400">
+              <div className="p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm font-semibold text-slate-600 dark:text-slate-400">
                 <span>
                   Showing {(jobsPage - 1) * jobsPageSize + 1}–
                   {Math.min(jobsPage * jobsPageSize, filteredJobs.length)} of{" "}
@@ -879,8 +840,8 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full text-left text-sm min-w-[700px]">
                 <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                   <tr>
                     <th className="py-3.5 px-5">Title</th>
@@ -980,8 +941,8 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full text-left text-sm min-w-[700px]">
                 <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                   <tr>
                     <th className="py-3.5 px-5">Company Name</th>
@@ -1059,8 +1020,8 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full text-left text-sm min-w-[700px]">
                 <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                   <tr>
                     <th className="py-3.5 px-5">Candidate</th>

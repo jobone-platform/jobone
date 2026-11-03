@@ -189,11 +189,11 @@ export default function EmployerAdminView() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 px-4 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-5 sm:py-10 px-3 sm:px-4 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         {/* Header */}
-        <div className="bg-slate-900 rounded-2xl p-8 text-white flex justify-between items-center shadow-xl">
+        <div className="bg-slate-900 rounded-2xl p-5 sm:p-8 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
           <div>
             <h1 className="text-2xl font-extrabold flex items-center gap-3">
               Admin Review: {employer.companyName || employer.name}
@@ -202,7 +202,7 @@ export default function EmployerAdminView() {
               Reviewing confidential data and documents.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
             <button
               onClick={handleExportSingleProfile}
               className="bg-indigo-600 px-4 py-2 rounded-lg font-bold hover:bg-indigo-700 transition flex items-center gap-2"

@@ -1,0 +1,56 @@
+/* ==========================================================================
+   GLOBAL SCROLLBAR ERADICATION (Universal Across All Browsers & Containers)
+   Completely hides all scrollbar tracks & thumbs while preserving 100% smooth scrolling.
+   ========================================================================== */
+
+/* Modern Standard (Firefox 64+) & Legacy Microsoft Browsers */
+*,
+*::before,
+*::after,
+html,
+body,
+#root {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+/* WebKit / Chromium Browsers (Chrome, Edge, Safari, Brave, Opera) */
+*::-webkit-scrollbar,
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-corner,
+*::-webkit-resizer,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#root::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Utility and Component Class Overrides */
+.custom-scrollbar,
+.no-scrollbar,
+.hide-scrollbar,
+.scrollbar-none {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+

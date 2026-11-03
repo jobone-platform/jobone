@@ -113,18 +113,104 @@ html.dark input[class*="dark:bg-transparent"] {
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* Custom Scrollbar for Modals and Data Panels */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* ==========================================================================
+   GLOBAL SCROLLBAR ERADICATION (Universal Across All Browsers & Containers)
+   Completely hides all scrollbar tracks & thumbs while preserving 100% smooth scrolling.
+   ========================================================================== */
+
+/* Modern Standard (Firefox 64+) & Legacy Microsoft Browsers */
+*,
+*::before,
+*::after,
+html,
+body,
+#root {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+
+/* WebKit / Chromium Browsers (Chrome, Edge, Safari, Brave, Opera) */
+*::-webkit-scrollbar,
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-corner,
+*::-webkit-resizer,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#root::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
+
+/* Utility and Component Class Overrides */
+.custom-scrollbar,
+.no-scrollbar,
+.hide-scrollbar,
+.scrollbar-none {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar-track,
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
-  border-radius: 9999px;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.7);
+
+/* ==========================================================================
+   JobOne Admin KPI Responsive Grid
+   Equal-width, equal-height, adaptive multi-column layout with zero overflow
+   Breakpoints:
+   - <480px: 1 column
+   - 480px–991px (Tablet): 2 columns
+   - 992px–1199px (Laptop): 3 columns
+   - 1200px–1599px (Desktop): 4 columns
+   - ≥1600px (Large Desktop): 7 columns
+   ========================================================================== */
+.admin-kpi-grid {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.875rem;
+}
+
+@media (min-width: 480px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.125rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 1.125rem;
+  }
 }

@@ -226,9 +226,13 @@ export default function HeroSection() {
           >
             <motion.span
               variants={itemVariants}
-              className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs md:text-sm font-semibold mb-6 tracking-wider shadow-[0_0_15px_rgba(59,130,246,0.15)] backdrop-blur-md"
+              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 md:px-4 md:py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs md:text-sm font-semibold mb-6 tracking-wider shadow-[0_0_15px_rgba(59,130,246,0.15)] backdrop-blur-md"
             >
-              💼 Verified Job Listings & Direct Hiring
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span>Verified Job Listings & Direct Hiring</span>
             </motion.span>
 
             {/* FACT: Toned down mobile text sizes to prevent horizontal clipping */}
@@ -236,8 +240,8 @@ export default function HeroSection() {
               variants={itemVariants}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.15] tracking-tight mb-5"
             >
-              Find your <br />
-              <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-blue-400 bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent min-h-[1.2em] inline-block ml-1 md:ml-0">
+              JobOne<br />
+              <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-blue-400 bg-[length:250%_auto] animate-gradient bg-clip-text text-transparent min-h-[1.2em] inline-block ml-1 md:ml-0">
                 <Typewriter />
                 <span className="text-blue-400 animate-pulse ml-1">|</span>
               </span>
