@@ -52,15 +52,15 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
   const totalActiveCount = jobs.filter((j) => j.status === "active").length;
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6 sm:p-7 transition-colors flex flex-col justify-between h-full min-h-[400px]">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 md:p-7 transition-colors flex flex-col justify-between h-full min-h-[350px] sm:min-h-[400px]">
       {/* ─── Header: Title, Metric pill, and Legend ─────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-xl font-black text-slate-900 dark:text-white">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
               Statistics
             </h3>
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1">
+            <span className="text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1">
               <TrendingUp size={12} /> {totalActiveCount} Active of {totalJobsCount}
             </span>
           </div>
@@ -70,13 +70,13 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
         </div>
 
         {/* Legend matching reference aesthetic: Black and light-grey series */}
-        <div className="flex items-center gap-4 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400">
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded-sm bg-slate-950 dark:bg-white shadow-xs" />
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm bg-slate-950 dark:bg-white shadow-xs" />
             <span>Total Jobs</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded-sm bg-slate-300 dark:bg-slate-700" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm bg-slate-300 dark:bg-slate-700" />
             <span>Active</span>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
         </div>
 
         {/* Bars Container with explicit heights so percentages resolve cleanly */}
-        <div className="relative z-10 flex items-end justify-between gap-2 sm:gap-5 h-56 sm:h-64 pl-6 pr-2">
+        <div className="relative z-10 flex items-end justify-between gap-1 sm:gap-3 md:gap-5 h-48 sm:h-56 md:h-64 pl-5 sm:pl-6 pr-1 sm:pr-2">
           {chartData.map((d, idx) => {
             const hTotal = Math.round((d.total / maxVal) * 100);
             const hActive = Math.round((d.active / maxVal) * 100);
@@ -124,11 +124,11 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
                 )}
 
                 {/* Grouped Bar Pair — Explicit full container height */}
-                <div className="flex-1 h-full w-full flex items-end justify-center gap-1.5 sm:gap-2.5 pb-1">
+                <div className="flex-1 h-full w-full flex items-end justify-center gap-1 sm:gap-2 md:gap-2.5 pb-1">
                   {/* Bar 1: Total Jobs (Black / White) */}
                   <div
                     style={{ height: `${Math.max(hTotal, 5)}%` }}
-                    className="w-3 sm:w-5 rounded-t-md bg-slate-950 dark:bg-white transition-all duration-300 group-hover:scale-y-105 origin-bottom relative shadow-xs"
+                    className="w-2 sm:w-3.5 md:w-5 rounded-t-md bg-slate-950 dark:bg-white transition-all duration-300 group-hover:scale-y-105 origin-bottom relative shadow-xs"
                   >
                     {isHovered && d.total > 0 && (
                       <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-black text-slate-900 dark:text-white">
@@ -140,7 +140,7 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
                   {/* Bar 2: Active Jobs (Muted Grey) */}
                   <div
                     style={{ height: `${Math.max(hActive, 5)}%` }}
-                    className="w-3 sm:w-5 rounded-t-md bg-slate-300 dark:bg-slate-700 transition-all duration-300 group-hover:scale-y-105 origin-bottom relative shadow-xs"
+                    className="w-2 sm:w-3.5 md:w-5 rounded-t-md bg-slate-300 dark:bg-slate-700 transition-all duration-300 group-hover:scale-y-105 origin-bottom relative shadow-xs"
                   >
                     {isHovered && d.active > 0 && (
                       <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-black text-slate-500 dark:text-slate-400">
@@ -151,7 +151,7 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
                 </div>
 
                 {/* X-axis label beneath */}
-                <span className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mt-2 truncate w-full text-center group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
+                <span className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mt-2 truncate w-full text-center group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
                   {d.label}
                 </span>
               </div>

@@ -8,12 +8,11 @@ import {
   Layers,
   BarChart3,
   Settings,
-  ChevronLeft,
-  ChevronRight,
   LogOut,
   Sun,
   Moon,
   Monitor,
+  X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import LogoJobOne from "../LogoJobOne";
@@ -103,60 +102,64 @@ export default function AdminSidebar({
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-r border-slate-200/80 dark:border-slate-800 select-none transition-colors overflow-x-hidden">
-      {/* ─── Top Brand Header ─────────────────────────────────────────── */}
+      {/* ─── Top Brand Header (Whole Logo Serves as Toggle on Desktop) ──────── */}
       {isCollapsed ? (
-        <div className="h-20 px-2 flex flex-col items-center justify-center gap-1.5 border-b border-slate-100 dark:border-slate-800 shrink-0">
-          <Link
-            to="/admin/dashboard?tab=overview"
-            onClick={() => {
-              onSelectTab("overview");
-              if (onCloseMobile) onCloseMobile();
-            }}
-            className="w-10 h-10 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center font-black text-sm shadow-xs hover:scale-105 transition-transform"
-            title="JobOne Dashboard"
+        <div className="h-20 px-2 flex items-center justify-center border-b border-slate-100 dark:border-slate-800 shrink-0">
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="w-11 h-11 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center font-black text-sm shadow-xs hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+            title="Click to expand sidebar"
+            aria-label="Expand sidebar"
           >
-            J1
-          </Link>
-          {onToggleCollapse && (
-            <button
-              type="button"
-              onClick={onToggleCollapse}
-              aria-label="Expand sidebar"
-              title="Expand sidebar"
-              className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            >
-              <ChevronRight size={14} />
-            </button>
-          )}
+            <span>J1</span>
+          </button>
         </div>
       ) : (
         <div className="h-20 px-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 shrink-0">
-          <Link
-            to="/admin/dashboard?tab=overview"
-            onClick={() => {
-              onSelectTab("overview");
-              if (onCloseMobile) onCloseMobile();
-            }}
-            className="flex items-center gap-2 overflow-hidden"
-            title="JobOne Dashboard"
+          {/* Desktop: Whole Logo Toggles Sidebar */}
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="hidden lg:flex items-center gap-2 overflow-hidden cursor-pointer group hover:opacity-80 transition-all text-left focus:outline-none"
+            title="Click logo to collapse sidebar"
+            aria-label="Collapse sidebar"
           >
             <LogoJobOne
               width={160}
               height={48}
               textColor={isDark ? "#FFFFFF" : "#0F172A"}
-              className="h-9 w-auto"
+              className="h-9 w-auto group-hover:scale-[0.99] transition-transform"
+            />
+          </button>
+
+          {/* Mobile: Logo Navigates to Dashboard */}
+          <Link
+            to="/admin/dashboard?tab=overview"
+            onClick={() => {
+              onSelectTab("overview");
+              if (onCloseMobile) onCloseMobile();
+            }}
+            className="flex lg:hidden items-center gap-2 overflow-hidden"
+            title="JobOne Dashboard"
+          >
+            <LogoJobOne
+              width={150}
+              height={44}
+              textColor={isDark ? "#FFFFFF" : "#0F172A"}
+              className="h-8 w-auto"
             />
           </Link>
 
-          {onToggleCollapse && (
+          {/* Mobile Close Button */}
+          {onCloseMobile && (
             <button
               type="button"
-              onClick={onToggleCollapse}
-              aria-label="Collapse sidebar"
-              title="Collapse sidebar"
-              className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              onClick={onCloseMobile}
+              aria-label="Close navigation drawer"
+              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
-              <ChevronLeft size={16} />
+              <X size={18} />
             </button>
           )}
         </div>
@@ -329,11 +332,11 @@ export default function AdminSidebar({
       {/* Mobile Drawer */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-50 lg:hidden bg-slate-950/50 backdrop-blur-xs flex animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 lg:hidden bg-slate-950/60 backdrop-blur-xs flex animate-in fade-in duration-150"
           onClick={onCloseMobile}
         >
           <div
-            className="w-64 h-full shadow-2xl animate-in slide-in-from-left duration-150"
+            className="w-72 max-w-[85vw] h-full shadow-2xl animate-in slide-in-from-left duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {sidebarContent}

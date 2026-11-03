@@ -48,21 +48,21 @@ export default function AdminJobseekerView() {
     return <div className="text-center mt-20 text-rose-500 font-bold">Jobseeker not found.</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 px-4 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-5 sm:py-10 px-3 sm:px-4 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
-        <div className="bg-slate-900 rounded-2xl p-8 text-white flex justify-between items-center shadow-xl">
+        <div className="bg-slate-900 rounded-2xl p-5 sm:p-8 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
           <div>
-            <h1 className="text-2xl font-extrabold flex items-center gap-3">
+            <h1 className="text-xl sm:text-2xl font-extrabold flex items-center gap-3">
               Admin Review: {jobseeker.name}
             </h1>
-            <p className="text-slate-400 mt-1">
+            <p className="text-slate-400 text-xs sm:text-sm mt-1">
               Reviewing candidate profile and application history.
             </p>
           </div>
           <button
             onClick={() => navigate("/admin/dashboard")}
-            className="bg-slate-800 px-4 py-2 rounded-lg font-bold hover:bg-slate-700 border border-slate-700 transition"
+            className="w-full sm:w-auto justify-center bg-slate-800 px-4 py-2 rounded-lg font-bold hover:bg-slate-700 border border-slate-700 transition cursor-pointer"
           >
             Back to Dashboard
           </button>

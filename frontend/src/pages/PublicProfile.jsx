@@ -324,7 +324,7 @@ export default function PublicProfile() {
                     {profile.email}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
                   <Phone className="text-green-500" size={18} />
                   <span className="text-sm text-slate-700 dark:text-slate-300">
                     {profile.phone || "N/A"}
@@ -336,7 +336,7 @@ export default function PublicProfile() {
                 <button
                   onClick={handleDownloadResume}
                   disabled={isDownloading}
-                  className="mt-6 flex items-center justify-center gap-2 w-full py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-black transition-colors disabled:opacity-70 shadow-sm"
+                  className="mt-6 flex items-center justify-center gap-2 w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-bold rounded-xl hover:bg-black dark:hover:bg-slate-100 transition-colors disabled:opacity-70 shadow-sm"
                 >
                   {isDownloading ? (
                     <Loader2 size={18} className="animate-spin" />
@@ -346,15 +346,15 @@ export default function PublicProfile() {
                   {isDownloading ? "Downloading..." : "Download Resume"}
                 </button>
               ) : (
-                <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-xl text-center">
-                  <p className="text-sm font-bold text-orange-800">No Resume Uploaded</p>
-                  <p className="text-xs font-medium text-orange-600 mt-1">This candidate has not uploaded a resume yet.</p>
+                <div className="mt-6 p-4 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/40 rounded-xl text-center">
+                  <p className="text-sm font-bold text-orange-800 dark:text-orange-300">No Resume Uploaded</p>
+                  <p className="text-xs font-medium text-orange-600 dark:text-orange-400 mt-1">This candidate has not uploaded a resume yet.</p>
                 </div>
               )}
 
               {/* CANDIDATE VERIFICATION DOCUMENTS */}
               {profile.documents && Object.keys(profile.documents).some(k => profile.documents[k]?.key) && (
-                <div className="mt-6 pt-6 border-t border-slate-200">
+                <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">
                   <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3 flex items-center gap-1.5">
                     <FileText size={16} className="text-blue-600" /> Verification Documents
                   </h4>
@@ -373,7 +373,7 @@ export default function PublicProfile() {
                         otherDocuments: "Other Documents",
                       };
                       return (
-                        <div key={field} className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-medium shadow-sm">
+                        <div key={field} className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium shadow-sm">
                           <span className="text-slate-800 dark:text-white font-bold">{labelMap[field] || field}</span>
                           <button
                             type="button"

@@ -70,6 +70,13 @@ export default function AdminLayout({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  const toggleTheme = () => {
+    if (theme === "light") setTheme("dark");
+    else if (theme === "dark") setTheme("default");
+    else setTheme("light");
+  };
+  const ThemeIcon = theme === "default" ? Monitor : isDark ? Moon : Sun;
+
   const totalPendingAlerts =
     pendingJobs.length + pendingEmployers.length + unreadContacts.length;
 
@@ -92,41 +99,69 @@ export default function AdminLayout({
       {/* 2. Main Workspace Canvas */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header Bar Only (hidden on desktop lg:hidden) */}
-        <div className="lg:hidden h-16 px-4 sm:px-6 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between shrink-0">
-          <button
-            type="button"
-            onClick={() => setIsMobileOpen(true)}
-            aria-label="Open navigation drawer"
-            className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-          >
-            <Menu size={22} />
-          </button>
+        <div className="lg:hidden h-16 px-3 sm:px-6 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => setIsMobileOpen(true)}
+              aria-label="Open navigation drawer"
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+            >
+              <Menu size={22} />
+            </button>
 
-          <LogoJobOne
-            width={120}
-            height={36}
-            textColor={isDark ? "#FFFFFF" : "#0F172A"}
-            className="h-8 w-auto"
-          />
+            <LogoJobOne
+              width={110}
+              height={32}
+              textColor={isDark ? "#FFFFFF" : "#0F172A"}
+              className="h-7 sm:h-8 w-auto"
+            />
+          </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            {/* Quick Command Palette Search on Mobile */}
+            <button
+              type="button"
+              onClick={() => setIsCommandPaletteOpen(true)}
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              title="Search commands (Ctrl+K)"
+              aria-label="Search commands"
+            >
+              <Search size={19} />
+            </button>
+
+            {/* Quick Theme Switcher on Mobile */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              title={`Theme: ${theme}`}
+              aria-label={`Toggle Theme (${theme})`}
+            >
+              <ThemeIcon size={19} />
+            </button>
+
+            {/* Quick Notifications on Mobile */}
             <button
               type="button"
               onClick={() => setIsNotificationsOpen(true)}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white relative cursor-pointer"
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 relative cursor-pointer"
               title="Notifications"
+              aria-label="Notifications"
             >
-              <Bell size={20} />
+              <Bell size={19} />
               {totalPendingAlerts > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500" />
+                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white dark:ring-slate-900" />
               )}
             </button>
           </div>
         </div>
 
         {/* Dashboard Main Content Area */}
-        <main className="flex-1 p-5 sm:p-7 lg:p-9 overflow-y-auto">
-          {children}
+        <main className="flex-1 p-3.5 sm:p-5 md:p-6 lg:p-8 xl:p-9 overflow-y-auto w-full min-w-0">
+          <div className="w-full max-w-[1700px] mx-auto min-w-0">
+            {children}
+          </div>
         </main>
       </div>
 

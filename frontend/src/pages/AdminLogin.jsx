@@ -71,24 +71,25 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex justify-center items-center p-4 py-12 font-sans relative overflow-y-auto">
+    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-3 sm:p-6 py-10 sm:py-12 font-sans relative overflow-y-auto">
       {/* Floating Return Button to Candidate & Employer Portal */}
       <Link
         to="/login"
-        className="fixed top-5 left-5 sm:top-8 sm:left-8 z-50 flex items-center gap-2 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 rounded-full px-4 py-2.5 text-xs sm:text-sm font-bold transition-all backdrop-blur-md shadow-xl group cursor-pointer"
+        className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 sm:gap-2 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 rounded-full px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-bold transition-all backdrop-blur-md shadow-xl group cursor-pointer"
       >
         <ArrowLeft
           size={16}
           className="transition-transform group-hover:-translate-x-1 text-slate-400 group-hover:text-white"
         />
-        <span>Candidate & Employer Portal</span>
+        <span className="hidden sm:inline">Candidate & Employer Portal</span>
+        <span className="sm:hidden">User Portal</span>
       </Link>
 
       {/* Ambient background glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-rose-600/15 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="bg-slate-900/90 backdrop-blur-2xl border border-slate-800 p-8 sm:p-12 rounded-3xl w-full max-w-lg shadow-2xl relative z-10 my-auto">
+      <div className="bg-slate-900/90 backdrop-blur-2xl border border-slate-800 p-6 sm:p-10 md:p-12 rounded-3xl w-full max-w-lg shadow-2xl relative z-10 my-auto mt-14 sm:mt-auto">
         {/* Header Branding */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-rose-500/15 text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-500/30 shadow-inner">

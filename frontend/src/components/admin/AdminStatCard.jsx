@@ -49,11 +49,11 @@ export default function AdminStatCard({
 }) {
   if (loading) {
     return (
-      <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 animate-pulse h-36 sm:h-40 flex flex-col justify-between shadow-xs">
-        <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800"></div>
+      <div className="p-3.5 sm:p-4.5 lg:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 animate-pulse h-32 sm:h-36 lg:h-40 flex flex-col justify-between shadow-xs">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-slate-100 dark:bg-slate-800"></div>
         <div>
-          <div className="h-8 w-16 bg-slate-200 dark:bg-slate-700 rounded-lg mb-2"></div>
-          <div className="h-4 w-20 bg-slate-100 dark:bg-slate-800 rounded-md"></div>
+          <div className="h-6 sm:h-8 w-14 sm:w-16 bg-slate-200 dark:bg-slate-700 rounded-lg mb-2"></div>
+          <div className="h-3.5 sm:h-4 w-16 sm:w-20 bg-slate-100 dark:bg-slate-800 rounded-md"></div>
         </div>
       </div>
     );
@@ -71,7 +71,7 @@ export default function AdminStatCard({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => e.key === "Enter" && onClick() : undefined}
-      className={`group relative p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between h-36 sm:h-40 ${
+      className={`group relative p-3.5 sm:p-4.5 lg:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between h-32 sm:h-36 lg:h-40 ${
         onClick
           ? `cursor-pointer ${scheme.hoverBorder}`
           : ""
@@ -79,13 +79,13 @@ export default function AdminStatCard({
     >
       <div className="flex items-center justify-between">
         <div
-          className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 ${scheme.bg} ${scheme.text}`}
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 ${scheme.bg} ${scheme.text}`}
         >
-          {Icon && <Icon size={20} />}
+          {Icon && <Icon size={18} className="sm:w-5 sm:h-5" />}
         </div>
         {badge && (
           <span
-            className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-full ${
+            className={`text-[10px] sm:text-[11px] font-extrabold px-2 sm:px-2.5 py-0.5 rounded-full ${
               badgeVariant === "warning"
                 ? "bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
                 : badgeVariant === "danger"
@@ -99,10 +99,10 @@ export default function AdminStatCard({
       </div>
 
       <div>
-        <p className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+        <p className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
-        <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-2 truncate group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+        <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-1.5 sm:mt-2 truncate group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
           {title}
         </p>
       </div>
