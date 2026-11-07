@@ -1,17 +1,17 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
 
 export const ThemeContext = createContext({
-  theme: "default",
-  resolvedTheme: "light",
+  theme: "dark",
+  resolvedTheme: "dark",
   setTheme: () => {},
 });
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setThemeState] = useState(() => {
     try {
-      return localStorage.getItem("jobone_theme") || "default";
+      return localStorage.getItem("jobone_theme") || "dark";
     } catch {
-      return "default";
+      return "dark";
     }
   });
 
@@ -19,7 +19,7 @@ export const ThemeProvider = ({ children }) => {
     if (typeof window !== "undefined" && window.matchMedia) {
       return window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
-    return false;
+    return true; // Default to dark identity
   });
 
   // Listen to system preference changes
@@ -46,8 +46,10 @@ export const ThemeProvider = ({ children }) => {
       root.setAttribute("data-theme", resolvedTheme);
       if (resolvedTheme === "dark") {
         root.classList.add("dark");
+        root.classList.remove("light");
       } else {
         root.classList.remove("dark");
+        root.classList.add("light");
       }
       localStorage.setItem("jobone_theme", theme);
     } catch (e) {

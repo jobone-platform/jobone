@@ -1,11 +1,12 @@
-import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-
+import { Building2, Mail, ArrowRight, Loader2, RefreshCw, CheckCircle2 } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../routes/Context";
+import AuthLayout from "../components/AuthLayout";
 
-const EmployerVerifyOTP = () => {
+export default function EmployerOTP() {
   const navigate = useNavigate();
   const location = useLocation();
   const { loginEmployer } = useAuth();
@@ -41,7 +42,7 @@ const EmployerVerifyOTP = () => {
   const handleResend = async () => {
     if (resending) return;
     if (!email.trim()) {
-      setMessage("Please provide your email address to resend OTP.");
+      setMessage("Please provide your business email address to resend the code.");
       setIsError(true);
       return;
     }
@@ -52,15 +53,13 @@ const EmployerVerifyOTP = () => {
       await axios.post(`${API_BASE_URL}/employer/resend-otp`, {
         email: email.trim().toLowerCase(),
       });
-      setMessage("A new 6-digit OTP code has been sent to your business email.");
+      setMessage("A fresh 6-digit verification code has been dispatched to your corporate email.");
       setIsError(false);
       setOtp("");
       setTimer(60);
       setCanResend(false);
     } catch (err) {
-      setMessage(
-        err.response?.data?.message || "Failed to resend OTP. Please try again."
-      );
+      setMessage(err.response?.data?.message || "Failed to resend code. Please try again.");
       setIsError(true);
     } finally {
       setResending(false);
@@ -74,7 +73,7 @@ const EmployerVerifyOTP = () => {
     setIsError(false);
 
     if (!email.trim()) {
-      setMessage("Please enter your registered business email.");
+      setMessage("Please enter your registered corporate email.");
       setIsError(true);
       return;
     }
@@ -93,7 +92,6 @@ const EmployerVerifyOTP = () => {
         otp: otp.trim(),
       });
 
-      // Save token & employerInfo in centralized AuthContext & localStorage with standardized fields
       const employerData = {
         ...res.data,
         id: res.data.employerId || res.data.id,
@@ -105,16 +103,14 @@ const EmployerVerifyOTP = () => {
 
       setMessage(
         res.data.alreadyVerified
-          ? "Account is already verified! Redirecting to dashboard..."
-          : "Employer account verified successfully! Redirecting to dashboard..."
+          ? "Account verified! Redirecting to employer recruitment dashboard..."
+          : "Employer account verified! Redirecting to recruitment console..."
       );
       setIsError(false);
 
-      setTimeout(() => navigate("/employerdashboard"), 1200);
+      setTimeout(() => navigate("/employerdashboard"), 1100);
     } catch (err) {
-      setMessage(
-        err.response?.data?.message || "Invalid or expired OTP. Please try again."
-      );
+      setMessage(err.response?.data?.message || "Invalid or expired verification code. Please check your corporate email.");
       setIsError(true);
     } finally {
       setLoading(false);
@@ -122,108 +118,130 @@ const EmployerVerifyOTP = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-100 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4 transition-colors">
-      <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-5 sm:p-8 w-full max-w-md border border-gray-100 dark:border-gray-700 transition-colors">
-        <h2 className="text-2xl font-extrabold text-center text-indigo-600 dark:text-indigo-400 mb-2">
-          Verify Employer Account
-        </h2>
-        <p className="text-center text-gray-600 dark:text-gray-300 mb-6 text-sm">
-          Enter the 6-digit verification code sent to your business email.
-        </p>
+    <AuthLayout
+      title="Verify Employer Account"
+      subtitle={`Enter the 6-digit security code dispatched to ${email ? email : "your corporate email"}`}
+      badge="Enterprise Verification"
+      visualHeading="Verified employers hire with elevated authority."
+      visualSubheading="Verifying your enterprise credentials activates job publishing privileges, direct candidate outreach, and the verified company trust badge."
+      metrics={[
+        { value: "Instant", label: "Requisition Publishing" },
+        { value: "Direct", label: "Candidate Communication" },
+        { value: "Verified", label: "Employer Trust Seal" },
+      ]}
+      quote={{
+        text: "The verification standard ensures candidate safety and elevates company brand perception across top candidates.",
+        author: "JobOne Enterprise Operations",
+        role: "Recruitment Security Team",
+      }}
+    >
+      {message && (
+        <div
+          role={isError ? "alert" : "status"}
+          className={`mb-4 p-3.5 rounded-xl text-xs font-medium border flex items-center gap-2 ${
+            isError
+              ? "border-rose-500/20 bg-rose-500/10 text-rose-300 dark:text-rose-400"
+              : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300 dark:text-emerald-400"
+          }`}
+        >
+          {!isError && <CheckCircle2 size={16} className="shrink-0" />}
+          <span>{message}</span>
+        </div>
+      )}
 
-        {message && (
-          <div
-            className={`p-3 rounded-lg text-sm mb-4 text-center font-medium ${
-              isError
-                ? "bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800"
-                : "bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/40 dark:text-green-300 dark:border-green-800"
-            }`}
-          >
-            {message}
-          </div>
-        )}
-
-        <form onSubmit={handleVerify} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1 text-sm font-semibold">
-              Business Email Address
-            </label>
+      <form onSubmit={handleVerify} className="space-y-4">
+        <div>
+          <label className="block text-[11px] font-mono tracking-wider uppercase text-foreground/70 mb-1.5">
+            Corporate Email Address
+          </label>
+          <div className="relative">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={!!initialEmail}
-              className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition ${
+              className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border transition-colors ${
                 initialEmail
-                  ? "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border-gray-200 dark:border-gray-600"
-                  : "bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                  ? "bg-surface-2/60 border-border/60 text-foreground/60 cursor-not-allowed"
+                  : "bg-surface-2 border-border text-foreground focus:outline-none focus:border-silver/60"
               }`}
-              placeholder="e.g. contact@company.com"
+              placeholder="recruiter@company.com"
             />
+            <Mail size={16} className="absolute left-3.5 top-3 text-foreground/40 pointer-events-none" />
           </div>
+        </div>
 
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1 text-sm font-semibold">
-              6-Digit OTP Code
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-[11px] font-mono tracking-wider uppercase text-foreground/70">
+              6-Digit Security Code
             </label>
+            <span className="text-[11px] text-foreground/40 font-mono">
+              {otp.length}/6
+            </span>
+          </div>
+          <div className="relative">
             <input
-              type="text"
+              type="tel"
               inputMode="numeric"
               pattern="[0-9]*"
               value={otp}
               onChange={handleOtpChange}
               required
               maxLength={6}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none tracking-widest text-center text-xl font-mono font-bold"
-              placeholder="••••••"
+              autoFocus
               autoComplete="one-time-code"
+              placeholder="••••••"
+              className="w-full text-center py-3.5 px-4 rounded-xl bg-surface-2 border border-border text-foreground font-mono text-2xl tracking-[0.4em] font-bold focus:outline-none focus:border-silver focus:ring-1 focus:ring-silver/40 transition-all placeholder-foreground/20"
             />
           </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading || otp.length !== 6}
-            className={`w-full font-semibold py-2.5 rounded-lg text-white transition shadow-md ${
-              loading || otp.length !== 6
-                ? "bg-indigo-400 dark:bg-indigo-500/50 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99]"
-            }`}
-          >
-            {loading ? "Verifying..." : "Verify & Complete Registration"}
-          </button>
-        </form>
+        <button
+          type="submit"
+          disabled={loading || otp.length !== 6}
+          className="w-full mt-2 py-3 rounded-xl bg-foreground text-background font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
+        >
+          {loading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              <span>Verifying Employer...</span>
+            </>
+          ) : (
+            <>
+              <span>Verify & Launch Recruitment Console</span>
+              <ArrowRight size={16} />
+            </>
+          )}
+        </button>
 
-        <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 text-center">
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
+        <div className="pt-3 text-center border-t border-border flex flex-col items-center gap-2">
+          <p className="text-xs text-foreground/60">
             Didn't receive the OTP?{" "}
             {canResend ? (
               <button
                 type="button"
                 onClick={handleResend}
                 disabled={resending}
-                className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline cursor-pointer"
+                className="inline-flex items-center gap-1 font-semibold text-foreground hover:underline cursor-pointer disabled:opacity-50"
               >
-                {resending ? "Sending..." : "Resend OTP"}
+                {resending ? <RefreshCw size={12} className="animate-spin" /> : null}
+                <span>Resend Code</span>
               </button>
             ) : (
-              <span className="text-gray-400 dark:text-gray-500 font-medium">
-                Resend in {timer}s
-              </span>
+              <span className="text-foreground/40 font-mono">Resend available in {timer}s</span>
             )}
           </p>
-          <div className="mt-3">
-            <Link
-              to="/employerregister"
-              className="text-xs text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
-            >
-              ← Back to Registration
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
-export default EmployerVerifyOTP;
+          <Link
+            to="/employerregister"
+            className="text-xs text-foreground/40 hover:text-foreground transition-colors"
+          >
+            ← Back to Employer Registration
+          </Link>
+        </div>
+      </form>
+    </AuthLayout>
+  );
+}

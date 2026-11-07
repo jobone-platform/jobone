@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { BarChart3, TrendingUp, Layers } from "lucide-react";
 
-export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
+export default function AdminChartPanel({ jobs = [] }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
   // Group real jobs by sector / category to form real paired series
@@ -50,34 +50,38 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
   const maxVal = Math.max(...chartData.map((d) => Math.max(d.total, d.active)), 4);
   const totalJobsCount = jobs.length;
   const totalActiveCount = jobs.filter((j) => j.status === "active").length;
+  const activeRate = totalJobsCount > 0 ? Math.round((totalActiveCount / totalJobsCount) * 100) : 0;
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 md:p-7 transition-colors flex flex-col justify-between h-full min-h-[350px] sm:min-h-[400px]">
+    <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] shadow-xs p-5 sm:p-6 transition-colors flex flex-col justify-between h-full min-h-[360px] sm:min-h-[420px]">
       {/* ─── Header: Title, Metric pill, and Legend ─────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[var(--theme-border)]">
         <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-              Statistics
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+              <BarChart3 size={15} />
+            </div>
+            <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-[var(--theme-text)]">
+              Industry Distribution
             </h3>
-            <span className="text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1">
-              <TrendingUp size={12} /> {totalActiveCount} Active of {totalJobsCount}
+            <span className="text-[10px] sm:text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] flex items-center gap-1.5">
+              <TrendingUp size={11} className="text-[#C0C0C0]" /> {totalActiveCount} Active of {totalJobsCount} ({activeRate}%)
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Industry distribution of platform postings
+          <p className="text-xs text-[var(--theme-text-muted)] mt-1.5">
+            Postings segmented by vertical with live operational health
           </p>
         </div>
 
-        {/* Legend matching reference aesthetic: Black and light-grey series */}
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm bg-slate-950 dark:bg-white shadow-xs" />
-            <span>Total Jobs</span>
+        {/* Monochromatic Legend: Black/White and Silver series */}
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-medium text-[var(--theme-text-muted)]">
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-xs bg-[var(--theme-text)] shadow-xs border border-[var(--theme-border-silver)]" />
+            <span className="text-[var(--theme-text)] font-semibold">Total Postings</span>
           </div>
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm bg-slate-300 dark:bg-slate-700" />
-            <span>Active</span>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-xs bg-[#C0C0C0] opacity-80" />
+            <span>Active Listings</span>
           </div>
         </div>
       </div>
@@ -87,21 +91,21 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
         {/* Horizontal grid lines & Y-Axis values */}
         <div className="absolute inset-x-0 top-8 bottom-8 flex flex-col justify-between pointer-events-none">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-slate-400 w-4 text-right">{maxVal}</span>
-            <div className="flex-1 border-b border-dashed border-slate-200/80 dark:border-slate-800" />
+            <span className="text-[10px] font-mono text-[var(--theme-text-muted)] w-4 text-right">{maxVal}</span>
+            <div className="flex-1 border-b border-dashed border-[var(--theme-border)] opacity-60" />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-slate-400 w-4 text-right">{Math.round(maxVal / 2)}</span>
-            <div className="flex-1 border-b border-dashed border-slate-200/80 dark:border-slate-800" />
+            <span className="text-[10px] font-mono text-[var(--theme-text-muted)] w-4 text-right">{Math.round(maxVal / 2)}</span>
+            <div className="flex-1 border-b border-dashed border-[var(--theme-border)] opacity-60" />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-slate-400 w-4 text-right">0</span>
-            <div className="flex-1 border-b border-slate-200 dark:border-slate-800" />
+            <span className="text-[10px] font-mono text-[var(--theme-text-muted)] w-4 text-right">0</span>
+            <div className="flex-1 border-b border-[var(--theme-border)]" />
           </div>
         </div>
 
         {/* Bars Container with explicit heights so percentages resolve cleanly */}
-        <div className="relative z-10 flex items-end justify-between gap-1 sm:gap-3 md:gap-5 h-48 sm:h-56 md:h-64 pl-5 sm:pl-6 pr-1 sm:pr-2">
+        <div className="relative z-10 flex items-end justify-between gap-1 sm:gap-3 md:gap-5 h-48 sm:h-56 md:h-64 pl-6 pr-2">
           {chartData.map((d, idx) => {
             const hTotal = Math.round((d.total / maxVal) * 100);
             const hActive = Math.round((d.active / maxVal) * 100);
@@ -116,34 +120,34 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
               >
                 {/* Floating tooltip */}
                 {isHovered && (
-                  <div className="absolute -top-12 z-20 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold shadow-xl pointer-events-none whitespace-nowrap animate-in fade-in duration-150">
-                    <span className="opacity-80">{d.label}: </span>
-                    <span>{d.total} total</span>
-                    <span className="opacity-75"> ({d.active} active)</span>
+                  <div className="absolute -top-12 z-20 px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-medium shadow-xl pointer-events-none whitespace-nowrap animate-in fade-in duration-150">
+                    <span className="text-[var(--theme-text-muted)]">{d.label}: </span>
+                    <span className="font-mono font-bold text-[var(--theme-text)]">{d.total} total</span>
+                    <span className="text-[var(--theme-text-muted)] font-mono"> ({d.active} active)</span>
                   </div>
                 )}
 
-                {/* Grouped Bar Pair — Explicit full container height */}
+                {/* Grouped Bar Pair */}
                 <div className="flex-1 h-full w-full flex items-end justify-center gap-1 sm:gap-2 md:gap-2.5 pb-1">
-                  {/* Bar 1: Total Jobs (Black / White) */}
+                  {/* Bar 1: Total Jobs (High-contrast theme-text) */}
                   <div
-                    style={{ height: `${Math.max(hTotal, 5)}%` }}
-                    className="w-2 sm:w-3.5 md:w-5 rounded-t-md bg-slate-950 dark:bg-white transition-all duration-300 group-hover:scale-y-105 origin-bottom relative shadow-xs"
+                    style={{ height: `${Math.max(hTotal, 4)}%` }}
+                    className="w-2 sm:w-3.5 md:w-5 rounded-t-sm bg-[var(--theme-text)] transition-all duration-300 group-hover:brightness-110 origin-bottom relative shadow-xs"
                   >
                     {isHovered && d.total > 0 && (
-                      <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-black text-slate-900 dark:text-white">
+                      <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-[var(--theme-text)]">
                         {d.total}
                       </span>
                     )}
                   </div>
 
-                  {/* Bar 2: Active Jobs (Muted Grey) */}
+                  {/* Bar 2: Active Jobs (Silver accent) */}
                   <div
-                    style={{ height: `${Math.max(hActive, 5)}%` }}
-                    className="w-2 sm:w-3.5 md:w-5 rounded-t-md bg-slate-300 dark:bg-slate-700 transition-all duration-300 group-hover:scale-y-105 origin-bottom relative shadow-xs"
+                    style={{ height: `${Math.max(hActive, 4)}%` }}
+                    className="w-2 sm:w-3.5 md:w-5 rounded-t-sm bg-[#C0C0C0] dark:bg-[#A0A0A0] transition-all duration-300 group-hover:brightness-110 origin-bottom relative shadow-xs"
                   >
                     {isHovered && d.active > 0 && (
-                      <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-black text-slate-500 dark:text-slate-400">
+                      <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-[#C0C0C0]">
                         {d.active}
                       </span>
                     )}
@@ -151,7 +155,7 @@ export default function AdminChartPanel({ jobs = [], applicationsCount = 0 }) {
                 </div>
 
                 {/* X-axis label beneath */}
-                <span className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mt-2 truncate w-full text-center group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
+                <span className="text-[10px] sm:text-xs font-mono text-[var(--theme-text-muted)] mt-2.5 truncate w-full text-center group-hover:text-[var(--theme-text)] transition-colors">
                   {d.label}
                 </span>
               </div>

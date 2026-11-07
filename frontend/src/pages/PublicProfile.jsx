@@ -1,4 +1,3 @@
-import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -18,7 +17,13 @@ import {
   Code,
   Award,
   FileText,
+  ShieldCheck,
+  CheckCircle2,
+  ExternalLink,
+  Calendar,
+  Sparkles,
 } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 
 export default function PublicProfile() {
   const { userId } = useParams();
@@ -48,10 +53,9 @@ export default function PublicProfile() {
         const token = stored ? JSON.parse(stored).token : null;
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-        const { data } = await axios.get(
-          `${API_BASE_URL}/user/${userId}`,
-          { headers },
-        );
+        const { data } = await axios.get(`${API_BASE_URL}/user/${userId}`, {
+          headers,
+        });
 
         const safeParse = (val) => {
           if (Array.isArray(val)) return val;
@@ -72,7 +76,7 @@ export default function PublicProfile() {
           education: safeParse(data.education),
         });
       } catch (err) {
-        console.error("Failed to load user", err);
+        console.error("Failed to load user profile", err);
       } finally {
         setLoading(false);
       }
@@ -89,13 +93,12 @@ export default function PublicProfile() {
       await axios.patch(
         `${API_BASE_URL}/applications/${applicationId}/status`,
         { status: actionModal.status, employerMessage: employerMessage },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setStatus(actionModal.status);
-      alert(`Candidate status updated to: ${actionModal.status}`);
     } catch (error) {
       console.error("Update failed", error);
-      alert("Failed to update status.");
+      alert("Failed to update applicant status.");
     } finally {
       setActionLoading(false);
       setActionModal({
@@ -108,13 +111,12 @@ export default function PublicProfile() {
     }
   };
 
-  // FACT: Forces a hard download using the new S3 uploaded resume system
   const handleDownloadResume = async () => {
     if (!profile?.resumeFileKey) {
       alert("No uploaded resume found for this candidate.");
       return;
     }
-    
+
     setIsDownloading(true);
     try {
       const stored = localStorage.getItem("employerInfo");
@@ -142,7 +144,7 @@ export default function PublicProfile() {
       }
     } catch (error) {
       console.error("Download failed", error);
-      alert("Error downloading resume. It may have been deleted.");
+      alert("Error downloading resume. It may have been archived.");
     } finally {
       setIsDownloading(false);
     }
@@ -167,68 +169,101 @@ export default function PublicProfile() {
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="animate-spin text-blue-600" />
+      <div className="flex h-screen items-center justify-center bg-[var(--theme-bg)] text-[var(--theme-text)]">
+        <Loader2 className="animate-spin text-[var(--theme-accent-silver)]" size={32} />
       </div>
     );
-  if (!profile) return <div className="p-10 text-center">User not found.</div>;
+  }
+
+  if (!profile) {
+    return (
+      <div className="p-12 text-center text-[var(--theme-text-muted)] min-h-screen flex items-center justify-center bg-[var(--theme-bg)]">
+        Candidate profile not found or permissions expired.
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-12 px-4 sm:px-6 font-sans transition-colors duration-150">
-      <div className="max-w-5xl mx-auto">
-        {/* FACT: Fixed Back Button Placement */}
-        <div className="mb-6 flex items-center gap-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
-          >
-            <ArrowLeft size={18} />
-          </button>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-            Applicant Review
-          </h1>
-        </div>
+    <div className="min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] py-12 px-4 sm:px-6 font-sans transition-colors pt-24 pb-24">
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Navigation & Status Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[var(--theme-border)]">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="p-2.5 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] transition-all cursor-pointer"
+            >
+              <ArrowLeft size={16} />
+            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-display font-bold text-[var(--theme-text)]">
+                  Applicant Dossier
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-accent-silver)]">
+                  Verified Candidate
+                </span>
+              </div>
+              <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                Evaluation console for requisition candidate review
+              </p>
+            </div>
+          </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-          {applicantList.length > 1 ? (
-            <div className="flex items-center gap-2">
+          {/* Stepper if list passed */}
+          {applicantList.length > 1 && (
+            <div className="flex items-center gap-2 text-xs font-mono">
               <button
+                type="button"
                 onClick={goToPrev}
                 disabled={currentIndex === 0}
-                className="px-4 py-2 bg-slate-800 text-white rounded-lg disabled:opacity-50 font-bold"
+                className="px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] disabled:opacity-40 cursor-pointer transition-all"
               >
-                ← Previous
+                ← Prev
               </button>
-              <span className="text-sm font-bold text-slate-500">
+              <span className="text-[var(--theme-text-muted)]">
                 {currentIndex + 1} of {applicantList.length}
               </span>
               <button
+                type="button"
                 onClick={goToNext}
                 disabled={currentIndex === applicantList.length - 1}
-                className="px-4 py-2 bg-slate-800 text-white rounded-lg disabled:opacity-50 font-bold"
+                className="px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] disabled:opacity-40 cursor-pointer transition-all"
               >
                 Next →
               </button>
             </div>
-          ) : (
-            <div></div>
           )}
+        </div>
 
-          {applicationId && (
-            <div className="flex flex-wrap gap-2 bg-white dark:bg-slate-900 p-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+        {/* Action Bar (Shortlist, Interview, Assignment, NCTT, Hire) */}
+        {applicationId && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] flex flex-wrap items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-muted)]">
+                Pipeline Status:
+              </span>
+              <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                {status.toUpperCase()}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
               {status === "hired" ? (
-                <span className="px-6 py-2 bg-green-100 text-green-700 font-bold rounded-lg border border-green-200 flex items-center gap-2">
-                  <CheckCircle size={18} /> Hired
+                <span className="px-4 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center gap-1.5">
+                  <CheckCircle size={14} /> Candidacy Hired
                 </span>
               ) : status === "NCTT" ? (
-                <span className="px-6 py-2 bg-rose-100 text-rose-700 font-bold rounded-lg border border-rose-200 flex items-center gap-2">
-                  <XCircle size={18} /> Not Considered (NCTT)
+                <span className="px-4 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 font-bold text-xs flex items-center gap-1.5">
+                  <XCircle size={14} /> Closed (NCTT)
                 </span>
               ) : (
                 <>
                   <button
+                    type="button"
                     onClick={() =>
                       setActionModal({
                         show: true,
@@ -237,11 +272,12 @@ export default function PublicProfile() {
                         requireMessage: true,
                       })
                     }
-                    className="px-4 py-2 bg-blue-50 text-blue-600 font-bold rounded-lg hover:bg-blue-100 text-sm"
+                    className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-xs font-semibold cursor-pointer transition-all text-[var(--theme-text)]"
                   >
                     Shortlist
                   </button>
                   <button
+                    type="button"
                     onClick={() =>
                       setActionModal({
                         show: true,
@@ -250,11 +286,12 @@ export default function PublicProfile() {
                         requireMessage: true,
                       })
                     }
-                    className="px-4 py-2 bg-purple-50 text-purple-600 font-bold rounded-lg hover:bg-purple-100 text-sm"
+                    className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-xs font-semibold cursor-pointer transition-all text-[var(--theme-text)]"
                   >
                     Interview
                   </button>
                   <button
+                    type="button"
                     onClick={() =>
                       setActionModal({
                         show: true,
@@ -263,11 +300,12 @@ export default function PublicProfile() {
                         requireMessage: true,
                       })
                     }
-                    className="px-4 py-2 bg-orange-50 text-orange-600 font-bold rounded-lg hover:bg-orange-100 text-sm"
+                    className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-xs font-semibold cursor-pointer transition-all text-[var(--theme-text)]"
                   >
                     Assignment
                   </button>
                   <button
+                    type="button"
                     onClick={() =>
                       setActionModal({
                         show: true,
@@ -276,308 +314,284 @@ export default function PublicProfile() {
                         requireMessage: false,
                       })
                     }
-                    className="px-4 py-2 bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-900/40 text-rose-600 dark:text-rose-400 font-bold rounded-lg hover:bg-rose-50 dark:hover:bg-slate-700 text-sm"
+                    className="px-3.5 py-1.5 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-semibold cursor-pointer transition-all"
                   >
                     NCTT
                   </button>
                   <button
+                    type="button"
                     onClick={() =>
                       setActionModal({
                         show: true,
                         status: "hired",
-                        title: "Hire Candidate",
+                        title: "Mark as Hired",
                         requireMessage: false,
                       })
                     }
-                    className="px-5 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 flex items-center gap-2 text-sm"
+                    className="px-4 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs hover:opacity-90 transition-all cursor-pointer shadow-xs"
                   >
-                    Hire
+                    Hire Candidate
                   </button>
                 </>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
+        {/* 2-Column Dossier Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* LEFT: CANDIDATE INFO & RESUME */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800 p-6 text-center">
+            <div className="p-6 rounded-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-sm text-center">
               <img
                 src={
                   profile.profilePicture ||
-                  (profile.gender === "Female" 
+                  (profile.gender === "Female"
                     ? "https://cdn-icons-png.flaticon.com/512/3135/3135768.png"
                     : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
                 }
-                alt="User"
-                className="w-32 h-32 rounded-full object-cover mx-auto border-4 border-slate-50 shadow-sm"
+                alt={profile.name}
+                className="w-24 h-24 rounded-full object-cover mx-auto border-2 border-[var(--theme-border-silver)] shadow-sm mb-4"
               />
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-4">
+              <h2 className="text-xl font-display font-bold text-[var(--theme-text)]">
                 {profile.name}
               </h2>
-              <p className="text-slate-500 font-medium">Job Seeker</p>
+              <p className="text-xs font-mono text-[var(--theme-accent-silver)] mt-0.5">
+                {profile.title || "Verified Candidate"}
+              </p>
 
-              <div className="mt-6 space-y-3 text-left">
-                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                  <Mail className="text-blue-500" size={18} />
-                  <span className="text-sm text-slate-700 dark:text-slate-300 break-all">
-                    {profile.email}
-                  </span>
+              <div className="mt-5 space-y-2 text-left text-xs">
+                <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)]">
+                  <Mail size={14} className="text-[var(--theme-accent-silver)] shrink-0" />
+                  <span className="truncate">{profile.email}</span>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                  <Phone className="text-green-500" size={18} />
-                  <span className="text-sm text-slate-700 dark:text-slate-300">
-                    {profile.phone || "N/A"}
-                  </span>
+                <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)]">
+                  <Phone size={14} className="text-[var(--theme-accent-silver)] shrink-0" />
+                  <span>{profile.phone || "Not Disclosed"}</span>
                 </div>
+                {profile.location && (
+                  <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)]">
+                    <MapPin size={14} className="text-[var(--theme-accent-silver)] shrink-0" />
+                    <span>{profile.location}</span>
+                  </div>
+                )}
               </div>
 
               {profile.resumeFileKey ? (
                 <button
+                  type="button"
                   onClick={handleDownloadResume}
                   disabled={isDownloading}
-                  className="mt-6 flex items-center justify-center gap-2 w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-bold rounded-xl hover:bg-black dark:hover:bg-slate-100 transition-colors disabled:opacity-70 shadow-sm"
+                  className="mt-5 w-full py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-all cursor-pointer disabled:opacity-50 shadow-xs"
                 >
                   {isDownloading ? (
-                    <Loader2 size={18} className="animate-spin" />
+                    <Loader2 size={14} className="animate-spin" />
                   ) : (
-                    <Download size={18} />
+                    <Download size={14} />
                   )}
-                  {isDownloading ? "Downloading..." : "Download Resume"}
+                  <span>Download Verified Resume</span>
                 </button>
               ) : (
-                <div className="mt-6 p-4 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/40 rounded-xl text-center">
-                  <p className="text-sm font-bold text-orange-800 dark:text-orange-300">No Resume Uploaded</p>
-                  <p className="text-xs font-medium text-orange-600 dark:text-orange-400 mt-1">This candidate has not uploaded a resume yet.</p>
+                <div className="mt-5 p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text-muted)]">
+                  No resume file attached
                 </div>
               )}
 
-              {/* CANDIDATE VERIFICATION DOCUMENTS */}
-              {profile.documents && Object.keys(profile.documents).some(k => profile.documents[k]?.key) && (
-                <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">
-                  <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3 flex items-center gap-1.5">
-                    <FileText size={16} className="text-blue-600" /> Verification Documents
-                  </h4>
-                  <div className="space-y-2">
-                    {Object.entries(profile.documents).map(([field, docObj]) => {
-                      if (!docObj?.key) return null;
-                      const labelMap = {
-                        tenthMarksheet: "10th Marksheet",
-                        twelfthMarksheet: "12th Marksheet",
-                        ugMarksheet: "UG Marksheet",
-                        pgMarksheet: "PG Marksheet",
-                        aadharCard: "Aadhar Card",
-                        panCard: "PAN Card",
-                        medicalCertificate: "Medical Certificate",
-                        salarySlips: "Salary Slips",
-                        otherDocuments: "Other Documents",
-                      };
-                      return (
-                        <div key={field} className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium shadow-sm">
-                          <span className="text-slate-800 dark:text-white font-bold">{labelMap[field] || field}</span>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              try {
-                                const token = JSON.parse(localStorage.getItem("userInfo"))?.token || JSON.parse(localStorage.getItem("employerInfo"))?.token;
-                                const { data } = await axios.get(`${API_BASE_URL}/user/${profile._id}/document/download?field=${field}`, {
-                                  headers: token ? { Authorization: `Bearer ${token}` } : {}
-                                });
-                                if (data.downloadableUrl) {
-                                  window.open(data.downloadableUrl, "_blank");
-                                }
-                              } catch (e) {
-                                alert("Failed to download document.");
-                              }
-                            }}
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-bold underline flex items-center gap-1"
+              {/* Candidate Verification Documents */}
+              {profile.documents &&
+                Object.keys(profile.documents).some((k) => profile.documents[k]?.key) && (
+                  <div className="mt-6 pt-5 border-t border-[var(--theme-border)] text-left">
+                    <h4 className="text-[10px] font-mono uppercase tracking-widest text-[var(--theme-text-muted)] mb-2 flex items-center gap-1.5 font-bold">
+                      <FileText size={12} className="text-[var(--theme-accent-silver)]" /> Credentials & Documents
+                    </h4>
+                    <div className="space-y-1.5">
+                      {Object.entries(profile.documents).map(([field, docObj]) => {
+                        if (!docObj?.key) return null;
+                        const labelMap = {
+                          tenthMarksheet: "10th Certificate",
+                          twelfthMarksheet: "12th Certificate",
+                          ugMarksheet: "UG Degree",
+                          pgMarksheet: "PG Degree",
+                          aadharCard: "Govt ID (Aadhar)",
+                          panCard: "Tax ID (PAN)",
+                          medicalCertificate: "Medical Certificate",
+                          salarySlips: "Salary Verification",
+                          otherDocuments: "Supplementary",
+                        };
+                        return (
+                          <div
+                            key={field}
+                            className="flex items-center justify-between p-2 rounded-lg bg-[var(--theme-surface-elevated)] text-xs border border-[var(--theme-border)]"
                           >
-                            <Download size={12} /> Download
-                          </button>
-                        </div>
-                      );
-                    })}
+                            <span className="font-medium text-[var(--theme-text)] truncate mr-2">
+                              {labelMap[field] || field}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                try {
+                                  const token =
+                                    JSON.parse(localStorage.getItem("employerInfo"))?.token;
+                                  const { data } = await axios.get(
+                                    `${API_BASE_URL}/user/${profile._id}/document/download?field=${field}`,
+                                    {
+                                      headers: token ? { Authorization: `Bearer ${token}` } : {},
+                                    }
+                                  );
+                                  if (data.downloadableUrl) {
+                                    window.open(data.downloadableUrl, "_blank");
+                                  }
+                                } catch {
+                                  alert("Failed to retrieve document.");
+                                }
+                              }}
+                              className="text-[11px] font-mono text-[var(--theme-accent-silver)] hover:underline flex items-center gap-1 shrink-0 cursor-pointer"
+                            >
+                              <Download size={11} /> View
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800 p-6">
-              <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                <User size={18} className="text-orange-500" /> Skills
+            {/* Skills Card */}
+            <div className="p-6 rounded-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-sm">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-[var(--theme-text-muted)] mb-3 flex items-center gap-1.5 font-bold">
+                <Code size={13} className="text-[var(--theme-accent-silver)]" />
+                <span>Competencies & Skills</span>
               </h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {profile.skills?.length > 0 ? (
                   profile.skills.map((skill, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-bold uppercase tracking-wide border border-slate-200 dark:border-slate-700"
+                      className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)] font-mono"
                     >
                       {skill}
                     </span>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-400 italic">
-                    No skills listed.
-                  </p>
+                  <p className="text-xs text-[var(--theme-text-muted)] italic">No skills listed.</p>
                 )}
               </div>
             </div>
           </div>
 
+          {/* RIGHT: SUMMARY, EXPERIENCE, EDUCATION, PROJECTS */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm dark:shadow-slate-950/40 border border-slate-200 dark:border-slate-800 p-8">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
-                Professional Summary
+            {/* Professional Summary */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-sm">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-[var(--theme-text-muted)] mb-3 font-bold">
+                Candidate Summary
               </h3>
-              <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
-                {profile.description || "No summary provided."}
+              <p className="text-xs sm:text-sm text-[var(--theme-text)] leading-relaxed whitespace-pre-wrap font-sans">
+                {profile.description || "No professional summary provided."}
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                <Briefcase className="text-indigo-500" size={20} /> Work
-                Experience
+            {/* Work Experience */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-sm">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-[var(--theme-text-muted)] mb-5 flex items-center gap-2 font-bold">
+                <Briefcase size={14} className="text-[var(--theme-accent-silver)]" />
+                <span>Career Experience</span>
               </h3>
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {profile.experience?.length > 0 ? (
                   profile.experience.map((exp, i) => (
-                    <div
-                      key={i}
-                      className="relative pl-6 border-l-2 border-indigo-100"
-                    >
-                      <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-50 border-2 border-indigo-500"></div>
-                      <h4 className="font-bold text-slate-900 dark:text-white text-lg">
+                    <div key={i} className="pl-4 border-l-2 border-[var(--theme-border-silver)] relative">
+                      <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-[var(--theme-accent-silver)]" />
+                      <h4 className="font-display font-bold text-[var(--theme-text)] text-sm sm:text-base">
                         {exp.role}
                       </h4>
-                      <p className="text-indigo-600 font-semibold">
-                        {exp.company}
-                      </p>
-                      <p className="text-xs text-slate-400 uppercase tracking-wide mt-1 mb-2">
+                      <p className="text-xs font-semibold text-[var(--theme-accent-silver)]">{exp.company}</p>
+                      <p className="text-[10px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider mt-0.5 mb-2">
                         {exp.duration}
                       </p>
-                      <p className="text-slate-600 text-sm leading-relaxed">
+                      <p className="text-xs text-[var(--theme-text-muted)] leading-relaxed font-sans">
                         {exp.description}
                       </p>
                     </div>
                   ))
                 ) : (
-                  <p className="text-slate-400 italic">No experience added.</p>
+                  <p className="text-xs text-[var(--theme-text-muted)] italic">No experience records added.</p>
                 )}
               </div>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                <GraduationCap className="text-green-500" size={20} /> Education
+            {/* Education */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-sm">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-[var(--theme-text-muted)] mb-4 flex items-center gap-2 font-bold">
+                <GraduationCap size={14} className="text-[var(--theme-accent-silver)]" />
+                <span>Academic Background</span>
               </h3>
-              <div className="space-y-6">
+              <div className="space-y-3">
                 {profile.education?.length > 0 ? (
                   profile.education.map((edu, i) => (
                     <div
                       key={i}
-                      className="flex justify-between items-start p-4 bg-slate-50 rounded-xl border border-slate-100"
+                      className="flex justify-between items-start p-3.5 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)]"
                     >
                       <div>
-                        <h4 className="font-bold text-slate-900 dark:text-white">
+                        <h4 className="font-semibold text-[var(--theme-text)] text-xs sm:text-sm">
                           {edu.degree}
                         </h4>
-                        <p className="text-slate-600 font-medium">
-                          {edu.university}
-                        </p>
+                        <p className="text-xs text-[var(--theme-text-muted)]">{edu.university}</p>
                       </div>
                       <div className="text-right">
-                        <span className="block text-xs font-bold text-slate-400 uppercase">
+                        <span className="block text-[10px] font-mono text-[var(--theme-text-muted)] uppercase">
                           {edu.ended}
                         </span>
                         {edu.CGPA && (
-                          <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded mt-1 inline-block">
-                            GPA: {edu.CGPA}
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-accent-silver)] mt-1 inline-block">
+                            GPA {edu.CGPA}
                           </span>
                         )}
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-slate-400 italic">No education added.</p>
+                  <p className="text-xs text-[var(--theme-text-muted)] italic">No academic history added.</p>
                 )}
               </div>
             </div>
-            {/* FACT: New Projects Section UI */}
-            {(profile.resumeData?.projects?.length > 0 ||
-              profile.projects?.length > 0) && (
-              <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                  <Code className="text-blue-500" size={20} /> Technical
-                  Projects
-                </h3>
-                <div className="space-y-6">
-                  {(profile.resumeData?.projects || profile.projects).map(
-                    (proj, i) => (
-                      <div
-                        key={i}
-                        className="p-5 bg-slate-50 rounded-xl border border-slate-100"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-extrabold text-slate-900 dark:text-white text-base">
-                            {proj.title}
-                          </h4>
-                          {proj.link && (
-                            <a
-                              href={proj.link}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-xs text-blue-600 font-bold hover:underline bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100"
-                            >
-                              View Project ↗
-                            </a>
-                          )}
-                        </div>
-                        {proj.technologies && (
-                          <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">
-                            Tech Stack:{" "}
-                            <span className="text-slate-600">
-                              {proj.technologies}
-                            </span>
-                          </p>
-                        )}
-                        <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">
-                          {proj.description}
-                        </p>
-                      </div>
-                    ),
-                  )}
-                </div>
-              </div>
-            )}
 
-            {/* FACT: New Certifications Section UI */}
-            {(profile.resumeData?.certifications?.length > 0 ||
-              profile.certifications?.length > 0) && (
-              <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                  <Award className="text-amber-500" size={20} /> Certifications
+            {/* Technical Projects */}
+            {(profile.resumeData?.projects?.length > 0 || profile.projects?.length > 0) && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-sm">
+                <h3 className="text-xs font-mono uppercase tracking-widest text-[var(--theme-text-muted)] mb-4 flex items-center gap-2 font-bold">
+                  <Code size={14} className="text-[var(--theme-accent-silver)]" />
+                  <span>Verified Projects</span>
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {(
-                    profile.resumeData?.certifications || profile.certifications
-                  ).map((cert, i) => (
-                    <div
-                      key={i}
-                      className="p-4 bg-slate-50 rounded-xl border border-slate-100"
-                    >
-                      <h4 className="font-bold text-slate-900 dark:text-white mb-1">
-                        {cert.name}
-                      </h4>
-                      <div className="flex justify-between items-center mt-2">
-                        <span className="text-xs font-bold text-slate-500">
-                          {cert.issuer}
-                        </span>
-                        <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md">
-                          {cert.date}
-                        </span>
+                <div className="space-y-4">
+                  {(profile.resumeData?.projects || profile.projects).map((proj, i) => (
+                    <div key={i} className="p-4 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)]">
+                      <div className="flex justify-between items-start mb-1">
+                        <h4 className="font-display font-bold text-[var(--theme-text)] text-xs sm:text-sm">
+                          {proj.title}
+                        </h4>
+                        {proj.link && (
+                          <a
+                            href={proj.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[11px] font-mono text-[var(--theme-accent-silver)] hover:underline inline-flex items-center gap-1"
+                          >
+                            <span>Repository</span>
+                            <ExternalLink size={11} />
+                          </a>
+                        )}
                       </div>
+                      {proj.technologies && (
+                        <p className="text-[11px] font-mono text-[var(--theme-accent-silver)] mb-2">
+                          Tech: {proj.technologies}
+                        </p>
+                      )}
+                      <p className="text-xs text-[var(--theme-text-muted)] leading-relaxed font-sans">
+                        {proj.description}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -587,32 +601,34 @@ export default function PublicProfile() {
         </div>
       </div>
 
+      {/* Action Dialog Modal */}
       {actionModal.show && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl p-8 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[var(--theme-surface)] text-[var(--theme-text)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-[var(--theme-border)]">
+            <h3 className="text-lg font-display font-bold text-[var(--theme-text)] mb-2">
               {actionModal.title}
             </h3>
             {actionModal.requireMessage ? (
-              <div className="mb-6 mt-4">
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Message / Details (Sent to Applicant)
+              <div className="mb-4 mt-3">
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-[var(--theme-text-muted)] mb-1.5 font-bold">
+                  Applicant Notification Dispatch
                 </label>
                 <textarea
                   value={employerMessage}
                   onChange={(e) => setEmployerMessage(e.target.value)}
-                  placeholder="Enter meeting links, dates, or assignment instructions here..."
-                  className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 h-32 resize-y text-sm"
+                  placeholder="Enter meeting links, scheduling details, or instructions..."
+                  className="w-full p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs sm:text-sm text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] h-28 resize-none"
                 />
               </div>
             ) : (
-              <p className="text-slate-600 mb-6 mt-2">
-                Are you sure you want to mark this candidate as{" "}
-                {actionModal.status}?
+              <p className="text-xs text-[var(--theme-text-muted)] mb-6 mt-2 leading-relaxed">
+                Confirm updating this candidate application to status{" "}
+                <span className="font-bold text-[var(--theme-text)]">{actionModal.status}</span>?
               </p>
             )}
-            <div className="flex gap-4 justify-end">
+            <div className="flex gap-2 justify-end">
               <button
+                type="button"
                 onClick={() => {
                   setActionModal({
                     show: false,
@@ -622,24 +638,18 @@ export default function PublicProfile() {
                   });
                   setEmployerMessage("");
                 }}
-                className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] cursor-pointer"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleStatusUpdate}
-                disabled={
-                  actionLoading ||
-                  (actionModal.requireMessage && !employerMessage.trim())
-                }
-                className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2 disabled:opacity-50"
+                disabled={actionLoading || (actionModal.requireMessage && !employerMessage.trim())}
+                className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
-                {actionLoading ? (
-                  <Loader2 className="animate-spin" size={16} />
-                ) : (
-                  <CheckCircle size={18} />
-                )}{" "}
-                Confirm
+                {actionLoading ? <Loader2 className="animate-spin" size={14} /> : null}
+                <span>Confirm Status</span>
               </button>
             </div>
           </div>

@@ -850,12 +850,51 @@ export const continueWithGoogle = expressAsyncHandler(async (req, res) => {
 export const googleLoginEmployer = expressAsyncHandler(async (req, res) => {
   try {
     const { token: googleToken } = req.body;
+    if (!googleToken) {
+      res.status(400);
+      throw new Error("Google authentication token is required.");
+    }
 
-    const ticket = await client.verifyIdToken({
-      idToken: googleToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const { email, name, picture, sub: googleId } = ticket.getPayload();
+    let email, name, picture, googleId;
+    const isIdToken = typeof googleToken === "string" && googleToken.split(".").length === 3;
+
+    if (isIdToken) {
+      // 1. Verify Google OIDC ID Token (JWT)
+      const ticket = await client.verifyIdToken({
+        idToken: googleToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+      googleId = payload.sub;
+    } else {
+      // 2. Verify Google OAuth2 Access Token
+      const tokenInfo = await client.getTokenInfo(googleToken);
+      if (tokenInfo.aud && process.env.GOOGLE_CLIENT_ID && tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID) {
+        res.status(401);
+        throw new Error("Invalid Google OAuth client credentials.");
+      }
+
+      const googleUserRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${googleToken}` },
+      });
+      if (!googleUserRes.ok) {
+        res.status(401);
+        throw new Error("Failed to verify Google access token with Google identity service.");
+      }
+      const profile = await googleUserRes.json();
+      email = profile.email;
+      name = profile.name;
+      picture = profile.picture;
+      googleId = profile.sub;
+    }
+
+    if (!email) {
+      res.status(400);
+      throw new Error("Unable to retrieve email from Google authentication.");
+    }
     const normalizedEmail = normalizeEmail(email);
 
     // 2. Check if employer exists FIRST (Login Scenario)
@@ -930,8 +969,9 @@ export const googleLoginEmployer = expressAsyncHandler(async (req, res) => {
     }
   } catch (error) {
     console.error("FATAL GOOGLE LOGIN ERROR (EMPLOYER):", error);
-    res.status(500);
-    throw new Error(`Google Login Failed: ${error.message}`);
+    const status = res.statusCode >= 400 ? res.statusCode : 401;
+    res.status(status);
+    throw new Error(error.message || "Google Authentication Failed");
   }
 });
 

@@ -157,7 +157,6 @@ export default function MobileBottomNav() {
 
   return (
     <div className="fixed bottom-4 left-0 w-full z-[1000] pb-2 px-4 flex justify-center pointer-events-none">
-      
       {/* "More" Menu Popup */}
       <AnimatePresence>
         {showMoreMenu && (
@@ -171,7 +170,7 @@ export default function MobileBottomNav() {
           >
             <div className="flex justify-between items-center px-3 py-2 border-b border-white/10 mb-2">
               <span className="text-white/80 font-semibold text-sm">More Options</span>
-              <button onClick={() => setShowMoreMenu(false)} aria-label="Close more options menu" className="text-white/50 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none rounded-lg p-1">
+              <button onClick={() => setShowMoreMenu(false)} aria-label="Close more options menu" className="text-white/50 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-silver focus-visible:outline-none rounded-lg p-1">
                 <X size={16} />
               </button>
             </div>
@@ -219,7 +218,7 @@ export default function MobileBottomNav() {
               aria-current={isActive ? "page" : undefined}
               className={`relative flex items-center justify-center h-12 transition-all duration-500 ease-out rounded-full focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none ${
                 isActive 
-                  ? "px-4 bg-blue-600 text-white shadow-[0_4px_14px_rgba(37,99,235,0.4)] flex-row gap-2" 
+                  ? "px-4 bg-white text-black shadow-md flex-row gap-2" 
                   : "w-16 flex-col gap-1 text-white/60 hover:text-white hover:bg-white/10"
               }`}
             >

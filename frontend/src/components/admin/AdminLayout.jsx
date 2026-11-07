@@ -1,21 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { Menu, Bell, Sun, Moon, Monitor, Search } from "lucide-react";
 import AdminSidebar from "./AdminSidebar";
+import AdminTopbar from "./AdminTopbar";
 import AdminCommandPalette from "./AdminCommandPalette";
 import AdminNotificationsModal from "./AdminNotificationsModal";
 import AdminSettingsModal from "./AdminSettingsModal";
 import AdminLogoutModal from "./AdminLogoutModal";
-import LogoJobOne from "../LogoJobOne";
 import { useTheme } from "../../routes/Context";
 
+const TAB_LABELS = {
+  overview: "Overview & KPIs",
+  analytics: "Platform Analytics",
+  allJobs: "Job Moderation",
+  pendingJobs: "Pending Job Approvals",
+  applications: "Applications CRM",
+  allEmployers: "Employer Verification",
+  pendingEmployers: "Pending Company Reviews",
+  allJobseekers: "Candidate Directory",
+  activity: "Activity Stream",
+  auditLogs: "Audit Centre",
+  notifications: "Notification Workspace",
+  categories: "Industry Taxonomies",
+  exportDB: "Reports & Exports",
+  settings: "System Settings",
+  manageAdmins: "Admin Team Management",
+};
+
 export default function AdminLayout({
-  activeTab,
+  activeTab = "overview",
   onSelectTab,
   adminInfo = {},
   pendingJobs = [],
   pendingEmployers = [],
   unreadContacts = [],
+  jobs = [],
+  employers = [],
+  jobseekers = [],
   onRefresh,
+  isRefreshing = false,
   onLogout,
   children,
 }) {
@@ -33,32 +54,21 @@ export default function AdminLayout({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const { theme, setTheme } = useTheme();
 
-  const handleToggleCollapse = () => {
-    setIsCollapsed((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem("jobone_admin_sidebar_collapsed", String(next));
-      } catch {}
-      return next;
-    });
-  };
+  // Keyboard shortcut Ctrl+[ to toggle sidebar collapse
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "[") {
+        e.preventDefault();
+        handleToggleCollapse();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
-  // Intercept logout to display the modern animated confirmation and exit sequence
-  const handleRequestLogout = () => {
-    setIsLogoutModalOpen(true);
-  };
-
-  const handleConfirmLogout = () => {
-    setIsLogoutModalOpen(false);
-    if (onLogout) {
-      onLogout();
-    }
-  };
-
-  // Global Ctrl+K / Cmd+K listener
+  // Global Ctrl+K / Cmd+K listener for Command Palette
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -70,18 +80,46 @@ export default function AdminLayout({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const toggleTheme = () => {
-    if (theme === "light") setTheme("dark");
-    else if (theme === "dark") setTheme("default");
-    else setTheme("light");
+  const handleToggleCollapse = () => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("jobone_admin_sidebar_collapsed", String(next));
+      } catch (_err) {
+        /* ignore */
+      }
+      return next;
+    });
   };
-  const ThemeIcon = theme === "default" ? Monitor : isDark ? Moon : Sun;
+
+  const handleRequestLogout = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleConfirmLogout = () => {
+    setIsLogoutModalOpen(false);
+    if (onLogout) {
+      onLogout();
+    }
+  };
 
   const totalPendingAlerts =
-    pendingJobs.length + pendingEmployers.length + unreadContacts.length;
+    (pendingJobs?.length || 0) +
+    (pendingEmployers?.length || 0) +
+    (unreadContacts?.length || 0);
+
+  const currentTabLabel = TAB_LABELS[activeTab] || "Executive Console";
 
   return (
-    <div className="min-h-screen bg-[#f4f5f7] dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex font-sans antialiased selection:bg-slate-950 selection:text-white transition-colors duration-150">
+    <div className="min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] flex flex-col lg:flex-row transition-colors duration-200 antialiased selection:bg-[var(--theme-text)] selection:text-[var(--theme-bg)] overflow-x-hidden relative">
+      {/* Skip to Main Content Link for accessibility */}
+      <a
+        href="#admin-main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[var(--theme-text)] focus:text-[var(--theme-bg)] focus:font-bold focus:rounded-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-silver)]"
+      >
+        Skip to administrative control center
+      </a>
+
       {/* 1. Left Vertical Sidebar (Desktop Sticky + Mobile Drawer) */}
       <AdminSidebar
         activeTab={activeTab}
@@ -92,80 +130,41 @@ export default function AdminLayout({
         onCloseMobile={() => setIsMobileOpen(false)}
         adminInfo={adminInfo}
         onLogout={handleRequestLogout}
-        pendingJobsCount={pendingJobs.length}
-        pendingEmployersCount={pendingEmployers.length}
+        pendingJobsCount={pendingJobs?.length || 0}
+        pendingEmployersCount={pendingEmployers?.length || 0}
       />
 
       {/* 2. Main Workspace Canvas */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile Header Bar Only (hidden on desktop lg:hidden) */}
-        <div className="lg:hidden h-16 px-3 sm:px-6 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <button
-              type="button"
-              onClick={() => setIsMobileOpen(true)}
-              aria-label="Open navigation drawer"
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-            >
-              <Menu size={22} />
-            </button>
-
-            <LogoJobOne
-              width={110}
-              height={32}
-              textColor={isDark ? "#FFFFFF" : "#0F172A"}
-              className="h-7 sm:h-8 w-auto"
-            />
-          </div>
-
-          <div className="flex items-center gap-1 sm:gap-1.5">
-            {/* Quick Command Palette Search on Mobile */}
-            <button
-              type="button"
-              onClick={() => setIsCommandPaletteOpen(true)}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-              title="Search commands (Ctrl+K)"
-              aria-label="Search commands"
-            >
-              <Search size={19} />
-            </button>
-
-            {/* Quick Theme Switcher on Mobile */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-              title={`Theme: ${theme}`}
-              aria-label={`Toggle Theme (${theme})`}
-            >
-              <ThemeIcon size={19} />
-            </button>
-
-            {/* Quick Notifications on Mobile */}
-            <button
-              type="button"
-              onClick={() => setIsNotificationsOpen(true)}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 relative cursor-pointer"
-              title="Notifications"
-              aria-label="Notifications"
-            >
-              <Bell size={19} />
-              {totalPendingAlerts > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white dark:ring-slate-900" />
-              )}
-            </button>
-          </div>
-        </div>
+      <div
+        className={`flex-1 flex flex-col min-w-0 transition-[margin] duration-300 ease-in-out ${
+          isCollapsed ? "lg:ml-20" : "lg:ml-64"
+        }`}
+      >
+        {/* Executive Header Bar (Integrated for Desktop & Mobile) */}
+        <AdminTopbar
+          breadcrumbs={["Admin Console", currentTabLabel]}
+          onOpenMobileSidebar={() => setIsMobileOpen(true)}
+          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+          onOpenNotifications={() => setIsNotificationsOpen(true)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          onRefresh={onRefresh}
+          isRefreshing={isRefreshing}
+          pendingAlertsCount={totalPendingAlerts}
+          adminInfo={adminInfo}
+          onLogout={handleRequestLogout}
+        />
 
         {/* Dashboard Main Content Area */}
-        <main className="flex-1 p-3.5 sm:p-5 md:p-6 lg:p-8 xl:p-9 overflow-y-auto w-full min-w-0">
-          <div className="w-full max-w-[1700px] mx-auto min-w-0">
-            {children}
-          </div>
+        <main
+          id="admin-main-content"
+          tabIndex="-1"
+          className="flex-1 outline-none p-4 sm:p-6 lg:p-8 xl:p-9 w-full min-w-0 max-w-[1700px] mx-auto"
+        >
+          {children}
         </main>
       </div>
 
-      {/* Modals & Dialogs */}
+      {/* 3. Command Palette Modal */}
       <AdminCommandPalette
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
@@ -173,45 +172,37 @@ export default function AdminLayout({
           onSelectTab(tab);
           setIsCommandPaletteOpen(false);
         }}
-        onOpenSettings={() => {
-          setIsCommandPaletteOpen(false);
-          setIsSettingsOpen(true);
-        }}
-        onOpenNotifications={() => {
-          setIsCommandPaletteOpen(false);
-          setIsNotificationsOpen(true);
-        }}
+        adminRole={adminInfo?.role}
         onRefresh={() => {
           if (onRefresh) onRefresh();
           setIsCommandPaletteOpen(false);
         }}
-        onLogout={handleRequestLogout}
-        theme={theme}
-        setTheme={setTheme}
+        jobs={jobs}
+        employers={employers}
+        jobseekers={jobseekers}
       />
 
+      {/* 4. Notifications Modal */}
       <AdminNotificationsModal
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
-        pendingJobs={pendingJobs}
-        pendingEmployers={pendingEmployers}
-        unreadContacts={unreadContacts}
-        onSelectTab={(tab) => {
+        pendingJobsCount={pendingJobs?.length || 0}
+        pendingEmployersCount={pendingEmployers?.length || 0}
+        unreadContactsCount={unreadContacts?.length || 0}
+        onNavigateTab={(tab) => {
           onSelectTab(tab);
           setIsNotificationsOpen(false);
         }}
       />
 
+      {/* 5. Settings Modal */}
       <AdminSettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         adminInfo={adminInfo}
-        onLogout={handleRequestLogout}
-        theme={theme}
-        setTheme={setTheme}
       />
 
-      {/* Modern Animated Admin Logout Modal */}
+      {/* 6. Animated Admin Logout Modal */}
       <AdminLogoutModal
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}

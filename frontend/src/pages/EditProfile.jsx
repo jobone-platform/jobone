@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import {
   User,
   Mail,
@@ -8,22 +8,32 @@ import {
   FileText,
   Briefcase,
   Plus,
-  X,
+  Trash2,
   Save,
   Loader2,
   ArrowLeft,
   GraduationCap,
-  Link as LinkIcon,
   AlertTriangle,
   Upload,
   Sparkles,
-  Code,
+  Code2,
   Award,
   Globe,
-  HeartHandshake,
+  ShieldCheck,
+  Check,
+  Camera,
+  MapPin,
+  Sliders,
+  Moon,
+  Sun,
+  Laptop,
+  CheckCircle2,
+  FileCode,
 } from "lucide-react";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 import { API_BASE_URL } from "../config/api";
+import CandidateLayout from "../components/candidate/CandidateLayout";
+import { useTheme } from "../routes/Context";
 
 export default function EditProfile() {
   const navigate = useNavigate();
@@ -31,9 +41,12 @@ export default function EditProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [imgUploadType, setImgUploadType] = useState("link");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [activeTab, setActiveTab] = useState("personal"); // personal | skills | experience | education | projects | certs | links | privacy
+  const [statusMessage, setStatusMessage] = useState(null);
+  const [genderError, setGenderError] = useState(false);
+
+  const { theme, setTheme } = useTheme();
 
   const [profile, setProfile] = useState({
     name: "",
@@ -43,6 +56,9 @@ export default function EditProfile() {
     description: "",
     profilePicture: "",
     resumeFileKey: "",
+    location: "",
+    title: "",
+    isPublic: true,
   });
 
   const [skills, setSkills] = useState([]);
@@ -80,7 +96,7 @@ export default function EditProfile() {
     year: "",
     link: "",
   });
-  const [linkForm, setLinkForm] = useState({ platform: "", url: "" });
+  const [linkForm, setLinkForm] = useState({ platform: "LinkedIn", url: "" });
   const [volForm, setVolForm] = useState({
     organization: "",
     role: "",
@@ -88,11 +104,15 @@ export default function EditProfile() {
     description: "",
   });
 
-  useEffect(() => {
-    if (location.state?.showWarning) setShowPopup(true);
+  const showNotification = (msg, type = "success") => {
+    setStatusMessage({ msg, type });
+    setTimeout(() => setStatusMessage(null), 4000);
+  };
 
+  useEffect(() => {
     const fetchUser = async () => {
       try {
+        setLoading(true);
         const storedString = localStorage.getItem("userInfo");
         if (!storedString) return navigate("/login");
         const storedUser = JSON.parse(storedString);
@@ -102,7 +122,7 @@ export default function EditProfile() {
 
         const { data } = await axios.get(
           `${API_BASE_URL}/user/${userId}`,
-          { headers: { Authorization: `Bearer ${storedUser.token}` } },
+          { headers: { Authorization: `Bearer ${storedUser.token}` } }
         );
 
         const safeList = (val) => (Array.isArray(val) ? val : []);
@@ -115,55 +135,30 @@ export default function EditProfile() {
           description: data.description || data.resumeData?.description || "",
           profilePicture: data.profilePicture || "",
           resumeFileKey: data.resumeFileKey || "",
+          location: data.location || "",
+          title: data.title || "",
+          isPublic: data.isPublic !== false,
         });
 
-        // FACT: Now intelligently checks resumeData fallback if manual arrays are empty
-        setSkills(
-          safeList(data.skills?.length ? data.skills : data.resumeData?.skills),
-        );
-        setExperience(
-          safeList(
-            data.experience?.length
-              ? data.experience
-              : data.resumeData?.experience,
-          ),
-        );
-        setEducation(
-          safeList(
-            data.education?.length
-              ? data.education
-              : data.resumeData?.education,
-          ),
-        );
-        setProjects(
-          safeList(
-            data.projects?.length ? data.projects : data.resumeData?.projects,
-          ),
-        );
-        setCertifications(
-          safeList(
-            data.certifications?.length
-              ? data.certifications
-              : data.resumeData?.certifications,
-          ),
-        );
+        setSkills(safeList(data.skills?.length ? data.skills : data.resumeData?.skills));
+        setExperience(safeList(data.experience?.length ? data.experience : data.resumeData?.experience));
+        setEducation(safeList(data.education?.length ? data.education : data.resumeData?.education));
+        setProjects(safeList(data.projects?.length ? data.projects : data.resumeData?.projects));
+        setCertifications(safeList(data.certifications?.length ? data.certifications : data.resumeData?.certifications));
         setPortfolioLinks(safeList(data.portfolioLinks));
-        setVolunteering(
-          safeList(
-            data.volunteering?.length
-              ? data.volunteering
-              : data.resumeData?.volunteering,
-          ),
-        );
+        setVolunteering(safeList(data.volunteering?.length ? data.volunteering : data.resumeData?.volunteering));
       } catch (error) {
-        console.error("Error loading profile:", error);
+        console.error("Error loading candidate profile:", error);
+        showNotification("Failed to load existing profile records.", "error");
       } finally {
         setLoading(false);
       }
     };
+
     fetchUser();
   }, [navigate, location]);
 
+  // AI Resume Parser Integration
   const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -173,19 +168,23 @@ export default function EditProfile() {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "application/msword",
     ];
-    if (!validTypes.includes(file.type))
-      return alert("Please upload a PDF, DOC, or DOCX file.");
+    if (!validTypes.includes(file.type)) {
+      showNotification("Please upload a PDF, DOC, or DOCX resume.", "error");
+      return;
+    }
 
     setIsParsing(true);
     const storedData = JSON.parse(localStorage.getItem("userInfo"));
     const userId = storedData.id || storedData.userId;
 
     try {
+      showNotification("Uploading resume to secure vault...", "info");
       const { data: s3Data } = await axios.post(
         `${API_BASE_URL}/user/${userId}/resume/upload-url`,
         { fileType: file.type },
         { headers: { Authorization: `Bearer ${storedData.token}` } }
       );
+
       if (window.__TAURI__) {
         const arrayBuffer = await file.arrayBuffer();
         await tauriFetch(s3Data.uploadUrl, {
@@ -200,6 +199,7 @@ export default function EditProfile() {
           headers: { "Content-Type": file.type },
         });
       }
+
       await axios.post(
         `${API_BASE_URL}/user/${userId}/resume/save-key`,
         { key: s3Data.key },
@@ -207,22 +207,18 @@ export default function EditProfile() {
       );
       setProfile((prev) => ({ ...prev, resumeFileKey: s3Data.key }));
 
+      showNotification("AI is parsing your credentials...", "info");
       let parsedData;
       if (window.__TAURI__) {
         const res = await axios.post(
           `${API_BASE_URL}/ai/parse-resume`,
           { key: s3Data.key },
-          {
-            headers: {
-              Authorization: `Bearer ${storedData.token}`,
-            },
-          }
+          { headers: { Authorization: `Bearer ${storedData.token}` } }
         );
         parsedData = res.data;
       } else {
         const formData = new FormData();
         formData.append("resume", file);
-
         const res = await axios.post(
           `${API_BASE_URL}/ai/parse-resume`,
           formData,
@@ -231,47 +227,38 @@ export default function EditProfile() {
               Authorization: `Bearer ${storedData.token}`,
               "Content-Type": "multipart/form-data",
             },
-          },
+          }
         );
         parsedData = res.data;
       }
 
       if (parsedData.name) setProfile((p) => ({ ...p, name: parsedData.name }));
-      if (parsedData.phone)
-        setProfile((p) => ({ ...p, phone: parsedData.phone }));
-      if (parsedData.description)
-        setProfile((p) => ({ ...p, description: parsedData.description }));
-      if (parsedData.skills)
-        setSkills((p) => Array.from(new Set([...p, ...parsedData.skills])));
-
+      if (parsedData.phone) setProfile((p) => ({ ...p, phone: parsedData.phone }));
+      if (parsedData.description) setProfile((p) => ({ ...p, description: parsedData.description }));
+      if (parsedData.skills) setSkills((p) => Array.from(new Set([...p, ...parsedData.skills])));
       if (parsedData.experience) setExperience(parsedData.experience);
       if (parsedData.education) setEducation(parsedData.education);
-
-      // FACT: Added missing state updates so AI extraction actually updates the frontend form!
       if (parsedData.projects) setProjects(parsedData.projects);
-      if (parsedData.certifications)
-        setCertifications(parsedData.certifications);
+      if (parsedData.certifications) setCertifications(parsedData.certifications);
       if (parsedData.volunteering) setVolunteering(parsedData.volunteering);
 
-      alert(
-        "Resume parsed successfully! The original file has been securely saved for recruiters. Please review the auto-filled details below.",
-      );
+      showNotification("Resume parsed successfully! Review auto-filled details below.", "success");
     } catch (error) {
       console.error("Upload/Parsing failed:", error);
-      alert("Failed to process resume. Please try again.");
+      showNotification("AI parsing was unable to read this file. Please fill fields manually.", "error");
     } finally {
       setIsParsing(false);
       e.target.value = null;
     }
   };
 
-  
+  // S3 Profile Picture Upload
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      alert("Please select a valid image file.");
+      showNotification("Please select a valid image file (JPG, PNG, WebP).", "error");
       return;
     }
 
@@ -301,74 +288,104 @@ export default function EditProfile() {
         });
       }
 
-      setProfile(prev => ({ ...prev, profilePicture: data.publicUrl }));
+      setProfile((prev) => ({ ...prev, profilePicture: data.publicUrl }));
+      showNotification("Profile avatar updated!", "success");
     } catch (error) {
       console.error("Image upload failed:", error);
-      alert("Failed to upload image. Please try again.");
+      showNotification("Failed to upload image. Please try again.", "error");
     } finally {
       setUploadingImage(false);
     }
   };
 
-  const handleProfileChange = (e) =>
+  const handleProfileChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
+    if (e.target.name === "gender" && e.target.value.trim() !== "") {
+      setGenderError(false);
+    }
+  };
 
+  // Skill Handlers
   const handleAddSkill = () => {
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {
       setSkills([...skills, newSkill.trim()]);
       setNewSkill("");
     }
   };
+
+  const handleRemoveSkill = (skillToRemove) => {
+    setSkills(skills.filter((s) => s !== skillToRemove));
+  };
+
+  // Section Add Handlers
   const handleAddExperience = () => {
     if (expForm.company && expForm.role) {
       setExperience([...experience, expForm]);
       setExpForm({ company: "", role: "", duration: "", description: "" });
-    } else alert("Company and Role required.");
+    } else {
+      showNotification("Company name and Role are required.", "error");
+    }
   };
+
   const handleAddEducation = () => {
     if (eduForm.degree && eduForm.university) {
       setEducation([...education, eduForm]);
-      setEduForm({
-        degree: "",
-        university: "",
-        started: "",
-        ended: "",
-        CGPA: "",
-      });
-    } else alert("Degree and University required.");
+      setEduForm({ degree: "", university: "", started: "", ended: "", CGPA: "" });
+    } else {
+      showNotification("Degree title and University are required.", "error");
+    }
   };
+
   const handleAddProject = () => {
     if (projForm.title) {
       setProjects([...projects, projForm]);
       setProjForm({ title: "", technologies: "", link: "", description: "" });
-    } else alert("Project title required.");
+    } else {
+      showNotification("Project title is required.", "error");
+    }
   };
+
   const handleAddCert = () => {
     if (certForm.name) {
       setCertifications([...certifications, certForm]);
       setCertForm({ name: "", issuer: "", year: "", link: "" });
-    } else alert("Certification name required.");
+    } else {
+      showNotification("Certification name is required.", "error");
+    }
   };
+
   const handleAddLink = () => {
     if (linkForm.platform && linkForm.url) {
       setPortfolioLinks([...portfolioLinks, linkForm]);
-      setLinkForm({ platform: "", url: "" });
-    } else alert("Platform and URL required.");
+      setLinkForm({ platform: "LinkedIn", url: "" });
+    } else {
+      showNotification("Platform and valid URL are required.", "error");
+    }
   };
+
   const handleAddVol = () => {
     if (volForm.organization && volForm.role) {
       setVolunteering([...volunteering, volForm]);
       setVolForm({ organization: "", role: "", duration: "", description: "" });
-    } else alert("Organization and Role required.");
+    } else {
+      showNotification("Organization and Role required.", "error");
+    }
   };
 
+  // Theme Switching Handler adhering to RULE[user_global]
+  const handleThemeChange = (mode) => {
+    setTheme(mode);
+    showNotification(`Theme set to ${mode.charAt(0).toUpperCase() + mode.slice(1)}.`);
+  };
+
+  // Main Save Submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
 
     if (!profile.gender || profile.gender.trim() === "") {
-      alert(
-        "Gender is a strictly required field. Employers use this to filter candidates based on specific job requirements. Please select a gender before saving.",
-      );
+      setGenderError(true);
+      setActiveTab("personal");
+      showNotification("Gender is required for demographic matching.", "error");
       return;
     }
 
@@ -391,835 +408,1089 @@ export default function EditProfile() {
       const { data } = await axios.patch(
         `${API_BASE_URL}/user/${userId}`,
         payload,
-        { headers: { Authorization: `Bearer ${storedUser.token}` } },
+        { headers: { Authorization: `Bearer ${storedUser.token}` } }
       );
 
       localStorage.setItem(
         "userInfo",
-        JSON.stringify({ ...storedUser, ...data, isProfileComplete: true }),
+        JSON.stringify({ ...storedUser, ...data, isProfileComplete: true })
       );
-      alert("Profile updated successfully!");
-      navigate("/profile");
+
+      showNotification("Dossier updated successfully!", "success");
+      setTimeout(() => navigate("/profile"), 800);
     } catch (error) {
       console.error("Update failed:", error);
-      alert("Failed to update profile.");
+      showNotification("Failed to save changes. Please try again.", "error");
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading)
+  const tabs = [
+    { id: "personal", label: "Contact & Bio", icon: User },
+    { id: "skills", label: "Skills Matrix", icon: Award },
+    { id: "experience", label: "Experience", icon: Briefcase },
+    { id: "education", label: "Education", icon: GraduationCap },
+    { id: "projects", label: "Projects", icon: Code2 },
+    { id: "certs", label: "Certifications", icon: FileText },
+    { id: "links", label: "Portfolios", icon: Globe },
+    { id: "privacy", label: "Settings & Privacy", icon: Sliders },
+  ];
+
+  // Reusable Form Input Classes
+  const inputClass =
+    "w-full rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:[var(--theme-input-placeholder)] focus:outline-none focus:border-[var(--theme-border-silver)] focus:ring-1 focus:ring-[var(--theme-border-silver)] py-2.5 px-3.5 text-xs sm:text-sm transition-all";
+  const labelClass = "block text-xs font-semibold text-[var(--theme-text)] mb-1.5";
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-950 flex justify-center items-center">
-        <Loader2 className="animate-spin text-blue-600" size={48} />
-      </div>
+      <CandidateLayout
+        activeTab="settings"
+        title="Profile & Account Settings"
+        breadcrumbs={[{ label: "Profile", path: "/profile" }, { label: "Settings" }]}
+      >
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center shadow-xs">
+            <Loader2 className="animate-spin text-[var(--theme-accent-silver)]" size={28} />
+          </div>
+          <span className="text-xs text-[var(--theme-text-muted)] font-mono">Loading profile editor...</span>
+        </div>
+      </CandidateLayout>
     );
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans relative overflow-hidden selection:bg-indigo-500/30 transition-colors duration-150">
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes lava-rise {
-          0% { transform: translateY(10vh) scaleX(1) scaleY(1); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-          50% { transform: translateY(-30vh) scaleX(1.1) scaleY(0.9); border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%; }
-          100% { transform: translateY(10vh) scaleX(1) scaleY(1); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-        }
-        @keyframes lava-fall {
-          0% { transform: translateY(-20vh) scaleX(1) scaleY(1); border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%; }
-          50% { transform: translateY(40vh) scaleX(0.9) scaleY(1.2); border-radius: 40% 60% 60% 40% / 50% 50% 60% 40%; }
-          100% { transform: translateY(-20vh) scaleX(1) scaleY(1); border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%; }
-        }
-        .animate-lava-rise { animation: lava-rise 15s infinite ease-in-out; }
-        .animate-lava-fall { animation: lava-fall 18s infinite ease-in-out; }
-        .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-5000 { animation-delay: 5s; }
-      `,
-        }}
-      />
-
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute -bottom-[20%] left-[-10%] w-[50vw] h-[50vw] bg-indigo-300/20 dark:bg-indigo-600/10 filter blur-[120px] animate-lava-rise"></div>
-        <div className="absolute -top-[10%] right-[-20%] w-[45vw] h-[45vw] bg-blue-300/20 dark:bg-blue-600/10 filter blur-[140px] animate-lava-fall animation-delay-2000"></div>
-        <div className="absolute top-[20%] left-[10%] w-[40vw] h-[40vw] bg-sky-200/20 dark:bg-sky-500/10 filter blur-[100px] animate-lava-rise animation-delay-5000"></div>
-      </div>
-
-      <div className="max-w-4xl mx-auto py-12 px-4 relative z-10">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
-            Edit Profile
-          </h1>
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 bg-white/50 hover:bg-white dark:bg-slate-800/60 dark:hover:bg-slate-800 backdrop-blur-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl transition-all shadow-sm"
+    <CandidateLayout
+      activeTab="settings"
+      title="Profile & Account Settings"
+      breadcrumbs={[{ label: "Profile", path: "/profile" }, { label: "Settings" }]}
+    >
+      <div className="pb-16 selection:bg-[var(--theme-text)] selection:text-[var(--theme-bg)] max-w-5xl mx-auto">
+        {/* Status Notification Toast */}
+        {statusMessage && (
+          <div
+            className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-md text-xs sm:text-sm font-bold border transition-all animate-in fade-in slide-in-from-bottom-4 duration-200 ${
+              statusMessage.type === "error"
+                ? "bg-rose-950 text-rose-100 border-rose-800"
+                : "bg-[var(--theme-text)] text-[var(--theme-bg)] border-[var(--theme-border)]"
+            }`}
           >
-            <ArrowLeft size={16} /> Cancel
-          </button>
+            {statusMessage.type === "error" ? (
+              <AlertTriangle size={18} className="text-rose-400 shrink-0" />
+            ) : (
+              <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
+            )}
+            <span>{statusMessage.msg}</span>
+          </div>
+        )}
+
+        {/* ─── AI RESUME AUTO-FILL BANNER ─────────────────────────────────── */}
+        <div className="mb-6 p-5 sm:p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] flex flex-col md:flex-row items-center justify-between gap-5 relative overflow-hidden shadow-xs">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-12 h-12 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-accent-silver)] flex items-center justify-center shrink-0">
+              <Sparkles size={22} className="animate-pulse" />
+            </div>
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-[var(--theme-text)] flex items-center gap-2">
+                <span>AI Resume Auto-Extract</span>
+                <span className="px-2 py-0.5 rounded-md bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[10px] font-mono text-[var(--theme-accent-silver)]">
+                  Gemini Flash
+                </span>
+              </h2>
+              <p className="text-xs text-[var(--theme-text-muted)] mt-0.5 max-w-xl">
+                Upload your latest resume to automatically parse work history, education, skills, and projects into your dossier in seconds.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0 w-full md:w-auto">
+            <label
+              className={`flex-1 md:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                isParsing
+                  ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] border border-[var(--theme-border)] cursor-not-allowed"
+                  : "bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] hover:opacity-90 shadow-xs"
+              }`}
+            >
+              {isParsing ? (
+                <>
+                  <Loader2 size={15} className="animate-spin" />
+                  <span>Parsing Document...</span>
+                </>
+              ) : (
+                <>
+                  <Upload size={15} />
+                  <span>Upload & Auto-Fill</span>
+                </>
+              )}
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx"
+                onChange={handleResumeUpload}
+                disabled={isParsing}
+                className="hidden"
+              />
+            </label>
+
+            <Link
+              to="/resume-builder"
+              className="px-4 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] text-[var(--theme-text)] border border-[var(--theme-border)] text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            >
+              <FileCode size={15} />
+              <span className="hidden sm:inline">ATS Builder</span>
+            </Link>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* AI MAGIC BANNER */}
-          <GlassCard className="border-indigo-200 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-950/30">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        {/* ─── TAB NAVIGATION BAR ────────────────────────────────────────── */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-2.5 mb-6 scrollbar-none border-b border-[var(--theme-border)]">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  isActive
+                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-xs"
+                    : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-transparent"
+                }`}
+              >
+                <Icon size={14} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ─── TAB CONTENT PANELS ───────────────────────────────────────── */}
+        <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] p-5 sm:p-7 space-y-6 shadow-xs">
+          
+          {/* TAB 1: CONTACT & BIO */}
+          {activeTab === "personal" && (
+            <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-2">
-                  <Sparkles className="text-indigo-600 dark:text-indigo-400" size={20} /> AI Resume Auto-Fill
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-                  Upload PDF/DOCX to securely save the file and auto-fill your details.
+                <h3 className="text-base font-bold text-[var(--theme-text)]">Basic Identity & Contact</h3>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                  Manage the core credentials visible to recruiters and hiring managers.
                 </p>
               </div>
-              <div className="relative group shrink-0">
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleResumeUpload}
-                  disabled={isParsing}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                />
-                <button
-                  type="button"
-                  disabled={isParsing}
-                  className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-md transition-all w-full cursor-pointer"
-                >
-                  {isParsing ? (
-                    <>
-                      <Loader2 className="animate-spin" size={18} /> Parsing...
-                    </>
-                  ) : (
-                    <>
-                      <Upload size={18} /> Upload Resume
-                    </>
+
+              {/* Avatar Upload */}
+              <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-xl bg-[var(--theme-surface-elevated)]/40 border border-[var(--theme-border)]">
+                <div className="relative group shrink-0">
+                  <div className="w-20 h-20 rounded-xl overflow-hidden bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] flex items-center justify-center">
+                    {profile.profilePicture ? (
+                      <img
+                        src={profile.profilePicture}
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User size={30} className="text-[var(--theme-text-muted)]" />
+                    )}
+                  </div>
+                  {uploadingImage && (
+                    <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center">
+                      <Loader2 size={20} className="animate-spin text-white" />
+                    </div>
                   )}
-                </button>
-              </div>
-            </div>
-            {profile.resumeFileKey && (
-              <p className="mt-4 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-full inline-block">
-                ✓ Resume securely attached
-              </p>
-            )}
-            <div className="mt-4 pt-4 border-t border-indigo-200/60 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-bold text-slate-900 dark:text-slate-100">Verification & Credential Documents</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Upload optional marksheets, ID proofs, and salary slips.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => navigate("/jobseeker-documents")}
-                className="bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-700 px-4 py-2 rounded-xl font-bold text-sm transition shadow-xs w-fit cursor-pointer"
-              >
-                Manage Documents →
-              </button>
-            </div>
-          </GlassCard>
-
-          {/* 1. PERSONAL DETAILS */}
-          <GlassCard>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <User className="text-indigo-600 dark:text-indigo-400" size={22} /> Personal Details
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InputGroup
-                label="Full Name"
-                name="name"
-                value={profile.name}
-                onChange={handleProfileChange}
-              />
-              <InputGroup
-                label="Phone Number"
-                name="phone"
-                value={profile.phone}
-                onChange={handleProfileChange}
-              />
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">
-                  Gender <span className="text-indigo-600 dark:text-indigo-400">*</span>
-                </label>
-                <select
-                  name="gender"
-                  value={profile.gender || ""}
-                  onChange={handleProfileChange}
-                  className="w-full p-3.5 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 text-slate-900 dark:text-slate-100 transition-all shadow-xs cursor-pointer"
-                >
-                  <option value="" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Select Gender</option>
-                  <option value="Male" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Male</option>
-                  <option value="Female" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Female</option>
-                  <option value="Other" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Other</option>
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
-                  Profile Picture
-                </label>
-                <div className="flex gap-4 mb-3 border-b border-slate-200 dark:border-slate-800 pb-2">
-                  <button
-                    type="button"
-                    onClick={() => setImgUploadType("link")}
-                    className={`text-sm font-semibold transition-colors pb-1 cursor-pointer ${
-                      imgUploadType === "link"
-                        ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold"
-                        : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
-                    }`}
+                  <label
+                    htmlFor="avatar-upload"
+                    className="absolute -bottom-1 -right-1 p-1.5 rounded-lg bg-[var(--theme-text)] text-[var(--theme-bg)] cursor-pointer shadow-md hover:opacity-90 transition-opacity"
+                    title="Change profile avatar"
                   >
-                    Provide Link
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setImgUploadType("upload")}
-                    className={`text-sm font-semibold transition-colors pb-1 cursor-pointer ${
-                      imgUploadType === "upload"
-                        ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold"
-                        : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
-                    }`}
-                  >
-                    Upload Image
-                  </button>
-                </div>
-
-                {imgUploadType === "link" ? (
-                  <InputGroup
-                    label=""
-                    name="profilePicture"
-                    value={profile.profilePicture}
-                    onChange={handleProfileChange}
-                    placeholder="https://example.com/photo.jpg"
-                  />
-                ) : (
-                  <div className="flex items-center gap-4">
+                    <Camera size={13} />
                     <input
+                      id="avatar-upload"
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
                       disabled={uploadingImage}
-                      className="block w-full text-sm text-slate-500 dark:text-slate-400
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-full file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-blue-50 dark:file:bg-slate-800 file:text-blue-700 dark:file:text-blue-400
-                        hover:file:bg-blue-100 cursor-pointer
-                        border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl p-2"
+                      className="hidden"
                     />
-                    {uploadingImage && <Loader2 className="animate-spin text-blue-600" size={24} />}
-                  </div>
-                )}
-                {profile.profilePicture && !uploadingImage && (
-                  <div className="mt-3 flex items-center gap-3">
-                    <img src={profile.profilePicture} alt="Profile Preview" className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-200 dark:border-slate-700" />
-                    <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2 py-1 rounded">Image ready</span>
-                  </div>
-                )}
-              </div>
-              <InputGroup
-                label="Email Address"
-                name="email"
-                value={profile.email}
-                disabled={true}
-              />
-            </div>
-          </GlassCard>
-
-          {/* 2. SUMMARY */}
-          <GlassCard>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <FileText className="text-indigo-600 dark:text-indigo-400" size={22} /> Professional Summary
-            </h2>
-            <textarea
-              name="description"
-              value={profile.description}
-              onChange={handleProfileChange}
-              rows={4}
-              className="w-full p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 dark:focus:ring-blue-900/40 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all resize-none shadow-sm "
-              placeholder="Tell employers about yourself..."
-            />
-          </GlassCard>
-
-          {/* 3. SKILLS */}
-          <GlassCard>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <Code className="text-indigo-600 dark:text-indigo-400" size={22} /> Skills
-            </h2>
-            <div className="flex gap-3 mb-6">
-              <input
-                value={newSkill}
-                onChange={(e) => setNewSkill(e.target.value)}
-                placeholder="Type a skill..."
-                className="flex-1 p-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 dark:focus:ring-blue-900/40 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-sm "
-                onKeyDown={(e) =>
-                  e.key === "Enter" && (e.preventDefault(), handleAddSkill())
-                }
-              />
-              <button
-                type="button"
-                onClick={handleAddSkill}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-xl font-bold shadow-md transition-all"
-              >
-                Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {skills.map((skill, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xs"
-                >
-                  <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
-                    {skill}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setSkills(skills.filter((s) => s !== skill))}
-                    className="text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
-                  >
-                    <X size={14} />
-                  </button>
+                  </label>
                 </div>
-              ))}
-            </div>
-          </GlassCard>
 
-          {/* 4. WORK EXPERIENCE */}
-          <GlassCard>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <Briefcase className="text-indigo-600 dark:text-indigo-400" size={22} /> Work Experience
-            </h2>
-            <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <GlassInput
-                  value={expForm.role}
-                  onChange={(e) =>
-                    setExpForm({ ...expForm, role: e.target.value })
-                  }
-                  placeholder="Job Title"
-                />
-                <GlassInput
-                  value={expForm.company}
-                  onChange={(e) =>
-                    setExpForm({ ...expForm, company: e.target.value })
-                  }
-                  placeholder="Company"
-                />
-                <GlassInput
-                  value={expForm.duration}
-                  onChange={(e) =>
-                    setExpForm({ ...expForm, duration: e.target.value })
-                  }
-                  placeholder="Duration (e.g. 2020 - Present)"
-                />
-                <GlassInput
-                  value={expForm.description}
-                  onChange={(e) =>
-                    setExpForm({ ...expForm, description: e.target.value })
-                  }
-                  placeholder="Description"
+                <div className="min-w-0 flex-1 text-center sm:text-left">
+                  <h4 className="text-sm font-bold text-[var(--theme-text)]">Profile Photo</h4>
+                  <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                    Recommended: 400x400 JPG, PNG or WebP. Stored in high-resolution cloud storage.
+                  </p>
+                </div>
+              </div>
+
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>
+                    Full Legal Name <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={profile.name}
+                    onChange={handleProfileChange}
+                    placeholder="Adarsh Sharma"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    Verified Email <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={profile.email}
+                    onChange={handleProfileChange}
+                    placeholder="adarsh@jobone.com"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    Contact Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={profile.phone}
+                    onChange={handleProfileChange}
+                    placeholder="+91 98765 43210"
+                    className={inputClass}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    Gender Identity <span className="text-red-400">*</span>
+                  </label>
+                  <select
+                    name="gender"
+                    value={profile.gender}
+                    onChange={handleProfileChange}
+                    className={`${inputClass} ${genderError ? "border-red-500/80 focus:border-red-500" : ""}`}
+                    required
+                  >
+                    <option value="">Select Gender Identity</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Non-Binary / Other</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                  {genderError && (
+                    <p className="text-[11px] text-red-400 mt-1 font-medium">
+                      Please select a gender option.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    Professional Headline
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={profile.title}
+                    onChange={handleProfileChange}
+                    placeholder="Full Stack Engineer • React & Node.js"
+                    className={inputClass}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    Target Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={profile.location}
+                    onChange={handleProfileChange}
+                    placeholder="Bengaluru, Karnataka / Remote"
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+
+              {/* Bio / Summary */}
+              <div>
+                <label className={labelClass}>
+                  Executive Summary / Bio
+                </label>
+                <textarea
+                  name="description"
+                  rows={4}
+                  value={profile.description}
+                  onChange={handleProfileChange}
+                  placeholder="Summarize your professional background, top technical strengths, leadership experience, and target roles..."
+                  className={`${inputClass} resize-y min-h-[100px] leading-relaxed`}
                 />
               </div>
-              <button
-                type="button"
-                onClick={handleAddExperience}
-                className="w-full py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-200 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-sm"
-              >
-                <Plus size={18} /> Add Position
-              </button>
             </div>
-            <div className="space-y-4">
-              {experience.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl flex justify-between items-start backdrop-blur-md shadow-sm"
+          )}
+
+          {/* TAB 2: SKILLS MATRIX */}
+          {activeTab === "skills" && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-base font-bold text-[var(--theme-text)]">Technical & Domain Skills</h3>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                  Skills are matched directly against ATS algorithms and recruiter searches.
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddSkill();
+                    }
+                  }}
+                  placeholder="Add skill (e.g., React, TypeScript, GraphQL, Docker)..."
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  onClick={handleAddSkill}
+                  className="px-4 py-2.5 rounded-xl bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] font-semibold text-xs flex items-center gap-1.5 shrink-0 hover:opacity-90 transition-opacity shadow-xs"
                 >
+                  <Plus size={15} />
+                  <span>Add</span>
+                </button>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[var(--theme-surface-elevated)]/30 border border-[var(--theme-border)]">
+                {skills.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {skills.map((s, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] group"
+                      >
+                        <span>{s}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSkill(s)}
+                          className="text-[var(--theme-text-muted)] hover:text-red-400 transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[var(--theme-text-muted)] italic text-center py-4">
+                    No skills added yet. Type a skill above and press Add.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: EXPERIENCE */}
+          {activeTab === "experience" && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-base font-bold text-[var(--theme-text)]">Work Experience</h3>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                  Record past positions, internships, and key career achievements.
+                </p>
+              </div>
+
+              {/* Add Experience Form */}
+              <div className="p-5 rounded-xl bg-[var(--theme-surface-elevated)]/30 border border-[var(--theme-border)] space-y-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--theme-accent-silver)]">
+                  + Add Experience Entry
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
-                    <h4 className="font-bold text-lg text-slate-900 dark:text-white">
-                      {item.role}
-                    </h4>
-                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-2">
-                      {item.company}{" "}
-                      <span className="text-slate-300 px-2">•</span>{" "}
-                      {item.duration}
-                    </p>
-                    {item.description && (
-                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-                        {item.description}
+                    <label className={labelClass}>Company Name *</label>
+                    <input
+                      type="text"
+                      value={expForm.company}
+                      onChange={(e) => setExpForm({ ...expForm, company: e.target.value })}
+                      placeholder="e.g. Google, Microsoft, Startup"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Role Title *</label>
+                    <input
+                      type="text"
+                      value={expForm.role}
+                      onChange={(e) => setExpForm({ ...expForm, role: e.target.value })}
+                      placeholder="e.g. Senior Frontend Architect"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Duration / Dates</label>
+                    <input
+                      type="text"
+                      value={expForm.duration}
+                      onChange={(e) => setExpForm({ ...expForm, duration: e.target.value })}
+                      placeholder="e.g. Jan 2022 – Present"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Key Responsibilities & Impact</label>
+                    <textarea
+                      rows={3}
+                      value={expForm.description}
+                      onChange={(e) => setExpForm({ ...expForm, description: e.target.value })}
+                      placeholder="Led frontend performance migration reducing bundle size by 40%..."
+                      className={`${inputClass} resize-y`}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddExperience}
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] font-semibold text-xs flex items-center gap-1.5 hover:opacity-90 shadow-xs transition-opacity"
+                >
+                  <Plus size={14} />
+                  <span>Add Role to List</span>
+                </button>
+              </div>
+
+              {/* Existing List */}
+              <div className="space-y-3">
+                {experience.map((exp, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-xl bg-[var(--theme-surface-elevated)]/50 border border-[var(--theme-border)] flex items-start justify-between gap-4"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-sm font-bold text-[var(--theme-text)]">{exp.role}</h4>
+                      <p className="text-xs text-[var(--theme-text-muted)] font-medium">
+                        {exp.company} {exp.duration ? `• ${exp.duration}` : ""}
                       </p>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setExperience(experience.filter((_, i) => i !== idx))
-                    }
-                    className="text-slate-400 hover:text-blue-600 transition-colors p-1"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </GlassCard>
-
-          {/* 5. EDUCATION */}
-          <GlassCard>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <GraduationCap className="text-indigo-600 dark:text-indigo-400" size={22} /> Education
-            </h2>
-            <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="md:col-span-2">
-                  <GlassInput
-                    value={eduForm.degree}
-                    onChange={(e) =>
-                      setEduForm({ ...eduForm, degree: e.target.value })
-                    }
-                    placeholder="Degree (e.g. B.Tech Computer Science)"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <GlassInput
-                    value={eduForm.university}
-                    onChange={(e) =>
-                      setEduForm({ ...eduForm, university: e.target.value })
-                    }
-                    placeholder="University / College"
-                  />
-                </div>
-                <GlassInput
-                  value={eduForm.started}
-                  onChange={(e) =>
-                    setEduForm({ ...eduForm, started: e.target.value })
-                  }
-                  placeholder="Start Year"
-                />
-                <GlassInput
-                  value={eduForm.ended}
-                  onChange={(e) =>
-                    setEduForm({ ...eduForm, ended: e.target.value })
-                  }
-                  placeholder="End Year (or Expected)"
-                />
-                <div className="md:col-span-2">
-                  <GlassInput
-                    value={eduForm.CGPA}
-                    onChange={(e) =>
-                      setEduForm({ ...eduForm, CGPA: e.target.value })
-                    }
-                    placeholder="CGPA / Percentage"
-                  />
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={handleAddEducation}
-                className="w-full py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-200 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-sm"
-              >
-                <Plus size={18} /> Add Education
-              </button>
-            </div>
-            <div className="space-y-4">
-              {education.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl flex justify-between items-start backdrop-blur-md shadow-sm"
-                >
-                  <div>
-                    <h4 className="font-bold text-lg text-slate-900 dark:text-white">
-                      {item.degree}
-                    </h4>
-                    <p className="text-sm text-blue-700 dark:text-blue-400 font-medium mb-1">
-                      {item.university}
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
-                      {item.started} - {item.ended}{" "}
-                      {item.CGPA && (
-                        <span className="ml-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">
-                          CGPA: {item.CGPA}
-                        </span>
+                      {exp.description && (
+                        <p className="text-xs text-[var(--theme-text-muted)] mt-1.5 leading-relaxed whitespace-pre-line">
+                          {exp.description}
+                        </p>
                       )}
-                    </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setExperience(experience.filter((_, i) => i !== idx))}
+                      className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setEducation(education.filter((_, i) => i !== idx))
-                    }
-                    className="text-slate-400 hover:text-blue-600 transition-colors p-1"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </GlassCard>
-
-          {/* 6. PROJECTS */}
-          <GlassCard>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <FileText className="text-indigo-600 dark:text-indigo-400" size={22} /> Projects
-            </h2>
-            <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <GlassInput
-                  value={projForm.title}
-                  onChange={(e) =>
-                    setProjForm({ ...projForm, title: e.target.value })
-                  }
-                  placeholder="Project Title"
-                />
-                <GlassInput
-                  value={projForm.link}
-                  onChange={(e) =>
-                    setProjForm({ ...projForm, link: e.target.value })
-                  }
-                  placeholder="Project URL"
-                />
-                <div className="md:col-span-2">
-                  <GlassInput
-                    value={projForm.technologies}
-                    onChange={(e) =>
-                      setProjForm({ ...projForm, technologies: e.target.value })
-                    }
-                    placeholder="Technologies Used"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <textarea
-                    value={projForm.description}
-                    onChange={(e) =>
-                      setProjForm({ ...projForm, description: e.target.value })
-                    }
-                    placeholder="Description"
-                    rows={3}
-                    className="w-full p-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 dark:focus:ring-blue-900/40 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all resize-none shadow-sm "
-                  />
-                </div>
+                ))}
               </div>
-              <button
-                type="button"
-                onClick={handleAddProject}
-                className="w-full py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-200 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-sm"
-              >
-                <Plus size={18} /> Add Project
-              </button>
             </div>
-            <div className="space-y-4">
-              {projects.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl flex justify-between items-start backdrop-blur-md shadow-sm"
-                >
+          )}
+
+          {/* TAB 4: EDUCATION */}
+          {activeTab === "education" && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-base font-bold text-[var(--theme-text)]">Education & Academics</h3>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                  List university degrees, diplomas, and relevant coursework.
+                </p>
+              </div>
+
+              {/* Add Education Form */}
+              <div className="p-5 rounded-xl bg-[var(--theme-surface-elevated)]/30 border border-[var(--theme-border)] space-y-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--theme-accent-silver)]">
+                  + Add Academic Degree
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
-                    <h4 className="font-bold text-lg text-slate-900 dark:text-white">
-                      {item.title}
-                    </h4>
-                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium my-1">
-                      {item.technologies}
-                    </p>
-                    {item.description && (
-                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-                        {item.description}
+                    <label className={labelClass}>Degree / Course Title *</label>
+                    <input
+                      type="text"
+                      value={eduForm.degree}
+                      onChange={(e) => setEduForm({ ...eduForm, degree: e.target.value })}
+                      placeholder="e.g. B.Tech Computer Science"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>University / College *</label>
+                    <input
+                      type="text"
+                      value={eduForm.university}
+                      onChange={(e) => setEduForm({ ...eduForm, university: e.target.value })}
+                      placeholder="e.g. Indian Institute of Technology"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Start Year</label>
+                    <input
+                      type="text"
+                      value={eduForm.started}
+                      onChange={(e) => setEduForm({ ...eduForm, started: e.target.value })}
+                      placeholder="e.g. 2018"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>End / Graduation Year</label>
+                    <input
+                      type="text"
+                      value={eduForm.ended}
+                      onChange={(e) => setEduForm({ ...eduForm, ended: e.target.value })}
+                      placeholder="e.g. 2022"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>CGPA / Grade Percentage</label>
+                    <input
+                      type="text"
+                      value={eduForm.CGPA}
+                      onChange={(e) => setEduForm({ ...eduForm, CGPA: e.target.value })}
+                      placeholder="e.g. 8.75 / 10.0"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddEducation}
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] font-semibold text-xs flex items-center gap-1.5 hover:opacity-90 shadow-xs transition-opacity"
+                >
+                  <Plus size={14} />
+                  <span>Add Degree to List</span>
+                </button>
+              </div>
+
+              {/* Existing List */}
+              <div className="space-y-3">
+                {education.map((edu, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-xl bg-[var(--theme-surface-elevated)]/50 border border-[var(--theme-border)] flex items-start justify-between gap-4"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-sm font-bold text-[var(--theme-text)]">{edu.degree}</h4>
+                      <p className="text-xs text-[var(--theme-text-muted)] font-medium">
+                        {edu.university} {edu.started || edu.ended ? `(${edu.started} – ${edu.ended})` : ""}
                       </p>
-                    )}
+                      {edu.CGPA && (
+                        <p className="text-xs font-mono text-[var(--theme-accent-silver)] mt-1">
+                          Grade: {edu.CGPA}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setEducation(education.filter((_, i) => i !== idx))}
+                      className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setProjects(projects.filter((_, i) => i !== idx))
-                    }
-                    className="text-slate-400 hover:text-blue-600 transition-colors p-1"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </GlassCard>
-
-          {/* 7. CERTIFICATIONS */}
-          <GlassCard>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <Award className="text-indigo-600 dark:text-indigo-400" size={22} /> Certifications
-            </h2>
-            <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="md:col-span-2">
-                  <GlassInput
-                    value={certForm.name}
-                    onChange={(e) =>
-                      setCertForm({ ...certForm, name: e.target.value })
-                    }
-                    placeholder="Certification Name"
-                  />
-                </div>
-                <GlassInput
-                  value={certForm.issuer}
-                  onChange={(e) =>
-                    setCertForm({ ...certForm, issuer: e.target.value })
-                  }
-                  placeholder="Issuer"
-                />
-                <GlassInput
-                  value={certForm.year}
-                  onChange={(e) =>
-                    setCertForm({ ...certForm, year: e.target.value })
-                  }
-                  placeholder="Year"
-                />
-                <div className="md:col-span-2">
-                  <GlassInput
-                    value={certForm.link}
-                    onChange={(e) =>
-                      setCertForm({ ...certForm, link: e.target.value })
-                    }
-                    placeholder="Credential URL"
-                  />
-                </div>
+                ))}
               </div>
-              <button
-                type="button"
-                onClick={handleAddCert}
-                className="w-full py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-200 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-sm"
-              >
-                <Plus size={18} /> Add Certification
-              </button>
             </div>
-            <div className="space-y-4">
-              {certifications.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl flex justify-between items-start backdrop-blur-md shadow-sm"
-                >
+          )}
+
+          {/* TAB 5: PROJECTS */}
+          {activeTab === "projects" && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-base font-bold text-[var(--theme-text)]">Showcase Projects</h3>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                  Highlight live products, open-source repos, or portfolio prototypes.
+                </p>
+              </div>
+
+              {/* Add Project Form */}
+              <div className="p-5 rounded-xl bg-[var(--theme-surface-elevated)]/30 border border-[var(--theme-border)] space-y-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--theme-accent-silver)]">
+                  + Add Project Showcase
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
-                    <h4 className="font-bold text-lg text-slate-900 dark:text-white">
-                      {item.name}
-                    </h4>
-                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-1">
-                      {item.issuer}{" "}
-                      <span className="text-slate-300 px-1">•</span> {item.year}
-                    </p>
+                    <label className={labelClass}>Project Title *</label>
+                    <input
+                      type="text"
+                      value={projForm.title}
+                      onChange={(e) => setProjForm({ ...projForm, title: e.target.value })}
+                      placeholder="e.g. AI-Powered ATS Pipeline"
+                      className={inputClass}
+                    />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setCertifications(
-                        certifications.filter((_, i) => i !== idx),
-                      )
-                    }
-                    className="text-slate-400 hover:text-blue-600 transition-colors p-1"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </GlassCard>
-
-          {/* 8. ONLINE PRESENCE */}
-          <GlassCard>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <Globe className="text-indigo-600 dark:text-indigo-400" size={22} /> Online Presence
-            </h2>
-            <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <GlassInput
-                  value={linkForm.platform}
-                  onChange={(e) =>
-                    setLinkForm({ ...linkForm, platform: e.target.value })
-                  }
-                  placeholder="Platform (e.g. GitHub)"
-                />
-                <GlassInput
-                  value={linkForm.url}
-                  onChange={(e) =>
-                    setLinkForm({ ...linkForm, url: e.target.value })
-                  }
-                  placeholder="URL"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={handleAddLink}
-                className="w-full py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-200 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-sm"
-              >
-                <Plus size={18} /> Add Link
-              </button>
-            </div>
-            <div className="space-y-4">
-              {portfolioLinks.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl flex justify-between items-center backdrop-blur-md shadow-sm"
-                >
-                  <div className="min-w-0">
-                    <h4 className="font-bold text-slate-900 dark:text-white">
-                      {item.platform}
-                    </h4>
-                    <p className="text-sm text-blue-700 dark:text-blue-400 truncate mt-0.5">
-                      {item.url}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setPortfolioLinks(
-                        portfolioLinks.filter((_, i) => i !== idx),
-                      )
-                    }
-                    className="text-slate-400 hover:text-blue-600 transition-colors p-2 shrink-0"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </GlassCard>
-
-          {/* 9. VOLUNTEERING */}
-          <GlassCard>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-              <HeartHandshake className="text-blue-600" size={22} />{" "}
-              Volunteering
-            </h2>
-            <div className="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 mb-6 shadow-inner ">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="md:col-span-2">
-                  <GlassInput
-                    value={volForm.organization}
-                    onChange={(e) =>
-                      setVolForm({ ...volForm, organization: e.target.value })
-                    }
-                    placeholder="Organization"
-                  />
-                </div>
-                <GlassInput
-                  value={volForm.role}
-                  onChange={(e) =>
-                    setVolForm({ ...volForm, role: e.target.value })
-                  }
-                  placeholder="Role"
-                />
-                <GlassInput
-                  value={volForm.duration}
-                  onChange={(e) =>
-                    setVolForm({ ...volForm, duration: e.target.value })
-                  }
-                  placeholder="Duration"
-                />
-                <div className="md:col-span-2">
-                  <textarea
-                    value={volForm.description}
-                    onChange={(e) =>
-                      setVolForm({ ...volForm, description: e.target.value })
-                    }
-                    placeholder="Description"
-                    rows={3}
-                    className="w-full p-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-100 dark:focus:ring-blue-900/40 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all resize-none shadow-sm "
-                  />
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={handleAddVol}
-                className="w-full py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-200 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-sm"
-              >
-                <Plus size={18} /> Add Volunteering
-              </button>
-            </div>
-            <div className="space-y-4">
-              {volunteering.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl flex justify-between items-start backdrop-blur-md shadow-sm"
-                >
                   <div>
-                    <h4 className="font-bold text-lg text-slate-900 dark:text-white">
-                      {item.organization}
-                    </h4>
-                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium my-1">
-                      {item.role} <span className="text-slate-300 px-1">•</span>{" "}
-                      {item.duration}
-                    </p>
-                    {item.description && (
-                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-                        {item.description}
+                    <label className={labelClass}>Technologies Used</label>
+                    <input
+                      type="text"
+                      value={projForm.technologies}
+                      onChange={(e) => setProjForm({ ...projForm, technologies: e.target.value })}
+                      placeholder="e.g. React, Node.js, AWS S3, Tailwind"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Live URL or GitHub Link</label>
+                    <input
+                      type="url"
+                      value={projForm.link}
+                      onChange={(e) => setProjForm({ ...projForm, link: e.target.value })}
+                      placeholder="https://github.com/..."
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Project Description</label>
+                    <textarea
+                      rows={3}
+                      value={projForm.description}
+                      onChange={(e) => setProjForm({ ...projForm, description: e.target.value })}
+                      placeholder="Built real-time resume parsing engine with 99% accuracy..."
+                      className={`${inputClass} resize-y`}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddProject}
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] font-semibold text-xs flex items-center gap-1.5 hover:opacity-90 shadow-xs transition-opacity"
+                >
+                  <Plus size={14} />
+                  <span>Add Project</span>
+                </button>
+              </div>
+
+              {/* Existing List */}
+              <div className="space-y-3">
+                {projects.map((proj, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-xl bg-[var(--theme-surface-elevated)]/50 border border-[var(--theme-border)] flex items-start justify-between gap-4"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-sm font-bold text-[var(--theme-text)]">{proj.title}</h4>
+                      {proj.technologies && (
+                        <p className="text-xs font-mono text-[var(--theme-accent-silver)] mt-0.5">
+                          {proj.technologies}
+                        </p>
+                      )}
+                      {proj.description && (
+                        <p className="text-xs text-[var(--theme-text-muted)] mt-1.5 leading-relaxed">
+                          {proj.description}
+                        </p>
+                      )}
+                      {proj.link && (
+                        <a
+                          href={proj.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:underline mt-2 inline-block truncate max-w-sm"
+                        >
+                          {proj.link}
+                        </a>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setProjects(projects.filter((_, i) => i !== idx))}
+                      className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: CERTIFICATIONS */}
+          {activeTab === "certs" && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-base font-bold text-[var(--theme-text)]">Certifications & Accreditations</h3>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                  Industry certifications, professional licenses, and course completions.
+                </p>
+              </div>
+
+              {/* Add Cert Form */}
+              <div className="p-5 rounded-xl bg-[var(--theme-surface-elevated)]/30 border border-[var(--theme-border)] space-y-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--theme-accent-silver)]">
+                  + Add Certification
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label className={labelClass}>Certification Title *</label>
+                    <input
+                      type="text"
+                      value={certForm.name}
+                      onChange={(e) => setCertForm({ ...certForm, name: e.target.value })}
+                      placeholder="e.g. AWS Solutions Architect"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Issuing Organization</label>
+                    <input
+                      type="text"
+                      value={certForm.issuer}
+                      onChange={(e) => setCertForm({ ...certForm, issuer: e.target.value })}
+                      placeholder="e.g. Amazon Web Services"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Issue Year</label>
+                    <input
+                      type="text"
+                      value={certForm.year}
+                      onChange={(e) => setCertForm({ ...certForm, year: e.target.value })}
+                      placeholder="e.g. 2024"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Verification URL</label>
+                    <input
+                      type="url"
+                      value={certForm.link}
+                      onChange={(e) => setCertForm({ ...certForm, link: e.target.value })}
+                      placeholder="https://..."
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddCert}
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] font-semibold text-xs flex items-center gap-1.5 hover:opacity-90 shadow-xs transition-opacity"
+                >
+                  <Plus size={14} />
+                  <span>Add Certification</span>
+                </button>
+              </div>
+
+              {/* Existing List */}
+              <div className="space-y-3">
+                {certifications.map((cert, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-xl bg-[var(--theme-surface-elevated)]/50 border border-[var(--theme-border)] flex items-start justify-between gap-4"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-sm font-bold text-[var(--theme-text)]">{cert.name}</h4>
+                      <p className="text-xs text-[var(--theme-text-muted)] font-medium">
+                        {cert.issuer} {cert.year ? `• ${cert.year}` : ""}
                       </p>
-                    )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setCertifications(certifications.filter((_, i) => i !== idx))}
+                      className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0 cursor-pointer"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Volunteering & Community Initiatives */}
+              <div className="pt-6 border-t border-[var(--theme-border)] space-y-4">
+                <div>
+                  <h4 className="text-sm font-bold text-[var(--theme-text)]">Volunteering & Community Initiatives</h4>
+                  <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                    Showcase non-profit mentorship, open-source maintainership, or community leadership.
+                  </p>
+                </div>
+                <div className="p-4 rounded-2xl bg-[var(--theme-surface-elevated)]/40 border border-[var(--theme-border)] space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-[var(--theme-text-muted)] uppercase tracking-wider mb-1">
+                        Organization
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Humanitarian Org, Tech Meetup"
+                        value={volForm.organization}
+                        onChange={(e) => setVolForm({ ...volForm, organization: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)] focus:border-[var(--theme-border-silver)] focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-[var(--theme-text-muted)] uppercase tracking-wider mb-1">
+                        Role / Responsibility
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Lead Mentor, Workshop Host"
+                        value={volForm.role}
+                        onChange={(e) => setVolForm({ ...volForm, role: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)] focus:border-[var(--theme-border-silver)] focus:outline-none"
+                      />
+                    </div>
                   </div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setVolunteering(volunteering.filter((_, i) => i !== idx))
-                    }
-                    className="text-slate-400 hover:text-blue-600 transition-colors p-1"
+                    onClick={handleAddVol}
+                    className="px-4 py-2 rounded-xl bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] font-semibold text-xs flex items-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer"
                   >
-                    <X size={20} />
+                    <Plus size={14} />
+                    <span>Add Volunteering</span>
                   </button>
                 </div>
-              ))}
-            </div>
-          </GlassCard>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 pb-20">
+                <div className="space-y-3">
+                  {volunteering.map((vol, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 rounded-xl bg-[var(--theme-surface-elevated)]/50 border border-[var(--theme-border)] flex items-start justify-between gap-4"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-sm font-bold text-[var(--theme-text)]">{vol.role}</h4>
+                        <p className="text-xs text-[var(--theme-text-muted)] font-medium">
+                          {vol.organization}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setVolunteering(volunteering.filter((_, i) => i !== idx))}
+                        className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0 cursor-pointer"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 7: PORTFOLIOS */}
+          {activeTab === "links" && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-base font-bold text-[var(--theme-text)]">Online Portfolios & Profiles</h3>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                  Link your professional social presence so recruiters can view code samples and work.
+                </p>
+              </div>
+
+              {/* Add Link Form */}
+              <div className="p-5 rounded-xl bg-[var(--theme-surface-elevated)]/30 border border-[var(--theme-border)] space-y-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--theme-accent-silver)]">
+                  + Add Portfolio / Social Link
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label className={labelClass}>Platform *</label>
+                    <select
+                      value={linkForm.platform}
+                      onChange={(e) => setLinkForm({ ...linkForm, platform: e.target.value })}
+                      className={inputClass}
+                    >
+                      <option value="LinkedIn">LinkedIn</option>
+                      <option value="GitHub">GitHub</option>
+                      <option value="Twitter">Twitter / X</option>
+                      <option value="Dribbble">Dribbble</option>
+                      <option value="Behance">Behance</option>
+                      <option value="Instagram">Instagram</option>
+                      <option value="Personal Website">Personal Website</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Profile URL *</label>
+                    <input
+                      type="url"
+                      value={linkForm.url}
+                      onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
+                      placeholder="https://..."
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddLink}
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] font-semibold text-xs flex items-center gap-1.5 hover:opacity-90 shadow-xs transition-opacity"
+                >
+                  <Plus size={14} />
+                  <span>Add Link</span>
+                </button>
+              </div>
+
+              {/* Existing List */}
+              <div className="space-y-3">
+                {portfolioLinks.map((link, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-xl bg-[var(--theme-surface-elevated)]/50 border border-[var(--theme-border)] flex items-center justify-between gap-4"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-sm font-bold text-[var(--theme-text)]">{link.platform}</h4>
+                      <p className="text-xs text-[var(--theme-text-muted)] font-mono truncate">{link.url}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setPortfolioLinks(portfolioLinks.filter((_, i) => i !== idx))}
+                      className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 8: PRIVACY & SYSTEM SETTINGS */}
+          {activeTab === "privacy" && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-base font-bold text-[var(--theme-text)]">Account, Theme & Privacy Settings</h3>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                  Configure recruiter visibility, platform appearance, and security credentials.
+                </p>
+              </div>
+
+              {/* Theme Preference per RULE[user_global] */}
+              <div className="p-5 rounded-xl bg-[var(--theme-surface-elevated)]/40 border border-[var(--theme-border)] space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--theme-text)]">
+                  Appearance Theme
+                </h4>
+                <p className="text-xs text-[var(--theme-text-muted)]">
+                  Choose between Dark (#050505), Light (#F8F9FA), or System Default mode.
+                </p>
+                <div className="grid grid-cols-3 gap-3 pt-2">
+                  {[
+                    { id: "dark", label: "Dark Theme", icon: Moon, desc: "#050505 Monochromatic" },
+                    { id: "light", label: "Light Theme", icon: Sun, desc: "#F8F9FA Clean" },
+                    { id: "default", label: "System Default", icon: Laptop, desc: "OS Sync" },
+                  ].map((t) => {
+                    const Icon = t.icon;
+                    const isSelected = theme === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => handleThemeChange(t.id)}
+                        className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-[var(--theme-surface)] border-[var(--theme-border-silver)] shadow-xs ring-1 ring-[var(--theme-border-silver)]"
+                            : "bg-[var(--theme-surface)]/50 border-[var(--theme-border)] hover:border-[var(--theme-border-silver)]"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <Icon size={16} className={isSelected ? "text-[var(--theme-text)]" : "text-[var(--theme-text-muted)]"} />
+                          {isSelected && <Check size={14} className="text-emerald-400" />}
+                        </div>
+                        <p className="text-xs font-bold text-[var(--theme-text)]">{t.label}</p>
+                        <p className="text-[10px] text-[var(--theme-text-muted)] mt-0.5">{t.desc}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Recruiter Visibility */}
+              <div className="p-5 rounded-xl bg-[var(--theme-surface-elevated)]/40 border border-[var(--theme-border)] flex items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-sm font-bold text-[var(--theme-text)]">Recruiter Visibility</h4>
+                  <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                    Allow verified recruiters and company hiring partners to find your dossier in talent searches.
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={profile.isPublic}
+                    onChange={(e) => setProfile({ ...profile, isPublic: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-[var(--theme-surface-elevated)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--theme-text)] border border-[var(--theme-border)]"></div>
+                </label>
+              </div>
+
+              {/* Account Security Verification Status */}
+              <div className="p-5 rounded-xl bg-[var(--theme-surface-elevated)]/40 border border-[var(--theme-border)] flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <ShieldCheck size={22} className="text-[var(--theme-accent-silver)] shrink-0" />
+                  <div>
+                    <h4 className="text-sm font-bold text-[var(--theme-text)]">Account Verification</h4>
+                    <p className="text-xs text-[var(--theme-text-muted)]">
+                      Your identity and verified email status is protected by JobOne encryption.
+                    </p>
+                  </div>
+                </div>
+                <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold shrink-0">
+                  Protected
+                </span>
+              </div>
+            </div>
+          )}
+
+        </div>
+
+        {/* ─── STICKY BOTTOM SAVE BAR (Padded and strictly within workspace canvas) ──── */}
+        <div className="sticky bottom-0 z-30 bg-[var(--theme-surface)]/95 backdrop-blur-md border border-[var(--theme-border)] rounded-2xl p-4 shadow-2xl mt-8">
+          <div className="flex items-center justify-between gap-4">
             <button
               type="button"
-              onClick={() => navigate(-1)}
-              className="flex-1 py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-2xl transition-all shadow-sm"
+              onClick={() => navigate("/profile")}
+              className="px-4 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] text-[var(--theme-text)] border border-[var(--theme-border)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              Cancel
+              <ArrowLeft size={14} />
+              <span>Cancel</span>
             </button>
-            <button
-              type="submit"
-              disabled={saving || isParsing}
-              className="flex-1 py-4 bg-indigo-600 hover:bg-indigo-700 border border-transparent text-white font-bold rounded-2xl flex justify-center items-center gap-2 transition-all shadow-md shadow-indigo-200 dark:shadow-none disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-            >
-              {saving ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <Save size={20} />
-              )}{" "}
-              {saving ? "Saving..." : "Save & Update Profile"}
-            </button>
+
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-[var(--theme-text-muted)] hidden sm:inline">
+                Changes will sync across all applications
+              </span>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={saving}
+                className="px-5 sm:px-6 py-2.5 rounded-xl bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] text-xs sm:text-sm font-bold flex items-center gap-2 hover:opacity-90 shadow-md transition-all cursor-pointer disabled:opacity-60"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 size={15} className="animate-spin" />
+                    <span>Saving Changes...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save size={15} />
+                    <span>Save Profile Dossier</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </CandidateLayout>
   );
 }
-
-// FACT: Reusable Smart Glass Components for White Mode
-const GlassCard = ({ children, className = "" }) => (
-  <div
-    className={`bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-xs dark:shadow-slate-950/40 transition-colors ${className}`}
-  >
-    {children}
-  </div>
-);
-
-const InputGroup = ({ label, name, value, onChange, disabled = false, placeholder = "" }) => (
-  <div className="space-y-2">
-    {label && (
-      <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">
-        {label}
-      </label>
-    )}
-    <input
-      name={name}
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-      placeholder={placeholder}
-      className={`w-full p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-xs ${
-        disabled
-          ? "opacity-60 bg-slate-100 dark:bg-slate-800 cursor-not-allowed"
-          : "bg-slate-50 dark:bg-slate-800/90"
-      }`}
-    />
-  </div>
-);
-
-const GlassInput = ({ value, onChange, placeholder }) => (
-  <input
-    value={value}
-    onChange={onChange}
-    placeholder={placeholder}
-    className="w-full p-3 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all shadow-xs"
-  />
-);

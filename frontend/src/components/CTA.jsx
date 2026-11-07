@@ -1,65 +1,104 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FaBriefcase, FaUserPlus, FaArrowRight } from "react-icons/fa";
+import { Briefcase, Building2, ArrowRight, Sparkles, UserPlus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function CTASection() {
   return (
-    <section className="py-20 bg-white dark:bg-slate-950 font-sans border-t border-slate-200/60 dark:border-slate-800/80 transition-colors duration-150">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid md:grid-cols-2 gap-6">
+    <section
+      aria-label="Action Hub"
+      className="py-20 bg-[var(--theme-bg)] text-[var(--theme-text)] font-sans border-t border-[var(--theme-border)] transition-colors duration-150 relative overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {/* Candidate Card */}
           <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 sm:p-10 md:p-12 rounded-[2rem] text-white relative overflow-hidden group shadow-[0_8px_30px_-4px_rgba(37,99,235,0.3)]"
+            whileHover={{ y: -4 }}
+            transition={{ duration: 0.2 }}
+            className="bg-[var(--theme-surface)] p-8 sm:p-10 rounded-3xl border border-[var(--theme-border-silver)] relative overflow-hidden shadow-xl flex flex-col justify-between"
           >
+            <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent-silver)]/40 to-transparent" />
+            
             <div className="relative z-10">
-              <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center mb-6 border border-white/20">
-                <FaBriefcase size={20} className="text-white" />
+              <div className="w-12 h-12 bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] rounded-2xl flex items-center justify-center mb-6 text-[var(--theme-accent-silver)]">
+                <Briefcase className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight">
-                Looking for your next opportunity?
+
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[11px] font-semibold text-[var(--theme-text-muted)] mb-3">
+                <Sparkles className="w-3 h-3 text-[var(--theme-accent-silver)]" />
+                <span>For Candidates</span>
+              </div>
+
+              <h3 className="text-2xl sm:text-3xl font-black text-[var(--theme-text)] mb-3 tracking-tight">
+                Accelerate Your Career Trajectory
               </h3>
-              <p className="text-blue-100 mb-8 max-w-sm font-medium leading-relaxed">
-                Explore verified job openings across engineering, business, and operations.
-                Filter by role, location, and salary.
+
+              <p className="text-sm text-[var(--theme-text-muted)] mb-8 max-w-md font-normal leading-relaxed">
+                Direct access to verified requisitions across engineering, product, finance, and operations. Transparent salary insights and real-time application tracking.
               </p>
-              <Link to="/jobs">
-                <button className="bg-white dark:bg-slate-800 text-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-50 transition-colors flex items-center gap-2 shadow-sm">
-                  Explore All Jobs <FaArrowRight size={12} />
-                </button>
-              </Link>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  to="/jobs"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs sm:text-sm transition-all hover:scale-105 shadow-sm group"
+                >
+                  <span>Explore Open Roles</span>
+                  <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)] group-hover:translate-x-1 transition-transform" />
+                </Link>
+
+                <Link
+                  to="/userregister"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-transparent hover:bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] font-semibold text-xs sm:text-sm transition-colors"
+                >
+                  <span>Join as Candidate</span>
+                </Link>
+              </div>
             </div>
-            {/* Decorative background icon */}
-            <FaBriefcase className="absolute -bottom-12 -right-12 text-white/5 text-[14rem] group-hover:rotate-12 group-hover:scale-110 transition-transform duration-700 ease-out" />
           </motion.div>
 
           {/* Employer Card */}
           <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-slate-900 p-6 sm:p-10 md:p-12 rounded-[2rem] text-white relative overflow-hidden group shadow-[0_8px_30px_-4px_rgba(15,23,42,0.4)] border border-slate-800"
+            whileHover={{ y: -4 }}
+            transition={{ duration: 0.2 }}
+            className="bg-[var(--theme-surface)] p-8 sm:p-10 rounded-3xl border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] relative overflow-hidden shadow-xl flex flex-col justify-between"
           >
+            <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent-silver)]/40 to-transparent" />
+
             <div className="relative z-10">
-              <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mb-6 border border-slate-700">
-                <FaUserPlus size={20} className="text-white" />
+              <div className="w-12 h-12 bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] rounded-2xl flex items-center justify-center mb-6 text-[var(--theme-accent-silver)]">
+                <Building2 className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight">
-                Hiring qualified talent?
+
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[11px] font-semibold text-[var(--theme-text-muted)] mb-3">
+                <Sparkles className="w-3 h-3 text-[var(--theme-accent-silver)]" />
+                <span>For Enterprises & ATS</span>
+              </div>
+
+              <h3 className="text-2xl sm:text-3xl font-black text-[var(--theme-text)] mb-3 tracking-tight">
+                Recruit Verified Industry Talent
               </h3>
-              <p className="text-slate-400 mb-8 max-w-sm font-medium leading-relaxed">
-                Post open positions and reach verified job seekers across industries.
-                Review applicants and manage your hiring pipeline directly.
+
+              <p className="text-sm text-[var(--theme-text-muted)] mb-8 max-w-md font-normal leading-relaxed">
+                Post positions, review authenticated candidate profiles, and manage your full talent pipeline directly with built-in ATS features.
               </p>
-              <Link to="/createjob">
-                <button className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-500 transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/50">
-                  Post a Job Opening <FaArrowRight size={12} />
-                </button>
-              </Link>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  to="/employerregisteroption"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs sm:text-sm transition-all hover:scale-105 shadow-sm group"
+                >
+                  <span>Post a Position</span>
+                  <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)] group-hover:translate-x-1 transition-transform" />
+                </Link>
+
+                <Link
+                  to="/services"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-transparent hover:bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] font-semibold text-xs sm:text-sm transition-colors"
+                >
+                  <span>Enterprise Solutions</span>
+                </Link>
+              </div>
             </div>
-            {/* Decorative background icon */}
-            <FaUserPlus className="absolute -bottom-12 -right-12 text-white/5 text-[14rem] group-hover:-rotate-12 group-hover:scale-110 transition-transform duration-700 ease-out" />
           </motion.div>
         </div>
       </div>

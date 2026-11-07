@@ -1,77 +1,68 @@
-import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaMapMarkerAlt,
-  FaBriefcase,
-  FaSearch,
-  FaUserTie,
-  FaBuilding,
-} from "react-icons/fa";
+  Search,
+  MapPin,
+  Briefcase,
+  Building2,
+  ArrowRight,
+  Sparkles,
+  ShieldCheck,
+  User,
+  Lock,
+  Mail,
+  Phone,
+  CheckCircle2,
+  TrendingUp,
+} from "lucide-react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 import heroVideo from "../assets/herovideo.mp4";
-import MobileHeroBg from "./MobileHeroBg";
+import { useAuth } from "../routes/Context";
 
-const Typewriter = () => {
-  const words = [
-    "Next Career Role",
-    "Engineering Position",
-    "Management Opportunity",
-    "Remote Job Opening",
-  ];
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [typingSpeed, setTypingSpeed] = useState(150);
+const ROLES = [
+  "Engineering Leader",
+  "Full-Stack Architect",
+  "Product Designer",
+  "DevOps Specialist",
+  "Finance Director",
+  "Growth Marketer",
+];
 
-  useEffect(() => {
-    // Disable continuous JS typing loops on Android/mobile to save massive power
-    if (window.innerWidth <= 768) {
-      setDisplayText("Next Career Role");
-      return;
-    }
-
-    const handleTyping = () => {
-      const fullWord = words[currentWordIndex];
-
-      if (isDeleting) {
-        setDisplayText(fullWord.substring(0, displayText.length - 1));
-        setTypingSpeed(40);
-      } else {
-        setDisplayText(fullWord.substring(0, displayText.length + 1));
-        setTypingSpeed(120);
-      }
-
-      if (!isDeleting && displayText === fullWord) {
-        setTimeout(() => setIsDeleting(true), 2500);
-      } else if (isDeleting && displayText === "") {
-        setIsDeleting(false);
-        setCurrentWordIndex((prev) => (prev + 1) % words.length);
-      }
-    };
-
-    const timer = setTimeout(handleTyping, typingSpeed);
-    return () => clearTimeout(timer);
-  }, [displayText, isDeleting, currentWordIndex]);
-
-  return <>{displayText}</>;
-};
+const POPULAR_TAGS = [
+  { label: "Remote", type: "location", val: "Remote" },
+  { label: "Full-Stack", type: "title", val: "Full Stack" },
+  { label: "Backend", type: "title", val: "Backend" },
+  { label: "React", type: "title", val: "React" },
+  { label: "Design", type: "title", val: "Design" },
+  { label: "Product", type: "title", val: "Product" },
+];
 
 export default function HeroSection() {
+  const navigate = useNavigate();
+  const { user, employer, authStatus } = useAuth();
+  const isLoggedIn = !!(user || employer || localStorage.getItem("userToken") || localStorage.getItem("employerToken"));
+
+  // --- Search State ---
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
-  const navigate = useNavigate();
 
-  // --- Auth State ---
-  const isLoggedIn =
-    localStorage.getItem("userToken") || localStorage.getItem("employerToken");
+  // --- Role Typewriter State ---
+  const [roleIndex, setRoleIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRoleIndex((prev) => (prev + 1) % ROLES.length);
+    }, 3200);
+    return () => clearInterval(interval);
+  }, []);
 
   // --- Quick Register State ---
-  const [regTab, setRegTab] = useState("jobseeker");
+  const [cardTab, setCardTab] = useState("register"); // "register" | "highlights"
+  const [regTab, setRegTab] = useState("jobseeker"); // "jobseeker" | "employer"
   const [regLoading, setRegLoading] = useState(false);
   const [regError, setRegError] = useState("");
-
   const [regData, setRegData] = useState({
     name: "",
     email: "",
@@ -83,10 +74,19 @@ export default function HeroSection() {
   });
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    navigate(
-      `/jobs?title=${encodeURIComponent(title)}&location=${encodeURIComponent(location)}`,
-    );
+    if (e) e.preventDefault();
+    const params = new URLSearchParams();
+    if (title.trim()) params.set("title", title.trim());
+    if (location.trim()) params.set("location", location.trim());
+    navigate(`/jobs${params.toString() ? `?${params.toString()}` : ""}`);
+  };
+
+  const handleQuickTagClick = (tag) => {
+    if (tag.type === "location") {
+      navigate(`/jobs?location=${encodeURIComponent(tag.val)}`);
+    } else {
+      navigate(`/jobs?title=${encodeURIComponent(tag.val)}`);
+    }
   };
 
   const handleRegChange = (e) => {
@@ -119,7 +119,7 @@ export default function HeroSection() {
 
     const cleanPhone = regData.phone.replace(/\D/g, "");
     if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-      setRegError("Indian mobile number must be exactly 10 digits starting with 6, 7, 8, or 9.");
+      setRegError("Mobile number must be 10 digits starting with 6, 7, 8, or 9.");
       return;
     }
 
@@ -137,70 +137,43 @@ export default function HeroSection() {
 
     try {
       if (regTab === "jobseeker") {
-        await axios.post(
-          `${API_BASE_URL}/user/register`,
-          {
-            name: trimmedName,
-            email: normalizedEmail,
-            password: regData.password,
-            phone: cleanPhone,
-            countryCode: "+91",
-          },
-        );
+        await axios.post(`${API_BASE_URL}/user/register`, {
+          name: trimmedName,
+          email: normalizedEmail,
+          password: regData.password,
+          phone: cleanPhone,
+          countryCode: "+91",
+        });
         navigate("/userotp", { state: { email: normalizedEmail } });
       } else {
-        await axios.post(
-          `${API_BASE_URL}/employer/register`,
-          {
-            name: trimmedName,
-            email: normalizedEmail,
-            password: regData.password,
-            phone: cleanPhone,
-            countryCode: "+91",
-            userType: regData.userType,
-            companyName:
-              regData.userType === "Company" ? regData.companyName.trim() : "",
-          },
-        );
+        await axios.post(`${API_BASE_URL}/employer/register`, {
+          name: trimmedName,
+          email: normalizedEmail,
+          password: regData.password,
+          phone: cleanPhone,
+          countryCode: "+91",
+          userType: regData.userType,
+          companyName: regData.userType === "Company" ? regData.companyName.trim() : "",
+        });
         navigate("/employerotp", { state: { email: normalizedEmail } });
       }
     } catch (err) {
       setRegError(
         err.response?.data?.message ||
           err.response?.data?.error ||
-          "Registration failed. Please check your details and try again.",
+          "Registration failed. Please check your details and try again."
       );
     } finally {
       setRegLoading(false);
     }
   };
 
-  // --- Animation Variants ---
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.2 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 70, damping: 15 },
-    },
-  };
-
   return (
-    // FACT: Mobile fix - Changed fixed h-[85vh] to min-h-[100dvh] so the page can scroll on small devices
-    // Added pt-28 pb-6 so the content isn't hidden under your transparent navbar and fits mobile screens better
-    <section className="relative w-full min-h-[90dvh] lg:min-h-[750px] lg:h-[85vh] flex lg:items-center justify-center overflow-hidden font-sans pt-28 pb-6 lg:pt-36 lg:pb-16">
-      {/* Video for desktop */}
+    <section className="relative w-full min-h-[92dvh] lg:min-h-[720px] flex items-center justify-center font-sans overflow-hidden bg-[var(--theme-bg)] text-[var(--theme-text)] pt-24 pb-16 lg:pt-32 lg:pb-20 transition-colors duration-150">
+      {/* Background Architectural Video with Dark Fade Overlay */}
       {!window.__TAURI__ && (
         <video
-          className="absolute inset-0 w-full h-full object-cover scale-105 hidden md:block"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none hidden md:block"
           src={heroVideo}
           autoPlay
           loop
@@ -208,265 +181,471 @@ export default function HeroSection() {
           playsInline
         />
       )}
-      {/* Animated CSS component for mobile */}
-      <MobileHeroBg />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-900/85 via-slate-900/75 to-slate-900/95 backdrop-blur-[4px] hidden md:block" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8">
-        {/* FACT: Adjusted gap for mobile so forms aren't pushed too far down */}
-        <div
-          className={`flex flex-col ${!isLoggedIn ? "lg:flex-row" : ""} items-center justify-between gap-10 lg:gap-12`}
-        >
-          {/* LEFT SIDE: Hero Text & Search */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className={`flex flex-col ${!isLoggedIn ? "lg:items-start lg:text-left items-center text-center lg:w-1/2" : "items-center text-center w-full max-w-4xl mx-auto mt-16 sm:mt-24 lg:mt-0"}`}
-          >
-            <motion.span
-              variants={itemVariants}
-              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 md:px-4 md:py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs md:text-sm font-semibold mb-6 tracking-wider shadow-[0_0_15px_rgba(59,130,246,0.15)] backdrop-blur-md"
+      {/* Ambient Gradient Highlights */}
+      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-white/[0.03] dark:bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-[30rem] h-[30rem] bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
+
+      {/* Grid Pattern Sheen */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(255,255,255,0.06),transparent)] pointer-events-none" />
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          {/* ─── LEFT: EDITORIAL ASYMMETRIC CONTENT & SEARCH (7 Cols) ────── */}
+          <div className="lg:col-span-7 flex flex-col items-start text-left">
+            {/* Live Status Pill */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] shadow-sm mb-6"
             >
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span>Verified Job Listings & Direct Hiring</span>
-            </motion.span>
+              <span className="text-xs font-semibold tracking-wide text-[var(--theme-text)]">
+                Direct Career Architecture & Verified Hiring
+              </span>
+            </motion.div>
 
-            {/* FACT: Toned down mobile text sizes to prevent horizontal clipping */}
+            {/* Editorial Headline */}
             <motion.h1
-              variants={itemVariants}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.15] tracking-tight mb-5"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-black tracking-tight leading-[1.08] mb-5 text-[var(--theme-text)]"
             >
-              JobOne<br />
-              <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-blue-400 bg-[length:250%_auto] animate-gradient bg-clip-text text-transparent min-h-[1.2em] inline-block ml-1 md:ml-0">
-                <Typewriter />
-                <span className="text-blue-400 animate-pulse ml-1">|</span>
+              Architect Your <br className="hidden sm:inline" />
+              <span className="relative inline-block">
+                <span className="bg-gradient-to-r from-[var(--theme-text)] via-[var(--theme-accent-silver)] to-[var(--theme-text)] bg-clip-text text-transparent">
+                  Next Milestone.
+                </span>
               </span>
             </motion.h1>
 
-            <motion.p
-              variants={itemVariants}
-              className={`hidden md:block text-slate-300 text-sm sm:text-base md:text-lg font-medium mb-8 leading-relaxed ${!isLoggedIn ? "lg:mx-0" : "mx-auto"} max-w-2xl px-2 md:px-0`}
+            {/* Dynamic Role Sub-heading */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="h-8 sm:h-9 flex items-center mb-6 overflow-hidden"
             >
-              Search thousands of verified job listings from employers actively
-              hiring across technology, finance, operations, and creative fields.
+              <span className="text-sm sm:text-base font-semibold text-[var(--theme-text-muted)] mr-2">
+                Connecting top talent for:
+              </span>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={roleIndex}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.28 }}
+                  className="text-sm sm:text-base font-bold text-[var(--theme-accent-silver-sheen)] underline decoration-[var(--theme-border-silver)] underline-offset-4"
+                >
+                  {ROLES[roleIndex]}
+                </motion.span>
+              </AnimatePresence>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.25 }}
+              className="text-sm sm:text-base md:text-lg text-[var(--theme-text-muted)] font-normal leading-relaxed max-w-xl mb-8"
+            >
+              The double-sided recruitment marketplace engineered for transparency. Direct employer pipelines, authenticated company reviews, and high-precision career discovery.
             </motion.p>
 
+            {/* ─── INTEGRATED JOB SEARCH BAR ───────────────────────────── */}
             <motion.form
-              variants={itemVariants}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
               onSubmit={handleSearch}
-              className={`w-full flex-col md:flex-row items-center bg-black/5 md:bg-white/5 md:backdrop-blur-md p-2 rounded-3xl md:rounded-full border border-white/10 shadow-2xl transition-all focus-within:border-blue-500/50 focus-within:bg-black/5 md:focus-within:bg-white/10 gap-2 md:gap-0 ${!isLoggedIn ? 'hidden md:flex' : 'flex'}`}
+              className="w-full max-w-2xl bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] rounded-2xl md:rounded-full p-2 shadow-2xl flex flex-col md:flex-row items-stretch gap-2 transition-all focus-within:border-[var(--theme-border-focus)] focus-within:shadow-[0_0_30px_rgba(255,255,255,0.05)]"
             >
-              <div className="flex items-center px-4 py-3 md:py-2 flex-1 w-full md:border-r border-white/10 group">
-                <FaBriefcase className="text-blue-400/70 group-focus-within:text-blue-400 mr-3 shrink-0 text-base transition-colors" />
+              {/* Job Title / Keyword Field */}
+              <div className="flex items-center px-4 py-3 flex-1 border-b md:border-b-0 md:border-r border-[var(--theme-border)]">
+                <Briefcase className="w-4 h-4 text-[var(--theme-accent-silver)] shrink-0 mr-3" />
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Job title, keyword, or company"
-                  className="w-full bg-transparent dark:bg-transparent outline-none text-white placeholder-slate-400 text-sm md:text-base font-medium"
+                  placeholder="Job title, skills, or company"
+                  aria-label="Job title or keywords"
+                  className="w-full bg-transparent text-sm font-medium text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] outline-none"
                 />
               </div>
 
-              {/* FACT: Added mobile divider (border-t) with proper spacing */}
-              <div className="flex items-center px-4 py-3 md:py-2 flex-1 w-full border-t border-white/10 md:border-t-0 group">
-                <FaMapMarkerAlt className="text-blue-400/70 group-focus-within:text-blue-400 mr-3 shrink-0 text-base transition-colors" />
+              {/* Location Field */}
+              <div className="flex items-center px-4 py-3 flex-1">
+                <MapPin className="w-4 h-4 text-[var(--theme-accent-silver)] shrink-0 mr-3" />
                 <input
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="City, state, or 'Remote'"
-                  className="w-full bg-transparent dark:bg-transparent outline-none text-white placeholder-slate-400 text-sm md:text-base font-medium"
+                  placeholder="Location or 'Remote'"
+                  aria-label="Job location"
+                  className="w-full bg-transparent text-sm font-medium text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] outline-none"
                 />
               </div>
 
+              {/* Submit CTA */}
               <button
                 type="submit"
-                className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3.5 md:py-3 rounded-2xl md:rounded-full transition-all text-sm md:text-base shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] flex items-center justify-center gap-2"
+                className="px-6 py-3.5 rounded-xl md:rounded-full bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm shrink-0 cursor-pointer"
               >
-                <FaSearch size={14} />
-                Search
+                <Search className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+                <span>Search Jobs</span>
               </button>
             </motion.form>
-          </motion.div>
 
-          {/* RIGHT SIDE: Dark Glassmorphism Registration Form */}
-          {!isLoggedIn && (
+            {/* Quick Popular Tags */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              // FACT: Adjusted padding on mobile to give inputs more room, replaced glassmorphism with 95% transparent black on mobile
-              className="w-full lg:w-5/12 max-w-md mx-auto lg:mx-0 bg-black/5 md:bg-slate-900/50 md:backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl relative overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex items-center gap-2 flex-wrap mt-4 text-xs text-[var(--theme-text-subtle)]"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl hidden md:block" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl hidden md:block" />
-
-              <div className="relative z-10">
-                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-                  Create an Account
-                </h3>
-                <p className="text-slate-400 text-xs sm:text-sm mb-6">
-                  Sign up to search open positions or hire verified talent.
-                </p>
-
-                {/* Tabs */}
-                <div className="flex bg-white/5 rounded-xl p-1 mb-6 border border-white/10">
-                  <button
-                    onClick={() => {
-                      setRegTab("jobseeker");
-                      setRegError("");
-                    }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all ${regTab === "jobseeker" ? "bg-blue-600 text-white shadow-lg" : "text-slate-400 hover:text-white hover:bg-white/5"}`}
-                  >
-                    <FaUserTie /> Jobseeker
-                  </button>
-                  <button
-                    onClick={() => {
-                      setRegTab("employer");
-                      setRegError("");
-                    }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all ${regTab === "employer" ? "bg-indigo-600 text-white shadow-lg" : "text-slate-400 hover:text-white hover:bg-white/5"}`}
-                  >
-                    <FaBuilding /> Employer
-                  </button>
-                </div>
-
-                {regError && (
-                  <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs p-3 rounded-xl mb-4">
-                    {regError}
-                  </div>
-                )}
-
-                <form onSubmit={handleQuickRegister} className="space-y-3.5">
-                  {/* Employer User Type Toggle */}
-                  {regTab === "employer" && (
-                    <div className="flex gap-5 p-1 mb-1">
-                      <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer hover:text-white transition-colors">
-                        <input
-                          type="radio"
-                          name="userType"
-                          value="Company"
-                          checked={regData.userType === "Company"}
-                          onChange={handleRegChange}
-                          className="accent-indigo-500 w-4 h-4"
-                        />
-                        Company
-                      </label>
-                      <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer hover:text-white transition-colors">
-                        <input
-                          type="radio"
-                          name="userType"
-                          value="Individual"
-                          checked={regData.userType === "Individual"}
-                          onChange={handleRegChange}
-                          className="accent-indigo-500 w-4 h-4"
-                        />
-                        Individual
-                      </label>
-                    </div>
-                  )}
-
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    value={regData.name}
-                    onChange={handleRegChange}
-                    placeholder={
-                      regTab === "jobseeker"
-                        ? "Full Name"
-                        : "Contact Person Name"
-                    }
-                    className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3 sm:p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors"
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={regData.email}
-                    onChange={handleRegChange}
-                    placeholder="Primary Email Address"
-                    className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3 sm:p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors"
-                  />
-
-                  {/* FACT: Fixed the Phone input layout for mobile using w-[85px] shrink-0 */}
-                  <div className="flex gap-2">
-                    <select className="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-2 py-3 sm:py-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors w-[85px] shrink-0">
-                      <option value="+91">🇮🇳 +91</option>
-                      <option value="+1">🇺🇸 +1</option>
-                      <option value="+44">🇬🇧 +44</option>
-                    </select>
-                    <input
-                      type="tel"
-                      name="phone"
-                      required
-                      value={regData.phone}
-                      onChange={handleRegChange}
-                      placeholder="Mobile Number"
-                      className="flex-1 min-w-0 bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3 sm:p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors"
-                    />
-                  </div>
-
-                  {regTab === "employer" && regData.userType === "Company" && (
-                    <div className="space-y-3.5">
-                      <input
-                        type="text"
-                        name="companyName"
-                        required
-                        value={regData.companyName}
-                        onChange={handleRegChange}
-                        placeholder="Company Name"
-                        className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3 sm:p-3.5 outline-none focus:border-indigo-500 focus:bg-white/10 transition-colors"
-                      />
-                      <input
-                        type="email"
-                        name="companyEmail"
-                        value={regData.companyEmail}
-                        onChange={handleRegChange}
-                        placeholder="Company Email (Optional)"
-                        className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3 sm:p-3.5 outline-none focus:border-indigo-500 focus:bg-white/10 transition-colors"
-                      />
-                    </div>
-                  )}
-
-                  <input
-                    type="password"
-                    name="password"
-                    required
-                    minLength="6"
-                    value={regData.password}
-                    onChange={handleRegChange}
-                    placeholder="Password (min 6 characters)"
-                    className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3 sm:p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors"
-                  />
-
-                  <button
-                    type="submit"
-                    disabled={regLoading}
-                    className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-3 transition-all shadow-lg ${regTab === "jobseeker" ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/30" : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30"} disabled:opacity-50`}
-                  >
-                    {regLoading
-                      ? "Creating Account..."
-                      : `Join as ${regTab === "jobseeker" ? "Jobseeker" : "Employer"}`}
-                  </button>
-                </form>
-
-                <p className="text-center text-xs text-slate-400 mt-5">
-                  Already have an account?{" "}
-                  <span
-                    onClick={() => navigate("/login")}
-                    className="text-blue-400 hover:text-blue-300 cursor-pointer font-semibold"
-                  >
-                    Sign in here
-                  </span>
-                </p>
-              </div>
+              <span className="font-semibold flex items-center gap-1 text-[var(--theme-text-muted)]">
+                <Sparkles className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                Popular:
+              </span>
+              {POPULAR_TAGS.map((tag) => (
+                <button
+                  key={tag.label}
+                  type="button"
+                  onClick={() => handleQuickTagClick(tag)}
+                  className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors cursor-pointer text-xs font-medium"
+                >
+                  {tag.label}
+                </button>
+              ))}
             </motion.div>
-          )}
+          </div>
+
+          {/* ─── RIGHT: ASYMMETRIC ACTION & DISCOVERY SURFACE (5 Cols) ────── */}
+          <div className="lg:col-span-5 w-full">
+            <motion.div
+              initial={{ opacity: 0, x: 25 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative w-full max-w-md mx-auto rounded-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] p-6 sm:p-8 shadow-2xl backdrop-blur-sm overflow-hidden"
+            >
+              {/* Top ambient sheen */}
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent-silver)]/30 to-transparent" />
+
+              {!isLoggedIn ? (
+                <>
+                  {/* Card Header & Tab Switch */}
+                  <div className="flex items-center justify-between pb-5 border-b border-[var(--theme-border)] mb-5">
+                    <div>
+                      <h2 className="text-lg sm:text-xl font-bold text-[var(--theme-text)] tracking-tight">
+                        {cardTab === "register" ? "Create Free Account" : "Platform Telemetry"}
+                      </h2>
+                      <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                        {cardTab === "register"
+                          ? "Apply in seconds or post jobs directly"
+                          : "Real-time verified ecosystem"}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center p-1 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-semibold">
+                      <button
+                        type="button"
+                        onClick={() => setCardTab("register")}
+                        className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                          cardTab === "register"
+                            ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-xs"
+                            : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+                        }`}
+                      >
+                        Join
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCardTab("highlights")}
+                        className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                          cardTab === "highlights"
+                            ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-xs"
+                            : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+                        }`}
+                      >
+                        Stats
+                      </button>
+                    </div>
+                  </div>
+
+                  {cardTab === "register" ? (
+                    <div>
+                      {/* Jobseeker vs Employer Segmented Control */}
+                      <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] mb-4">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setRegTab("jobseeker");
+                            setRegError("");
+                          }}
+                          className={`flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                            regTab === "jobseeker"
+                              ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-sm border border-[var(--theme-border-silver)]"
+                              : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+                          }`}
+                        >
+                          <User className="w-3.5 h-3.5" />
+                          Candidate
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setRegTab("employer");
+                            setRegError("");
+                          }}
+                          className={`flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                            regTab === "employer"
+                              ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-sm border border-[var(--theme-border-silver)]"
+                              : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+                          }`}
+                        >
+                          <Building2 className="w-3.5 h-3.5" />
+                          Employer
+                        </button>
+                      </div>
+
+                      {regError && (
+                        <div className="mb-4 p-3 rounded-xl bg-[var(--theme-danger-bg)] border border-[var(--theme-danger)]/30 text-xs text-rose-400">
+                          {regError}
+                        </div>
+                      )}
+
+                      <form onSubmit={handleQuickRegister} className="space-y-3">
+                        {regTab === "employer" && (
+                          <div className="flex gap-4 px-1 text-xs font-medium text-[var(--theme-text-muted)]">
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="userType"
+                                value="Company"
+                                checked={regData.userType === "Company"}
+                                onChange={handleRegChange}
+                                className="accent-[var(--theme-accent-silver)]"
+                              />
+                              Company
+                            </label>
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="userType"
+                                value="Individual"
+                                checked={regData.userType === "Individual"}
+                                onChange={handleRegChange}
+                                className="accent-[var(--theme-accent-silver)]"
+                              />
+                              Individual Recruiter
+                            </label>
+                          </div>
+                        )}
+
+                        <div className="relative">
+                          <input
+                            type="text"
+                            name="name"
+                            required
+                            value={regData.name}
+                            onChange={handleRegChange}
+                            placeholder={regTab === "jobseeker" ? "Full Name" : "Contact Person Name"}
+                            className="w-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[var(--theme-border-focus)] transition-colors"
+                          />
+                        </div>
+
+                        <div className="relative">
+                          <input
+                            type="email"
+                            name="email"
+                            required
+                            value={regData.email}
+                            onChange={handleRegChange}
+                            placeholder="Primary Email Address"
+                            className="w-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[var(--theme-border-focus)] transition-colors"
+                          />
+                        </div>
+
+                        <div className="flex gap-2">
+                          <span className="w-16 shrink-0 bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-[var(--theme-text)] text-xs rounded-xl px-2 py-2.5 flex items-center justify-center font-mono">
+                            +91
+                          </span>
+                          <input
+                            type="tel"
+                            name="phone"
+                            required
+                            value={regData.phone}
+                            onChange={handleRegChange}
+                            placeholder="10-digit mobile"
+                            className="flex-1 bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[var(--theme-border-focus)] transition-colors"
+                          />
+                        </div>
+
+                        {regTab === "employer" && regData.userType === "Company" && (
+                          <input
+                            type="text"
+                            name="companyName"
+                            required
+                            value={regData.companyName}
+                            onChange={handleRegChange}
+                            placeholder="Registered Company Name"
+                            className="w-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[var(--theme-border-focus)] transition-colors"
+                          />
+                        )}
+
+                        <input
+                          type="password"
+                          name="password"
+                          required
+                          minLength="6"
+                          value={regData.password}
+                          onChange={handleRegChange}
+                          placeholder="Create Password (min 6 chars)"
+                          className="w-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[var(--theme-border-focus)] transition-colors"
+                        />
+
+                        <button
+                          type="submit"
+                          disabled={regLoading}
+                          className="w-full mt-2 py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                        >
+                          {regLoading ? (
+                            <span>Initiating Verification...</span>
+                          ) : (
+                            <>
+                              <span>Join as {regTab === "jobseeker" ? "Candidate" : "Employer"}</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </>
+                          )}
+                        </button>
+                      </form>
+
+                      <p className="text-center text-xs text-[var(--theme-text-muted)] mt-4">
+                        Already have an account?{" "}
+                        <button
+                          type="button"
+                          onClick={() => navigate("/login")}
+                          className="text-[var(--theme-text)] hover:underline font-bold cursor-pointer"
+                        >
+                          Sign In
+                        </button>
+                      </p>
+                    </div>
+                  ) : (
+                    /* Platform Highlights Tab */
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] flex items-center justify-center text-[var(--theme-accent-silver)]">
+                            <ShieldCheck className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-[var(--theme-text)]">
+                              100% Verified Postings
+                            </h4>
+                            <p className="text-xs text-[var(--theme-text-muted)]">
+                              Every employer passes domain & CIN verification
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] flex items-center justify-center text-[var(--theme-accent-silver)]">
+                            <TrendingUp className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-[var(--theme-text)]">
+                              Transparent ATS Pipelines
+                            </h4>
+                            <p className="text-xs text-[var(--theme-text-muted)]">
+                              Real-time application status and interview telemetry
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)]">
+                        <p className="text-xs text-[var(--theme-text-muted)] italic leading-relaxed">
+                          "JobOne removed the clutter of traditional job boards. Direct recruiter outreach and clean status tracking helped me secure my engineering role."
+                        </p>
+                        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--theme-border)]">
+                          <div className="w-6 h-6 rounded-full bg-[var(--theme-surface)] flex items-center justify-center text-[10px] font-bold text-[var(--theme-text)] border border-[var(--theme-border)]">
+                            A
+                          </div>
+                          <span className="text-xs font-semibold text-[var(--theme-text)]">
+                            Aakash Verma
+                          </span>
+                          <span className="text-[10px] text-[var(--theme-text-subtle)]">
+                            • Senior Software Engineer
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => navigate("/jobs")}
+                        className="w-full py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                      >
+                        <span>Browse Verified Openings</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                /* Authenticated User Quick Navigation */
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3 pb-4 border-b border-[var(--theme-border)]">
+                    <div className="w-12 h-12 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-lg font-bold text-[var(--theme-text)]">
+                      {(user?.name || employer?.name || "U").charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider font-bold text-[var(--theme-accent-silver)]">
+                        Active Session
+                      </span>
+                      <h3 className="text-base font-bold text-[var(--theme-text)]">
+                        {user?.name || employer?.companyName || employer?.name || "Welcome Back"}
+                      </h3>
+                      <p className="text-xs text-[var(--theme-text-muted)]">
+                        {employer ? "Employer ATS Console" : "Candidate Career Center"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-[var(--theme-text-muted)] leading-relaxed">
+                    Access your personalized dashboard, track active candidate applications, or manage job openings.
+                  </p>
+
+                  <div className="space-y-2.5">
+                    <button
+                      type="button"
+                      onClick={() => navigate(employer ? "/employerdashboard" : "/userdashboard")}
+                      className="w-full py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <span>Open {employer ? "Employer ATS Portal" : "Candidate Dashboard"}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => navigate("/jobs")}
+                      className="w-full py-2.5 rounded-xl bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <Search className="w-3.5 h-3.5" />
+                      <span>Explore Openings</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+
         </div>
       </div>
     </section>

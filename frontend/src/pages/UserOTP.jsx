@@ -1,11 +1,12 @@
-import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-
+import { KeyRound, Mail, ArrowRight, Loader2, RefreshCw, CheckCircle2 } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../routes/Context";
+import AuthLayout from "../components/AuthLayout";
 
-const UserVerifyOTP = () => {
+export default function UserOTP() {
   const navigate = useNavigate();
   const location = useLocation();
   const { loginUser } = useAuth();
@@ -41,7 +42,7 @@ const UserVerifyOTP = () => {
   const handleResend = async () => {
     if (resending) return;
     if (!email.trim()) {
-      setMessage("Please provide your email address to resend OTP.");
+      setMessage("Please provide your email address to resend the code.");
       setIsError(true);
       return;
     }
@@ -50,7 +51,7 @@ const UserVerifyOTP = () => {
       setMessage("");
       setIsError(false);
       await axios.post(`${API_BASE_URL}/user/resend-otp`, { email: email.trim().toLowerCase() });
-      setMessage("A new 6-digit OTP code has been sent to your email.");
+      setMessage("A fresh 6-digit verification code has been dispatched to your email inbox.");
       setIsError(false);
       setOtp("");
       setTimer(60);
@@ -70,7 +71,7 @@ const UserVerifyOTP = () => {
     setIsError(false);
 
     if (!email.trim()) {
-      setMessage("Please enter your registered email address.");
+      setMessage("Please enter your registered candidate email address.");
       setIsError(true);
       return;
     }
@@ -89,19 +90,18 @@ const UserVerifyOTP = () => {
         otp: otp.trim(),
       });
 
-      // Update centralized auth state
       loginUser(res.data.token, res.data);
 
       setMessage(
         res.data.alreadyVerified
-          ? "Account is already verified! Redirecting to your dashboard..."
-          : "Account verified successfully! Redirecting to your dashboard..."
+          ? "Account verified! Redirecting to your candidate dashboard..."
+          : "Verification successful! Redirecting to your candidate dashboard..."
       );
       setIsError(false);
 
-      setTimeout(() => navigate("/userdashboard"), 1200);
+      setTimeout(() => navigate("/userdashboard"), 1100);
     } catch (err) {
-      setMessage(err.response?.data?.message || "Invalid or expired OTP. Please try again.");
+      setMessage(err.response?.data?.message || "Invalid or expired verification code. Please check your inbox or resend.");
       setIsError(true);
     } finally {
       setLoading(false);
@@ -109,51 +109,70 @@ const UserVerifyOTP = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-colors">
-      <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-5 sm:p-8 w-full max-w-md border border-gray-100 dark:border-gray-700 transition-colors">
-        <h2 className="text-2xl font-extrabold text-center text-indigo-700 dark:text-indigo-400 mb-2">
-          Verify Your Candidate Email
-        </h2>
-        <p className="text-center text-gray-600 dark:text-gray-300 mb-6 text-sm">
-          Please enter the 6-digit verification code sent to your email inbox.
-        </p>
+    <AuthLayout
+      title="Verify Candidate Email"
+      subtitle={`We've dispatched a 6-digit verification code to ${email ? email : "your email"}`}
+      badge="Security Verification"
+      visualHeading="Verified candidates earn priority review."
+      visualSubheading="Completing your email verification unlocks instant application routing, verified badges, and automated recruiter notifications."
+      metrics={[
+        { value: "100%", label: "Encrypted & Compliant" },
+        { value: "0 Spam", label: "Direct-only Recruiters" },
+        { value: "Instant", label: "Dashboard Access" },
+      ]}
+      quote={{
+        text: "The verification process confirms your authenticity to top-tier engineering organizations.",
+        author: "JobOne Trust & Security",
+        role: "Compliance Engineering",
+      }}
+    >
+      {message && (
+        <div
+          role={isError ? "alert" : "status"}
+          className={`mb-4 p-3.5 rounded-xl text-xs font-medium border flex items-center gap-2 ${
+            isError
+              ? "border-rose-500/20 bg-rose-500/10 text-rose-300 dark:text-rose-400"
+              : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300 dark:text-emerald-400"
+          }`}
+        >
+          {!isError && <CheckCircle2 size={16} className="shrink-0" />}
+          <span>{message}</span>
+        </div>
+      )}
 
-        {message && (
-          <div
-            className={`p-3 rounded-lg text-sm mb-4 text-center font-medium ${
-              isError
-                ? "bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800"
-                : "bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/40 dark:text-green-300 dark:border-green-800"
-            }`}
-          >
-            {message}
-          </div>
-        )}
-
-        <form onSubmit={handleVerify} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1 text-sm font-semibold">
-              Email Address
-            </label>
+      <form onSubmit={handleVerify} className="space-y-4">
+        <div>
+          <label className="block text-[11px] font-mono tracking-wider uppercase text-foreground/70 mb-1.5">
+            Registered Email Address
+          </label>
+          <div className="relative">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={!!initialEmail}
-              className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none transition ${
+              className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border transition-colors ${
                 initialEmail
-                  ? "bg-gray-100 dark:bg-gray-700 cursor-not-allowed text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600"
-                  : "bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                  ? "bg-surface-2/60 border-border/60 text-foreground/60 cursor-not-allowed"
+                  : "bg-surface-2 border-border text-foreground focus:outline-none focus:border-silver/60"
               }`}
-              placeholder="Enter your email"
+              placeholder="candidate@example.com"
             />
+            <Mail size={16} className="absolute left-3.5 top-3 text-foreground/40 pointer-events-none" />
           </div>
+        </div>
 
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1 text-sm font-semibold">
-              6-Digit OTP Code
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-[11px] font-mono tracking-wider uppercase text-foreground/70">
+              6-Digit Verification Code
             </label>
+            <span className="text-[11px] text-foreground/40 font-mono">
+              {otp.length}/6
+            </span>
+          </div>
+          <div className="relative">
             <input
               type="tel"
               inputMode="numeric"
@@ -161,50 +180,59 @@ const UserVerifyOTP = () => {
               value={otp}
               onChange={handleOtpChange}
               required
-              maxLength="6"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none tracking-widest text-center text-xl font-mono font-bold"
-              placeholder="••••••"
-              autoComplete="one-time-code"
+              maxLength={6}
               autoFocus
+              autoComplete="one-time-code"
+              placeholder="••••••"
+              className="w-full text-center py-3.5 px-4 rounded-xl bg-surface-2 border border-border text-foreground font-mono text-2xl tracking-[0.4em] font-bold focus:outline-none focus:border-silver focus:ring-1 focus:ring-silver/40 transition-all placeholder-foreground/20"
             />
           </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading || otp.length !== 6}
-            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-lg transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          >
-            {loading ? "Verifying Code..." : "Verify & Continue"}
-          </button>
-        </form>
+        <button
+          type="submit"
+          disabled={loading || otp.length !== 6}
+          className="w-full mt-2 py-3 rounded-xl bg-foreground text-background font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
+        >
+          {loading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              <span>Verifying Code...</span>
+            </>
+          ) : (
+            <>
+              <span>Verify & Launch Dashboard</span>
+              <ArrowRight size={16} />
+            </>
+          )}
+        </button>
 
-        <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4">
-          <p>
+        <div className="pt-3 text-center border-t border-border flex flex-col items-center gap-2">
+          <p className="text-xs text-foreground/60">
             Didn't receive the email?{" "}
             {canResend ? (
               <button
                 type="button"
                 onClick={handleResend}
                 disabled={resending}
-                className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline disabled:opacity-50"
+                className="inline-flex items-center gap-1 font-semibold text-foreground hover:underline cursor-pointer disabled:opacity-50"
               >
-                {resending ? "Sending..." : "Resend Code"}
+                {resending ? <RefreshCw size={12} className="animate-spin" /> : null}
+                <span>Resend Code</span>
               </button>
             ) : (
-              <span className="text-gray-400 dark:text-gray-500 font-medium">
-                Resend in {timer}s
-              </span>
+              <span className="text-foreground/40 font-mono">Resend available in {timer}s</span>
             )}
           </p>
-          <div className="mt-3">
-            <Link to="/userregister" className="text-xs text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">
-              ← Back to Registration
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
-export default UserVerifyOTP;
+          <Link
+            to="/userregister"
+            className="text-xs text-foreground/40 hover:text-foreground transition-colors"
+          >
+            ← Back to Registration
+          </Link>
+        </div>
+      </form>
+    </AuthLayout>
+  );
+}

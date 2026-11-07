@@ -24,6 +24,13 @@ import {
   Settings,
   ChevronRight,
   Eye,
+  Filter,
+  ArrowUpDown,
+  SlidersHorizontal,
+  Phone,
+  Shield,
+  Calendar,
+  AlertTriangle,
 } from "lucide-react";
 import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../routes/Context";
@@ -32,6 +39,16 @@ import AdminStatCard from "../components/admin/AdminStatCard";
 import AdminKPISection from "../components/admin/AdminKPISection";
 import AdminChartPanel from "../components/admin/AdminChartPanel";
 import AdminConfirmDialog from "../components/admin/AdminConfirmDialog";
+import AdminActivityFeed from "../components/admin/AdminActivityFeed";
+import AdminUserDetailDrawer from "../components/admin/AdminUserDetailDrawer";
+import AdminEmployerDetailDrawer from "../components/admin/AdminEmployerDetailDrawer";
+import AdminJobDetailDrawer from "../components/admin/AdminJobDetailDrawer";
+import AdminAnalyticsView from "../components/admin/AdminAnalyticsView";
+import AdminAuditLogsView from "../components/admin/AdminAuditLogsView";
+import AdminNotificationsView from "../components/admin/AdminNotificationsView";
+import AdminSettingsView from "../components/admin/AdminSettingsView";
+import AdminExportCentre from "../components/admin/AdminExportCentre";
+import AdminActivityWorkspace from "../components/admin/AdminActivityWorkspace";
 
 export default function AdminDashboard() {
   const [pendingJobs, setPendingJobs] = useState([]);
@@ -82,6 +99,42 @@ export default function AdminDashboard() {
   const [jobsPageSize] = useState(10);
   const [selectedJobIds, setSelectedJobIds] = useState([]);
 
+  // User Management State
+  const [userSearch, setUserSearch] = useState("");
+  const [userStatusFilter, setUserStatusFilter] = useState("all");
+  const [userVerificationFilter, setUserVerificationFilter] = useState("all");
+  const [userSort, setUserSort] = useState("newest");
+  const [userPage, setUserPage] = useState(1);
+  const [userPageSize] = useState(10);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [selectedUserIdForDrawer, setSelectedUserIdForDrawer] = useState(null);
+  const [isUserDrawerOpen, setIsUserDrawerOpen] = useState(false);
+
+  // Employer Verification State
+  const [empSubTab, setEmpSubTab] = useState("all");
+  const [empSearch, setEmpSearch] = useState("");
+  const [empEntityFilter, setEmpEntityFilter] = useState("all");
+  const [empApprovalFilter, setEmpApprovalFilter] = useState("all");
+  const [empFreezeFilter, setEmpFreezeFilter] = useState("all");
+  const [empSort, setEmpSort] = useState("newest");
+  const [empPage, setEmpPage] = useState(1);
+  const [empPageSize] = useState(10);
+  const [selectedEmpIds, setSelectedEmpIds] = useState([]);
+  const [selectedEmpIdForDrawer, setSelectedEmpIdForDrawer] = useState(null);
+  const [isEmpDrawerOpen, setIsEmpDrawerOpen] = useState(false);
+
+  // Job Moderation Workspace State
+  const [jobModSubTab, setJobModSubTab] = useState("all");
+  const [jobModSearch, setJobModSearch] = useState("");
+  const [jobModStatusFilter, setJobModStatusFilter] = useState("all");
+  const [jobModIndustryFilter, setJobModIndustryFilter] = useState("all");
+  const [jobModSort, setJobModSort] = useState("newest");
+  const [jobModPage, setJobModPage] = useState(1);
+  const [jobModPageSize] = useState(10);
+  const [selectedJobModIds, setSelectedJobModIds] = useState([]);
+  const [selectedJobIdForDrawer, setSelectedJobIdForDrawer] = useState(null);
+  const [isJobDrawerOpen, setIsJobDrawerOpen] = useState(false);
+
   // Row Action Dropdown Menu State
   const [openActionMenuId, setOpenActionMenuId] = useState(null);
 
@@ -109,6 +162,11 @@ export default function AdminDashboard() {
     const tabParam = searchParams.get("tab");
     if (tabParam) {
       setActiveTab(tabParam);
+      if (tabParam === "pendingEmployers") {
+        setEmpSubTab("pending");
+      } else if (tabParam === "pendingJobs") {
+        setJobModSubTab("pending");
+      }
     }
   }, [location.search]);
 
@@ -213,7 +271,9 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     try {
       logout();
-    } catch {}
+    } catch (_err) {
+      /* ignore */
+    }
     localStorage.removeItem("adminInfo");
     localStorage.removeItem("adminToken");
     navigate("/admin/login", { replace: true, state: { loggedOut: true } });
@@ -430,11 +490,219 @@ export default function AdminDashboard() {
     return filteredJobs.slice(start, start + jobsPageSize);
   }, [filteredJobs, jobsPage, jobsPageSize]);
 
+  // ─── BULK ACTIONS ────────────────────────────────────────────────────────
+
+  const handleBulkFreezeUsers = async (freeze) => {
+    if (selectedUserIds.length === 0) return;
+    try {
+      const token = adminInfo?.token;
+      await Promise.all(
+        selectedUserIds.map((id) =>
+          axios.put(
+            `${API_BASE_URL}/admin/freeze-user/${id}`,
+            { freeze },
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+        )
+      );
+      setAllJobseekers((prev) =>
+        prev.map((u) => (selectedUserIds.includes(u._id) ? { ...u, isFrozen: freeze } : u))
+      );
+      setSelectedUserIds([]);
+    } catch {
+      alert("Failed to update candidate freeze status.");
+    }
+  };
+
+  const handleBulkReviewEmployers = async (status) => {
+    if (selectedEmpIds.length === 0) return;
+    try {
+      const token = adminInfo?.token;
+      await Promise.all(
+        selectedEmpIds.map((id) =>
+          axios.patch(
+            `${API_BASE_URL}/admin/employers/${id}/review`,
+            { status },
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+        )
+      );
+      setAllEmployers((prev) =>
+        prev.map((e) => (selectedEmpIds.includes(e._id) ? { ...e, isApproved: status } : e))
+      );
+      setPendingEmployers((prev) => prev.filter((e) => !selectedEmpIds.includes(e._id)));
+      setSelectedEmpIds([]);
+    } catch {
+      alert("Failed to update employer review status.");
+    }
+  };
+
+  const handleBulkModerationJobs = async (status) => {
+    if (selectedJobModIds.length === 0) return;
+    try {
+      const token = adminInfo?.token;
+      await Promise.all(
+        selectedJobModIds.map((id) =>
+          axios.patch(
+            `${API_BASE_URL}/admin/jobs/${id}/review`,
+            { status },
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+        )
+      );
+      setAllJobs((prev) =>
+        prev.map((j) => (selectedJobModIds.includes(j._id) ? { ...j, status } : j))
+      );
+      setPendingJobs((prev) => prev.filter((j) => !selectedJobModIds.includes(j._id)));
+      setSelectedJobModIds([]);
+    } catch {
+      alert("Failed to update job review status.");
+    }
+  };
+
+  // ─── USER MANAGEMENT COMPUTED LISTS ────────────────────────────────────
+  const filteredUsers = useMemo(() => {
+    let list = [...allJobseekers];
+
+    if (userSearch.trim()) {
+      const q = userSearch.toLowerCase();
+      list = list.filter(
+        (u) =>
+          u.name?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q) ||
+          u.phone?.includes(q)
+      );
+    }
+
+    if (userStatusFilter === "active") list = list.filter((u) => !u.isFrozen);
+    if (userStatusFilter === "frozen") list = list.filter((u) => u.isFrozen);
+
+    if (userVerificationFilter === "verified") list = list.filter((u) => u.isVerified);
+    if (userVerificationFilter === "unverified") list = list.filter((u) => !u.isVerified);
+
+    if (userSort === "newest") {
+      list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    } else if (userSort === "oldest") {
+      list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    } else if (userSort === "name") {
+      list.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    }
+
+    return list;
+  }, [allJobseekers, userSearch, userStatusFilter, userVerificationFilter, userSort]);
+
+  const paginatedUsers = useMemo(() => {
+    const start = (userPage - 1) * userPageSize;
+    return filteredUsers.slice(start, start + userPageSize);
+  }, [filteredUsers, userPage, userPageSize]);
+
+  // ─── EMPLOYER VERIFICATION COMPUTED LISTS ──────────────────────────────
+  const filteredEmployers = useMemo(() => {
+    let list = [...allEmployers];
+
+    if (empSubTab === "pending") {
+      list = list.filter((e) => e.isApproved === "pending");
+    }
+
+    if (empSearch.trim()) {
+      const q = empSearch.toLowerCase();
+      list = list.filter(
+        (e) =>
+          e.companyName?.toLowerCase().includes(q) ||
+          e.name?.toLowerCase().includes(q) ||
+          e.email?.toLowerCase().includes(q)
+      );
+    }
+
+    if (empEntityFilter !== "all") {
+      list = list.filter((e) => (e.employerType || "company") === empEntityFilter);
+    }
+
+    if (empApprovalFilter !== "all") {
+      list = list.filter((e) => (e.isApproved || "pending") === empApprovalFilter);
+    }
+
+    if (empFreezeFilter === "active") list = list.filter((e) => !e.isFrozen);
+    if (empFreezeFilter === "frozen") list = list.filter((e) => e.isFrozen);
+
+    if (empSort === "newest") {
+      list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    } else if (empSort === "oldest") {
+      list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    } else if (empSort === "name") {
+      list.sort((a, b) => (a.companyName || a.name || "").localeCompare(b.companyName || b.name || ""));
+    }
+
+    return list;
+  }, [allEmployers, empSubTab, empSearch, empEntityFilter, empApprovalFilter, empFreezeFilter, empSort]);
+
+  const paginatedEmployers = useMemo(() => {
+    const start = (empPage - 1) * empPageSize;
+    return filteredEmployers.slice(start, start + empPageSize);
+  }, [filteredEmployers, empPage, empPageSize]);
+
+  // ─── JOB MODERATION COMPUTED LISTS ────────────────────────────────────
+  const filteredModerationJobs = useMemo(() => {
+    let list = [...allJobs];
+
+    if (activeTab === "pendingJobs" || jobModSubTab === "pending") {
+      list = list.filter((j) => j.status === "pending_approval" || j.status === "pending");
+    }
+
+    if (jobModSearch.trim()) {
+      const q = jobModSearch.toLowerCase();
+      list = list.filter(
+        (j) =>
+          j.title?.toLowerCase().includes(q) ||
+          j.postedByCompany?.toLowerCase().includes(q) ||
+          j.postedByName?.toLowerCase().includes(q)
+      );
+    }
+
+    if (jobModStatusFilter !== "all") {
+      if (jobModStatusFilter === "pending") {
+        list = list.filter((j) => j.status === "pending_approval" || j.status === "pending");
+      } else {
+        list = list.filter((j) => j.status === jobModStatusFilter);
+      }
+    }
+
+    if (jobModIndustryFilter !== "all") {
+      list = list.filter((j) => j.industry === jobModIndustryFilter);
+    }
+
+    if (jobModSort === "newest") {
+      list.sort((a, b) => new Date(b.createdAt || b.postedAt || 0) - new Date(a.createdAt || a.postedAt || 0));
+    } else if (jobModSort === "oldest") {
+      list.sort((a, b) => new Date(a.createdAt || a.postedAt || 0) - new Date(b.createdAt || b.postedAt || 0));
+    } else if (jobModSort === "title") {
+      list.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    }
+
+    return list;
+  }, [allJobs, activeTab, jobModSubTab, jobModSearch, jobModStatusFilter, jobModIndustryFilter, jobModSort]);
+
+  const paginatedModerationJobs = useMemo(() => {
+    const start = (jobModPage - 1) * jobModPageSize;
+    return filteredModerationJobs.slice(start, start + jobModPageSize);
+  }, [filteredModerationJobs, jobModPage, jobModPageSize]);
+
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
+  }, []);
+
   if (loading || !adminInfo) {
     return (
-      <div className="min-h-screen bg-[#f4f5f7] dark:bg-slate-950 flex flex-col justify-center items-center">
-        <Loader2 className="animate-spin text-slate-900 dark:text-white mb-2" size={32} />
-        <p className="text-xs font-semibold text-slate-500">Loading Admin Dashboard...</p>
+      <div className="min-h-screen bg-[var(--theme-bg)] flex flex-col justify-center items-center">
+        <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mb-3 shadow-xs">
+          <Loader2 className="animate-spin text-[var(--theme-text)]" size={20} />
+        </div>
+        <p className="text-xs font-mono font-medium text-[var(--theme-text-muted)]">
+          Authenticating Executive Session...
+        </p>
       </div>
     );
   }
@@ -449,14 +717,95 @@ export default function AdminDashboard() {
       pendingJobs={pendingJobs}
       pendingEmployers={pendingEmployers}
       unreadContacts={unreadContacts}
+      jobs={allJobs}
+      employers={allEmployers}
+      jobseekers={allJobseekers}
       onRefresh={() => fetchInitialData(adminInfo)}
       onLogout={handleLogout}
     >
       {/* =========================================================================
-          VIEW: DASHBOARD (EXACT REFERENCE SPECIFICATION)
+          VIEW: DASHBOARD (EXECUTIVE CONTROL CENTER)
       ========================================================================= */}
       {activeTab === "overview" && (
-        <div className="space-y-6 min-w-0 w-full">
+        <div className="space-y-6 min-w-0 w-full animate-in fade-in duration-200">
+          {/* Executive Welcome Header */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2">
+            <div>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl font-extrabold font-display tracking-tight text-[var(--theme-text)]">
+                  {greeting}, {adminInfo?.name?.split(" ")[0] || "Executive"}
+                </h1>
+                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] uppercase tracking-wider">
+                  {adminInfo?.role === "superAdmin"
+                    ? "Super Administrator"
+                    : adminInfo?.role === "employerAdmin"
+                    ? "Employer Administrator"
+                    : "Candidate Administrator"}
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-[var(--theme-text-muted)] mt-1">
+                Platform executive oversight, recruitment velocity, and moderation queues.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* Live Operational Status */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] shadow-xs">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>System: Operational • All Services Live</span>
+              </div>
+
+              {/* Export quick button */}
+              <button
+                type="button"
+                onClick={() => handleExport("all")}
+                className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                title="Download platform data archive"
+              >
+                <Download size={13} />
+                <span>Quick Export</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Conditional Pending Alert Banner */}
+          {pendingApprovalsList.length > 0 && (
+            <div className="p-4 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[#C0C0C0] shrink-0">
+                  <ShieldAlert size={18} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-[var(--theme-text)] font-display">
+                      Executive Moderation Required
+                    </p>
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[var(--theme-text)] text-[var(--theme-bg)]">
+                      {pendingApprovalsList.length} PENDING
+                    </span>
+                  </div>
+                  <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                    {pendingJobs.length} job posting{pendingJobs.length === 1 ? "" : "s"} and {pendingEmployers.length} company KYC account{pendingEmployers.length === 1 ? "" : "s"} awaiting review.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleSelectTab("pendingJobs")}
+                  className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-xs flex items-center gap-1.5"
+                >
+                  <span>Open Moderation Queue</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Redesigned Advanced Interactive KPI Widgets Section */}
           <AdminKPISection
             allJobs={allJobs}
@@ -480,15 +829,18 @@ export default function AdminDashboard() {
             </div>
 
             {/* Right: Pending Approvals Card (~35% width) */}
-            <div className="lg:col-span-5 xl:col-span-4 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 md:p-7 transition-colors flex flex-col justify-between min-h-[350px] sm:min-h-[400px]">
+            <div className="lg:col-span-5 xl:col-span-4 bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] shadow-xs p-5 sm:p-6 transition-colors flex flex-col justify-between min-h-[360px] sm:min-h-[420px]">
               <div>
-                <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[var(--theme-border)]">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                    <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                      <ShieldAlert size={15} />
+                    </div>
+                    <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-[var(--theme-text)]">
                       Pending Approvals
                     </h3>
                     {pendingApprovalsList.length > 0 && (
-                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300">
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)]">
                         {pendingApprovalsList.length}
                       </span>
                     )}
@@ -496,44 +848,49 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={() => handleSelectTab("pendingJobs")}
-                    className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hover:underline cursor-pointer"
+                    className="text-xs font-mono font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:underline cursor-pointer"
                   >
-                    View All
+                    Queue &rarr;
                   </button>
                 </div>
 
                 {pendingApprovalsList.length === 0 ? (
-                  <div className="py-14 text-center text-slate-400">
-                    <CheckCircle2 size={40} className="mx-auto text-emerald-500 mb-3" />
-                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                      All caught up!
+                  <div className="py-14 text-center">
+                    <CheckCircle2 size={36} className="mx-auto text-emerald-500/80 mb-2.5" />
+                    <p className="text-sm font-bold text-[var(--theme-text)]">
+                      Queue Cleared
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      No pending jobs or employer registrations.
+                    <p className="text-xs text-[var(--theme-text-muted)] mt-1 max-w-[220px] mx-auto">
+                      All job postings and employer verification submissions have been reviewed.
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {pendingApprovalsList.slice(0, 4).map((item) => (
                       <div
                         key={`${item.type}-${item.id}`}
-                        className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/60 flex items-center justify-between gap-3"
+                        className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-between gap-3 hover:border-[var(--theme-border-silver)] transition-colors"
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-10 h-10 rounded-full bg-slate-200/80 dark:bg-slate-700 flex items-center justify-center font-black text-sm shrink-0 text-slate-700 dark:text-slate-200 shadow-xs">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] flex items-center justify-center font-mono font-bold text-xs shrink-0 text-[var(--theme-text)]">
                             {item.title.charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                              {item.title}
-                            </p>
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[9px] font-mono font-bold px-1 py-0.2 rounded-xs bg-[var(--theme-surface)] text-[var(--theme-text-muted)] border border-[var(--theme-border)]">
+                                {item.type === "job" ? "JOB" : "KYC"}
+                              </span>
+                              <p className="text-xs font-semibold text-[var(--theme-text)] truncate">
+                                {item.title}
+                              </p>
+                            </div>
+                            <p className="text-[11px] font-mono text-[var(--theme-text-muted)] truncate mt-0.5">
                               {item.secondary} • {item.date ? new Date(item.date).toLocaleDateString() : "Recent"}
                             </p>
                           </div>
                         </div>
 
-                        <div className="shrink-0 flex items-center gap-1.5">
+                        <div className="shrink-0 flex items-center gap-1">
                           <button
                             type="button"
                             onClick={() =>
@@ -541,10 +898,10 @@ export default function AdminDashboard() {
                                 ? handleReviewJob(item.id, "active")
                                 : handleReviewEmployer(item.id, "approved")
                             }
-                            className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors cursor-pointer shadow-xs"
+                            className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-colors cursor-pointer"
                             title="Quick Approve"
                           >
-                            <Check size={15} />
+                            <Check size={13} />
                           </button>
                           <button
                             type="button"
@@ -553,11 +910,18 @@ export default function AdminDashboard() {
                                 ? handleReviewJob(item.id, "rejected")
                                 : handleReviewEmployer(item.id, "rejected")
                             }
-                            className="p-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-950/70 dark:hover:bg-rose-900/80 dark:text-rose-300 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition-colors cursor-pointer"
                             title="Quick Reject"
                           >
-                            <XCircle size={15} />
+                            <XCircle size={13} />
                           </button>
+                          <Link
+                            to={item.type === "job" ? `/admin/job/${item.id}` : `/admin/employer/${item.id}`}
+                            className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface)] transition-colors"
+                            title="Inspect Details"
+                          >
+                            <Eye size={13} />
+                          </Link>
                         </div>
                       </div>
                     ))}
@@ -566,28 +930,54 @@ export default function AdminDashboard() {
               </div>
 
               {pendingApprovalsList.length > 0 && (
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-medium text-slate-500 dark:text-slate-400 text-center">
-                  {pendingApprovalsList.length} total pending in review queues
+                <div className="pt-3 border-t border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text-muted)] flex items-center justify-between">
+                  <span>{pendingApprovalsList.length} item{pendingApprovalsList.length === 1 ? "" : "s"} in queue</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectTab("pendingJobs")}
+                    className="text-[var(--theme-text)] font-semibold hover:underline cursor-pointer"
+                  >
+                    Process All &rarr;
+                  </button>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Bottom Row: Manage Jobs (Reference Table Card) */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
+          {/* Audit Feed / Chronological Platform Activity */}
+          <AdminActivityFeed
+            jobs={allJobs}
+            employers={allEmployers}
+            jobseekers={allJobseekers}
+            contacts={allContacts}
+            onSelectTab={handleSelectTab}
+          />
+
+          {/* Bottom Row: Manage Jobs (High-Density Table Card) */}
+          <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] shadow-xs overflow-hidden transition-colors">
             {/* Card Header: Title on Left, Status & Export on Right */}
-            <div className="p-4 sm:p-5 md:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="p-4 sm:p-5 border-b border-[var(--theme-border)] flex flex-col md:flex-row md:items-center justify-between gap-3.5">
               <div className="flex flex-wrap items-center gap-3">
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-                  Manage Jobs
-                </h3>
+                <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                  <Briefcase size={15} />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-[var(--theme-text)]">
+                    Manage Jobs Directory
+                  </h3>
+                  <p className="text-xs text-[var(--theme-text-muted)]">
+                    Active, pending, and moderated position postings across organizations
+                  </p>
+                </div>
+
                 {selectedJobIds.length > 0 && (
-                  <div className="flex items-center gap-1.5 bg-slate-900 text-white dark:bg-white dark:text-slate-950 px-3 py-1 rounded-full text-xs font-bold animate-in fade-in">
-                    <span>{selectedJobIds.length} selected</span>
+                  <div className="flex items-center gap-2 bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] px-3 py-1 rounded-lg text-xs font-mono animate-in fade-in">
+                    <span className="font-bold">{selectedJobIds.length} selected</span>
+                    <span>•</span>
                     <button
                       type="button"
                       onClick={() => handleBulkReviewJobs("active")}
-                      className="ml-1 text-emerald-400 hover:text-emerald-300 underline cursor-pointer"
+                      className="text-emerald-400 hover:underline cursor-pointer font-bold"
                     >
                       Approve
                     </button>
@@ -595,7 +985,7 @@ export default function AdminDashboard() {
                     <button
                       type="button"
                       onClick={() => handleBulkReviewJobs("rejected")}
-                      className="text-rose-400 hover:text-rose-300 underline cursor-pointer"
+                      className="text-rose-400 hover:underline cursor-pointer font-bold"
                     >
                       Reject
                     </button>
@@ -603,7 +993,7 @@ export default function AdminDashboard() {
                     <button
                       type="button"
                       onClick={() => setSelectedJobIds([])}
-                      className="text-slate-400 hover:text-white cursor-pointer"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] cursor-pointer"
                     >
                       Clear
                     </button>
@@ -614,7 +1004,7 @@ export default function AdminDashboard() {
               <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 w-full md:w-auto">
                 {/* Integrated Compact Search */}
                 <div className="relative flex-1 sm:flex-initial">
-                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]" />
                   <input
                     type="text"
                     value={jobsSearch}
@@ -622,8 +1012,8 @@ export default function AdminDashboard() {
                       setJobsSearch(e.target.value);
                       setJobsPage(1);
                     }}
-                    placeholder="Search jobs..."
-                    className="pl-9 pr-3.5 py-2 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none w-full sm:w-56 md:w-60"
+                    placeholder="Search jobs by title or company..."
+                    className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] w-full sm:w-56 md:w-64 transition-colors"
                   />
                 </div>
 
@@ -634,7 +1024,7 @@ export default function AdminDashboard() {
                     setJobsStatusFilter(e.target.value);
                     setJobsPage(1);
                   }}
-                  className="px-3.5 py-2 text-sm font-bold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 outline-none cursor-pointer"
+                  className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
                 >
                   <option value="all">All Statuses</option>
                   <option value="active">Active</option>
@@ -646,9 +1036,9 @@ export default function AdminDashboard() {
                 <button
                   type="button"
                   onClick={() => handleExport("all")}
-                  className="px-4 py-2 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Download size={15} />
+                  <Download size={13} />
                   <span>Export</span>
                 </button>
               </div>
@@ -656,10 +1046,10 @@ export default function AdminDashboard() {
 
             {/* Table */}
             <div className="overflow-x-auto w-full">
-              <table className="w-full text-left text-sm min-w-[720px]">
-                <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+              <table className="w-full text-left text-xs min-w-[720px]">
+                <thead className="bg-[var(--theme-surface-elevated)]/60 text-[var(--theme-text-muted)] font-mono uppercase tracking-wider border-b border-[var(--theme-border)]">
                   <tr>
-                    <th className="py-3.5 px-5 w-12">
+                    <th className="py-3 px-4 w-10">
                       <input
                         type="checkbox"
                         checked={
@@ -673,22 +1063,22 @@ export default function AdminDashboard() {
                             setSelectedJobIds([]);
                           }
                         }}
-                        className="rounded border-slate-300 dark:border-slate-700 cursor-pointer"
+                        className="rounded border-[var(--theme-border)] cursor-pointer"
                       />
                     </th>
-                    <th className="py-3.5 px-5">Job Title</th>
-                    <th className="py-3.5 px-5">Company</th>
-                    <th className="py-3.5 px-5">Location</th>
-                    <th className="py-3.5 px-5">Status</th>
-                    <th className="py-3.5 px-5">Posted Date</th>
-                    <th className="py-3.5 px-5 text-right">Actions</th>
+                    <th className="py-3 px-4">Job Title</th>
+                    <th className="py-3 px-4">Company</th>
+                    <th className="py-3 px-4">Location</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4">Posted Date</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                <tbody className="divide-y divide-[var(--theme-border)] text-[var(--theme-text)]">
                   {paginatedJobs.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-10 text-center text-slate-400">
-                        No jobs found.
+                      <td colSpan={7} className="py-10 text-center text-[var(--theme-text-muted)] font-mono">
+                        No jobs matching criteria.
                       </td>
                     </tr>
                   ) : (
@@ -698,14 +1088,12 @@ export default function AdminDashboard() {
                           ? job.location?.address || "Remote"
                           : job.location || "Remote";
 
-                      const isMenuOpen = openActionMenuId === job._id;
-
                       return (
                         <tr
                           key={job._id}
-                          className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors"
+                          className="hover:bg-[var(--theme-surface-elevated)]/50 transition-colors"
                         >
-                          <td className="py-4 px-5">
+                          <td className="py-3.5 px-4">
                             <input
                               type="checkbox"
                               checked={selectedJobIds.includes(job._id)}
@@ -718,57 +1106,57 @@ export default function AdminDashboard() {
                                   );
                                 }
                               }}
-                              className="rounded border-slate-300 dark:border-slate-700 cursor-pointer"
+                              className="rounded border-[var(--theme-border)] cursor-pointer"
                             />
                           </td>
-                          <td className="py-4 px-5 font-bold text-slate-900 dark:text-white text-sm sm:text-base">
+                          <td className="py-3.5 px-4 font-semibold text-[var(--theme-text)] text-sm">
                             <Link
                               to={`/admin/job/${job._id}`}
                               className="hover:underline flex items-center gap-1.5"
                             >
                               <span>{job.title}</span>
-                              <ExternalLink size={13} className="text-slate-400" />
+                              <ExternalLink size={12} className="text-[var(--theme-text-muted)]" />
                             </Link>
                           </td>
-                          <td className="py-4 px-5 font-medium text-slate-700 dark:text-slate-300">
+                          <td className="py-3.5 px-4 text-[var(--theme-text-muted)]">
                             {job.postedByCompany || job.postedByName || "Company Confidential"}
                           </td>
-                          <td className="py-4 px-5 font-medium text-slate-500 dark:text-slate-400">
+                          <td className="py-3.5 px-4 text-[var(--theme-text-muted)] font-mono text-[11px]">
                             {locationStr}
                           </td>
-                          <td className="py-4 px-5">
+                          <td className="py-3.5 px-4">
                             <span
-                              className={`px-3 py-1 rounded-full font-black text-xs uppercase tracking-wider ${
+                              className={`px-2 py-0.5 rounded-md font-mono font-bold text-[10px] uppercase tracking-wider ${
                                 job.status === "active"
-                                  ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
+                                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                                   : job.status === "pending"
-                                  ? "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60"
-                                  : "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60"
+                                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                  : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
                               }`}
                             >
                               {job.status || "active"}
                             </span>
                           </td>
-                          <td className="py-4 px-5 text-slate-500 font-mono text-xs sm:text-sm">
+                          <td className="py-3.5 px-4 text-[var(--theme-text-muted)] font-mono text-[11px]">
                             {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : "—"}
                           </td>
-                          <td className="py-4 px-5 text-right relative">
-                            <div className="flex items-center justify-end gap-1.5">
+                          <td className="py-3.5 px-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
                               <Link
                                 to={`/admin/job/${job._id}`}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="p-1 rounded-md text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-elevated)] transition-colors"
                                 title="View Details"
                               >
-                                <Eye size={16} />
+                                <Eye size={14} />
                               </Link>
                               {job.status === "pending" && (
                                 <button
                                   type="button"
                                   onClick={() => handleReviewJob(job._id, "active")}
-                                  className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors"
+                                  className="p-1 rounded-md text-emerald-400 hover:bg-emerald-500/10 transition-colors cursor-pointer"
                                   title="Approve"
                                 >
-                                  <Check size={16} />
+                                  <Check size={14} />
                                 </button>
                               )}
                             </div>
@@ -783,7 +1171,7 @@ export default function AdminDashboard() {
 
             {/* Pagination Controls */}
             {filteredJobs.length > jobsPageSize && (
-              <div className="p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm font-semibold text-slate-600 dark:text-slate-400">
+              <div className="p-3.5 sm:p-4 border-t border-[var(--theme-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[var(--theme-text-muted)]">
                 <span>
                   Showing {(jobsPage - 1) * jobsPageSize + 1}–
                   {Math.min(jobsPage * jobsPageSize, filteredJobs.length)} of{" "}
@@ -794,11 +1182,11 @@ export default function AdminDashboard() {
                     type="button"
                     onClick={() => setJobsPage((p) => Math.max(1, p - 1))}
                     disabled={jobsPage === 1}
-                    className="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm disabled:opacity-40 cursor-pointer"
+                    className="px-3 py-1 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold disabled:opacity-40 cursor-pointer transition-colors"
                   >
                     Previous
                   </button>
-                  <span className="font-bold text-slate-800 dark:text-slate-200 px-1.5">
+                  <span className="font-bold text-[var(--theme-text)] px-1.5">
                     {jobsPage}
                   </span>
                   <button
@@ -809,7 +1197,7 @@ export default function AdminDashboard() {
                       )
                     }
                     disabled={jobsPage * jobsPageSize >= filteredJobs.length}
-                    className="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm disabled:opacity-40 cursor-pointer"
+                    className="px-3 py-1 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold disabled:opacity-40 cursor-pointer transition-colors"
                   >
                     Next
                   </button>
@@ -821,82 +1209,426 @@ export default function AdminDashboard() {
       )}
 
       {/* =========================================================================
-          VIEW: ALL JOBS / PENDING JOBS WORKSPACE
+          VIEW: PLATFORM INTELLIGENCE & ANALYTICS
       ========================================================================= */}
-      {(activeTab === "allJobs" || activeTab === "pendingJobs") && (
-        <div className="space-y-5">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-              {activeTab === "pendingJobs" ? "Pending Jobs Review" : "Manage Jobs"}
-            </h2>
+      {activeTab === "analytics" && (
+        <AdminAnalyticsView
+          allJobs={allJobs}
+          allEmployers={allEmployers}
+          allJobseekers={allJobseekers}
+          pendingJobs={pendingJobs}
+          pendingEmployers={pendingEmployers}
+          unreadContacts={unreadContacts}
+          dbStats={dbStats}
+          onSelectTab={handleSelectTab}
+        />
+      )}
+
+      {/* =========================================================================
+          VIEW: ALL JOBS / PENDING JOBS (JOB MODERATION WORKSPACE)
+      ========================================================================= */}
+      {(activeTab === "allJobs" || activeTab === "pendingJobs") &&
+        (adminInfo?.role === "jobseekerAdmin" ? (
+          <div className="p-8 sm:p-12 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] text-center space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+              <ShieldAlert size={24} />
+            </div>
+            <h3 className="font-display font-bold text-lg text-[var(--theme-text)]">
+              Access Restricted by Clearance Policy
+            </h3>
+            <p className="text-xs text-[var(--theme-text-muted)] max-w-md mx-auto font-mono">
+              Your profile is assigned the <strong className="text-[var(--theme-text)]">jobseekerAdmin</strong> role. Job moderation and listing review privileges are restricted to Super Administrators and Employer Administrators.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Header & Export */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                  <Briefcase size={16} />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-[var(--theme-text)]">
+                  {activeTab === "pendingJobs" ? "Pending Job Moderation Queue" : "Job Listings Moderation Workspace"}
+                </h2>
+              </div>
+              <p className="text-xs text-[var(--theme-text-muted)] mt-1">
+                Review, approve, reject, and moderate position postings across organizations
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => handleExport("all")}
-              className="px-3 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:bg-slate-800 transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer w-fit"
             >
               <Download size={13} />
-              <span>Export</span>
+              <span>Export All Jobs</span>
             </button>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+          {/* Metric Telemetry Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Total Postings
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-[var(--theme-text)]">
+                {allJobs.length}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block">
+                  Pending Review
+                </span>
+                {pendingJobs.length > 0 && (
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                  </span>
+                )}
+              </div>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-amber-400">
+                {pendingJobs.length}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Active & Live
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-emerald-400">
+                {allJobs.filter((j) => j.status === "active").length}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Rejected / Inactive
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-[var(--theme-text-muted)]">
+                {allJobs.filter((j) => j.status === "rejected" || j.status === "hidden" || j.status === "inactive").length}
+              </p>
+            </div>
+          </div>
+
+          {/* Sub-Tabs: All vs Pending */}
+          <div className="flex items-center gap-2 border-b border-[var(--theme-border)] pb-2 overflow-x-auto">
+            <button
+              type="button"
+              onClick={() => {
+                setJobModSubTab("all");
+                setJobModPage(1);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer shrink-0 ${
+                jobModSubTab === "all" && activeTab !== "pendingJobs"
+                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-xs"
+                  : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] border border-[var(--theme-border)]"
+              }`}
+            >
+              All Listings ({allJobs.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setJobModSubTab("pending");
+                setJobModPage(1);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                jobModSubTab === "pending" || activeTab === "pendingJobs"
+                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-xs"
+                  : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] border border-[var(--theme-border)]"
+              }`}
+            >
+              <span>Pending Moderation</span>
+              {pendingJobs.length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-amber-400 text-black">
+                  {pendingJobs.length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Filter Bar */}
+          <div className="p-4 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]" />
+              <input
+                type="text"
+                value={jobModSearch}
+                onChange={(e) => {
+                  setJobModSearch(e.target.value);
+                  setJobModPage(1);
+                }}
+                placeholder="Search job title, company name, recruiter..."
+                className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] w-full transition-colors"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={jobModStatusFilter}
+                onChange={(e) => {
+                  setJobModStatusFilter(e.target.value);
+                  setJobModPage(1);
+                }}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active (Live)</option>
+                <option value="pending">Pending Approval</option>
+                <option value="rejected">Rejected</option>
+                <option value="hidden">Hidden</option>
+              </select>
+
+              <select
+                value={jobModIndustryFilter}
+                onChange={(e) => {
+                  setJobModIndustryFilter(e.target.value);
+                  setJobModPage(1);
+                }}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="all">All Sectors</option>
+                <option value="IT & Software">IT & Software</option>
+                <option value="Banking & Finance">Banking & Finance</option>
+                <option value="Sales & Marketing">Sales & Marketing</option>
+                <option value="Healthcare & Pharma">Healthcare & Pharma</option>
+                <option value="Engineering & Manufacturing">Engineering</option>
+                <option value="Operations & Logistics">Operations</option>
+                <option value="Customer Support">Customer Support</option>
+                <option value="HR & Admin">HR & Admin</option>
+                <option value="Education & EdTech">Education</option>
+              </select>
+
+              <select
+                value={jobModSort}
+                onChange={(e) => setJobModSort(e.target.value)}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="title">Title (A-Z)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Contextual Bulk Action Bar */}
+          {selectedJobModIds.length > 0 && (
+            <div className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xs text-xs font-mono">
+              <span className="font-bold text-[var(--theme-text)]">
+                {selectedJobModIds.length} position listing{selectedJobModIds.length === 1 ? "" : "s"} selected
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleBulkModerationJobs("active")}
+                  className="px-3 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold transition-colors cursor-pointer"
+                >
+                  Bulk Approve
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleBulkModerationJobs("rejected")}
+                  className="px-3 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold transition-colors cursor-pointer"
+                >
+                  Bulk Reject
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedJobModIds([])}
+                  className="px-2.5 py-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] cursor-pointer"
+                >
+                  Clear Selection
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Table Container */}
+          <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] shadow-xs overflow-hidden">
             <div className="overflow-x-auto w-full">
-              <table className="w-full text-left text-sm min-w-[700px]">
-                <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+              <table className="w-full text-left text-xs min-w-[760px]">
+                <thead className="bg-[var(--theme-surface-elevated)]/60 text-[var(--theme-text-muted)] font-mono uppercase tracking-wider border-b border-[var(--theme-border)]">
                   <tr>
-                    <th className="py-3.5 px-5">Title</th>
-                    <th className="py-3.5 px-5">Company</th>
-                    <th className="py-3.5 px-5">Location</th>
-                    <th className="py-3.5 px-5">Status</th>
-                    <th className="py-3.5 px-5 text-right">Actions</th>
+                    <th className="py-3 px-4 w-10">
+                      <input
+                        type="checkbox"
+                        checked={
+                          paginatedModerationJobs.length > 0 &&
+                          selectedJobModIds.length === paginatedModerationJobs.length
+                        }
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedJobModIds(paginatedModerationJobs.map((j) => j._id));
+                          } else {
+                            setSelectedJobModIds([]);
+                          }
+                        }}
+                        className="rounded border-[var(--theme-border)] cursor-pointer"
+                      />
+                    </th>
+                    <th className="py-3 px-4">Position Title & Vertical</th>
+                    <th className="py-3 px-4">Organization</th>
+                    <th className="py-3 px-4">Location</th>
+                    <th className="py-3 px-4">Compensation</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4">Posted Date</th>
+                    <th className="py-3 px-4 text-right">Moderation</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                  {(activeTab === "pendingJobs" ? pendingJobs : allJobs).map((job) => (
-                    <tr key={job._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30">
-                      <td className="py-4 px-5 font-bold text-slate-900 dark:text-white text-base">
-                        <Link to={`/admin/job/${job._id}`} className="hover:underline">
-                          {job.title}
-                        </Link>
-                      </td>
-                      <td className="py-4 px-5 font-medium text-slate-700 dark:text-slate-300">
-                        {job.postedByCompany || job.postedByName || "Company Confidential"}
-                      </td>
-                      <td className="py-4 px-5 font-medium text-slate-500 dark:text-slate-400">
-                        {typeof job.location === "object" ? job.location?.address || "Remote" : job.location || "Remote"}
-                      </td>
-                      <td className="py-4 px-5">
-                        <span className="px-3 py-1 rounded-full font-black text-xs uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                          {job.status || "active"}
-                        </span>
-                      </td>
-                      <td className="py-4 px-5 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {job.status === "pending" && (
-                            <button
-                              type="button"
-                              onClick={() => handleReviewJob(job._id, "active")}
-                              className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[11px] hover:bg-emerald-700 cursor-pointer"
-                            >
-                              Approve
-                            </button>
-                          )}
-                          <Link
-                            to={`/admin/job/${job._id}`}
-                            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-[11px] hover:bg-slate-200 dark:hover:bg-slate-700"
-                          >
-                            View
-                          </Link>
-                        </div>
+                <tbody className="divide-y divide-[var(--theme-border)] text-[var(--theme-text)]">
+                  {paginatedModerationJobs.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="py-12 text-center text-xs font-mono text-[var(--theme-text-muted)]">
+                        Zero job listings matching selected moderation criteria.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    paginatedModerationJobs.map((job) => {
+                      const locationStr =
+                        typeof job.location === "object"
+                          ? job.location?.address || "Remote"
+                          : job.location || "Remote";
+
+                      return (
+                        <tr
+                          key={job._id}
+                          className="hover:bg-[var(--theme-surface-elevated)]/50 transition-colors group"
+                        >
+                          <td className="py-3.5 px-4">
+                            <input
+                              type="checkbox"
+                              checked={selectedJobModIds.includes(job._id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedJobModIds((p) => [...p, job._id]);
+                                } else {
+                                  setSelectedJobModIds((p) => p.filter((id) => id !== job._id));
+                                }
+                              }}
+                              className="rounded border-[var(--theme-border)] cursor-pointer"
+                            />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-2">
+                              <Link
+                                to={`/admin/job/${job._id}`}
+                                className="font-semibold text-sm text-[var(--theme-text)] hover:underline flex items-center gap-1.5"
+                              >
+                                <span>{job.title}</span>
+                                <ExternalLink size={11} className="text-[var(--theme-text-muted)] opacity-60 group-hover:opacity-100" />
+                              </Link>
+                            </div>
+                            <span className="font-mono text-[10px] text-[var(--theme-text-muted)] mt-0.5 block">
+                              {job.industry || "General"}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-[var(--theme-text-muted)] font-mono text-xs">
+                            {job.postedByCompany || job.postedByName || "Company Confidential"}
+                          </td>
+                          <td className="py-3.5 px-4 text-[var(--theme-text-muted)] font-mono text-[11px]">
+                            {locationStr}
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-[11px] text-[var(--theme-text-muted)]">
+                            {job.salaryMin === 0 && job.salaryMax === 0
+                              ? "Unpaid"
+                              : `${job.salaryCurrency || "INR"} ${job.salaryMin?.toLocaleString()} - ${job.salaryMax?.toLocaleString()}`}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`px-2 py-0.5 rounded-md font-mono font-bold text-[10px] uppercase tracking-wider ${
+                                job.status === "active"
+                                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                  : job.status === "pending_approval" || job.status === "pending"
+                                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                  : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                              }`}
+                            >
+                              {job.status}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-[11px] text-[var(--theme-text-muted)]">
+                            {job.createdAt || job.postedAt ? new Date(job.createdAt || job.postedAt).toLocaleDateString() : "—"}
+                          </td>
+                          <td className="py-3.5 px-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedJobIdForDrawer(job._id);
+                                  setIsJobDrawerOpen(true);
+                                }}
+                                className="p-1 rounded-md text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-elevated)] transition-colors cursor-pointer"
+                                title="Quick Inspect Drawer"
+                              >
+                                <Eye size={14} />
+                              </button>
+                              {job.status === "pending_approval" || job.status === "pending" ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleReviewJob(job._id, "active")}
+                                  className="p-1 rounded-md text-emerald-400 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+                                  title="Approve Listing"
+                                >
+                                  <Check size={14} />
+                                </button>
+                              ) : null}
+                              {job.status !== "rejected" && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleReviewJob(job._id, "rejected")}
+                                  className="p-1 rounded-md text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                                  title="Reject Listing"
+                                >
+                                  <XCircle size={14} />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination */}
+            {filteredModerationJobs.length > jobModPageSize && (
+              <div className="p-3.5 sm:p-4 border-t border-[var(--theme-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[var(--theme-text-muted)]">
+                <span>
+                  Showing {(jobModPage - 1) * jobModPageSize + 1}–
+                  {Math.min(jobModPage * jobModPageSize, filteredModerationJobs.length)} of{" "}
+                  {filteredModerationJobs.length} listings
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setJobModPage((p) => Math.max(1, p - 1))}
+                    disabled={jobModPage === 1}
+                    className="px-3 py-1 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold disabled:opacity-40 cursor-pointer transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="font-bold text-[var(--theme-text)] px-1.5">{jobModPage}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setJobModPage((p) =>
+                        p * jobModPageSize < filteredModerationJobs.length ? p + 1 : p
+                      )
+                    }
+                    disabled={jobModPage * jobModPageSize >= filteredModerationJobs.length}
+                    className="px-3 py-1 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold disabled:opacity-40 cursor-pointer transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      )}
+      ))}
 
       {/* =========================================================================
           VIEW: APPLICATIONS
@@ -904,269 +1636,891 @@ export default function AdminDashboard() {
       {activeTab === "applications" && (
         <div className="space-y-5">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+            <h2 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-[var(--theme-text)]">
               Platform Applications
             </h2>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-8 shadow-xs text-center">
-            <FileText size={32} className="mx-auto text-slate-400 mb-2" />
-            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
-              Applications Overview
+          <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] p-8 shadow-xs text-center">
+            <div className="w-12 h-12 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mx-auto mb-3">
+              <FileText size={20} className="text-[#C0C0C0]" />
+            </div>
+            <p className="text-sm font-bold text-[var(--theme-text)] font-display">
+              Candidate Submissions Workflow
             </p>
-            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-              Candidate submissions are managed within each individual job posting view. Select a job from the Jobs directory to view candidates.
+            <p className="text-xs text-[var(--theme-text-muted)] mt-1 max-w-sm mx-auto">
+              Candidate applications are grouped directly under their corresponding position listings. Select any job in the Directory to review candidate pipelines.
             </p>
           </div>
-        </div>
+</div>
       )}
 
       {/* =========================================================================
-          VIEW: COMPANIES (ALL & PENDING EMPLOYERS)
+          VIEW: EMPLOYER VERIFICATION CENTRE
       ========================================================================= */}
-      {activeTab === "allEmployers" && (
-        <div className="space-y-5">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-              Companies & Employers
-            </h2>
+      {(activeTab === "allEmployers" || activeTab === "pendingEmployers") &&
+        (adminInfo?.role === "jobseekerAdmin" ? (
+          <div className="p-8 sm:p-12 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] text-center space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+              <ShieldAlert size={24} />
+            </div>
+            <h3 className="font-display font-bold text-lg text-[var(--theme-text)]">
+              Access Restricted by Clearance Policy
+            </h3>
+            <p className="text-xs text-[var(--theme-text-muted)] max-w-md mx-auto font-mono">
+              Your profile is assigned the <strong className="text-[var(--theme-text)]">jobseekerAdmin</strong> role. Employer KYC verification and corporate compliance reviews are restricted to Super Administrators and Employer Administrators.
+            </p>
+          </div>
+        ) : (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Header & Export */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                  <Building2 size={16} />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-[var(--theme-text)]">
+                  Employer Verification Centre
+                </h2>
+              </div>
+              <p className="text-xs text-[var(--theme-text-muted)] mt-1">
+                KYC compliance auditing, government credential review, and organization access moderation
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => handleExport("employers")}
-              className="px-3 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:bg-slate-800 transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer w-fit"
             >
               <Download size={13} />
-              <span>Export</span>
+              <span>Export Employers (XLSX)</span>
             </button>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+          {/* Metric Telemetry Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Total Organizations
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-[var(--theme-text)]">
+                {allEmployers.length}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block">
+                  Pending KYC
+                </span>
+                {allEmployers.filter((e) => e.isApproved === "pending").length > 0 && (
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                  </span>
+                )}
+              </div>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-amber-400">
+                {allEmployers.filter((e) => e.isApproved === "pending").length}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Verified & Approved
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-emerald-400">
+                {allEmployers.filter((e) => e.isApproved === "approved").length}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Frozen Accounts
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-rose-400">
+                {allEmployers.filter((e) => e.isFrozen).length}
+              </p>
+            </div>
+          </div>
+
+          {/* Sub-Tabs: All vs Pending KYC */}
+          <div className="flex items-center gap-2 border-b border-[var(--theme-border)] pb-2 overflow-x-auto">
+            <button
+              type="button"
+              onClick={() => {
+                setEmpSubTab("all");
+                setEmpPage(1);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer shrink-0 ${
+                empSubTab === "all"
+                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-xs"
+                  : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] border border-[var(--theme-border)]"
+              }`}
+            >
+              All Organizations ({allEmployers.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmpSubTab("pending");
+                setEmpPage(1);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                empSubTab === "pending"
+                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-xs"
+                  : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] border border-[var(--theme-border)]"
+              }`}
+            >
+              <span>Pending KYC Queue</span>
+              {allEmployers.filter((e) => e.isApproved === "pending").length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-amber-400 text-black">
+                  {allEmployers.filter((e) => e.isApproved === "pending").length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Filter Bar */}
+          <div className="p-4 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]" />
+              <input
+                type="text"
+                value={empSearch}
+                onChange={(e) => {
+                  setEmpSearch(e.target.value);
+                  setEmpPage(1);
+                }}
+                placeholder="Search company name, contact person, email..."
+                className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] w-full transition-colors"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={empEntityFilter}
+                onChange={(e) => {
+                  setEmpEntityFilter(e.target.value);
+                  setEmpPage(1);
+                }}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="all">All Entity Types</option>
+                <option value="company">Corporate Company</option>
+                <option value="individual">Individual Recruiter</option>
+              </select>
+
+              <select
+                value={empApprovalFilter}
+                onChange={(e) => {
+                  setEmpApprovalFilter(e.target.value);
+                  setEmpPage(1);
+                }}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="all">All Approvals</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+              </select>
+
+              <select
+                value={empFreezeFilter}
+                onChange={(e) => {
+                  setEmpFreezeFilter(e.target.value);
+                  setEmpPage(1);
+                }}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active Only</option>
+                <option value="frozen">Frozen Only</option>
+              </select>
+
+              <select
+                value={empSort}
+                onChange={(e) => setEmpSort(e.target.value)}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="name">Company (A-Z)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Contextual Bulk Action Bar */}
+          {selectedEmpIds.length > 0 && (
+            <div className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xs text-xs font-mono">
+              <span className="font-bold text-[var(--theme-text)]">
+                {selectedEmpIds.length} employer account{selectedEmpIds.length === 1 ? "" : "s"} selected
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleBulkReviewEmployers("approved")}
+                  className="px-3 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold transition-colors cursor-pointer"
+                >
+                  Bulk Approve KYC
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleBulkReviewEmployers("rejected")}
+                  className="px-3 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold transition-colors cursor-pointer"
+                >
+                  Bulk Reject
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedEmpIds([])}
+                  className="px-2.5 py-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] cursor-pointer"
+                >
+                  Clear Selection
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Table Container */}
+          <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] shadow-xs overflow-hidden">
             <div className="overflow-x-auto w-full">
-              <table className="w-full text-left text-sm min-w-[700px]">
-                <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+              <table className="w-full text-left text-xs min-w-[760px]">
+                <thead className="bg-[var(--theme-surface-elevated)]/60 text-[var(--theme-text-muted)] font-mono uppercase tracking-wider border-b border-[var(--theme-border)]">
                   <tr>
-                    <th className="py-3.5 px-5">Company Name</th>
-                    <th className="py-3.5 px-5">Email</th>
-                    <th className="py-3.5 px-5">Approval</th>
-                    <th className="py-3.5 px-5">Status</th>
-                    <th className="py-3.5 px-5 text-right">Actions</th>
+                    <th className="py-3 px-4 w-10">
+                      <input
+                        type="checkbox"
+                        checked={
+                          paginatedEmployers.length > 0 &&
+                          selectedEmpIds.length === paginatedEmployers.length
+                        }
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedEmpIds(paginatedEmployers.map((emp) => emp._id));
+                          } else {
+                            setSelectedEmpIds([]);
+                          }
+                        }}
+                        className="rounded border-[var(--theme-border)] cursor-pointer"
+                      />
+                    </th>
+                    <th className="py-3 px-4">Organization & Contact</th>
+                    <th className="py-3 px-4">Entity Type</th>
+                    <th className="py-3 px-4">Nature of Business</th>
+                    <th className="py-3 px-4">KYC Documents</th>
+                    <th className="py-3 px-4">Approval</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                  {allEmployers.map((emp) => (
-                    <tr key={emp._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30">
-                      <td className="py-4 px-5 font-bold text-slate-900 dark:text-white text-base">
-                        <Link to={`/admin/employer/${emp._id}`} className="hover:underline">
-                          {emp.companyName || emp.name}
-                        </Link>
-                      </td>
-                      <td className="py-4 px-5 font-mono text-sm text-slate-600 dark:text-slate-400">{emp.email}</td>
-                      <td className="py-4 px-5">
-                        <span className="px-3 py-1 rounded-full font-black text-xs uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                          {emp.isApproved || "pending"}
-                        </span>
-                      </td>
-                      <td className="py-4 px-5">
-                        <span className="px-3 py-1 rounded-full font-black text-xs uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                          {emp.isFrozen ? "Frozen" : "Active"}
-                        </span>
-                      </td>
-                      <td className="py-4 px-5 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {emp.isApproved === "pending" && (
-                            <button
-                              type="button"
-                              onClick={() => handleReviewEmployer(emp._id, "approved")}
-                              className="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold text-[10px]"
-                            >
-                              Approve
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => handleFreezeToggle(emp._id, emp.isFrozen, "employer")}
-                            className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700 font-bold text-[10px]"
-                          >
-                            {emp.isFrozen ? "Unfreeze" : "Freeze"}
-                          </button>
-                        </div>
+                <tbody className="divide-y divide-[var(--theme-border)] text-[var(--theme-text)]">
+                  {paginatedEmployers.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="py-12 text-center text-xs font-mono text-[var(--theme-text-muted)]">
+                        Zero employer records matching selected filter criteria.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    paginatedEmployers.map((emp) => {
+                      const hasAadhar = !!emp.aadharCard;
+                      const hasPan = !!emp.panCard;
+                      const hasGst = !!emp.gstForm;
+
+                      return (
+                        <tr
+                          key={emp._id}
+                          className="hover:bg-[var(--theme-surface-elevated)]/50 transition-colors group"
+                        >
+                          <td className="py-3.5 px-4">
+                            <input
+                              type="checkbox"
+                              checked={selectedEmpIds.includes(emp._id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedEmpIds((p) => [...p, emp._id]);
+                                } else {
+                                  setSelectedEmpIds((p) => p.filter((id) => id !== emp._id));
+                                }
+                              }}
+                              className="rounded border-[var(--theme-border)] cursor-pointer"
+                            />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <Link
+                              to={`/admin/employer/${emp._id}`}
+                              className="font-semibold text-sm text-[var(--theme-text)] hover:underline flex items-center gap-1.5"
+                            >
+                              <span>{emp.companyName || emp.name}</span>
+                              <ExternalLink size={11} className="text-[var(--theme-text-muted)] opacity-60 group-hover:opacity-100" />
+                            </Link>
+                            <span className="font-mono text-[11px] text-[var(--theme-text-muted)] select-all block mt-0.5">
+                              {emp.email}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className="px-2 py-0.5 rounded-md font-mono text-[10px] bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] uppercase">
+                              {emp.employerType || "company"}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-[11px] text-[var(--theme-text-muted)]">
+                            {emp.natureOfBusiness || "Standard Entity"}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-1 font-mono text-[10px]">
+                              <span
+                                className={`px-1.5 py-0.2 rounded-xs ${
+                                  hasAadhar ? "bg-emerald-500/10 text-emerald-400" : "bg-zinc-800 text-zinc-500"
+                                }`}
+                                title={hasAadhar ? "Aadhar Card Uploaded" : "Aadhar Missing"}
+                              >
+                                ADH
+                              </span>
+                              <span
+                                className={`px-1.5 py-0.2 rounded-xs ${
+                                  hasPan ? "bg-emerald-500/10 text-emerald-400" : "bg-zinc-800 text-zinc-500"
+                                }`}
+                                title={hasPan ? "PAN Card Uploaded" : "PAN Missing"}
+                              >
+                                PAN
+                              </span>
+                              {emp.employerType !== "individual" && (
+                                <span
+                                  className={`px-1.5 py-0.2 rounded-xs ${
+                                    hasGst ? "bg-emerald-500/10 text-emerald-400" : "bg-zinc-800 text-zinc-500"
+                                  }`}
+                                  title={hasGst ? "GST Form Uploaded" : "GST Missing"}
+                                >
+                                  GST
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`px-2 py-0.5 rounded-md font-mono font-bold text-[10px] uppercase tracking-wider ${
+                                emp.isApproved === "approved"
+                                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                  : emp.isApproved === "pending"
+                                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                  : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                              }`}
+                            >
+                              {emp.isApproved || "pending"}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`px-2 py-0.5 rounded-md font-mono font-bold text-[10px] uppercase tracking-wider ${
+                                emp.isFrozen
+                                  ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                                  : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                              }`}
+                            >
+                              {emp.isFrozen ? "Frozen" : "Active"}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedEmpIdForDrawer(emp._id);
+                                  setIsEmpDrawerOpen(true);
+                                }}
+                                className="p-1 rounded-md text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-elevated)] transition-colors cursor-pointer"
+                                title="Quick Inspect Drawer"
+                              >
+                                <Eye size={14} />
+                              </button>
+                              {emp.isApproved === "pending" && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleReviewEmployer(emp._id, "approved")}
+                                  className="p-1 rounded-md text-emerald-400 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+                                  title="Approve KYC"
+                                >
+                                  <Check size={14} />
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleFreezeToggle(emp._id, emp.isFrozen, "employer")}
+                                className="px-2 py-0.5 rounded-md border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-mono text-[10px] cursor-pointer transition-colors"
+                              >
+                                {emp.isFrozen ? "Unfreeze" : "Freeze"}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination */}
+            {filteredEmployers.length > empPageSize && (
+              <div className="p-3.5 sm:p-4 border-t border-[var(--theme-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[var(--theme-text-muted)]">
+                <span>
+                  Showing {(empPage - 1) * empPageSize + 1}–
+                  {Math.min(empPage * empPageSize, filteredEmployers.length)} of{" "}
+                  {filteredEmployers.length} organizations
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setEmpPage((p) => Math.max(1, p - 1))}
+                    disabled={empPage === 1}
+                    className="px-3 py-1 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold disabled:opacity-40 cursor-pointer transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="font-bold text-[var(--theme-text)] px-1.5">{empPage}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setEmpPage((p) =>
+                        p * empPageSize < filteredEmployers.length ? p + 1 : p
+                      )
+                    }
+                    disabled={empPage * empPageSize >= filteredEmployers.length}
+                    className="px-3 py-1 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold disabled:opacity-40 cursor-pointer transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      )}
+        ))}
 
       {/* =========================================================================
-          VIEW: USERS (CANDIDATES DIRECTORY)
+          VIEW: USER MANAGEMENT (HYBRID CANDIDATE WORKSPACE)
       ========================================================================= */}
-      {activeTab === "allJobseekers" && (
-        <div className="space-y-5">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-              Users & Candidates
-            </h2>
+      {activeTab === "allJobseekers" &&
+        (adminInfo?.role === "employerAdmin" ? (
+          <div className="p-8 sm:p-12 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] text-center space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+              <ShieldAlert size={24} />
+            </div>
+            <h3 className="font-display font-bold text-lg text-[var(--theme-text)]">
+              Access Restricted by Clearance Policy
+            </h3>
+            <p className="text-xs text-[var(--theme-text-muted)] max-w-md mx-auto font-mono">
+              Your profile is assigned the <strong className="text-[var(--theme-text)]">employerAdmin</strong> role. Candidate directory management and talent account administration are restricted to Super Administrators and Jobseeker Administrators.
+            </p>
+          </div>
+        ) : (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Header & Export */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                  <Users size={16} />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-[var(--theme-text)]">
+                  Candidate User Management Workspace
+                </h2>
+              </div>
+              <p className="text-xs text-[var(--theme-text-muted)] mt-1">
+                Candidate authentication directory, account status moderation, and verified profile tracking
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => handleExport("jobseekers")}
-              className="px-3 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:bg-slate-800 transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer w-fit"
             >
               <Download size={13} />
-              <span>Export</span>
+              <span>Export Candidates (XLSX)</span>
             </button>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+          {/* Metric Telemetry Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Total Talent Pool
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-[var(--theme-text)]">
+                {allJobseekers.length}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Active Candidates
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-emerald-400">
+                {allJobseekers.filter((u) => !u.isFrozen).length}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Frozen Accounts
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-rose-400">
+                {allJobseekers.filter((u) => u.isFrozen).length}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)] uppercase tracking-wider block mb-1">
+                Profiles Complete
+              </span>
+              <p className="text-xl sm:text-2xl font-extrabold font-display text-[var(--theme-text)]">
+                {allJobseekers.filter((u) => u.isProfileComplete).length}
+              </p>
+            </div>
+          </div>
+
+          {/* Filter Bar */}
+          <div className="p-4 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]" />
+              <input
+                type="text"
+                value={userSearch}
+                onChange={(e) => {
+                  setUserSearch(e.target.value);
+                  setUserPage(1);
+                }}
+                placeholder="Search candidate name, email address, phone..."
+                className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] w-full transition-colors"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={userStatusFilter}
+                onChange={(e) => {
+                  setUserStatusFilter(e.target.value);
+                  setUserPage(1);
+                }}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="all">All Accounts</option>
+                <option value="active">Active Accounts</option>
+                <option value="frozen">Frozen Accounts</option>
+              </select>
+
+              <select
+                value={userVerificationFilter}
+                onChange={(e) => {
+                  setUserVerificationFilter(e.target.value);
+                  setUserPage(1);
+                }}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="all">All Verification</option>
+                <option value="verified">Verified Email</option>
+                <option value="unverified">Unverified</option>
+              </select>
+
+              <select
+                value={userSort}
+                onChange={(e) => setUserSort(e.target.value)}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="name">Name (A-Z)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Contextual Bulk Action Bar */}
+          {selectedUserIds.length > 0 && (
+            <div className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xs text-xs font-mono">
+              <span className="font-bold text-[var(--theme-text)]">
+                {selectedUserIds.length} candidate account{selectedUserIds.length === 1 ? "" : "s"} selected
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleBulkFreezeUsers(false)}
+                  className="px-3 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold transition-colors cursor-pointer"
+                >
+                  Bulk Unfreeze
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleBulkFreezeUsers(true)}
+                  className="px-3 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold transition-colors cursor-pointer"
+                >
+                  Bulk Freeze
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedUserIds([])}
+                  className="px-2.5 py-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] cursor-pointer"
+                >
+                  Clear Selection
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Table Container */}
+          <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] shadow-xs overflow-hidden">
             <div className="overflow-x-auto w-full">
-              <table className="w-full text-left text-sm min-w-[700px]">
-                <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+              <table className="w-full text-left text-xs min-w-[760px]">
+                <thead className="bg-[var(--theme-surface-elevated)]/60 text-[var(--theme-text-muted)] font-mono uppercase tracking-wider border-b border-[var(--theme-border)]">
                   <tr>
-                    <th className="py-3.5 px-5">Candidate</th>
-                    <th className="py-3.5 px-5">Email</th>
-                    <th className="py-3.5 px-5">Phone</th>
-                    <th className="py-3.5 px-5">Status</th>
-                    <th className="py-3.5 px-5 text-right">Moderation</th>
+                    <th className="py-3 px-4 w-10">
+                      <input
+                        type="checkbox"
+                        checked={
+                          paginatedUsers.length > 0 &&
+                          selectedUserIds.length === paginatedUsers.length
+                        }
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedUserIds(paginatedUsers.map((u) => u._id));
+                          } else {
+                            setSelectedUserIds([]);
+                          }
+                        }}
+                        className="rounded border-[var(--theme-border)] cursor-pointer"
+                      />
+                    </th>
+                    <th className="py-3 px-4">Candidate Identity</th>
+                    <th className="py-3 px-4">Contact & Phone</th>
+                    <th className="py-3 px-4">Verification</th>
+                    <th className="py-3 px-4">Account Status</th>
+                    <th className="py-3 px-4">Profile Status</th>
+                    <th className="py-3 px-4">Member Since</th>
+                    <th className="py-3 px-4 text-right">Moderation</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                  {allJobseekers.map((u) => (
-                    <tr key={u._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30">
-                      <td className="py-4 px-5 font-bold text-slate-900 dark:text-white text-base">
-                        <Link to={`/admin/user/${u._id}`} className="hover:underline">
-                          {u.name || "Candidate"}
-                        </Link>
-                      </td>
-                      <td className="py-4 px-5 font-mono text-sm text-slate-600 dark:text-slate-400">{u.email}</td>
-                      <td className="py-4 px-5 font-medium text-slate-500 dark:text-slate-400">{u.phone || "—"}</td>
-                      <td className="py-4 px-5">
-                        <span className="px-3 py-1 rounded-full font-black text-xs uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                          {u.isFrozen ? "Frozen" : "Active"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => handleFreezeToggle(u._id, u.isFrozen, "user")}
-                          className="px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 font-bold text-[11px] cursor-pointer"
-                        >
-                          {u.isFrozen ? "Unfreeze" : "Freeze"}
-                        </button>
+                <tbody className="divide-y divide-[var(--theme-border)] text-[var(--theme-text)]">
+                  {paginatedUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="py-12 text-center text-xs font-mono text-[var(--theme-text-muted)]">
+                        Zero candidate records matching selected criteria.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    paginatedUsers.map((u) => (
+                      <tr
+                        key={u._id}
+                        className="hover:bg-[var(--theme-surface-elevated)]/50 transition-colors group"
+                      >
+                        <td className="py-3.5 px-4">
+                          <input
+                            type="checkbox"
+                            checked={selectedUserIds.includes(u._id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedUserIds((p) => [...p, u._id]);
+                              } else {
+                                setSelectedUserIds((p) => p.filter((id) => id !== u._id));
+                              }
+                            }}
+                            className="rounded border-[var(--theme-border)] cursor-pointer"
+                          />
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <Link
+                            to={`/admin/user/${u._id}`}
+                            className="font-semibold text-sm text-[var(--theme-text)] hover:underline flex items-center gap-1.5"
+                          >
+                            <span>{u.name || "Candidate"}</span>
+                            <ExternalLink size={11} className="text-[var(--theme-text-muted)] opacity-60 group-hover:opacity-100" />
+                          </Link>
+                          <span className="font-mono text-[11px] text-[var(--theme-text-muted)] select-all block mt-0.5">
+                            {u.email}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-[11px] text-[var(--theme-text-muted)]">
+                          {u.phone || "Not Provided"}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span
+                            className={`px-2 py-0.5 rounded-md font-mono text-[10px] ${
+                              u.isVerified
+                                ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                                : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] border border-[var(--theme-border)]"
+                            }`}
+                          >
+                            {u.isVerified ? "Verified" : "Unverified"}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span
+                            className={`px-2 py-0.5 rounded-md font-mono font-bold text-[10px] uppercase tracking-wider ${
+                              u.isFrozen
+                                ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                                : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            }`}
+                          >
+                            {u.isFrozen ? "Frozen" : "Active"}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span
+                            className={`px-2 py-0.5 rounded-md font-mono text-[10px] ${
+                              u.isProfileComplete
+                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] border border-[var(--theme-border)]"
+                            }`}
+                          >
+                            {u.isProfileComplete ? "Complete" : "Incomplete"}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-[11px] text-[var(--theme-text-muted)]">
+                          {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedUserIdForDrawer(u._id);
+                                setIsUserDrawerOpen(true);
+                              }}
+                              className="p-1 rounded-md text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-elevated)] transition-colors cursor-pointer"
+                              title="Quick Inspect Drawer"
+                            >
+                              <Eye size={14} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleFreezeToggle(u._id, u.isFrozen, "user")}
+                              className="px-2 py-0.5 rounded-md border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-mono text-[10px] cursor-pointer transition-colors"
+                            >
+                              {u.isFrozen ? "Unfreeze" : "Freeze"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination */}
+            {filteredUsers.length > userPageSize && (
+              <div className="p-3.5 sm:p-4 border-t border-[var(--theme-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[var(--theme-text-muted)]">
+                <span>
+                  Showing {(userPage - 1) * userPageSize + 1}–
+                  {Math.min(userPage * userPageSize, filteredUsers.length)} of{" "}
+                  {filteredUsers.length} candidates
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setUserPage((p) => Math.max(1, p - 1))}
+                    disabled={userPage === 1}
+                    className="px-3 py-1 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold disabled:opacity-40 cursor-pointer transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="font-bold text-[var(--theme-text)] px-1.5">{userPage}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setUserPage((p) =>
+                        p * userPageSize < filteredUsers.length ? p + 1 : p
+                      )
+                    }
+                    disabled={userPage * userPageSize >= filteredUsers.length}
+                    className="px-3 py-1 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold disabled:opacity-40 cursor-pointer transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      )}
+        ))}
 
       {/* =========================================================================
           VIEW: CATEGORIES
       ========================================================================= */}
       {activeTab === "categories" && (
         <div className="space-y-5">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-            Job Categories
+          <h2 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-[var(--theme-text)]">
+            Job Categories & Taxonomies
           </h2>
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-8 shadow-xs text-center">
-            <Layers size={32} className="mx-auto text-slate-400 mb-2" />
-            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
-              Taxonomy & Sectors
+          <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] p-8 shadow-xs text-center">
+            <div className="w-12 h-12 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mx-auto mb-3">
+              <Layers size={20} className="text-[#C0C0C0]" />
+            </div>
+            <p className="text-sm font-bold text-[var(--theme-text)] font-display">
+              Taxonomy & Sector Breakdown
             </p>
-            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-              Categories are assigned dynamically by employers during job creation and tracked in the Statistics chart.
+            <p className="text-xs text-[var(--theme-text-muted)] mt-1 max-w-sm mx-auto">
+              Categories are assigned dynamically by employers during job creation and aggregated automatically into the Industry Distribution chart.
             </p>
           </div>
         </div>
       )}
 
       {/* =========================================================================
-          VIEW: REPORTS / EXPORT
+          VIEW: EXECUTIVE EXPORT & REPORTING CENTRE
       ========================================================================= */}
       {activeTab === "exportDB" && (
-        <div className="space-y-5">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-            Reports & Database Exports
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
-              <div>
-                <h4 className="font-bold text-slate-900 dark:text-white text-sm">Full Platform Database</h4>
-                <p className="text-xs text-slate-400 mt-1 mb-4">Complete backup ZIP archive.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleExport("all")}
-                className="py-2 px-3 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold cursor-pointer"
-              >
-                Download ZIP
-              </button>
-            </div>
-            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
-              <div>
-                <h4 className="font-bold text-slate-900 dark:text-white text-sm">Employers Directory</h4>
-                <p className="text-xs text-slate-400 mt-1 mb-4">Excel workbook of company profiles.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleExport("employers")}
-                className="py-2 px-3 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold cursor-pointer"
-              >
-                Download XLSX
-              </button>
-            </div>
-            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
-              <div>
-                <h4 className="font-bold text-slate-900 dark:text-white text-sm">Candidates Directory</h4>
-                <p className="text-xs text-slate-400 mt-1 mb-4">Excel sheet of registered jobseekers.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleExport("jobseekers")}
-                className="py-2 px-3 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold cursor-pointer"
-              >
-                Download XLSX
-              </button>
-            </div>
-          </div>
-        </div>
+        <AdminExportCentre
+          allEmployers={allEmployers}
+          allJobseekers={allJobseekers}
+          allJobs={allJobs}
+          adminInfo={adminInfo}
+        />
       )}
 
       {/* =========================================================================
-          VIEW: SETTINGS
+          VIEW: OPERATIONAL ACTIVITY STREAM
+      ========================================================================= */}
+      {activeTab === "activity" && (
+        <AdminActivityWorkspace
+          jobs={allJobs}
+          employers={allEmployers}
+          jobseekers={allJobseekers}
+          contacts={allContacts}
+          onSelectTab={handleSelectTab}
+        />
+      )}
+
+      {/* =========================================================================
+          VIEW: ADMINISTRATIVE AUDIT CENTRE
+      ========================================================================= */}
+      {activeTab === "auditLogs" && (
+        <AdminAuditLogsView
+          allJobs={allJobs}
+          allEmployers={allEmployers}
+          allJobseekers={allJobseekers}
+          allContacts={allContacts}
+          adminInfo={adminInfo}
+        />
+      )}
+
+      {/* =========================================================================
+          VIEW: NOTIFICATION WORKSPACE
+      ========================================================================= */}
+      {activeTab === "notifications" && (
+        <AdminNotificationsView
+          pendingJobs={pendingJobs}
+          pendingEmployers={pendingEmployers}
+          allContacts={allContacts}
+          frozenAccountsCount={frozenAccountsCount}
+          adminInfo={adminInfo}
+          onSelectTab={handleSelectTab}
+          onRefresh={() => fetchInitialData(adminInfo)}
+        />
+      )}
+
+      {/* =========================================================================
+          VIEW: SETTINGS CENTRE & GOVERNANCE
       ========================================================================= */}
       {activeTab === "settings" && (
-        <div className="space-y-5 max-w-2xl">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-            Settings & Administrator Profile
-          </h2>
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-xs">
-              <div>
-                <span className="text-slate-400 block mb-1">Name</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">
-                  {adminInfo?.name}
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 block mb-1">Email</span>
-                <span className="font-mono text-slate-900 dark:text-white">
-                  {adminInfo?.email}
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 block mb-1">Assigned Role</span>
-                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-bold uppercase text-[10px]">
-                  {adminInfo?.role}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AdminSettingsView
+          adminInfo={adminInfo}
+          allAdmins={allAdmins}
+          onRefresh={() => fetchInitialData(adminInfo)}
+        />
       )}
 
       {/* Confirmation Dialog */}
@@ -1179,6 +2533,43 @@ export default function AdminDashboard() {
         confirmText={confirmDialog.confirmText}
         variant={confirmDialog.variant}
         loading={confirmDialog.loading}
+      />
+
+      {/* User Detail Drawer */}
+      <AdminUserDetailDrawer
+        userId={selectedUserIdForDrawer}
+        isOpen={isUserDrawerOpen}
+        onClose={() => {
+          setIsUserDrawerOpen(false);
+          setSelectedUserIdForDrawer(null);
+        }}
+        adminToken={adminInfo?.token}
+        onFreezeToggle={handleFreezeToggle}
+      />
+
+      {/* Employer Verification Drawer */}
+      <AdminEmployerDetailDrawer
+        employerId={selectedEmpIdForDrawer}
+        isOpen={isEmpDrawerOpen}
+        onClose={() => {
+          setIsEmpDrawerOpen(false);
+          setSelectedEmpIdForDrawer(null);
+        }}
+        adminToken={adminInfo?.token}
+        onReviewEmployer={handleReviewEmployer}
+        onFreezeToggle={handleFreezeToggle}
+      />
+
+      {/* Job Moderation Drawer */}
+      <AdminJobDetailDrawer
+        jobId={selectedJobIdForDrawer}
+        isOpen={isJobDrawerOpen}
+        onClose={() => {
+          setIsJobDrawerOpen(false);
+          setSelectedJobIdForDrawer(null);
+        }}
+        adminToken={adminInfo?.token}
+        onReviewJob={handleReviewJob}
       />
     </AdminLayout>
   );
