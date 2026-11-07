@@ -1,9 +1,24 @@
 import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { Loader2, CheckCircle, XCircle, FileText, UploadCloud, Eye, Download, AlertCircle, Trash2, ArrowLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Loader2,
+  CheckCircle2,
+  FileText,
+  UploadCloud,
+  Eye,
+  EyeOff,
+  Download,
+  Trash2,
+  ShieldCheck,
+  FileCode,
+  ExternalLink,
+  Sparkles,
+  AlertCircle,
+} from "lucide-react";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
+import CandidateLayout from "../components/candidate/CandidateLayout";
 
 const API_BASE = `${API_BASE_URL}/user`;
 
@@ -15,22 +30,24 @@ const getAuthHeader = () => {
 const getUserId = () => {
   try {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    return userInfo ? (userInfo.userId || userInfo.id || userInfo.user?.id || userInfo.user?._id || userInfo._id) : null;
+    return userInfo
+      ? userInfo.userId || userInfo.id || userInfo.user?.id || userInfo.user?._id || userInfo._id
+      : null;
   } catch (e) {
     return null;
   }
 };
 
 const DOCUMENT_CONFIG = [
-  { label: "10th Marksheet", field: "tenthMarksheet" },
-  { label: "12th Marksheet", field: "twelfthMarksheet" },
-  { label: "UG Marksheet", field: "ugMarksheet" },
-  { label: "PG Marksheet", field: "pgMarksheet" },
-  { label: "Aadhar Card", field: "aadharCard" },
-  { label: "PAN Card", field: "panCard" },
-  { label: "Medical Certificate", field: "medicalCertificate" },
-  { label: "3 Months Salary Slip (if Experienced)", field: "salarySlips" },
-  { label: "Other Documents", field: "otherDocuments" },
+  { label: "10th Marksheet / Matriculation", field: "tenthMarksheet" },
+  { label: "12th Marksheet / Higher Secondary", field: "twelfthMarksheet" },
+  { label: "Undergraduate (UG) Degree / Marksheet", field: "ugMarksheet" },
+  { label: "Postgraduate (PG) Degree / Marksheet", field: "pgMarksheet" },
+  { label: "Aadhar Card / Government ID", field: "aadharCard" },
+  { label: "PAN Card / Tax ID", field: "panCard" },
+  { label: "Medical Fitness Certificate", field: "medicalCertificate" },
+  { label: "3 Months Salary Slips (if Experienced)", field: "salarySlips" },
+  { label: "Other Supporting Credentials / Licenses", field: "otherDocuments" },
 ];
 
 export default function JobseekerDocumentManager() {
@@ -58,66 +75,99 @@ export default function JobseekerDocumentManager() {
     fetchProfile();
   }, []);
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-screen text-slate-500 gap-2">
-      <Loader2 className="animate-spin" /> Loading verification documents...
-    </div>
-  );
+  const uploadedCount = DOCUMENT_CONFIG.filter(
+    (doc) => profile?.documents?.[doc.field]?.key
+  ).length;
 
-  if (!profile) return (
-    <div className="text-center mt-20 text-red-500 font-bold">
-      Error loading profile. Please make sure you are logged in.
-    </div>
-  );
-
-  const uploadedCount = DOCUMENT_CONFIG.filter(doc => profile.documents?.[doc.field]?.key).length;
+  const completionPercent = Math.round((uploadedCount / DOCUMENT_CONFIG.length) * 100);
 
   return (
-    <div className="max-w-4xl mx-auto p-6 mt-10 font-sans pb-20 text-slate-900 dark:text-slate-100">
-      <div className="flex items-center gap-4 mb-6">
-        <button 
-          onClick={() => navigate('/profile')} 
-          className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300"
-          title="Back to Profile"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <div>
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">My Verification & Credential Documents</h2>
-          <p className="text-slate-500 mt-1">
-            Upload your academic marksheets, ID proofs, and certificates.
-          </p>
-        </div>
-      </div>
+    <CandidateLayout
+      activeTab="documents"
+      title="Documents & Credentials"
+      breadcrumbs={[{ label: "Career Profile", path: "/profile" }, { label: "Credential Vault" }]}
+    >
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans antialiased text-[var(--theme-text)]">
+        {/* Header & Overview */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--theme-border)] pb-6">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border-silver)]">
+                Official Credential Vault
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--theme-text)]">
+              Verification & Credential Documents
+            </h1>
+            <p className="text-xs sm:text-sm text-[var(--theme-text-muted)]">
+              Securely store and manage academic marksheets, government identity proofs, and experience documents.
+            </p>
+          </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 flex items-start gap-4 mb-8 shadow-sm">
-        <AlertCircle className="text-blue-600 shrink-0 mt-0.5" size={24} />
-        <div>
-          <h3 className="font-bold text-blue-900 dark:text-blue-300 text-base">All Documents Are Optional By Default</h3>
-          <p className="text-sm text-blue-800 dark:text-blue-200 mt-1 leading-relaxed">
-            You do not need to upload all documents immediately. They are only required when applying to specific job postings where the employer has explicitly requested them in their checklist. Once uploaded here, you can apply to those jobs with a single click!
-          </p>
-          <div className="mt-3 inline-flex items-center px-3 py-1 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-900/40 text-xs font-bold">
-            Uploaded: {uploadedCount} / {DOCUMENT_CONFIG.length} documents
+          <div className="flex items-center gap-2.5 shrink-0">
+            <Link
+              to="/resume-builder"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-all shadow-xs"
+            >
+              <FileCode size={14} /> Resume Builder
+            </Link>
           </div>
         </div>
-      </div>
 
-      <div className="space-y-6">
-        {DOCUMENT_CONFIG.map((doc) => (
-          <DocumentUploader key={doc.field} doc={doc} profile={profile} onRefresh={fetchProfile} />
-        ))}
-      </div>
+        {/* Informational Guidance Banner & Progress Meter */}
+        <div className="p-5 sm:p-6 rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface)] space-y-4 shadow-xs">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center text-[var(--theme-accent-silver)] shrink-0 mt-0.5">
+              <ShieldCheck size={20} />
+            </div>
+            <div className="space-y-1 flex-1 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-sm font-bold text-[var(--theme-text)]">
+                  Zero-Friction Credential Verification
+                </h3>
+                <span className="text-xs font-mono font-bold text-[var(--theme-accent-silver)]">
+                  {uploadedCount} / {DOCUMENT_CONFIG.length} Uploaded ({completionPercent}%)
+                </span>
+              </div>
+              <p className="text-xs text-[var(--theme-text-muted)] leading-relaxed">
+                Uploading documents is optional and only required when an employer asks for specific verification proofs during hiring stages. Once stored here, your credentials can be shared with verified employers in one click.
+              </p>
+            </div>
+          </div>
 
-      <div className="mt-10 flex justify-end">
-        <button 
-          onClick={() => navigate('/profile')}
-          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg flex items-center gap-2"
-        >
-          <CheckCircle size={20} /> Return to Profile
-        </button>
+          {/* Progress bar */}
+          <div className="w-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] rounded-full h-2 overflow-hidden">
+            <div
+              className="h-full bg-[var(--theme-text)] rounded-full transition-all duration-500"
+              style={{ width: `${completionPercent}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Document Upload Cards */}
+        {loading ? (
+          <div className="space-y-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-24 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] animate-pulse p-6"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {DOCUMENT_CONFIG.map((doc) => (
+              <DocumentUploader
+                key={doc.field}
+                doc={doc}
+                profile={profile}
+                onRefresh={fetchProfile}
+              />
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </CandidateLayout>
   );
 }
 
@@ -130,7 +180,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
 
   const docData = profile?.documents?.[doc.field];
   const isUploaded = !!(docData && docData.key);
-  const fileName = docData?.name || "Uploaded Document";
+  const fileName = docData?.name || "Official Document";
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -145,34 +195,44 @@ function DocumentUploader({ doc, profile, onRefresh }) {
     try {
       const headers = getAuthHeader();
       const userId = getUserId();
-      
+
       // 1. Get Presigned S3 URL
-      const presignRes = await axios.post(`${API_BASE}/${userId}/document/upload-url`, { 
-        fileType: file.type,
-        field: doc.field 
-      }, { headers });
-      
+      const presignRes = await axios.post(
+        `${API_BASE}/${userId}/document/upload-url`,
+        {
+          fileType: file.type,
+          field: doc.field,
+        },
+        { headers }
+      );
+
       // 2. Upload directly to AWS S3 (Tauri binary buffer support)
       if (window.__TAURI__) {
         const arrayBuffer = await file.arrayBuffer();
         await tauriFetch(presignRes.data.uploadUrl, {
           method: "PUT",
           body: new Uint8Array(arrayBuffer),
-          headers: { "Content-Type": file.type }
+          headers: { "Content-Type": file.type },
         });
       } else {
-        await axios.put(presignRes.data.uploadUrl, file, { headers: { "Content-Type": file.type } });
+        await axios.put(presignRes.data.uploadUrl, file, {
+          headers: { "Content-Type": file.type },
+        });
       }
 
       // 3. Save the specific S3 Key to database
-      await axios.post(`${API_BASE}/${userId}/document/save-key`, { 
-        field: doc.field, 
-        key: presignRes.data.key,
-        fileName: file.name
-      }, { headers });
+      await axios.post(
+        `${API_BASE}/${userId}/document/save-key`,
+        {
+          field: doc.field,
+          key: presignRes.data.key,
+          fileName: file.name,
+        },
+        { headers }
+      );
 
       setFile(null);
-      onRefresh(); 
+      onRefresh();
     } catch (err) {
       console.error(err);
       setError("Upload failed. Ensure the file is valid and network is stable.");
@@ -182,10 +242,12 @@ function DocumentUploader({ doc, profile, onRefresh }) {
   };
 
   const handleView = async () => {
-    if (viewUrl) return setViewUrl(null); 
+    if (viewUrl) return setViewUrl(null);
     try {
       const userId = getUserId();
-      const res = await axios.get(`${API_BASE}/${userId}/document/view?field=${doc.field}`, { headers: getAuthHeader() });
+      const res = await axios.get(`${API_BASE}/${userId}/document/view?field=${doc.field}`, {
+        headers: getAuthHeader(),
+      });
       setViewUrl(res.data.viewableUrl);
     } catch (err) {
       setError("Could not load preview.");
@@ -195,9 +257,13 @@ function DocumentUploader({ doc, profile, onRefresh }) {
   const handleDownload = async () => {
     try {
       const userId = getUserId();
-      const res = await axios.get(`${API_BASE}/${userId}/document/download?field=${doc.field}`, { headers: getAuthHeader() });
+      const res = await axios.get(`${API_BASE}/${userId}/document/download?field=${doc.field}`, {
+        headers: getAuthHeader(),
+      });
       const link = document.createElement("a");
       link.href = res.data.downloadableUrl;
+      link.target = "_blank";
+      link.rel = "noreferrer";
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -207,14 +273,14 @@ function DocumentUploader({ doc, profile, onRefresh }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm(`Are you sure you want to delete ${doc.label}?`)) return;
+    if (!window.confirm(`Are you sure you want to remove ${doc.label}?`)) return;
     setDeleting(true);
     setError("");
     try {
       const userId = getUserId();
-      await axios.delete(`${API_BASE}/${userId}/document`, { 
+      await axios.delete(`${API_BASE}/${userId}/document`, {
         headers: getAuthHeader(),
-        data: { field: doc.field }
+        data: { field: doc.field },
       });
       setViewUrl(null);
       onRefresh();
@@ -226,81 +292,158 @@ function DocumentUploader({ doc, profile, onRefresh }) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm dark:shadow-slate-950/40 p-4 sm:p-6 transition-all hover:shadow-md">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        
-        {/* Left Side: Info */}
-        <div className="flex items-center gap-4 flex-1">
-          <div className={`p-4 rounded-xl shrink-0 ${isUploaded ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
-            {isUploaded ? <CheckCircle size={24} /> : <FileText size={24} />}
+    <div className="p-5 sm:p-6 rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface)] hover:border-[var(--theme-border-silver)] transition-all shadow-xs space-y-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* Document Metadata */}
+        <div className="flex items-center gap-3.5 flex-1 min-w-0">
+          <div
+            className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
+              isUploaded
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                : "bg-[var(--theme-surface-elevated)] border-[var(--theme-border)] text-[var(--theme-text-muted)]"
+            }`}
+          >
+            {isUploaded ? <CheckCircle2 size={18} /> : <FileText size={18} />}
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-extrabold text-slate-800 dark:text-white text-lg">{doc.label}</h3>
-              <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">Optional</span>
-            </div>
+
+          <div className="min-w-0 space-y-0.5">
+            <h3 className="font-bold text-sm text-[var(--theme-text)] truncate">{doc.label}</h3>
             {isUploaded ? (
-              <div className="mt-1">
-                <p className="text-sm font-bold text-emerald-600 flex items-center gap-1.5">
-                  ✓ Uploaded: <span className="text-slate-700 dark:text-slate-200 underline underline-offset-2">{fileName}</span>
-                </p>
-              </div>
+              <p className="text-xs text-[var(--theme-text-muted)] truncate font-mono">
+                ✓ Attached: <span className="text-[var(--theme-text)] font-semibold">{fileName}</span>
+              </p>
             ) : (
-              <p className="text-sm text-slate-400 font-medium mt-1 flex items-center gap-1">
-                <XCircle size={14}/> Not Uploaded
+              <p className="text-xs text-[var(--theme-text-muted)] font-mono">Status: Pending Verification</p>
+            )}
+            {error && (
+              <p className="text-[11px] text-rose-400 flex items-center gap-1 font-medium mt-1">
+                <AlertCircle size={12} /> {error}
               </p>
             )}
-            {error && <p className="text-xs text-red-500 font-bold mt-2">{error}</p>}
           </div>
         </div>
 
-        {/* Right Side: Actions */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 shrink-0">
           {!isUploaded || file ? (
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <input type="file" id={`file-${doc.field}`} onChange={handleFileChange} accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" className="hidden" />
-              <label htmlFor={`file-${doc.field}`} className="cursor-pointer bg-slate-100 text-slate-600 px-4 py-2.5 rounded-xl font-bold hover:bg-slate-200 transition text-sm text-center flex-1 sm:flex-none">
-                {file ? file.name.substring(0, 15) + "..." : "Select File"}
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <input
+                type="file"
+                id={`file-${doc.field}`}
+                onChange={handleFileChange}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                className="hidden"
+              />
+              <label
+                htmlFor={`file-${doc.field}`}
+                className="cursor-pointer px-3.5 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-semibold transition-all inline-block truncate max-w-[180px]"
+              >
+                {file ? file.name : "Select File"}
               </label>
-              
+
               {file && (
-                <button onClick={handleUpload} disabled={uploading} className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-md shadow-blue-200 flex items-center gap-2 text-sm disabled:opacity-70">
-                  {uploading ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
-                  {uploading ? "Uploading..." : "Confirm Upload"}
+                <button
+                  type="button"
+                  onClick={handleUpload}
+                  disabled={uploading}
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                >
+                  {uploading ? (
+                    <Loader2 size={13} className="animate-spin" />
+                  ) : (
+                    <UploadCloud size={13} />
+                  )}
+                  {uploading ? "Uploading..." : "Confirm"}
                 </button>
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap justify-end">
-              <button onClick={handleView} className="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl font-bold hover:bg-blue-100 transition flex items-center gap-1.5 text-sm">
-                <Eye size={16} /> {viewUrl ? "Close" : "View"}
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={handleView}
+                className="px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                {viewUrl ? <EyeOff size={13} className="text-[var(--theme-accent-silver)]" /> : <Eye size={13} className="text-[var(--theme-accent-silver)]" />}
+                <span>{viewUrl ? "Hide" : "View"}</span>
               </button>
-              <button onClick={handleDownload} className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-1.5 text-sm">
-                <Download size={16} /> Download
+
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                <Download size={13} className="text-[var(--theme-accent-silver)]" />
+                <span>Download</span>
               </button>
-              
-              <input type="file" id={`replace-${doc.field}`} onChange={handleFileChange} accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" className="hidden" />
-              <label htmlFor={`replace-${doc.field}`} className="cursor-pointer bg-amber-50 text-amber-700 px-3 py-2 rounded-xl text-sm font-bold hover:bg-amber-100 transition">
+
+              <input
+                type="file"
+                id={`replace-${doc.field}`}
+                onChange={handleFileChange}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                className="hidden"
+              />
+              <label
+                htmlFor={`replace-${doc.field}`}
+                className="cursor-pointer px-3 py-1.5 rounded-xl border border-[var(--theme-border)] bg-[var(--theme-surface)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] text-xs font-medium transition-all"
+              >
                 Replace
               </label>
-              <button onClick={handleDelete} disabled={deleting} className="bg-red-50 text-red-600 p-2 rounded-xl hover:bg-red-100 transition" title="Delete document">
-                {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="p-2 rounded-xl text-[var(--theme-text-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                title="Delete document"
+              >
+                {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Inline Preview Iframe */}
+      {/* Embedded Document Previewer */}
       {viewUrl && (
-        <div className="mt-6 border border-slate-200 rounded-xl overflow-hidden bg-slate-100 h-[500px] animate-in fade-in slide-in-from-top-4">
-          {viewUrl.includes(".pdf") ? (
-            <iframe src={viewUrl} title={doc.label} className="w-full h-full" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center p-4">
-              <img src={viewUrl} alt={doc.label} className="max-h-full max-w-full object-contain rounded-lg shadow-sm" />
+        <div className="mt-4 border border-[var(--theme-border)] rounded-2xl overflow-hidden bg-[var(--theme-surface-elevated)] flex flex-col animate-in fade-in duration-200">
+          <div className="p-3 border-b border-[var(--theme-border)] flex items-center justify-between bg-[var(--theme-surface)]">
+            <span className="text-xs font-mono text-[var(--theme-text-muted)]">
+              Document Preview: <strong className="text-[var(--theme-text)]">{doc.label}</strong>
+            </span>
+            <div className="flex items-center gap-2">
+              <a
+                href={viewUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="px-2.5 py-1 rounded-lg border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] flex items-center gap-1 transition-colors"
+              >
+                <span>Fullscreen</span>
+                <ExternalLink size={12} />
+              </a>
+              <button
+                type="button"
+                onClick={() => setViewUrl(null)}
+                className="px-2.5 py-1 rounded-lg border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors"
+              >
+                Close
+              </button>
             </div>
-          )}
+          </div>
+          <div className="h-[460px]">
+            {viewUrl.includes(".pdf") ? (
+              <iframe src={viewUrl} title={doc.label} className="w-full h-full" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center p-4">
+                <img
+                  src={viewUrl}
+                  alt={doc.label}
+                  className="max-h-full max-w-full object-contain rounded-xl shadow-xs"
+                />
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

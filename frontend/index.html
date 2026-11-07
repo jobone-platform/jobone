@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/JobOneLogo.png" />
@@ -10,16 +10,28 @@
     <meta property="og:description" content="Connect with top employers, apply seamlessly, and accelerate your career on JobOne." />
     <meta property="og:type" content="website" />
     <title>JobOne Portal</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <script>
       (function () {
         try {
-          var saved = localStorage.getItem('jobone_theme') || 'default';
-          var isDark = saved === 'dark' || (saved === 'default' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var saved = localStorage.getItem('jobone_theme') || 'dark';
+          var isDark = saved === 'dark' || (saved === 'default' && (!window.matchMedia || window.matchMedia('(prefers-color-scheme: dark)').matches || !window.matchMedia('(prefers-color-scheme: light)').matches));
+          if (saved === 'light') isDark = false;
           if (isDark) {
             document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
             document.documentElement.setAttribute('data-theme', 'dark');
           } else {
             document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
             document.documentElement.setAttribute('data-theme', 'light');
           }
         } catch (e) {}

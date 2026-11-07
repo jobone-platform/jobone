@@ -1,316 +1,488 @@
 import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useNavigate, Link } from "react-router-dom";
+import EmployerLayout from "../components/employer/EmployerLayout.jsx";
 import {
-  Edit, MapPin, Globe, Mail, Phone, CheckCircle, XCircle, FileText,
-  Star, Calendar, Building, User, Briefcase
+  Edit,
+  MapPin,
+  Globe,
+  Mail,
+  Phone,
+  CheckCircle,
+  XCircle,
+  FileText,
+  Star,
+  Calendar,
+  Building,
+  User,
+  Briefcase,
+  ExternalLink,
+  ShieldCheck,
+  Clock,
+  XOctagon,
+  PlusCircle,
+  ArrowRight,
+  Loader2,
 } from "lucide-react";
 
 export default function EmployerProfile() {
-  const { id } = useParams();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchEmployerProfile();
-    fetchEmployerJobs();
-  }, []);
+    const loadData = async () => {
+      try {
+        const storedData = localStorage.getItem("employerInfo");
+        if (!storedData) return navigate("/login");
 
-  const fetchEmployerProfile = async () => {
-    try {
-      const storedData = localStorage.getItem("employerInfo");
-      if (!storedData) {
-        navigate("/login");
-        return;
+        const info = JSON.parse(storedData);
+        const token = info.token;
+        const employerID = info.id || info.employerId;
+
+        if (!token || !employerID) return navigate("/login");
+
+        const [profileRes, jobsRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/employer/profile/${employerID}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios
+            .get(`${API_BASE_URL}/jobs/employer-jobs`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+            .catch(() => ({ data: [] })),
+        ]);
+
+        setProfile(profileRes.data);
+        const resolvedJobs = Array.isArray(jobsRes.data)
+          ? jobsRes.data
+          : jobsRes.data?.jobs || [];
+        setJobs(resolvedJobs);
+      } catch (err) {
+        console.error("Failed to load employer profile:", err);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const info = JSON.parse(storedData);
-      const token = info.token;
-      const employerID = info.employerId;
-
-      if (!token || !employerID) {
-        navigate("/login");
-        return;
-      }
-
-      const { data } = await axios.get(
-        `${API_BASE_URL}/employer/profile/${employerID}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setProfile(data);
-    } catch (err) {
-      console.error("Failed to load profile", err);
-    }
-  };
-
-  const fetchEmployerJobs = async () => {
-    try {
-      const storedData = localStorage.getItem("employerInfo");
-      if (!storedData) return;
-      const info = JSON.parse(storedData);
-      if (!info.token) return;
-
-      const { data } = await axios.get(
-        `${API_BASE_URL}/jobs/employer-jobs`,
-        { headers: { Authorization: `Bearer ${info.token}` } }
-      );
-
-      if (Array.isArray(data)) setJobs(data);
-      else if (data.jobs) setJobs(data.jobs);
-      else setJobs([]);
-    } catch (err) {
-      console.error("Failed to load jobs", err);
-    }
-  };
+    loadData();
+  }, [navigate]);
 
   const calculateRating = (ratings) => {
-    if (!ratings || ratings.length === 0) return "No ratings yet";
+    if (!ratings || ratings.length === 0) return "5.0";
     const total = ratings.reduce((acc, curr) => acc + curr.rating, 0);
-    return (total / ratings.length).toFixed(1) + " / 5.0";
+    return (total / ratings.length).toFixed(1);
   };
 
-  if (!profile) return <div className="text-center py-20 text-gray-500">Loading...</div>;
+  if (loading) {
+    return (
+      <EmployerLayout activeTab="profile" title="Company Profile">
+        <div className="py-24 flex flex-col items-center justify-center text-[var(--theme-text-muted)]">
+          <Loader2 size={36} className="animate-spin text-[var(--theme-accent-silver)] mb-4" />
+          <p className="text-sm font-semibold">Loading enterprise dossier...</p>
+        </div>
+      </EmployerLayout>
+    );
+  }
 
-  // FACT: Helper function to render document status rows
-  const DocumentRow = ({ name, field }) => (
-    <div className="flex items-center justify-between py-1 border-b border-gray-100 dark:border-slate-800 last:border-0">
-      <span className="text-sm text-gray-600">{name}</span>
-      {profile[field] ? (
-        <span className="flex items-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">
-          <CheckCircle size={12} /> Uploaded
+  if (!profile) {
+    return (
+      <EmployerLayout activeTab="profile" title="Profile Unavailable">
+        <div className="py-20 text-center max-w-md mx-auto">
+          <p className="text-sm text-[var(--theme-text-muted)]">
+            Unable to load profile information.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-[var(--theme-text)] text-[var(--theme-bg)] rounded-xl text-xs font-bold"
+          >
+            Retry
+          </button>
+        </div>
+      </EmployerLayout>
+    );
+  }
+
+  const companyName =
+    profile.employerType === "company"
+      ? profile.companyName || profile.name
+      : profile.name;
+
+  const initials = companyName
+    ?.split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() || "CO";
+
+  const isApproved = profile.isApproved === "approved";
+  const employerId = profile._id || profile.id;
+
+  return (
+    <EmployerLayout
+      activeTab="profile"
+      title="Company Profile"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "Company Profile" },
+      ]}
+      approvalStatus={profile.isApproved}
+      employerInfo={profile}
+    >
+      <div className="space-y-6 sm:space-y-8">
+        {/* 1. EDITORIAL SHOWCASE HEADER */}
+        <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+              {/* Logo / Initials Monogram */}
+              {profile.profilePicture ? (
+                <img
+                  src={profile.profilePicture}
+                  alt={companyName}
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border border-[var(--theme-border-silver)] bg-[var(--theme-surface-elevated)] shadow-sm shrink-0"
+                />
+              ) : (
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center font-bold text-2xl text-[var(--theme-text)] shrink-0 shadow-sm">
+                  {initials}
+                </div>
+              )}
+
+              {/* Company Info */}
+              <div className="space-y-1.5 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--theme-text)] tracking-tight truncate">
+                    {companyName}
+                  </h1>
+
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+                    {profile.employerType === "company" ? (
+                      <Building size={11} />
+                    ) : (
+                      <User size={11} />
+                    )}
+                    {profile.employerType === "company" ? "Company" : "Individual"}
+                  </span>
+
+                  {isApproved ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      <ShieldCheck size={11} />
+                      Verified Employer
+                    </span>
+                  ) : profile.isApproved === "rejected" ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-500/10 text-red-400 border border-red-500/20">
+                      <XOctagon size={11} />
+                      Denied
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      <Clock size={11} />
+                      Under Review
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--theme-text-muted)]">
+                  <span className="flex items-center gap-1.5">
+                    <MapPin size={14} className="text-[var(--theme-accent-silver)] shrink-0" />
+                    <span>
+                      {profile.officeLocation?.address || profile.location || "HQ Location Not Set"}
+                    </span>
+                  </span>
+
+                  <span className="flex items-center gap-1.5">
+                    <Calendar size={14} className="text-[var(--theme-accent-silver)] shrink-0" />
+                    <span>Member since {new Date(profile.createdAt || Date.now()).getFullYear()}</span>
+                  </span>
+
+                  <span className="flex items-center gap-1 text-amber-400 font-semibold">
+                    <Star size={13} fill="currentColor" />
+                    <span>{calculateRating(profile.ratingsReceived)}</span>
+                    <span className="text-[var(--theme-text-subtle)] font-normal">
+                      ({profile.ratingsReceived?.length || 0} reviews)
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+              <Link
+                to="/employereditprofile"
+                className="flex-1 md:flex-none justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs sm:text-sm hover:opacity-90 transition-opacity shadow-sm"
+              >
+                <Edit size={15} />
+                <span>Edit Profile</span>
+              </Link>
+
+              {employerId && (
+                <Link
+                  to={`/company/${employerId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 md:flex-none justify-center inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs sm:text-sm font-semibold text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition-colors"
+                >
+                  <span>Public View</span>
+                  <ExternalLink size={14} className="text-[var(--theme-accent-silver)]" />
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 2. MAIN BENTO GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+          {/* Left Column: Metadata & Documents */}
+          <div className="space-y-6">
+            {/* Business Dossier */}
+            <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-5 shadow-sm space-y-4">
+              <h2 className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-subtle)] font-bold">
+                Enterprise Dossier
+              </h2>
+
+              <div className="space-y-3 text-xs">
+                <div>
+                  <span className="text-[var(--theme-text-subtle)] block text-[11px]">Industry</span>
+                  <span className="font-semibold text-[var(--theme-text)]">
+                    {profile.industry || "General Industry"}
+                  </span>
+                </div>
+
+                {profile.natureOfBusiness && (
+                  <div>
+                    <span className="text-[var(--theme-text-subtle)] block text-[11px]">
+                      Nature of Business
+                    </span>
+                    <span className="font-semibold text-[var(--theme-text)]">
+                      {profile.natureOfBusiness}
+                    </span>
+                  </div>
+                )}
+
+                {profile.companyWebsite && (
+                  <div>
+                    <span className="text-[var(--theme-text-subtle)] block text-[11px]">Website</span>
+                    <a
+                      href={
+                        profile.companyWebsite.startsWith("http")
+                          ? profile.companyWebsite
+                          : `https://${profile.companyWebsite}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-[var(--theme-accent-silver)] hover:underline flex items-center gap-1 mt-0.5"
+                    >
+                      <span>{profile.companyWebsite.replace(/^https?:\/\//, "")}</span>
+                      <ExternalLink size={12} />
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Point of Contact */}
+            <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-5 shadow-sm space-y-4">
+              <h2 className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-subtle)] font-bold">
+                Authorized Point of Contact
+              </h2>
+
+              <div className="space-y-3 text-xs">
+                <div className="flex items-center gap-2.5">
+                  <User size={15} className="text-[var(--theme-accent-silver)] shrink-0" />
+                  <div>
+                    <span className="text-[var(--theme-text-subtle)] block text-[10px]">Contact Person</span>
+                    <span className="font-semibold text-[var(--theme-text)]">{profile.name}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <Mail size={15} className="text-[var(--theme-accent-silver)] shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-[var(--theme-text-subtle)] block text-[10px]">Corporate Email</span>
+                    <span className="font-semibold text-[var(--theme-text)] truncate block">
+                      {profile.email}
+                    </span>
+                  </div>
+                </div>
+
+                {profile.phone && (
+                  <div className="flex items-center gap-2.5">
+                    <Phone size={15} className="text-[var(--theme-accent-silver)] shrink-0" />
+                    <div>
+                      <span className="text-[var(--theme-text-subtle)] block text-[10px]">Direct Line</span>
+                      <span className="font-semibold text-[var(--theme-text)]">{profile.phone}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Verification Documents Summary */}
+            <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-5 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-subtle)] font-bold">
+                  KYC Verification Docs
+                </h2>
+                <Link
+                  to="/employerdocupload"
+                  className="text-[11px] font-semibold text-[var(--theme-accent-silver)] hover:underline"
+                >
+                  Manage
+                </Link>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <DocumentRow name="Aadhar Identity" uploaded={Boolean(profile.aadharCard)} />
+                <DocumentRow name="PAN Verification" uploaded={Boolean(profile.panCard)} />
+                {profile.employerType === "company" ? (
+                  <>
+                    <DocumentRow name="GST Certificate" uploaded={Boolean(profile.gstForm)} />
+                    <DocumentRow
+                      name="Business Incorporation"
+                      uploaded={Boolean(profile.otherBusinessCertificate)}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <DocumentRow name="Trade License" uploaded={Boolean(profile.tradeLicense)} />
+                    <DocumentRow
+                      name="Educational Credentials"
+                      uploaded={Boolean(profile.educationDocuments)}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Story & Active Job Openings */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* About / Corporate Story */}
+            <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-6 sm:p-7 shadow-sm">
+              <h2 className="text-sm font-bold text-[var(--theme-text)] mb-3 flex items-center gap-2">
+                <Briefcase size={16} className="text-[var(--theme-accent-silver)]" />
+                <span>About the Organization</span>
+              </h2>
+
+              <p className="text-xs sm:text-sm text-[var(--theme-text-muted)] leading-relaxed whitespace-pre-wrap">
+                {profile.description ||
+                  "No company narrative provided yet. Click 'Edit Profile' to add your organization's mission and team values."}
+              </p>
+
+              {profile.description &&
+                (profile.description.split(/\s+/).filter((w) => w.length > 0).length < 50 ||
+                  profile.description.split(/\s+/).filter((w) => w.length > 0).length > 200) && (
+                  <div className="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs flex items-start gap-2">
+                    <Clock size={14} className="shrink-0 mt-0.5" />
+                    <span>
+                      Notice: High-converting employer profiles maintain descriptions between 50 and 200 words.
+                    </span>
+                  </div>
+                )}
+            </div>
+
+            {/* Current Open Positions */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-[var(--theme-text)]">
+                    Published Open Positions
+                  </h2>
+                  <p className="text-xs text-[var(--theme-text-muted)]">
+                    Active job requisitions receiving candidate applications
+                  </p>
+                </div>
+
+                <Link
+                  to="/createjob"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 shadow-sm"
+                >
+                  <PlusCircle size={14} />
+                  <span>Post Job</span>
+                </Link>
+              </div>
+
+              {jobs.length === 0 ? (
+                <div className="p-8 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] text-center">
+                  <p className="text-xs sm:text-sm text-[var(--theme-text-muted)] mb-3">
+                    No active job listings published under this profile yet.
+                  </p>
+                  <Link
+                    to="/createjob"
+                    className="text-xs font-bold text-[var(--theme-accent-silver)] hover:underline"
+                  >
+                    Create Your First Job Opportunity
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {jobs.map((job) => (
+                    <div
+                      key={job._id}
+                      onClick={() => navigate(`/job/${job._id}`)}
+                      className="p-4 sm:p-5 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] transition-all cursor-pointer group flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="font-bold text-xs sm:text-sm text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors line-clamp-1">
+                            {job.title}
+                          </h3>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase shrink-0 ${
+                              job.status === "active"
+                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] border border-[var(--theme-border)]"
+                            }`}
+                          >
+                            {job.status}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] text-[var(--theme-text-muted)] mb-3">
+                          <span>{Array.isArray(job.jobType) ? job.jobType.join(", ") : job.jobType}</span>
+                          <span>•</span>
+                          <span className="truncate">
+                            {typeof job.location === "object" ? job.location?.address : job.location || "Remote"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-3 border-t border-[var(--theme-border)] text-xs">
+                        <span className="text-[11px] text-[var(--theme-text-muted)] font-mono">
+                          {job.stats?.total || 0} applicants
+                        </span>
+                        <span className="text-[11px] font-semibold text-[var(--theme-accent-silver)] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                          <span>View Dossier</span>
+                          <ArrowRight size={12} />
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </EmployerLayout>
+  );
+}
+
+function DocumentRow({ name, uploaded }) {
+  return (
+    <div className="flex items-center justify-between py-1.5 border-b border-[var(--theme-border)]/50 last:border-0">
+      <span className="text-[var(--theme-text-muted)]">{name}</span>
+      {uploaded ? (
+        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400">
+          <CheckCircle size={12} /> Verified
         </span>
       ) : (
-        <span className="flex items-center gap-1 text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">
+        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--theme-text-subtle)]">
           <XCircle size={12} /> Missing
         </span>
       )}
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-4 sm:py-15 font-sans pb-20">
-      {/* ---------------- Header Section ---------------- */}
-      <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-4 sm:gap-6 text-center md:text-left">
-            <img
-              src={profile.profilePicture || "https://via.placeholder.com/150"}
-              alt="Logo"
-              className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-xl border-2 sm:border-4 border-gray-50 shadow-sm"
-            />
-
-            <div className="flex-1 w-full flex flex-col items-center md:items-start">
-              <div className="flex flex-wrap justify-center md:justify-start items-center gap-2 mb-2">
-                <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                  {profile.employerType === 'company' ? (profile.companyName || profile.name) : profile.name}
-                </h1>
-                
-                {/* FACT: Show Employer Type Badge */}
-                <span className="flex items-center gap-1 px-2 py-0.5 sm:px-3 sm:py-1 bg-indigo-100 text-indigo-700 text-[10px] sm:text-xs font-bold rounded-md">
-                  {profile.employerType === 'company' ? <Building size={12} /> : <User size={12} />}
-                  {profile.employerType === 'company' ? 'Company' : 'Individual'}
-                </span>
-
-                {profile.isApproved === "approved" && (
-                  <span className="flex items-center gap-1 px-2 py-0.5 sm:px-3 sm:py-1 bg-green-100 text-green-700 text-[10px] sm:text-xs font-bold rounded-md">
-                    <CheckCircle size={12} /> Approved
-                  </span>
-                )}
-                {profile.isApproved === "pending" && (
-                  <span className="flex items-center gap-1 px-2 py-0.5 sm:px-3 sm:py-1 bg-orange-100 text-orange-700 text-[10px] sm:text-xs font-bold rounded-md">
-                    <CheckCircle size={12} /> Pending Review
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-4 text-gray-600 text-xs sm:text-sm mt-2 sm:mt-3">
-                <div className="flex items-center gap-1">
-                  <MapPin size={14} className="text-gray-400" />
-                  {profile.officeLocation?.address || profile.location || "Location not set"}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar size={14} className="text-gray-400" />
-                  Joined {new Date(profile.createdAt).getFullYear()}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Star size={14} className="text-yellow-500" />
-                  {calculateRating(profile.ratingsReceived)} ({profile.ratingsReceived?.length || 0} reviews)
-                </div>
-              </div>
-            </div>
-
-            <button onClick={() => navigate(`/employereditprofile`)} className="w-full md:w-auto mt-4 md:mt-0 flex justify-center items-center gap-2 bg-blue-600 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg text-sm sm:text-base font-bold hover:bg-blue-700 transition shadow-sm">
-              <Edit size={16} /> Edit Profile
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 mt-4 sm:mt-8 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
-        {/* ---------------- Left Column: Info Cards ---------------- */}
-        <div className="lg:col-span-1 space-y-4 sm:space-y-6">
-          
-          {/* Business Details Card */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mb-3 sm:mb-4">Business Details</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <Briefcase className="w-5 h-5 text-blue-600 mt-0.5" />
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">Industry</p>
-                  <p className="text-sm text-gray-800 dark:text-white font-medium">{profile.industry || "Not Specified"}</p>
-                </div>
-              </li>
-              {/* FACT: Conditionally render Nature of Business if they are a company */}
-              {profile.employerType === 'company' && profile.natureOfBusiness && (
-                <li className="flex items-start gap-3">
-                  <Building className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-gray-500 font-medium">Nature of Business</p>
-                    <p className="text-sm text-gray-800 dark:text-white font-medium">{profile.natureOfBusiness}</p>
-                  </div>
-                </li>
-              )}
-            </ul>
-          </div>
-
-          {/* Contact Card */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mb-3 sm:mb-4">Contact Info</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <User className="w-5 h-5 text-blue-600 mt-0.5" />
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">Contact Person</p>
-                  <p className="text-sm text-gray-800 dark:text-white">{profile.name}</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-blue-600 mt-0.5" />
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">Email</p>
-                  <p className="text-sm text-gray-800 dark:text-white break-all">{profile.email}</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-blue-600 mt-0.5" />
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">Phone</p>
-                  <p className="text-sm text-gray-800 dark:text-white">{profile.phone || "N/A"}</p>
-                </div>
-              </li>
-              {profile.employerType === 'company' && (
-                <li className="flex items-start gap-3">
-                  <Globe className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-gray-500 font-medium">Website</p>
-                    {profile.companyWebsite ? (
-                      <a href={profile.companyWebsite} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 font-medium hover:underline break-all">
-                        {profile.companyWebsite}
-                      </a>
-                    ) : (
-                      <p className="text-sm text-gray-500">N/A</p>
-                    )}
-                  </div>
-                </li>
-              )}
-            </ul>
-          </div>
-
-          {/* FACT: Dynamic Document Verification Card */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-              <FileText size={18} className="text-blue-600"/> Verification Docs
-            </h3>
-            <div className="space-y-2 mb-4">
-              {/* Universal Documents */}
-              <DocumentRow name="Aadhar Card" field="aadharCard" />
-              <DocumentRow name="PAN Card" field="panCard" />
-              
-              {/* Conditional Documents */}
-              {profile.employerType === "company" ? (
-                <>
-                  <DocumentRow name="Company GST Form" field="gstForm" />
-                  <DocumentRow name="Other Business Cert." field="otherBusinessCertificate" />
-                </>
-              ) : (
-                <>
-                  <DocumentRow name="Trade License" field="tradeLicense" />
-                  <DocumentRow name="Education Docs" field="educationDocuments" />
-                </>
-              )}
-            </div>
-            
-            <button
-              onClick={() => navigate("/employerdocupload")}
-              className="w-full text-sm font-bold bg-blue-50 text-blue-700 py-2.5 rounded-lg hover:bg-blue-100 transition shadow-sm"
-            >
-              Manage Documents
-            </button>
-          </div>
-        </div>
-
-        {/* ---------------- Right Column: Main Content ---------------- */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-8">
-          
-          {/* About Section */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-4 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-3 sm:mb-4">About</h2>
-            <p className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-wrap">
-              {profile.description || "No description provided yet."}
-            </p>
-            {/* Provide helpful context if description is too short or too long based on our new rule */}
-            {profile.description && (profile.description.split(/\s+/).filter(w => w.length > 0).length < 50 || profile.description.split(/\s+/).filter(w => w.length > 0).length > 200) && (
-               <div className="mt-4 p-3 bg-red-50 border border-red-100 text-red-600 text-sm rounded-lg flex items-start gap-2">
-                  <XCircle size={16} className="shrink-0 mt-0.5" />
-                  <p>Your description must be between 50 and 200 words. You will not be able to post jobs until you update this section in Edit Profile.</p>
-               </div>
-            )}
-          </div>
-
-          {/* Openings Section */}
-          <div>
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-              Current Openings
-              <span className="bg-blue-100 text-blue-700 text-xs sm:text-sm px-2 py-0.5 rounded-full font-bold">{jobs.length}</span>
-            </h2>
-
-            {jobs.length === 0 ? (
-              <div className="text-center py-8 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-800 border-dashed">
-                <p className="text-sm text-gray-500 font-medium">No job openings posted yet.</p>
-                <button onClick={() => navigate("/createjob")} className="mt-2 text-sm text-blue-600 font-bold hover:underline">
-                  Post a Job
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                {jobs.map((job) => (
-                  <motion.div key={job._id} whileHover={{ y: -2 }} className="cursor-pointer group bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col h-full" onClick={() => navigate(`/job/${job._id}`)}>
-                    <div className="flex justify-between items-center mb-3">
-                      <h3 className="font-bold text-gray-800 dark:text-white text-sm sm:text-base line-clamp-1 pr-2 group-hover:text-blue-700 transition-colors">{job.title}</h3>
-                      {job.status === "pending_approval" && (
-                         <span className="text-[10px] bg-orange-100 text-orange-700 font-bold px-2 py-1 rounded-md whitespace-nowrap">Pending</span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 font-medium mb-4">
-                      <span className="bg-gray-100 px-2 py-1 rounded text-gray-700 dark:text-slate-300">{job.jobType}</span>
-                      <span className="truncate max-w-[150px]">{job.location?.address || "Remote"}</span>
-                    </div>
-                    <div className="mt-auto pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between">
-                      <div className="text-blue-600 font-bold text-xs sm:text-sm group-hover:translate-x-1 transition-transform">
-                        View Details →
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

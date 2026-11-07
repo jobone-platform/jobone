@@ -1,9 +1,9 @@
-import { API_BASE_URL } from "../config/api";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaUserTie, FaBuilding } from "react-icons/fa";
-import BackgroundJoin from "../components/BackgroundJoin";
+import { User, Building2, Mail, Lock, KeyRound, ArrowRight, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
+import AuthLayout from "../components/AuthLayout";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -38,10 +38,10 @@ export default function ForgotPassword() {
           : `${API_BASE_URL}/user/forgot-password`;
 
       const { data } = await axios.post(endpoint, { email: normalizedEmail });
-      setMessage(data.message || "If this email is registered, a password reset code has been sent.");
+      setMessage(data.message || "A secure 6-digit password reset code has been dispatched to your email.");
       setStep(2);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to send reset code. Please try again.");
+      setError(err.response?.data?.message || "Failed to dispatch reset code. Please verify your email and try again.");
     } finally {
       setLoading(false);
     }
@@ -78,165 +78,214 @@ export default function ForgotPassword() {
           : `${API_BASE_URL}/user/reset-password`;
 
       const { data } = await axios.post(endpoint, { email: normalizedEmail, otp: cleanOtp, newPassword });
-      setMessage(data.message || "Password has been successfully reset! Redirecting to login...");
-      
-      // Redirect to login after a short delay
+      setMessage(data.message || "Password updated successfully! Redirecting to sign in...");
+
       setTimeout(() => {
-        navigate("/login");
-      }, 1800);
-      
+        navigate(activeTab === "employer" ? "/login?tab=employer" : "/login?tab=user");
+      }, 1400);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to reset password. Please verify your OTP code and try again.");
+      setError(err.response?.data?.message || "Failed to reset password. Please check your OTP code and try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative flex flex-col justify-center items-center min-h-screen bg-slate-950 font-sans p-4 sm:p-8 overflow-x-hidden">
-      <div className="fixed inset-0 z-0 bg-slate-950 pointer-events-none">
-        <div className="opacity-50">
-          <BackgroundJoin />
+    <AuthLayout
+      title={step === 1 ? "Reset Account Password" : "Set New Password"}
+      subtitle={
+        step === 1
+          ? "Enter your registered email to receive a secure recovery code"
+          : `Enter the 6-digit code sent to ${email} and choose your new password`
+      }
+      badge="Security Recovery"
+      visualHeading="Regain access to your recruitment pipeline."
+      visualSubheading="JobOne ensures encrypted credentials, multi-factor authentication, and secure password recovery mechanisms."
+      metrics={[
+        { value: "End-to-End", label: "Encrypted Protocol" },
+        { value: "15 min", label: "OTP Code Expiry" },
+        { value: "Instant", label: "Security Confirmation" },
+      ]}
+      quote={{
+        text: "Account safety and privacy are fundamental pillars of the JobOne architectural framework.",
+        author: "JobOne Platform Security",
+        role: "Identity Governance",
+      }}
+    >
+      {/* Account Type Tabs (Step 1 only) */}
+      {step === 1 && (
+        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-surface-2 border border-border mb-4">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("user");
+              setError("");
+              setMessage("");
+            }}
+            className={`py-2 px-3 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              activeTab === "user"
+                ? "bg-foreground text-background shadow-sm"
+                : "text-foreground/70 hover:text-foreground"
+            }`}
+          >
+            <User size={14} /> Candidate
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("employer");
+              setError("");
+              setMessage("");
+            }}
+            className={`py-2 px-3 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              activeTab === "employer"
+                ? "bg-foreground text-background shadow-sm"
+                : "text-foreground/70 hover:text-foreground"
+            }`}
+          >
+            <Building2 size={14} /> Employer
+          </button>
         </div>
+      )}
+
+      {/* Step Indicator */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className={`h-1 flex-1 rounded-full ${step >= 1 ? "bg-foreground" : "bg-border"}`} />
+        <div className={`h-1 flex-1 rounded-full ${step >= 2 ? "bg-foreground" : "bg-border"}`} />
       </div>
 
-      <div className="relative z-10 w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl mt-8 mb-8">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+      {error && (
+        <div role="alert" className="mb-4 p-3.5 rounded-xl text-xs font-medium border border-rose-500/20 bg-rose-500/10 text-rose-300 dark:text-rose-400">
+          {error}
+        </div>
+      )}
 
-        <div className="relative z-10">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-extrabold text-white mb-2">
-              Forgot Password
-            </h2>
-            <p className="text-slate-400 text-sm">
-              {step === 1 ? "Enter your email to receive a reset code." : "Enter your code and new password."}
-            </p>
+      {message && (
+        <div role="status" className="mb-4 p-3.5 rounded-xl text-xs font-medium border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 dark:text-emerald-400 flex items-center gap-2">
+          <CheckCircle2 size={16} className="shrink-0" />
+          <span>{message}</span>
+        </div>
+      )}
+
+      {step === 1 ? (
+        <form onSubmit={handleRequestOTP} className="space-y-4">
+          <div>
+            <label className="block text-[11px] font-mono tracking-wider uppercase text-foreground/70 mb-1.5">
+              {activeTab === "employer" ? "Corporate Email Address" : "Registered Email Address"}
+            </label>
+            <div className="relative">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder={activeTab === "employer" ? "recruiter@company.com" : "candidate@example.com"}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-2 border border-border text-foreground placeholder-foreground/40 text-sm focus:outline-none focus:border-silver/60 transition-colors"
+              />
+              <Mail size={16} className="absolute left-3.5 top-3 text-foreground/40 pointer-events-none" />
+            </div>
           </div>
 
-          {step === 1 && (
-            <div className="flex bg-white/5 rounded-xl p-1 mb-6 border border-white/10">
-              <button
-                onClick={() => {
-                  setActiveTab("user");
-                  setError("");
-                  setMessage("");
-                }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${
-                  activeTab === "user"
-                    ? "bg-blue-600 text-white shadow-lg"
-                    : "text-slate-400 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                <FaUserTie /> Jobseeker
-              </button>
-              <button
-                onClick={() => {
-                  setActiveTab("employer");
-                  setError("");
-                  setMessage("");
-                }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${
-                  activeTab === "employer"
-                    ? "bg-indigo-600 text-white shadow-lg"
-                    : "text-slate-400 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                <FaBuilding /> Employer
-              </button>
+          <button
+            type="submit"
+            disabled={loading || !email}
+            className="w-full mt-2 py-3 rounded-xl bg-foreground text-background font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Dispatching Code...</span>
+              </>
+            ) : (
+              <>
+                <span>Send Reset Code</span>
+                <ArrowRight size={16} />
+              </>
+            )}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <div>
+            <label className="block text-[11px] font-mono tracking-wider uppercase text-foreground/70 mb-1.5">
+              6-Digit Reset Code
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                autoComplete="one-time-code"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="••••••"
+                maxLength={6}
+                required
+                className="w-full text-center py-3 px-4 rounded-xl bg-surface-2 border border-border text-foreground font-mono text-xl tracking-[0.3em] font-bold focus:outline-none focus:border-silver/60"
+              />
             </div>
-          )}
+          </div>
 
-          {error && (
-            <div role="alert" className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs p-3 rounded-xl mb-4 text-center">
-              {error}
+          <div>
+            <label className="block text-[11px] font-mono tracking-wider uppercase text-foreground/70 mb-1.5">
+              New Password <span className="text-foreground/40 normal-case">(min. 6 characters)</span>
+            </label>
+            <div className="relative">
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                minLength={6}
+                required
+                placeholder="Enter new strong password"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-2 border border-border text-foreground placeholder-foreground/40 text-sm focus:outline-none focus:border-silver/60 transition-colors"
+              />
+              <Lock size={16} className="absolute left-3.5 top-3 text-foreground/40 pointer-events-none" />
             </div>
-          )}
-          
-          {message && (
-            <div role="status" className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs p-3 rounded-xl mb-4 text-center">
-              {message}
-            </div>
-          )}
+          </div>
 
-          {step === 1 ? (
-            <form onSubmit={handleRequestOTP} className="space-y-4">
-              <div>
-                <input
-                  type="email"
-                  placeholder="Email Address"
-                  className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !email}
-                className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-2 transition-all shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none ${
-                  activeTab === "user"
-                    ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/30"
-                    : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30"
-                } disabled:opacity-50`}
-              >
-                {loading ? "Sending..." : "Send Reset Code"}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleResetPassword} className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  autoComplete="one-time-code"
-                  placeholder="Enter 6-digit OTP"
-                  className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  maxLength={6}
-                  required
-                />
-              </div>
-              <div>
-                <input
-                  type="password"
-                  placeholder="New Password"
-                  className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  minLength={6}
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !otp || !newPassword}
-                className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-2 transition-all shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none ${
-                  activeTab === "user"
-                    ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/30"
-                    : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30"
-                } disabled:opacity-50`}
-              >
-                {loading ? "Resetting..." : "Reset Password"}
-              </button>
-            </form>
-          )}
-
-          <p className="text-center text-slate-400 text-sm mt-6">
-            Remembered your password?{" "}
-            <Link
-              to="/login"
-              className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setStep(1);
+                setError("");
+                setMessage("");
+              }}
+              className="py-3 px-4 rounded-xl border border-border text-foreground/70 hover:text-foreground text-xs font-semibold cursor-pointer"
             >
-              Sign In
-            </Link>
-          </p>
-        </div>
+              Back
+            </button>
+            <button
+              type="submit"
+              disabled={loading || otp.length !== 6 || !newPassword}
+              className="flex-1 py-3 rounded-xl bg-foreground text-background font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Updating Password...</span>
+                </>
+              ) : (
+                <>
+                  <span>Reset & Sign In</span>
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="pt-4 mt-4 border-t border-border text-center">
+        <Link
+          to="/login"
+          className="inline-flex items-center gap-1.5 text-xs text-foreground/60 hover:text-foreground font-medium transition-colors"
+        >
+          <ArrowLeft size={14} />
+          <span>Return to Sign In</span>
+        </Link>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

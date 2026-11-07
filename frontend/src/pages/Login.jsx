@@ -1,12 +1,11 @@
-import { API_BASE_URL } from "../config/api";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { GoogleLogin } from "@react-oauth/google";
-import { FaUserTie, FaBuilding } from "react-icons/fa";
-import { Eye, EyeOff } from "lucide-react";
-import BackgroundJoin from "../components/BackgroundJoin";
+import { Eye, EyeOff, User, Building2, Shield, Lock, Mail, ArrowRight } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../routes/Context";
+import AuthLayout from "../components/AuthLayout";
+import GoogleAuthButton, { AuthDivider } from "../components/GoogleAuthButton";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -27,13 +26,14 @@ export default function Login() {
       if (candidateAliases.includes(queryTab) || candidateAliases.includes(stateTab)) {
         return "user";
       }
-    } catch {}
+    } catch (_err) {
+      /* ignore */
+    }
     return "user";
   };
 
   const [activeTab, setActiveTab] = useState(resolveTab);
 
-  // Synchronize tab state if user navigates with query parameter
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const queryTab = params.get("tab")?.toLowerCase();
@@ -47,13 +47,14 @@ export default function Login() {
       }
     }
   }, [location.search, location.state]);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(location.state?.error || "");
   const [loading, setLoading] = useState(false);
 
-  // If already authenticated in this role, redirect to appropriate dashboard
+  // If already authenticated, redirect to role portal
   useEffect(() => {
     if (authStatus === "authenticated") {
       if (role === "employer") {
@@ -67,10 +68,11 @@ export default function Login() {
   }, [authStatus, role, navigate]);
 
   useEffect(() => {
-    const savedEmail = activeTab === "user" 
-      ? localStorage.getItem("lastJobseekerEmail") 
-      : localStorage.getItem("lastEmployerEmail");
-    
+    const savedEmail =
+      activeTab === "user"
+        ? localStorage.getItem("lastJobseekerEmail")
+        : localStorage.getItem("lastEmployerEmail");
+
     if (savedEmail) {
       setEmail(savedEmail);
     } else {
@@ -78,37 +80,6 @@ export default function Login() {
     }
     setPassword("");
   }, [activeTab]);
-
-  const handleGoogleSuccess = async (credentialResponse) => {
-    if (loading) return;
-    try {
-      setLoading(true);
-      setError("");
-      const endpoint =
-        activeTab === "employer"
-          ? `${API_BASE_URL}/employer/google-login`
-          : `${API_BASE_URL}/user/google-login`;
-
-      const { data } = await axios.post(endpoint, {
-        token: credentialResponse.credential,
-      });
-
-      const redirectPath = location.state?.from?.pathname;
-
-      if (activeTab === "employer") {
-        loginEmployer(data.token, data);
-        navigate(redirectPath || "/employerdashboard");
-      } else {
-        loginUser(data.token, data);
-        navigate(redirectPath || "/userdashboard");
-      }
-    } catch (err) {
-      console.error("Google Login Error:", err);
-      setError(err.response?.data?.message || "Google Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -149,186 +120,161 @@ export default function Login() {
   };
 
   return (
-    // FACT: Replaced 100dvh with min-h-screen to prevent the desktop band issue.
-    // Removed unnecessary w-full that conflicts with Windows scrollbars.
-    // UPDATE: Now fully fixed to screen to prevent any scrolling.
-    <div className={`relative min-h-screen w-full flex flex-col justify-center items-center font-sans p-4 sm:p-8 py-16 sm:py-8 overflow-y-auto transition-colors duration-700 ${
-      activeTab === "employer" ? "bg-[#0a0b22]" : "bg-slate-950"
-    }`}>
-      {/* FACT: The background is pinned directly to the screen viewport */}
-      <div className={`fixed inset-0 z-0 pointer-events-none transition-colors duration-700 ${
-        activeTab === "employer" ? "bg-[#0a0b22]" : "bg-slate-950"
-      }`}>
-        <div className="absolute inset-0 z-0">
-          <BackgroundJoin theme={activeTab} />
-        </div>
+    <AuthLayout
+      title="Welcome Back"
+      subtitle={
+        activeTab === "user"
+          ? "Sign in to search verified positions and track applications"
+          : "Sign in to manage active job requisitions and review candidate pools"
+      }
+      badge="Career Workspace Authentication"
+      roleType={activeTab}
+    >
+      {/* Role Switcher Pill */}
+      <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] mb-6">
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab("user");
+            setError("");
+          }}
+          className={`flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            activeTab === "user"
+              ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-sm border border-[var(--theme-border-silver)]"
+              : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+          }`}
+        >
+          <User className="w-3.5 h-3.5" />
+          <span>Candidate</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab("employer");
+            setError("");
+          }}
+          className={`flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            activeTab === "employer"
+              ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-sm border border-[var(--theme-border-silver)]"
+              : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+          }`}
+        >
+          <Building2 className="w-3.5 h-3.5" />
+          <span>Employer ATS</span>
+        </button>
       </div>
 
-      {/* Admin Portal Button */}
-      <button
-        type="button"
-        onClick={() => navigate("/admin/login")}
-        className="fixed top-12 right-4 sm:top-14 sm:right-8 z-50 flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 rounded-full px-4 py-2 text-xs font-bold transition-all backdrop-blur-md shadow-lg"
-      >
-        <span className="w-2 h-2 rounded-full bg-red-500/80"></span>
-        Admin
-      </button>
+      {/* Error Notice */}
+      {error && (
+        <div className="mb-5 p-3 rounded-xl bg-[var(--theme-danger-bg)] border border-[var(--theme-danger)]/30 text-xs text-rose-400 font-medium">
+          {error}
+        </div>
+      )}
 
-      <div className="relative z-10 w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl my-auto">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-extrabold text-white mb-2">
-              Welcome Back
-            </h2>
-            <p className="text-slate-400 text-sm">
-              {activeTab === "user"
-                ? "Sign in to search jobs and track your applications."
-                : "Sign in to manage job postings and review candidates."}
-            </p>
-          </div>
-
-          <div className="flex bg-white/5 rounded-xl p-1 mb-6 border border-white/10">
-            <button
-              onClick={() => {
-                setActiveTab("user");
-                setError("");
-              }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${
-                activeTab === "user"
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "text-slate-400 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <FaUserTie /> Jobseeker
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab("employer");
-                setError("");
-              }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${
-                activeTab === "employer"
-                  ? "bg-indigo-600 text-white shadow-lg"
-                  : "text-slate-400 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <FaBuilding /> Employer
-            </button>
-          </div>
-
-          {error && (
-            <div role="alert" className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs p-3 rounded-xl mb-4 text-center">
-              {error}
-            </div>
-          )}
-
-          <div className="flex justify-center w-full mb-2">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => setError("Google Login Failed")}
-              theme="filled_black"
-              size="large"
-              text="continue_with"
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-xs font-semibold text-[var(--theme-text-muted)] uppercase tracking-wider mb-1.5">
+            {activeTab === "employer" ? "Business Email Address" : "Email Address"}
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--theme-text-subtle)]" />
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={activeTab === "employer" ? "recruiter@company.com" : "name@example.com"}
+              className="w-full pl-10 pr-4 py-2.5 bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] text-xs sm:text-sm rounded-xl outline-none focus:border-[var(--theme-border-focus)] transition-colors"
             />
           </div>
+        </div>
 
-
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <input
-                id={activeTab === "user" ? "user-email" : "employer-email"}
-                name={activeTab === "user" ? "user-email" : "employer-email"}
-                autoComplete="username"
-                type="email"
-                placeholder="Email Address"
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <div className="relative">
-                <input
-                  id={activeTab === "user" ? "user-password" : "employer-password"}
-                  name={activeTab === "user" ? "user-password" : "employer-password"}
-                  autoComplete="current-password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-400 text-sm rounded-xl p-3.5 outline-none focus:border-blue-500 focus:bg-white/10 transition-colors pr-12 hide-password-toggle"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus:outline-none ${
-                    activeTab === "user"
-                      ? "text-blue-500 hover:bg-blue-500 hover:text-white"
-                      : "text-indigo-500 hover:bg-indigo-500 hover:text-white"
-                  }`}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              <style>{`
-                .hide-password-toggle::-ms-reveal,
-                .hide-password-toggle::-ms-clear {
-                  display: none;
-                }
-              `}</style>
-              <div className="text-right mt-2">
-                <Link
-                  to="/forgot-password"
-                  className="text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-3.5 rounded-xl text-white font-bold text-sm mt-2 transition-all shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none ${
-                activeTab === "user"
-                  ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/30"
-                  : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30"
-              } disabled:opacity-50`}
-            >
-              {loading
-                ? "Authenticating..."
-                : activeTab === "employer"
-                  ? "Sign In as Employer"
-                  : "Sign In"}
-            </button>
-          </form>
-
-          <p className="text-center text-slate-400 text-sm mt-6">
-            New to JOBONE? Register{" "}
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-semibold text-[var(--theme-text-muted)] uppercase tracking-wider">
+              Password
+            </label>
             <Link
-              to="/userregister"
-              className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+              to="/forgot-password"
+              className="text-xs text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:underline font-medium"
             >
-              Jobseeker
-            </Link>{" "}
-            <span className="text-slate-600 mx-1">/</span>{" "}
-            <Link
-              to="/employerregister"
-              className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
-            >
-              Employer
+              Forgot password?
             </Link>
-          </p>
+          </div>
+          <div className="relative">
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--theme-text-subtle)]" />
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full pl-10 pr-10 py-2.5 bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] text-xs sm:text-sm rounded-xl outline-none focus:border-[var(--theme-border-focus)] transition-colors"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)] cursor-pointer"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
+        >
+          {loading ? (
+            <span>Signing in...</span>
+          ) : (
+            <>
+              <span>Sign In to {activeTab === "employer" ? "ATS Console" : "Workspace"}</span>
+              <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+            </>
+          )}
+        </button>
+      </form>
+
+      {/* Divider */}
+      <AuthDivider text="or continue with" />
+
+      {/* Google Authentication Component */}
+      <div className="mb-6">
+        <GoogleAuthButton
+          role={activeTab === "employer" ? "employer" : "candidate"}
+          mode="login"
+          onError={setError}
+        />
+      </div>
+
+      {/* Sign Up Redirect */}
+      <div className="text-center text-xs text-[var(--theme-text-muted)] space-y-3">
+        <p>
+          Don't have an account yet?{" "}
+          <Link
+            to={activeTab === "employer" ? "/employerregisteroption" : "/userregister"}
+            className="text-[var(--theme-text)] font-bold hover:underline"
+          >
+            Create an account
+          </Link>
+        </p>
+
+        {/* Admin Portal Shortcut */}
+        <div className="pt-3 border-t border-[var(--theme-border)]">
+          <Link
+            to="/admin/login"
+            className="inline-flex items-center gap-1.5 text-[11px] text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)] font-medium"
+          >
+            <Shield className="w-3.5 h-3.5 text-amber-500/80" />
+            <span>Administrator Security Console</span>
+          </Link>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

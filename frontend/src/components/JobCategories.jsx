@@ -25,6 +25,7 @@ import {
   SlidersHorizontal,
   Layers,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
 
 // Predefined core job categories with realistic popular roles and subdomains
@@ -179,52 +180,52 @@ const BASE_CATEGORIES = [
     group: "services",
     popularRoles: [
       "Instructional Designer",
-      "Academic Counselor",
       "Subject Matter Expert",
-      "EdTech Trainer",
+      "Academic Counselor",
+      "Curriculum Developer",
     ],
     subdomains: [
-      "Teaching & Faculty",
-      "EdTech Content Creation",
-      "Academic Counseling",
+      "Teaching & Academics",
+      "EdTech Content",
       "Corporate Training",
-      "Curriculum Design",
+      "Student Counseling",
+      "Institutional Operations",
     ],
   },
   {
     name: "Legal & Compliance",
     icon: Scale,
-    group: "finance",
+    group: "services",
     popularRoles: [
-      "Legal Associate",
+      "Legal Advisor",
       "Compliance Officer",
-      "Contract Specialist",
-      "Corporate Counsel",
+      "Contracts Specialist",
+      "Paralegal Associate",
     ],
     subdomains: [
       "Corporate Law",
       "Regulatory Compliance",
-      "Contract Drafting",
       "Intellectual Property",
+      "Contract Management",
       "Litigation Support",
     ],
   },
   {
-    name: "Media, Design & Creative",
+    name: "Design & Creative",
     icon: Palette,
-    group: "creative",
+    group: "marketing",
     popularRoles: [
       "UI/UX Designer",
       "Graphic Designer",
-      "Video Editor",
-      "Brand Strategist",
+      "Motion Artist",
+      "Product Designer",
     ],
     subdomains: [
-      "UI/UX & Product Design",
-      "Graphic Design",
-      "Copywriting & Content",
-      "Video Editing & 3D",
+      "Product Design",
+      "Visual & Graphic Design",
       "Brand Identity",
+      "Motion Graphics",
+      "Creative Direction",
     ],
   },
   {
@@ -232,10 +233,10 @@ const BASE_CATEGORIES = [
     icon: Building2,
     group: "engineering",
     popularRoles: [
-      "Civil Engineer",
+      "Site Engineer",
       "Project Architect",
-      "Site Supervisor",
-      "Property Manager",
+      "Property Consultant",
+      "Quantity Surveyor",
     ],
     subdomains: [
       "Civil Construction",
@@ -247,7 +248,7 @@ const BASE_CATEGORIES = [
   },
 ];
 
-// Clean job filter pill groups
+// Clean sector filter pill groups
 const SECTOR_GROUPS = [
   { id: "all", label: "All Industries", icon: Layers },
   { id: "tech", label: "IT & Software", icon: Code2 },
@@ -322,7 +323,7 @@ export default function JobCategories() {
       list = list.filter((cat) => cat.group === activeGroup);
     }
 
-    // Filter by Search Query (matches category name, popular roles, or subdomains)
+    // Filter by Search Query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       list = list.filter((cat) => {
@@ -337,7 +338,7 @@ export default function JobCategories() {
       });
     }
 
-    // Sorting: "jobs" puts higher available job counts first
+    // Sorting
     list.sort((a, b) => {
       const countA = realCounts[a.name] || 0;
       const countB = realCounts[b.name] || 0;
@@ -370,7 +371,6 @@ export default function JobCategories() {
     );
   };
 
-  // Determine visible item count
   const INITIAL_VISIBLE_COUNT = 8;
   const isSearchActive = searchQuery.trim().length > 0;
   const isGroupFiltered = activeGroup !== "all";
@@ -381,21 +381,25 @@ export default function JobCategories() {
       : processedCategories.slice(0, INITIAL_VISIBLE_COUNT);
 
   return (
-    <section className="relative py-16 md:py-24 bg-slate-50/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 overflow-hidden w-full border-t border-slate-200/60 dark:border-slate-800/60">
-      <div className="relative z-10 w-full px-4 sm:px-6 md:px-10 lg:px-16 mx-auto max-w-[1600px]">
+    <section
+      aria-label="Job Industries and Sectors"
+      className="relative py-16 md:py-24 bg-[var(--theme-bg)] text-[var(--theme-text)] font-sans transition-colors duration-150 overflow-hidden w-full border-t border-[var(--theme-border)]"
+    >
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
         {/* HEADER SECTION */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
           <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-bold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">
-                JOB CATEGORIES
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text-muted)] mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+              <span className="font-semibold uppercase tracking-wider text-[11px]">
+                Industry Directory
               </span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-              Find Jobs by Industry
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--theme-text)] leading-tight">
+              Explore Positions by Sector
             </h2>
-            <p className="mt-2 text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-              Explore job opportunities across industries and find roles that match your skills and experience.
+            <p className="mt-2 text-[var(--theme-text-muted)] text-sm sm:text-base leading-relaxed">
+              Targeted requisitions mapped to technical domains, operational disciplines, and functional specializations.
             </p>
           </div>
 
@@ -403,24 +407,24 @@ export default function JobCategories() {
           <button
             type="button"
             onClick={() => navigate("/jobs")}
-            className="self-start md:self-end flex items-center gap-1.5 text-xs sm:text-sm font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors group cursor-pointer"
+            className="self-start md:self-end inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[var(--theme-text)] hover:text-[var(--theme-accent-silver-sheen)] transition-colors group cursor-pointer"
           >
-            <span>View All Jobs</span>
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            <span>Browse All Openings</span>
+            <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)] group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
         {/* API ERROR BANNER (WITH RETRY) */}
         {apiError && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
-            <div className="flex items-center gap-2 text-rose-700 dark:text-rose-300">
+          <div className="mb-6 p-4 rounded-xl bg-[var(--theme-danger-bg)] border border-[var(--theme-danger)]/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
+            <div className="flex items-center gap-2 text-rose-400">
               <AlertCircle size={16} className="shrink-0" />
-              <span>Unable to load live job counts. Please try again.</span>
+              <span>Unable to load live sector counts. Telemetry will retry.</span>
             </div>
             <button
               type="button"
               onClick={fetchCategoryCounts}
-              className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition-colors shrink-0 cursor-pointer shadow-xs"
+              className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs transition-colors shrink-0 cursor-pointer"
             >
               Retry
             </button>
@@ -428,65 +432,65 @@ export default function JobCategories() {
         )}
 
         {/* SEARCH & FILTER CONTROLS BAR */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs mb-8 space-y-4">
+        <div className="bg-[var(--theme-surface)] rounded-2xl p-4 sm:p-5 border border-[var(--theme-border)] shadow-sm mb-8 space-y-4">
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
             {/* SEARCH INPUT */}
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
-                <Search size={18} />
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--theme-text-subtle)]">
+                <Search size={16} />
               </div>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search industries, job roles or skills..."
+                placeholder="Search industries, roles, or specializations..."
                 aria-label="Search industries, job roles or skills"
-                className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 border border-slate-200 dark:border-slate-700/80 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium"
+                className="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm rounded-xl bg-[var(--theme-input-bg)] text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] border border-[var(--theme-border)] focus:outline-none focus:border-[var(--theme-border-focus)] transition-all font-medium"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)] transition-colors cursor-pointer"
                   aria-label="Clear search"
                 >
-                  <X size={16} />
+                  <X size={15} />
                 </button>
               )}
             </div>
 
             {/* SORTING SELECTOR */}
             <div className="flex items-center gap-2 shrink-0">
-              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                <SlidersHorizontal size={14} className="text-slate-400" />
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-semibold text-[var(--theme-text-muted)]">
+                <SlidersHorizontal size={13} className="text-[var(--theme-accent-silver)]" />
                 <span className="hidden sm:inline">Sort:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-transparent border-none text-xs font-bold text-indigo-600 dark:text-indigo-400 focus:outline-none cursor-pointer"
+                  className="bg-transparent border-none text-xs font-bold text-[var(--theme-text)] focus:outline-none cursor-pointer"
                   aria-label="Sort industries"
                 >
-                  <option value="jobs" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-                    Most Jobs
+                  <option value="jobs" className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
+                    Most Active Jobs
                   </option>
-                  <option value="alpha-asc" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-                    A–Z
+                  <option value="alpha-asc" className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
+                    Alphabetical (A–Z)
                   </option>
-                  <option value="alpha-desc" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-                    Z–A
+                  <option value="alpha-desc" className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
+                    Alphabetical (Z–A)
                   </option>
                 </select>
               </div>
 
               {/* Match Counter Badge */}
-              <div className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                {processedCategories.length} {processedCategories.length === 1 ? "Industry" : "Industries"}
+              <div className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-bold text-[var(--theme-text-muted)] whitespace-nowrap">
+                {processedCategories.length} {processedCategories.length === 1 ? "Sector" : "Sectors"}
               </div>
             </div>
           </div>
 
           {/* SECTOR GROUP FILTER PILLS */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 no-scrollbar border-t border-slate-100 dark:border-slate-800/80">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 no-scrollbar border-t border-[var(--theme-border)]">
             {SECTOR_GROUPS.map((tab) => {
               const TabIcon = tab.icon;
               const isActive = activeGroup === tab.id;
@@ -497,11 +501,11 @@ export default function JobCategories() {
                   onClick={() => setActiveGroup(tab.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer border ${
                     isActive
-                      ? "bg-indigo-600 text-white border-indigo-600 shadow-xs shadow-indigo-600/30"
-                      : "bg-slate-100/80 dark:bg-slate-800/70 text-slate-600 dark:text-slate-400 border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700/70 hover:text-slate-900 dark:hover:text-white"
+                      ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border-[var(--theme-border-silver)] shadow-sm"
+                      : "bg-[var(--theme-surface)] text-[var(--theme-text-muted)] border-[var(--theme-border)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)]"
                   }`}
                 >
-                  <TabIcon size={13} />
+                  <TabIcon size={12} className={isActive ? "text-[var(--theme-accent-silver)]" : ""} />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -515,41 +519,30 @@ export default function JobCategories() {
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-2xl p-5 bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800/70 animate-pulse space-y-4"
+                className="rounded-2xl p-5 bg-[var(--theme-surface)] border border-[var(--theme-border)] animate-pulse space-y-4"
               >
                 <div className="flex justify-between items-center">
-                  <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800" />
-                  <div className="w-24 h-5 rounded-full bg-slate-100 dark:bg-slate-800" />
+                  <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-muted)]" />
+                  <div className="w-24 h-5 rounded-full bg-[var(--theme-surface-muted)]" />
                 </div>
                 <div className="space-y-1.5">
-                  <div className="w-3/4 h-5 rounded-md bg-slate-200 dark:bg-slate-800" />
-                  <div className="w-1/2 h-3.5 rounded-md bg-slate-100 dark:bg-slate-800/60" />
-                </div>
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-800/60 space-y-2">
-                  <div className="w-20 h-3 rounded bg-slate-100 dark:bg-slate-800/60" />
-                  <div className="flex gap-1.5">
-                    <div className="w-20 h-5 rounded-md bg-slate-100 dark:bg-slate-800" />
-                    <div className="w-24 h-5 rounded-md bg-slate-100 dark:bg-slate-800" />
-                  </div>
-                </div>
-                <div className="pt-2 flex justify-between">
-                  <div className="w-20 h-4 rounded bg-slate-100 dark:bg-slate-800" />
-                  <div className="w-4 h-4 rounded bg-slate-100 dark:bg-slate-800" />
+                  <div className="w-3/4 h-5 rounded bg-[var(--theme-surface-muted)]" />
+                  <div className="w-1/2 h-3.5 rounded bg-[var(--theme-surface-muted)]" />
                 </div>
               </div>
             ))}
           </div>
         ) : processedCategories.length === 0 ? (
           /* EMPTY STATE */
-          <div className="py-14 px-4 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 max-w-md mx-auto shadow-xs">
-            <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3">
+          <div className="py-14 px-4 text-center bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] max-w-md mx-auto shadow-sm">
+            <div className="w-12 h-12 rounded-xl bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] flex items-center justify-center mx-auto mb-3">
               <Search size={22} />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
-              No industries found
+            <h3 className="text-base font-bold text-[var(--theme-text)] mb-1">
+              No matching sectors found
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-5">
-              Try searching for another industry, role, or skill.
+            <p className="text-xs text-[var(--theme-text-muted)] mb-5">
+              Try searching for another industry title, functional domain, or key skill.
             </p>
             <button
               type="button"
@@ -557,7 +550,7 @@ export default function JobCategories() {
                 setSearchQuery("");
                 setActiveGroup("all");
               }}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-colors shadow-xs cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs transition-colors cursor-pointer"
             >
               Reset Filters
             </button>
@@ -573,45 +566,43 @@ export default function JobCategories() {
                 <div
                   key={cat.name}
                   onClick={() => handleCategoryClick(cat.name)}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl p-5 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500/60 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl p-5 sm:p-6 bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer"
                 >
                   <div>
                     {/* TOP SECTION: ICON + JOB COUNT BADGE */}
                     <div className="flex items-center justify-between gap-3 mb-3">
-                      {/* Icon */}
-                      <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/60 transition-colors">
+                      <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                         <CategoryIcon size={18} />
                       </div>
 
-                      {/* Job Count - Most important info */}
                       <span
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border transition-colors ${
                           liveCount > 0
-                            ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/70 dark:border-emerald-800/50"
-                            : "bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border-slate-200/60 dark:border-slate-700/60"
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                            : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] border-[var(--theme-border)]"
                         }`}
                       >
                         {liveCount > 0 && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
                         )}
                         <span>
                           {liveCount > 0
-                            ? `${liveCount.toLocaleString()} ${liveCount === 1 ? "job available" : "jobs available"}`
-                            : "Hiring soon"}
+                            ? `${liveCount.toLocaleString()} ${liveCount === 1 ? "opening" : "openings"}`
+                            : "Requisitions pending"}
                         </span>
                       </span>
                     </div>
 
                     {/* CATEGORY TITLE */}
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1 mb-1">
+                    <h3 className="text-base sm:text-lg font-bold text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors line-clamp-1 mb-1">
                       {cat.name}
                     </h3>
 
                     {/* POPULAR ROLES CHIPS */}
                     {cat.popularRoles && cat.popularRoles.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
-                          Popular roles
+                      <div className="mt-3 pt-3 border-t border-[var(--theme-border)]">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--theme-text-subtle)] mb-2">
+                          High-Demand Roles
                         </p>
                         <div className="flex flex-wrap gap-1.5">
                           {cat.popularRoles.slice(0, 3).map((role) => (
@@ -620,7 +611,7 @@ export default function JobCategories() {
                               type="button"
                               onClick={(e) => handleRoleClick(e, cat.name, role)}
                               title={`Search ${role} jobs`}
-                              className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-50 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 dark:hover:text-indigo-300 border border-slate-200/60 dark:border-slate-700/60 transition-colors cursor-pointer truncate max-w-[170px]"
+                              className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] border border-[var(--theme-border)] transition-colors cursor-pointer truncate max-w-[170px]"
                             >
                               {role}
                             </button>
@@ -631,13 +622,13 @@ export default function JobCategories() {
                   </div>
 
                   {/* BOTTOM ACTION CTA */}
-                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-700 dark:group-hover:text-indigo-300">
+                  <div className="mt-4 pt-3 border-t border-[var(--theme-border)] flex items-center justify-between text-xs font-bold text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)]">
                     <span>
-                      {liveCount > 0 ? `View ${liveCount} Jobs` : "View Jobs"}
+                      {liveCount > 0 ? `View ${liveCount} Postings` : "View Sector"}
                     </span>
                     <ArrowRight
                       size={14}
-                      className="group-hover:translate-x-1 transition-transform"
+                      className="group-hover:translate-x-1 transition-transform text-[var(--theme-accent-silver)]"
                     />
                   </div>
                 </div>
@@ -652,12 +643,12 @@ export default function JobCategories() {
             <button
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] text-[var(--theme-text)] font-semibold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>
                 {isExpanded
-                  ? "Show Fewer Industries"
-                  : `View All ${processedCategories.length} Industries`}
+                  ? "Show Fewer Sectors"
+                  : `View All ${processedCategories.length} Sectors`}
               </span>
               {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
             </button>
@@ -665,9 +656,9 @@ export default function JobCategories() {
             <button
               type="button"
               onClick={() => navigate("/jobs")}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Browse All Jobs</span>
+              <span>Explore All Opportunities</span>
               <ArrowRight size={15} />
             </button>
           </div>

@@ -1,251 +1,108 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import {
-  FaUserPlus,
-  FaSearchDollar,
-  FaPaperPlane,
-  FaCheckDouble,
-} from "react-icons/fa";
+  UserPlus,
+  Search,
+  Send,
+  CalendarCheck,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 
 export default function ProcessBento() {
-  const [activeBlobs, setActiveBlobs] = useState({
-    b1: "bg-blue-600",
-    b2: "bg-indigo-500",
-  });
-
-  // FACT: Added initX and initY so each card enters from a unique direction
   const steps = [
     {
       num: "01",
-      title: "Create Profile",
-      desc: "Upload your resume and build your profile to showcase verified skills to hiring teams.",
-      icon: <FaUserPlus size={32} />,
-      circleColor: "bg-blue-500",
-      iconColor: "text-blue-500",
-      blob1: "bg-blue-500",
-      blob2: "bg-cyan-400",
-      initX: -100,
-      initY: 0, // Comes from Left
+      title: "Architect Profile",
+      desc: "Build a verified career portfolio, upload your resume, and detail your core technical competencies.",
+      icon: UserPlus,
     },
     {
       num: "02",
-      title: "Search Openings",
-      desc: "Filter verified job openings by industry, technical skills, location, and salary.",
-      icon: <FaSearchDollar size={32} />,
-      circleColor: "bg-indigo-500",
-      iconColor: "text-indigo-500",
-      blob1: "bg-indigo-500",
-      blob2: "bg-purple-500",
-      initX: 0,
-      initY: -100, // Drops from Top
+      title: "Discover Requisitions",
+      desc: "Filter live openings with verified employer transparency across compensation, workplace mode, and role scope.",
+      icon: Search,
     },
     {
       num: "03",
-      title: "One-Click Apply",
-      desc: "Submit your candidate profile and resume directly to active employer listings.",
-      icon: <FaPaperPlane size={32} />,
-      circleColor: "bg-emerald-500",
-      iconColor: "text-emerald-500",
-      blob1: "bg-emerald-500",
-      blob2: "bg-teal-400",
-      initX: 0,
-      initY: 100, // Rises from Bottom
+      title: "Direct Submission",
+      desc: "Apply straight into employer ATS pipelines with verified credentials and structured documents.",
+      icon: Send,
     },
     {
       num: "04",
-      title: "Track & Interview",
-      desc: "Monitor your application status in real-time and coordinate interviews with recruiters.",
-      icon: <FaCheckDouble size={32} />,
-      circleColor: "bg-amber-500",
-      iconColor: "text-amber-500",
-      blob1: "bg-amber-500",
-      blob2: "bg-orange-500",
-      initX: 100,
-      initY: 0, // Comes from Right
+      title: "Telemetry & Offer",
+      desc: "Track review progress in real-time, coordinate recruiter interviews, and receive competitive offers.",
+      icon: CalendarCheck,
     },
   ];
 
-  // FACT: Random Twirl Engine implemented for the process icons
-  const [twirlingIndex, setTwirlingIndex] = useState(null);
-
-  useEffect(() => {
-    // Disable random icon twirling on mobile to save JS execution cycles
-    if (window.innerWidth <= 768) return;
-
-    const triggerRandomTwirl = () => {
-      const randomIndex = Math.floor(Math.random() * steps.length);
-      setTwirlingIndex(randomIndex);
-
-      setTimeout(() => {
-        setTwirlingIndex(null);
-      }, 1500);
-
-      const nextInterval = Math.random() * 5000 + 100;
-      setTimeout(triggerRandomTwirl, nextInterval);
-    };
-
-    const initialTimer = setTimeout(triggerRandomTwirl, 5000);
-    return () => clearTimeout(initialTimer);
-  }, [steps.length]);
-
   return (
-    <section className="relative py-24 bg-[#F8FAFC] dark:bg-slate-950 font-sans overflow-hidden border-t border-slate-200/60 dark:border-slate-800/80 transition-colors duration-150">
-      {/* FREEROAMING LAVA LAMP BACKGROUNDS (Desktop Only for Performance) */}
-      <div className="hidden md:block absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <motion.div
-          animate={{
-            x: ["0vw", "40vw", "-20vw", "30vw", "0vw"],
-            y: ["0vh", "30vh", "10vh", "-20vh", "0vh"],
-            scale: [1, 1.2, 0.8, 1.1, 1],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className={`absolute top-[10%] left-[10%] w-[25rem] h-[25rem] rounded-full mix-blend-multiply blur-[100px] opacity-30 transition-colors duration-1000 ease-in-out ${activeBlobs.b1}`}
-        />
+    <section
+      aria-label="How JobOne Works"
+      className="relative py-20 md:py-28 bg-[var(--theme-bg)] text-[var(--theme-text)] font-sans overflow-hidden border-t border-[var(--theme-border)] transition-colors duration-150"
+    >
+      {/* Ambient Sheen */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-white/[0.015] rounded-full blur-3xl pointer-events-none" />
 
-        <motion.div
-          animate={{
-            x: ["0vw", "-30vw", "20vw", "-40vw", "0vw"],
-            y: ["0vh", "-20vh", "40vh", "10vh", "0vh"],
-            scale: [1, 0.9, 1.3, 0.9, 1],
-          }}
-          transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
-          className={`absolute bottom-0 right-0 w-[30rem] h-[30rem] rounded-full mix-blend-multiply blur-[120px] opacity-30 transition-colors duration-1000 ease-in-out ${activeBlobs.b2}`}
-        />
-      </div>
-
-      <div className="relative z-10 max-w-6xl mx-auto px-6">
-        {/* Header - Static on Mobile, Animated on Desktop */}
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
-          className="hidden md:block text-center mb-16"
-        >
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <span className="w-6 h-[2px] bg-blue-600 rounded-full"></span>
-            <span className="text-blue-600 font-bold tracking-widest uppercase text-[10px]">
-              Hiring & Application Process
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text-muted)] mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+            <span className="font-semibold uppercase tracking-wider text-[11px]">
+              Recruitment Workflow
             </span>
-            <span className="w-6 h-[2px] bg-blue-600 rounded-full"></span>
           </div>
-          <h2 className="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            A Streamlined{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">
-              Application Process
-            </span>
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-4 font-medium text-lg max-w-xl mx-auto">
-            Search verified openings, submit your profile in seconds, and track
-            interview updates directly with employers.
-          </p>
-        </motion.div>
 
-        {/* Static Header for Mobile */}
-        <div className="block md:hidden text-center mb-10">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="w-4 h-[1px] bg-blue-600 rounded-full"></span>
-            <span className="text-blue-600 font-bold tracking-widest uppercase text-[9px]">
-              Hiring & Application Process
-            </span>
-            <span className="w-4 h-[1px] bg-blue-600 rounded-full"></span>
-          </div>
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            A Streamlined{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">
-              Application Process
-            </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--theme-text)] tracking-tight leading-tight">
+            How JobOne Powers Your Career
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-3 font-medium text-sm max-w-xl mx-auto px-2">
-            Search verified openings, submit your profile in seconds, and track
-            interview updates directly with employers.
+          <p className="mt-3 text-sm sm:text-base text-[var(--theme-text-muted)] leading-relaxed">
+            A transparent 4-stage pipeline eliminating recruitment ambiguity for candidates and enterprises.
           </p>
         </div>
 
-        {/* Card Grid */}
-        <div
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6"
-          onMouseLeave={() =>
-            setActiveBlobs({ b1: "bg-blue-600", b2: "bg-indigo-500" })
-          }
-        >
-          {steps.map((step, i) => {
-            const cardContent = (
-              <>
-                {/* Top-Right Decorative Circle */}
-                <div
-                  className={`w-16 h-16 md:w-28 md:h-28 absolute -right-3 -top-3 md:-right-6 md:-top-6 rounded-full transition-transform duration-500 group-hover:scale-110 ${step.circleColor} flex items-end justify-start pb-2 pl-4 md:pb-5 md:pl-7`}
-                >
-                  <p className="text-white text-lg md:text-3xl font-black leading-none drop-shadow-md">
-                    {step.num}
-                  </p>
-                </div>
+        {/* 4 Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((step, idx) => {
+            const Icon = step.icon;
+            return (
+              <motion.div
+                key={step.num}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                whileHover={{ y: -4 }}
+                className="group relative bg-[var(--theme-surface)] rounded-2xl p-6 border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] shadow-sm hover:shadow-xl transition-all duration-200 flex flex-col justify-between overflow-hidden"
+              >
+                {/* Top Sheen */}
+                <div className="absolute top-0 inset-x-6 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent-silver)]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                {/* Card Content */}
-                <div className="relative z-10">
-                  {/* Desktop Only Twirl Animation */}
-                  <div className="hidden md:block">
-                    <motion.div
-                      animate={
-                        twirlingIndex === i
-                          ? { y: [0, -15, 0], rotate: [0, 720, 720] }
-                          : { y: 0, rotate: 0 }
-                      }
-                      transition={{ duration: 1.2, ease: "easeInOut" }}
-                      className={`mb-6 inline-block ${step.iconColor}`}
-                    >
-                      <div className="transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-110">
-                        {step.icon}
-                      </div>
-                    </motion.div>
-                  </div>
-                  
-                  {/* Static Icon for Mobile */}
-                  <div className={`block md:hidden mb-4 inline-block ${step.iconColor}`}>
-                     {React.cloneElement(step.icon, { size: 20 })}
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="font-mono text-2xl font-black text-[var(--theme-accent-silver)] tracking-tighter">
+                      {step.num}
+                    </span>
+                    <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-accent-silver)] flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Icon className="w-5 h-5" />
+                    </div>
                   </div>
 
-                  <h3 className="font-extrabold text-sm md:text-xl text-slate-900 dark:text-white mb-2 md:mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                  <h3 className="text-lg font-bold text-[var(--theme-text)] mb-2 group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors">
                     {step.title}
                   </h3>
 
-                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-medium leading-snug md:leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[var(--theme-text-muted)] leading-relaxed font-normal">
                     {step.desc}
                   </p>
                 </div>
-              </>
-            );
 
-            return (
-              <React.Fragment key={i}>
-                {/* Desktop Animated Card */}
-                <motion.div
-                  initial={{ opacity: 0, x: step.initX, y: step.initY }}
-                  whileInView={{ opacity: 1, x: 0, y: 0 }}
-                  viewport={{ once: false, amount: 0.1 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 100,
-                    damping: 20,
-                    delay: i * 0.1,
-                  }}
-                  onMouseEnter={() =>
-                    setActiveBlobs({ b1: step.blob1, b2: step.blob2 })
-                  }
-                  whileHover={{ y: -4, scale: 1.02 }}
-                  className="hidden md:flex relative bg-white/80 dark:bg-slate-900/90 backdrop-blur-sm shadow-[0_4px_15px_-4px_rgba(0,0,0,0.03)] dark:shadow-slate-950/40 hover:shadow-[0_12px_30px_-4px_rgba(0,0,0,0.08)] border border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 p-8 pt-10 rounded-[2rem] overflow-hidden group transition-colors duration-300 flex-col h-full cursor-default"
-                >
-                  {cardContent}
-                </motion.div>
-
-                {/* Mobile Static Card (No animations) */}
-                <div
-                  onClick={() => setActiveBlobs({ b1: step.blob1, b2: step.blob2 })}
-                  className="flex md:hidden relative bg-white dark:bg-slate-900 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.03)] dark:shadow-slate-950/40 border border-slate-200/80 dark:border-slate-800 p-4 pt-5 rounded-2xl overflow-hidden group flex-col h-full cursor-default"
-                >
-                  {cardContent}
+                <div className="mt-6 pt-3 border-t border-[var(--theme-border)] flex items-center text-xs font-semibold text-[var(--theme-text-subtle)] group-hover:text-[var(--theme-text)] transition-colors">
+                  <span>Phase {step.num}</span>
                 </div>
-              </React.Fragment>
+              </motion.div>
             );
           })}
         </div>

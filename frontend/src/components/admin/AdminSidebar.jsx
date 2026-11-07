@@ -1,18 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   LayoutDashboard,
   Briefcase,
-  FileText,
   Building2,
   Users,
   Layers,
   BarChart3,
   Settings,
   LogOut,
-  Sun,
-  Moon,
-  Monitor,
   X,
+  ChevronLeft,
+  ShieldAlert,
+  Activity,
+  Bell,
+  Download,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import LogoJobOne from "../LogoJobOne";
@@ -30,14 +31,8 @@ export default function AdminSidebar({
   pendingJobsCount = 0,
   pendingEmployersCount = 0,
 }) {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
-
-  const toggleTheme = () => {
-    if (theme === "light") setTheme("dark");
-    else if (theme === "dark") setTheme("default");
-    else setTheme("light");
-  };
 
   const role = adminInfo?.role || "superAdmin";
   const roleNameMap = {
@@ -46,118 +41,161 @@ export default function AdminSidebar({
     jobseekerAdmin: "Jobseeker Admin",
   };
 
+  // Keyboard shortcut listener for mobile drawer
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && onCloseMobile) {
+        onCloseMobile();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileOpen, onCloseMobile]);
+
   const navItems = [
     {
       id: "overview",
-      label: "Dashboard",
+      label: "Overview & KPIs",
       icon: LayoutDashboard,
+      badge: null,
+    },
+    {
+      id: "analytics",
+      label: "Platform Analytics",
+      icon: BarChart3,
+      badge: null,
     },
     {
       id: "allJobs",
-      label: "Jobs",
+      label: "Job Moderation",
       icon: Briefcase,
       count: pendingJobsCount > 0 ? pendingJobsCount : undefined,
     },
     {
-      id: "applications",
-      label: "Applications",
-      icon: FileText,
-    },
-    {
       id: "allEmployers",
-      label: "Companies",
+      label: "Employer Verification",
       icon: Building2,
       count: pendingEmployersCount > 0 ? pendingEmployersCount : undefined,
     },
     {
       id: "allJobseekers",
-      label: "Users",
+      label: "Candidate Directory",
       icon: Users,
+      badge: null,
+    },
+    {
+      id: "activity",
+      label: "Activity Stream",
+      icon: Activity,
+      badge: null,
+    },
+    {
+      id: "auditLogs",
+      label: "Audit Centre",
+      icon: ShieldAlert,
+      badge: null,
+    },
+    {
+      id: "notifications",
+      label: "Notification Centre",
+      icon: Bell,
+      badge: null,
     },
     {
       id: "categories",
-      label: "Categories",
+      label: "Industry Taxonomies",
       icon: Layers,
+      badge: null,
     },
     {
       id: "exportDB",
-      label: "Reports",
-      icon: BarChart3,
+      label: "Reports & Exports",
+      icon: Download,
+      badge: null,
     },
     {
       id: "settings",
-      label: "Settings",
+      label: "System Settings",
       icon: Settings,
+      badge: null,
     },
   ];
 
   const adminInitials = (adminInfo?.name || "Admin")
     .split(" ")
+    .filter(Boolean)
     .map((n) => n[0])
     .join("")
     .slice(0, 2)
-    .toUpperCase();
+    .toUpperCase() || "AD";
 
-  const ThemeIcon = theme === "default" ? Monitor : isDark ? Moon : Sun;
+  const sidebarContent = (isMobile = false) => (
+    <div className="flex flex-col h-full bg-[var(--theme-surface)] text-[var(--theme-text)] select-none transition-colors overflow-hidden">
+      {/* ─── Top Brand Header ────────────────────────────────────────── */}
+      {isCollapsed && !isMobile ? (
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          className="w-full h-16 flex items-center justify-center border-b border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)] transition-colors group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-silver)] relative shrink-0"
+          title="Expand sidebar (Ctrl+[)"
+          aria-label="Expand sidebar"
+        >
+          <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center font-bold font-mono text-sm tracking-tight text-[var(--theme-text)] shadow-xs group-hover:border-[var(--theme-border-silver)] group-hover:scale-105 transition-all">
+            J<span className="text-[var(--theme-accent-silver)]">1</span>
+          </div>
 
-  const sidebarContent = (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-r border-slate-200/80 dark:border-slate-800 select-none transition-colors overflow-x-hidden">
-      {/* ─── Top Brand Header (Whole Logo Serves as Toggle on Desktop) ──────── */}
-      {isCollapsed ? (
-        <div className="h-20 px-2 flex items-center justify-center border-b border-slate-100 dark:border-slate-800 shrink-0">
-          <button
-            type="button"
-            onClick={onToggleCollapse}
-            className="w-11 h-11 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center font-black text-sm shadow-xs hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-            title="Click to expand sidebar"
-            aria-label="Expand sidebar"
-          >
-            <span>J1</span>
-          </button>
-        </div>
+          {/* Floating Expand Tooltip */}
+          <div className="hidden lg:group-hover:flex absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 text-xs font-medium rounded-lg bg-[var(--theme-text)] text-[var(--theme-bg)] whitespace-nowrap shadow-xl z-50 pointer-events-none items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+            <span>Expand sidebar</span>
+            <span className="text-[10px] font-mono opacity-70">(Ctrl+[)</span>
+          </div>
+        </button>
       ) : (
-        <div className="h-20 px-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 shrink-0">
-          {/* Desktop: Whole Logo Toggles Sidebar */}
-          <button
-            type="button"
-            onClick={onToggleCollapse}
-            className="hidden lg:flex items-center gap-2 overflow-hidden cursor-pointer group hover:opacity-80 transition-all text-left focus:outline-none"
-            title="Click logo to collapse sidebar"
-            aria-label="Collapse sidebar"
-          >
-            <LogoJobOne
-              width={160}
-              height={48}
-              textColor={isDark ? "#FFFFFF" : "#0F172A"}
-              className="h-9 w-auto group-hover:scale-[0.99] transition-transform"
-            />
-          </button>
-
-          {/* Mobile: Logo Navigates to Dashboard */}
+        <div className="h-16 px-4 border-b border-[var(--theme-border)] flex items-center justify-between shrink-0">
           <Link
             to="/admin/dashboard?tab=overview"
             onClick={() => {
-              onSelectTab("overview");
-              if (onCloseMobile) onCloseMobile();
+              if (onSelectTab) onSelectTab("overview");
+              if (isMobile && onCloseMobile) onCloseMobile();
             }}
-            className="flex lg:hidden items-center gap-2 overflow-hidden"
-            title="JobOne Dashboard"
+            className="flex items-center gap-2 overflow-hidden hover:opacity-85 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-silver)] rounded-lg p-1 group"
+            title="JobOne Executive Console"
           >
             <LogoJobOne
-              width={150}
-              height={44}
-              textColor={isDark ? "#FFFFFF" : "#0F172A"}
+              width={116}
+              height={32}
+              textColor={isDark ? "#FFFFFF" : "#0A0A0A"}
               className="h-8 w-auto"
             />
+            <span className="text-[10px] font-mono font-bold tracking-widest uppercase px-1.5 py-0.5 rounded bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+              Admin
+            </span>
           </Link>
 
+          {/* Desktop collapse toggle button */}
+          {!isMobile && onToggleCollapse && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleCollapse();
+              }}
+              aria-label="Collapse sidebar"
+              title="Collapse sidebar (Ctrl+[)"
+              className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-silver)]"
+            >
+              <ChevronLeft size={16} />
+            </button>
+          )}
+
           {/* Mobile Close Button */}
-          {onCloseMobile && (
+          {isMobile && onCloseMobile && (
             <button
               type="button"
               onClick={onCloseMobile}
               aria-label="Close navigation drawer"
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-silver)]"
             >
               <X size={18} />
             </button>
@@ -166,9 +204,10 @@ export default function AdminSidebar({
       )}
 
       {/* ─── Navigation Links ────────────────────────────────────────── */}
-      <div
-        className={`flex-1 overflow-y-auto py-5 space-y-1.5 custom-scrollbar ${
-          isCollapsed ? "px-2.5 flex flex-col items-center" : "px-4"
+      <nav
+        aria-label="Admin Navigation"
+        className={`flex-1 overflow-y-auto overflow-x-hidden py-3 space-y-1 scrollbar-thin ${
+          isCollapsed && !isMobile ? "px-2 flex flex-col items-center" : "px-3"
         }`}
       >
         {navItems.map((item) => {
@@ -180,26 +219,44 @@ export default function AdminSidebar({
             (item.id === "exportDB" && activeTab === "reports") ||
             (item.id === "settings" && activeTab === "manageAdmins");
 
-          if (isCollapsed) {
+          if (isCollapsed && !isMobile) {
             return (
               <button
                 key={item.id}
                 type="button"
-                title={`${item.label}${item.count ? ` (${item.count} pending)` : ""}`}
+                title={`${item.label}${item.count ? ` (${item.count} queued)` : ""}`}
+                aria-label={item.label}
                 onClick={() => {
-                  onSelectTab(item.id);
-                  if (onCloseMobile) onCloseMobile();
+                  if (onSelectTab) onSelectTab(item.id);
+                  if (isMobile && onCloseMobile) onCloseMobile();
                 }}
-                className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all cursor-pointer relative group ${
+                className={`group relative w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
                   isActive
-                    ? "bg-slate-950 dark:bg-white text-white dark:text-slate-950 shadow-sm"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-xs font-semibold"
+                    : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-transparent"
                 }`}
               >
-                <Icon size={19} />
+                <Icon
+                  size={18}
+                  className={`shrink-0 transition-colors ${
+                    isActive
+                      ? "text-[var(--theme-accent-silver)]"
+                      : "text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text)]"
+                  }`}
+                />
                 {item.count !== undefined && item.count > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white dark:ring-slate-900" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[var(--theme-surface)] animate-pulse" />
                 )}
+
+                {/* Collapsed Tooltip */}
+                <div className="hidden lg:group-hover:flex absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 text-xs font-medium rounded-lg bg-[var(--theme-text)] text-[var(--theme-bg)] whitespace-nowrap shadow-xl z-50 pointer-events-none items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                  <span>{item.label}</span>
+                  {item.count !== undefined && item.count > 0 && (
+                    <span className="text-[10px] font-mono px-1 rounded bg-[var(--theme-bg)]/20 text-[var(--theme-text)]">
+                      {item.count}
+                    </span>
+                  )}
+                </div>
               </button>
             );
           }
@@ -209,109 +266,87 @@ export default function AdminSidebar({
               key={item.id}
               type="button"
               onClick={() => {
-                onSelectTab(item.id);
-                if (onCloseMobile) onCloseMobile();
+                if (onSelectTab) onSelectTab(item.id);
+                if (isMobile && onCloseMobile) onCloseMobile();
               }}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-full text-sm transition-all group cursor-pointer relative ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs transition-all group cursor-pointer relative ${
                 isActive
-                  ? "bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 font-semibold"
-              }`}
+                  ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold border border-[var(--theme-border-silver)] shadow-xs"
+                  : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] font-medium border border-transparent"
+              } ${isMobile ? "min-h-[44px]" : "min-h-[38px]"}`}
             >
-              <div className="flex items-center gap-3 truncate">
-                <div
-                  className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+              <div className="flex items-center gap-2.5 truncate">
+                <Icon
+                  size={18}
+                  className={`shrink-0 transition-colors ${
                     isActive
-                      ? "bg-white/20 dark:bg-slate-900/20 text-white dark:text-slate-950"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:bg-slate-200 dark:group-hover:bg-slate-700"
+                      ? "text-[var(--theme-accent-silver)]"
+                      : "text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text)]"
                   }`}
-                >
-                  <Icon size={18} />
-                </div>
-                <span className="truncate text-sm">{item.label}</span>
+                />
+                <span className="truncate">{item.label}</span>
               </div>
 
               {item.count !== undefined && item.count > 0 && (
-                <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                    isActive
-                      ? "bg-white/20 dark:bg-slate-900/20 text-white dark:text-slate-900"
-                      : "bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300"
-                  }`}
-                >
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0 bg-amber-500/10 text-amber-400 border border-amber-500/20">
                   {item.count}
                 </span>
               )}
             </button>
           );
         })}
-      </div>
+      </nav>
 
-      {/* ─── Bottom Administrator Profile ─────────────────────────────── */}
-      <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/60 shrink-0">
-        {isCollapsed ? (
-          <div className="p-3 flex flex-col items-center gap-2">
-            <div
-              className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100 flex items-center justify-center font-bold text-sm shadow-xs cursor-default"
-              title={`${adminInfo?.name || "Administrator"} (${roleNameMap[role] || role})`}
+      {/* ─── Bottom Administrator Profile & Logout ─────────────────────── */}
+      <div className="p-3 border-t border-[var(--theme-border)] bg-[var(--theme-surface-muted)]/30 shrink-0">
+        {isCollapsed && !isMobile ? (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onLogout) onLogout();
+              }}
+              className="w-10 h-10 rounded-xl text-[var(--theme-text-muted)] hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all cursor-pointer flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 relative group"
+              title="Sign out"
+              aria-label="Sign out"
             >
-              {adminInitials}
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                title={`Theme: ${theme}`}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              >
-                <ThemeIcon size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={onLogout}
-                title="Log Out"
-                aria-label="Log Out"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-              >
-                <LogOut size={15} />
-              </button>
-            </div>
+              <LogOut size={18} />
+
+              {/* Collapsed Tooltip */}
+              <div className="hidden lg:group-hover:flex absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 text-xs font-medium rounded-lg bg-[var(--theme-text)] text-[var(--theme-bg)] whitespace-nowrap shadow-xl z-50 pointer-events-none items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                <span>Sign out</span>
+              </div>
+            </button>
           </div>
         ) : (
-          <div className="p-4 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100 flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
+          <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)]">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
                 {adminInitials}
               </div>
               <div className="min-w-0 pr-1">
-                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                <p className="text-xs font-bold text-[var(--theme-text)] truncate">
                   {adminInfo?.name || "Administrator"}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 font-medium truncate">
+                <p className="text-[10px] text-[var(--theme-text-muted)] font-mono truncate">
                   {roleNameMap[role] || role}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 shrink-0">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                title={`Theme: ${theme}`}
-                className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              >
-                <ThemeIcon size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={onLogout}
-                title="Log Out"
-                aria-label="Log Out"
-                className="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-              >
-                <LogOut size={16} />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (isMobile && onCloseMobile) onCloseMobile();
+                if (onLogout) onLogout();
+              }}
+              title="Sign Out"
+              aria-label="Sign Out"
+              className="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-colors shrink-0 cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+            >
+              <LogOut size={16} />
+            </button>
           </div>
         )}
       </div>
@@ -320,26 +355,30 @@ export default function AdminSidebar({
 
   return (
     <>
-      {/* Desktop Sticky Sidebar */}
+      {/* 1. Desktop Fixed Collapsible Sidebar */}
       <aside
-        className={`hidden lg:block h-screen sticky top-0 transition-all duration-200 z-30 shrink-0 ${
-          isCollapsed ? "w-18 min-w-[4.5rem] max-w-[4.5rem]" : "w-64 min-w-[16rem] max-w-[16rem]"
+        aria-label="Admin Navigation Sidebar"
+        className={`hidden lg:flex flex-col fixed inset-y-0 left-0 z-40 bg-[var(--theme-surface)] border-r border-[var(--theme-border)] transition-[width] duration-300 ease-in-out ${
+          isCollapsed ? "w-20" : "w-64"
         }`}
       >
-        {sidebarContent}
+        {sidebarContent(false)}
       </aside>
 
-      {/* Mobile Drawer */}
+      {/* 2. Mobile / Tablet Overlay Drawer */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-50 lg:hidden bg-slate-950/60 backdrop-blur-xs flex animate-in fade-in duration-150"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Admin Mobile Navigation Drawer"
+          className="fixed inset-0 z-50 lg:hidden bg-black/75 backdrop-blur-sm flex animate-in fade-in duration-200"
           onClick={onCloseMobile}
         >
           <div
-            className="w-72 max-w-[85vw] h-full shadow-2xl animate-in slide-in-from-left duration-200"
+            className="w-72 max-w-[85vw] h-full bg-[var(--theme-surface)] text-[var(--theme-text)] border-r border-[var(--theme-border)] shadow-2xl flex flex-col z-10 animate-in slide-in-from-left duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            {sidebarContent}
+            {sidebarContent(true)}
           </div>
         </div>
       )}

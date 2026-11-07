@@ -1,18 +1,18 @@
-import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Building2, Search, MapPin, Briefcase, Filter, ArrowLeft } from "lucide-react";
+import { Building2, Search, MapPin, Briefcase, Filter, ArrowLeft, ShieldCheck, ArrowRight, Sparkles } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 
 export default function ExploreCompanies() {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("");
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function ExploreCompanies() {
           return;
         }
         console.error("Error fetching companies:", err);
-        setError("Failed to load companies. Please try again later.");
+        setError("Failed to load corporate directory. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -63,49 +63,58 @@ export default function ExploreCompanies() {
   }, [companies]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pt-24 pb-20 transition-colors duration-150">
-      {/* Hero Section */}
+    <div className="min-h-screen bg-background text-foreground pt-24 pb-24 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-indigo-900 rounded-3xl p-8 sm:p-16 text-center text-white relative overflow-hidden shadow-2xl">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-          
+        {/* --- EDITORIAL HERO SECTION --- */}
+        <div className="bg-surface-1 border border-border rounded-3xl p-8 sm:p-14 relative overflow-hidden shadow-2xl mb-12">
+          {/* Subtle architectural background texture */}
+          <div className="absolute inset-0 [background-image:linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none opacity-40" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-silver/5 rounded-full blur-3xl pointer-events-none" />
+
           <button
+            type="button"
             onClick={() => navigate(-1)}
-            className="absolute top-6 left-4 sm:left-6 flex items-center gap-2 text-white/80 hover:text-white transition-colors font-bold text-sm uppercase tracking-wide bg-black/20 hover:bg-black/40 px-4 py-2 rounded-xl backdrop-blur-md z-20"
+            className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-foreground/60 hover:text-foreground transition-colors mb-6 cursor-pointer"
           >
-            <ArrowLeft size={16} /> Back
+            <ArrowLeft size={14} /> Back
           </button>
 
-          <div className="relative z-10">
-            <h1 className="text-3xl sm:text-5xl font-extrabold mb-6 tracking-tight">
-              Explore Top Companies
+          <div className="relative z-10 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-2 border border-border text-[11px] font-mono text-silver mb-4">
+              <ShieldCheck size={13} className="text-silver" />
+              <span>VERIFIED EMPLOYER DIRECTORY</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-5xl font-display font-bold tracking-tight text-foreground mb-4">
+              Explore Hiring Enterprises
             </h1>
-            <p className="text-indigo-200 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
-              Discover companies that align with your career goals. Browse employers who are actively hiring and find your next opportunity.
+            <p className="text-foreground/70 text-sm sm:text-base leading-relaxed mb-8">
+              Discover engineering powerhouses, high-growth startups, and global enterprises actively recruiting through JobOne.
             </p>
 
-            {/* Search and Filters */}
-            <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 p-3 rounded-2xl flex flex-col sm:flex-row gap-3 shadow-xl">
+            {/* Integrated Search & Industry Filter */}
+            <div className="bg-surface-2 border border-border p-2 sm:p-3 rounded-2xl flex flex-col sm:flex-row gap-2 shadow-lg">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none" size={18} />
                 <input
                   type="text"
-                  placeholder="Search by company or employer name..."
-                  className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-white font-medium placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all"
+                  placeholder="Search by company or employer title..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-surface-1 border border-border/60 text-foreground placeholder-foreground/40 text-xs sm:text-sm focus:outline-none focus:border-silver/60 transition-colors"
                 />
               </div>
-              <div className="sm:w-64 relative flex-shrink-0">
-                <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+
+              <div className="sm:w-60 relative">
+                <Filter className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none" size={16} />
                 <select
-                  className="w-full pl-12 pr-10 py-3 sm:py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-white font-medium appearance-none outline-none transition-all cursor-pointer"
                   value={selectedIndustry}
                   onChange={(e) => setSelectedIndustry(e.target.value)}
+                  className="w-full pl-10 pr-8 py-3 rounded-xl bg-surface-1 border border-border/60 text-foreground text-xs sm:text-sm focus:outline-none focus:border-silver/60 transition-colors appearance-none cursor-pointer"
                 >
-                  <option value="">All Industries</option>
+                  <option value="">All Industry Sectors</option>
                   {industries.map((ind) => (
-                    <option key={ind} value={ind}>
+                    <option key={ind} value={ind} className="bg-surface-1 text-foreground">
                       {ind}
                     </option>
                   ))}
@@ -115,37 +124,41 @@ export default function ExploreCompanies() {
           </div>
         </div>
 
-        {/* Companies Grid */}
-        <div className="mt-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-              {filteredCompanies.length} {filteredCompanies.length === 1 ? "Company" : "Companies"} Hiring
+        {/* --- COMPANIES DIRECTORY --- */}
+        <div>
+          <div className="flex items-center justify-between mb-8 pb-3 border-b border-border">
+            <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">
+              {filteredCompanies.length} Verified {filteredCompanies.length === 1 ? "Enterprise" : "Enterprises"} Active
             </h2>
+            <span className="text-xs font-mono text-foreground/50">
+              Live recruitment telemetry
+            </span>
           </div>
 
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white dark:bg-slate-900 rounded-3xl p-6 h-64 animate-pulse border border-slate-100 dark:border-slate-800">
-                  <div className="w-16 h-16 bg-slate-200 rounded-2xl mb-4"></div>
-                  <div className="w-3/4 h-6 bg-slate-200 rounded-lg mb-3"></div>
-                  <div className="w-1/2 h-4 bg-slate-200 rounded-lg mb-6"></div>
-                  <div className="flex gap-2">
-                    <div className="w-24 h-8 bg-slate-200 rounded-lg"></div>
-                    <div className="w-24 h-8 bg-slate-200 rounded-lg"></div>
-                  </div>
+                <div key={i} className="p-6 rounded-2xl bg-surface-1 border border-border h-60 animate-pulse space-y-4">
+                  <div className="w-14 h-14 rounded-xl bg-surface-2" />
+                  <div className="h-5 w-2/3 bg-surface-2 rounded-lg" />
+                  <div className="h-3 w-1/2 bg-surface-2 rounded-lg" />
+                  <div className="h-3 w-1/3 bg-surface-2 rounded-lg" />
                 </div>
               ))}
             </div>
           ) : error ? (
-            <div className="bg-red-50 text-red-600 p-6 rounded-2xl text-center font-medium">
+            <div className="p-8 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-center text-sm font-mono">
               {error}
             </div>
           ) : filteredCompanies.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 p-12 rounded-3xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
-              <Building2 className="mx-auto text-slate-300 dark:text-slate-600 mb-4" size={64} />
-              <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No companies found</h3>
-              <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filter criteria.</p>
+            <div className="p-12 rounded-3xl bg-surface-1 border border-border text-center shadow-sm">
+              <Building2 className="mx-auto text-foreground/30 mb-4" size={48} />
+              <h3 className="text-lg font-display font-bold text-foreground mb-1">
+                No matching enterprises found
+              </h3>
+              <p className="text-xs text-foreground/60 max-w-xs mx-auto">
+                Try modifying your keywords or clearing the industry filter.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -155,47 +168,49 @@ export default function ExploreCompanies() {
                   <div
                     key={company._id}
                     onClick={() => navigate(`/company/${company._id}`)}
-                    className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-xl dark:hover:border-indigo-500/50 transition-all cursor-pointer group flex flex-col h-full"
+                    className="p-6 rounded-2xl bg-surface-1 border border-border hover:border-silver/50 transition-all duration-200 cursor-pointer group flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-0.5"
                   >
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="w-16 h-16 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex items-center justify-center p-2 group-hover:scale-105 transition-transform shadow-sm">
-                        {company.profilePicture ? (
-                          <img
-                            src={company.profilePicture}
-                            alt={displayName}
-                            className="w-full h-full object-contain"
-                          />
-                        ) : (
-                          <Building2 size={32} className="text-slate-300" />
-                        )}
+                    <div>
+                      {/* Logo and Job Count Badge */}
+                      <div className="flex items-start justify-between mb-5">
+                        <div className="w-14 h-14 rounded-xl bg-surface-2 border border-border flex items-center justify-center overflow-hidden p-2 group-hover:scale-105 transition-transform">
+                          {company.profilePicture ? (
+                            <img
+                              src={company.profilePicture}
+                              alt={displayName}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <Building2 size={26} className="text-foreground/40" />
+                          )}
+                        </div>
+
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-surface-2 border border-border text-foreground flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span>{company.jobCount} {company.jobCount === 1 ? "Role" : "Roles"}</span>
+                        </span>
                       </div>
-                      <div className="bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                        {company.jobCount} {company.jobCount === 1 ? "Job" : "Jobs"}
+
+                      <h3 className="text-base sm:text-lg font-display font-bold text-foreground group-hover:text-silver transition-colors mb-2 line-clamp-1 flex items-center gap-1.5">
+                        <span>{displayName}</span>
+                        <ShieldCheck size={14} className="text-silver shrink-0" />
+                      </h3>
+
+                      <div className="space-y-1.5 text-xs text-foreground/60 mb-6">
+                        <div className="flex items-center gap-2 line-clamp-1">
+                          <MapPin size={13} className="text-foreground/40 shrink-0" />
+                          <span>{company.location || "Distributed / Remote"}</span>
+                        </div>
+                        <div className="flex items-center gap-2 line-clamp-1">
+                          <Briefcase size={13} className="text-foreground/40 shrink-0" />
+                          <span>{company.industry || "General Technology"}</span>
+                        </div>
                       </div>
                     </div>
-                    
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                      {displayName}
-                    </h3>
-                    
-                    <div className="flex items-center text-sm text-slate-500 gap-2 mb-1 line-clamp-1">
-                      <MapPin size={16} className="text-slate-400 shrink-0" />
-                      <span>{company.location || "Location not provided"}</span>
-                    </div>
-                    
-                    <div className="flex items-center text-sm text-slate-500 gap-2 mb-6 line-clamp-1">
-                      <Briefcase size={16} className="text-slate-400 shrink-0" />
-                      <span>{company.industry || "Industry not specified"}</span>
-                    </div>
-                    
-                    <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                      <span className="text-indigo-600 font-bold text-sm group-hover:underline">
-                        View Profile
-                      </span>
-                      <span className="text-slate-400 group-hover:translate-x-1 transition-transform">
-                        →
-                      </span>
+
+                    <div className="pt-4 border-t border-border flex items-center justify-between text-xs font-semibold text-foreground/80 group-hover:text-foreground">
+                      <span>View Enterprise Dossier</span>
+                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 );

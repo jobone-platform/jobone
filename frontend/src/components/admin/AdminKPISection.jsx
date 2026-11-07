@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Users,
   Building2,
@@ -9,11 +9,27 @@ import {
   ShieldAlert,
   SlidersHorizontal,
   LayoutGrid,
-  ListFilter,
   CheckCircle2,
+  Settings2,
+  Eye,
+  EyeOff,
+  ArrowUp,
+  ArrowDown,
+  RotateCcw,
+  X,
 } from "lucide-react";
 import KPIWidgetCard from "./KPIWidgetCard";
 import KPIWidgetExpandedModal from "./KPIWidgetExpandedModal";
+
+const DEFAULT_WIDGET_ORDER = [
+  "users",
+  "companies",
+  "activeJobs",
+  "totalJobs",
+  "applications",
+  "pending",
+  "reported",
+];
 
 export default function AdminKPISection({
   allJobs = [],
@@ -28,6 +44,7 @@ export default function AdminKPISection({
   onReviewEmployer,
   loading = false,
 }) {
+  // Density display mode: "compact" vs "detailed"
   const [displayMode, setDisplayMode] = useState(() => {
     try {
       return localStorage.getItem("jobone_admin_kpi_mode") || "detailed";
@@ -36,13 +53,64 @@ export default function AdminKPISection({
     }
   });
 
+  // Smart Hybrid Widgets customization state (persisted in localStorage)
+  const [widgetPrefs, setWidgetPrefs] = useState(() => {
+    try {
+      const stored = localStorage.getItem("jobone_admin_widget_prefs");
+      if (stored) return JSON.parse(stored);
+    } catch {
+      /* ignore */
+    }
+    return {
+      order: DEFAULT_WIDGET_ORDER,
+      hidden: [],
+    };
+  });
+
+  const [customizeOpen, setCustomizeOpen] = useState(false);
   const [maximizedWidget, setMaximizedWidget] = useState(null);
 
   const handleToggleMode = (mode) => {
     setDisplayMode(mode);
     try {
       localStorage.setItem("jobone_admin_kpi_mode", mode);
-    } catch {}
+    } catch (_err) {
+      /* ignore */
+    }
+  };
+
+  const saveWidgetPrefs = (newPrefs) => {
+    setWidgetPrefs(newPrefs);
+    try {
+      localStorage.setItem("jobone_admin_widget_prefs", JSON.stringify(newPrefs));
+    } catch (_err) {
+      /* ignore */
+    }
+  };
+
+  const handleToggleWidgetVisibility = (widgetId) => {
+    const isHidden = widgetPrefs.hidden.includes(widgetId);
+    const newHidden = isHidden
+      ? widgetPrefs.hidden.filter((id) => id !== widgetId)
+      : [...widgetPrefs.hidden, widgetId];
+    saveWidgetPrefs({ ...widgetPrefs, hidden: newHidden });
+  };
+
+  const handleMoveWidget = (index, direction) => {
+    const newOrder = [...widgetPrefs.order];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newOrder.length) return;
+    const temp = newOrder[index];
+    newOrder[index] = newOrder[targetIndex];
+    newOrder[targetIndex] = temp;
+    saveWidgetPrefs({ ...widgetPrefs, order: newOrder });
+  };
+
+  const handleResetWidgets = () => {
+    saveWidgetPrefs({
+      order: DEFAULT_WIDGET_ORDER,
+      hidden: [],
+    });
   };
 
   // Helper to compute daily distribution over the last 7 days from genuine createdAt
@@ -61,7 +129,6 @@ export default function AdminKPISection({
       }
     });
 
-    // If all zeroes, provide baseline distribution based on length so sparkline renders cleanly
     if (counts.every((c) => c === 0) && items.length > 0) {
       return [1, 2, 1, 3, 2, 4, items.length];
     }
@@ -91,7 +158,7 @@ export default function AdminKPISection({
   };
 
   // ─── COMPUTED REAL METRICS ────────────────────────────────────────────────
-  const widgetsData = useMemo(() => {
+  const widgetsMap = useMemo(() => {
     const now = Date.now();
     const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
     const fourteenDaysAgo = now - 14 * 24 * 60 * 60 * 1000;
@@ -165,17 +232,14 @@ export default function AdminKPISection({
     const unreadMessagesCount = unreadContacts.length;
     const totalModerationAlerts = frozenAccountsTotal + unreadMessagesCount;
 
-    return [
+    return {
       // 1. USERS
-      {
+      users: {
         id: "users",
-        title: "Users",
+        title: "Total Candidates",
         targetTab: "allJobseekers",
         primaryValue: totalUsers,
         icon: Users,
-        color: "#3b82f6",
-        iconBg: "bg-blue-50 dark:bg-blue-950/70",
-        iconColor: "text-blue-600 dark:text-blue-400",
         badge: newUsersLast7d > 0 ? `+${newUsersLast7d} new` : null,
         badgeVariant: "info",
         trendText: newUsersLast7d > 0 ? `+${newUsersLast7d} this wk` : "Stable",
@@ -193,16 +257,13 @@ export default function AdminKPISection({
       },
 
       // 2. COMPANIES
-      {
+      companies: {
         id: "companies",
-        title: "Companies",
+        title: "Registered Companies",
         targetTab: "allEmployers",
         primaryValue: totalEmployers,
         icon: Building2,
-        color: "#8b5cf6",
-        iconBg: "bg-purple-50 dark:bg-purple-950/70",
-        iconColor: "text-purple-600 dark:text-purple-400",
-        badge: pendingEmployersCount > 0 ? `${pendingEmployersCount} review` : "Verified",
+        badge: pendingEmployersCount > 0 ? `${pendingEmployersCount} queued` : "Verified",
         badgeVariant: pendingEmployersCount > 0 ? "warning" : "info",
         trendText: newEmployersLast7d > 0 ? `+${newEmployersLast7d} this wk` : "Verified",
         isPositiveTrend: true,
@@ -219,15 +280,12 @@ export default function AdminKPISection({
       },
 
       // 3. ACTIVE JOBS
-      {
+      activeJobs: {
         id: "activeJobs",
-        title: "Active",
+        title: "Active Postings",
         targetTab: "allJobs",
         primaryValue: activeJobsCount,
         icon: Briefcase,
-        color: "#10b981",
-        iconBg: "bg-emerald-50 dark:bg-emerald-950/70",
-        iconColor: "text-emerald-600 dark:text-emerald-400",
         badge: `${activeJobRatio}% live`,
         badgeVariant: "info",
         trendText: `${activeJobRatio}% of total`,
@@ -240,20 +298,17 @@ export default function AdminKPISection({
         breakdown: [
           { label: "Active Postings", value: activeJobsCount, helper: "Currently accepting applications" },
           { label: "Total Platform Jobs", value: totalJobs, helper: "All-time listings" },
-          { label: "Active Ratio", value: `${activeJobRatio}%`, helper: "Healthy posting velocity" },
+          { label: "Active Ratio", value: `${activeJobRatio}%`, helper: "Posting health" },
         ],
       },
 
       // 4. TOTAL JOBS
-      {
+      totalJobs: {
         id: "totalJobs",
-        title: "Jobs",
+        title: "Total Requisitions",
         targetTab: "allJobs",
         primaryValue: totalJobs,
         icon: Layers,
-        color: "#6366f1",
-        iconBg: "bg-indigo-50 dark:bg-indigo-950/70",
-        iconColor: "text-indigo-600 dark:text-indigo-400",
         badge: newJobsLast7d > 0 ? `+${newJobsLast7d} wk` : null,
         badgeVariant: "info",
         trendText: newJobsLast7d > 0 ? `+${newJobsLast7d} this wk` : "Total created",
@@ -271,15 +326,12 @@ export default function AdminKPISection({
       },
 
       // 5. APPLICATIONS
-      {
+      applications: {
         id: "applications",
-        title: "Applications",
+        title: "Candidate Applications",
         targetTab: "applications",
         primaryValue: totalApplications,
         icon: FileText,
-        color: "#06b6d4",
-        iconBg: "bg-cyan-50 dark:bg-cyan-950/70",
-        iconColor: "text-cyan-600 dark:text-cyan-400",
         badge: totalApplications > 0 ? `${avgAppsPerJob}/job` : null,
         badgeVariant: "info",
         trendText: `${avgAppsPerJob} avg/job`,
@@ -297,16 +349,13 @@ export default function AdminKPISection({
       },
 
       // 6. PENDING APPROVALS
-      {
+      pending: {
         id: "pending",
-        title: "Pending",
+        title: "Pending Moderation",
         targetTab: "pendingJobs",
         primaryValue: totalPending,
         icon: Clock,
-        color: "#f59e0b",
-        iconBg: "bg-amber-50 dark:bg-amber-950/70",
-        iconColor: "text-amber-600 dark:text-amber-400",
-        badge: totalPending > 0 ? "Review" : "Clear",
+        badge: totalPending > 0 ? "Action" : "Clear",
         badgeVariant: totalPending > 0 ? "warning" : "info",
         trendText: totalPending > 0 ? `${totalPending} items` : "Clear",
         isPositiveTrend: totalPending === 0,
@@ -324,15 +373,12 @@ export default function AdminKPISection({
       },
 
       // 7. REPORTED / MODERATION
-      {
+      reported: {
         id: "reported",
-        title: "Reported",
-        targetTab: "searchFreeze",
+        title: "Restricted & Support",
+        targetTab: "allJobseekers",
         primaryValue: totalModerationAlerts,
         icon: ShieldAlert,
-        color: "#64748b",
-        iconBg: "bg-slate-100 dark:bg-slate-800",
-        iconColor: "text-slate-600 dark:text-slate-400",
         badge: totalModerationAlerts > 0 ? "Alerts" : "Healthy",
         badgeVariant: totalModerationAlerts > 0 ? "danger" : "info",
         trendText: totalModerationAlerts > 0 ? `${totalModerationAlerts} flags` : "Protected",
@@ -345,10 +391,10 @@ export default function AdminKPISection({
         breakdown: [
           { label: "Frozen Candidates", value: frozenUsers, helper: "Suspended access" },
           { label: "Frozen Employers", value: allEmployers.filter((e) => e.isFrozen).length, helper: "Suspended companies" },
-          { label: "Unread Messages", value: unreadMessagesCount, helper: "Support inquiries" },
+          { label: "Unread Inquiries", value: unreadMessagesCount, helper: "Support inquiries" },
         ],
       },
-    ];
+    };
   }, [
     allJobs,
     allEmployers,
@@ -359,29 +405,50 @@ export default function AdminKPISection({
     dbStats,
   ]);
 
+  // Order widgets according to preferences and filter hidden ones
+  const orderedVisibleWidgets = useMemo(() => {
+    const order = widgetPrefs.order || DEFAULT_WIDGET_ORDER;
+    const hidden = widgetPrefs.hidden || [];
+    return order
+      .filter((id) => !hidden.includes(id) && widgetsMap[id])
+      .map((id) => widgetsMap[id]);
+  }, [widgetPrefs, widgetsMap]);
+
   return (
     <div>
-      {/* ─── Header: Title + Mode Toggle (Compact vs Detailed Analytics) ──── */}
+      {/* ─── Header: Title + Mode Toggle + Customize Button ──── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-            Quick Stats & Insights
+          <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[var(--theme-text)] tracking-tight">
+            Executive Metrics & Velocity
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Interactive real-time metrics with activity trends and one-click drilldown
+          <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+            Operational platform telemetry computed directly from active MongoDB collections
           </p>
         </div>
 
-        {/* Layout Density Controls */}
+        {/* Layout Density Controls + Customization Trigger */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <div className="inline-flex p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+          {/* Smart Hybrid Customize Button */}
+          <button
+            type="button"
+            onClick={() => setCustomizeOpen(true)}
+            className="px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+            title="Rearrange and toggle widget visibility"
+          >
+            <Settings2 size={13} className="text-[var(--theme-accent-silver)]" />
+            <span>Customize</span>
+          </button>
+
+          {/* Density Toggle (Compact vs Analytics) */}
+          <div className="inline-flex p-1 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)]">
             <button
               type="button"
               onClick={() => handleToggleMode("compact")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 displayMode === "compact"
-                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                  : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
               }`}
               title="Compact card layout"
             >
@@ -391,10 +458,10 @@ export default function AdminKPISection({
             <button
               type="button"
               onClick={() => handleToggleMode("detailed")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 displayMode === "detailed"
-                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                  : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
               }`}
               title="Detailed analytics with mini charts and progress tracking"
             >
@@ -406,12 +473,9 @@ export default function AdminKPISection({
       </div>
 
       {/* ─── Interactive Responsive KPI Grid ─────────────────────────── */}
-      <div className="admin-kpi-grid w-full min-w-0">
-        {widgetsData.map((widget) => (
-          <div
-            key={widget.id}
-            className="w-full min-w-0 flex"
-          >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-3 sm:gap-4 w-full min-w-0">
+        {orderedVisibleWidgets.map((widget) => (
+          <div key={widget.id} className="w-full min-w-0 flex">
             <KPIWidgetCard
               widget={widget}
               displayMode={displayMode}
@@ -423,6 +487,118 @@ export default function AdminKPISection({
           </div>
         ))}
       </div>
+
+      {/* ─── Smart Hybrid Customize Modal ─────────────────────────────── */}
+      {customizeOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="customize-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-150"
+          onClick={() => setCustomizeOpen(false)}
+        >
+          <div
+            className="w-full max-w-md bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 sm:p-5 border-b border-[var(--theme-border)] flex items-center justify-between bg-[var(--theme-surface-elevated)]/40">
+              <div className="flex items-center gap-2.5">
+                <Settings2 size={16} className="text-[var(--theme-accent-silver)]" />
+                <h3 id="customize-title" className="text-sm font-bold text-[var(--theme-text)]">
+                  Customize Dashboard Widgets
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCustomizeOpen(false)}
+                className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-2 max-h-[60vh] overflow-y-auto">
+              <p className="text-xs text-[var(--theme-text-muted)] mb-3">
+                Toggle visibility or reorder metric cards. Preferences persist across sessions.
+              </p>
+
+              {widgetPrefs.order.map((widgetId, idx) => {
+                const widget = widgetsMap[widgetId];
+                if (!widget) return null;
+                const isHidden = widgetPrefs.hidden.includes(widgetId);
+
+                return (
+                  <div
+                    key={widgetId}
+                    className={`p-3 rounded-xl border flex items-center justify-between gap-3 transition-colors ${
+                      isHidden
+                        ? "bg-[var(--theme-surface-elevated)]/30 border-[var(--theme-border)]/50 opacity-60"
+                        : "bg-[var(--theme-surface-elevated)] border-[var(--theme-border)]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleWidgetVisibility(widgetId)}
+                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          isHidden
+                            ? "text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)]"
+                            : "text-emerald-400 hover:text-emerald-300"
+                        }`}
+                        title={isHidden ? "Click to show" : "Click to hide"}
+                      >
+                        {isHidden ? <EyeOff size={15} /> : <Eye size={15} />}
+                      </button>
+                      <span className={`text-xs font-semibold truncate ${isHidden ? "line-through text-[var(--theme-text-subtle)]" : "text-[var(--theme-text)]"}`}>
+                        {widget.title}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => handleMoveWidget(idx, "up")}
+                        className="p-1 rounded text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                        title="Move up"
+                      >
+                        <ArrowUp size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === widgetPrefs.order.length - 1}
+                        onClick={() => handleMoveWidget(idx, "down")}
+                        className="p-1 rounded text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                        title="Move down"
+                      >
+                        <ArrowDown size={13} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="p-3.5 bg-[var(--theme-surface-muted)]/50 border-t border-[var(--theme-border)] flex items-center justify-between">
+              <button
+                type="button"
+                onClick={handleResetWidgets}
+                className="text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <RotateCcw size={12} />
+                <span>Reset to Default</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCustomizeOpen(false)}
+                className="px-4 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── Maximized Widget Analytics Overlay ───────────────────────── */}
       <KPIWidgetExpandedModal
@@ -436,4 +612,3 @@ export default function AdminKPISection({
     </div>
   );
 }
-

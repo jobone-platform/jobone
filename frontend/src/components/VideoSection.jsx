@@ -1,8 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FaArrowRight, FaBolt, FaUsers, FaClock } from "react-icons/fa";
 
 export default function VideoSection() {
+  const navigate = useNavigate();
   const containerRef = useRef(null);
 
   // FACT: The Hydration Lock & Mobile Detection
@@ -129,7 +131,7 @@ export default function VideoSection() {
         {/* ── LAYER 1: MASK & TEXT EFFECTS ─────────────────────── */}
         {!isMobile ? (
           /* DESKTOP: 300x Zoom through mix-blend hole punch */
-          <div className="absolute inset-0 z-20 bg-white dark:bg-slate-900 mix-blend-screen flex items-center justify-center pointer-events-none [transform:translateZ(-10px)]">
+          <div className="absolute inset-0 z-20 bg-white dark:bg-slate-950 mix-blend-screen flex items-center justify-center pointer-events-none [transform:translateZ(-10px)]">
             <motion.div style={{ scale: textScale, transformOrigin: "34% 50%" }}>
               <h1
                 className="text-black font-black leading-[0.88] tracking-tight uppercase select-none"
@@ -215,17 +217,17 @@ export default function VideoSection() {
               className="absolute inset-0 z-50 flex flex-col items-center justify-center text-center px-6 [transform:translateZ(100px)] pointer-events-none"
             >
               <div className="flex items-center gap-3 mb-5 justify-center">
-                <span className="w-8 h-px bg-blue-400/70 rounded-full" />
-                <span className="text-blue-400 font-semibold tracking-[0.28em] uppercase text-[10px]">
+                <span className="w-8 h-px bg-[var(--theme-accent-silver)]/70 rounded-full" />
+                <span className="text-[var(--theme-accent-silver)] font-semibold tracking-[0.28em] uppercase text-[10px]">
                   Product Tour
                 </span>
-                <span className="w-8 h-px bg-blue-400/70 rounded-full" />
+                <span className="w-8 h-px bg-[var(--theme-accent-silver)]/70 rounded-full" />
               </div>
 
               <h2 className="text-4xl md:text-6xl lg:text-[72px] font-extrabold text-white tracking-tight leading-[1.05] mb-5">
                 Connecting candidates
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-indigo-400">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[var(--theme-accent-silver)] to-white">
                   with top employers.
                 </span>
               </h2>
@@ -289,7 +291,8 @@ export default function VideoSection() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
-                className="bg-blue-600 text-white px-10 py-4 rounded-full font-bold text-sm md:text-base shadow-[0_0_40px_rgba(99,102,241,0.45)] hover:bg-blue-500 transition-colors flex items-center gap-2.5 mx-auto pointer-events-auto"
+                onClick={() => navigate("/jobs")}
+                className="bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-white px-10 py-4 rounded-full font-bold text-sm md:text-base shadow-xl transition-all flex items-center gap-2.5 mx-auto pointer-events-auto cursor-pointer"
               >
                 Get Started Free <FaArrowRight size={13} />
               </motion.button>

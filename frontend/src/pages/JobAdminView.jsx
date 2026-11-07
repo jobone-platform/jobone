@@ -1,28 +1,32 @@
 import { API_BASE_URL } from "../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Loader2,
   Briefcase,
-  Building,
+  Building2,
   MapPin,
   DollarSign,
   Clock,
   FileText,
-  CheckCircle,
+  CheckCircle2,
   XCircle,
   CalendarDays,
   Users,
-  Zap,
-  UserCircle2,
+  Eye,
+  EyeOff,
+  ArrowLeft,
+  ExternalLink,
+  ShieldAlert,
+  Layers,
   GraduationCap,
   Languages,
   HelpCircle,
-  EyeOff,
-  CheckCircle2,
+  Calendar,
 } from "lucide-react";
 import CompanyDisplay from "../components/CompanyDisplay";
+import AdminConfirmDialog from "../components/admin/AdminConfirmDialog";
 
 export default function JobAdminView() {
   const { id } = useParams();
@@ -30,6 +34,15 @@ export default function JobAdminView() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    confirmText: "Confirm",
+    variant: "danger",
+    action: null,
+    loading: false,
+  });
 
   useEffect(() => {
     fetchJobData();
@@ -51,49 +64,51 @@ export default function JobAdminView() {
         navigate("/admin/login");
         return;
       }
-      const { data } = await axios.get(
-        `${API_BASE_URL}/admin/jobs/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const { data } = await axios.get(`${API_BASE_URL}/admin/jobs/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setJob(data);
-    } catch (err) {
-      alert("Failed to load job data.");
-      navigate("/admin/dashboard");
+    } catch {
+      alert("Failed to load job moderation dossier.");
+      navigate("/admin/dashboard?tab=allJobs");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleStatusChange = async (status, stayOnPage = false) => {
-    setActionLoading(true);
-    try {
-      const token = getAdminToken();
-      if (!token) {
-        navigate("/admin/login");
-        return;
-      }
-      await axios.patch(
-        `${API_BASE_URL}/admin/jobs/${id}/review`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      
-      setJob((prev) => ({ ...prev, status }));
-
-      alert(
-        `Job successfully ${status === "active" ? "approved" : status === "hidden" ? "hidden" : status === "rejected" ? "rejected" : "updated"}!`,
-      );
-      
-      if (!stayOnPage) {
-        navigate("/admin/dashboard");
-      }
-    } catch (err) {
-      alert("Failed to update status.");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleStatusChange = (status, stayOnPage = false) => {
+    const isApprove = status === "active";
+    setConfirmDialog({
+      isOpen: true,
+      title: `${isApprove ? "Approve & Publish" : status === "rejected" ? "Reject" : "Update"} Position Listing`,
+      message: `Are you sure you want to mark this job posting as "${status}"? ${
+        isApprove ? "The job will become immediately visible in candidate search." : "The listing status will be updated immediately."
+      }`,
+      confirmText: isApprove ? "Approve & Publish" : status === "rejected" ? "Reject Job" : "Update Status",
+      variant: isApprove ? "success" : "danger",
+      loading: false,
+      action: async () => {
+        setActionLoading(true);
+        try {
+          const token = getAdminToken();
+          await axios.patch(
+            `${API_BASE_URL}/admin/jobs/${id}/review`,
+            { status },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          setJob((prev) => ({ ...prev, status }));
+          setConfirmDialog((p) => ({ ...p, isOpen: false }));
+          if (!stayOnPage) {
+            navigate("/admin/dashboard?tab=allJobs");
+          }
+        } catch {
+          alert("Failed to update job review status.");
+          setConfirmDialog((p) => ({ ...p, isOpen: false }));
+        } finally {
+          setActionLoading(false);
+        }
+      },
+    });
   };
 
   const renderArray = (arr) => {
@@ -105,421 +120,363 @@ export default function JobAdminView() {
     if (!dateString) return "TBD";
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-slate-50 dark:bg-slate-950">
-        <Loader2 className="animate-spin text-indigo-600" size={48} />
+      <div className="min-h-screen bg-[var(--theme-bg)] flex flex-col justify-center items-center">
+        <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mb-3">
+          <Loader2 className="animate-spin text-[var(--theme-text)]" size={20} />
+        </div>
+        <p className="text-xs font-mono font-medium text-[var(--theme-text-muted)]">
+          Retrieving Job Moderation Dossier...
+        </p>
       </div>
     );
-  if (!job)
+  }
+
+  if (!job) {
     return (
-      <div className="text-center mt-20 text-red-500 font-bold">
-        Job not found.
+      <div className="min-h-screen bg-[var(--theme-bg)] flex flex-col justify-center items-center p-4">
+        <div className="text-center max-w-sm">
+          <ShieldAlert size={36} className="mx-auto text-rose-500 mb-2" />
+          <h2 className="text-lg font-bold text-[var(--theme-text)] font-display">Job Listing Not Found</h2>
+          <p className="text-xs text-[var(--theme-text-muted)] mt-1 mb-4">
+            The requested position listing may have been deleted or is inaccessible.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/admin/dashboard?tab=allJobs")}
+            className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-mono text-xs font-bold cursor-pointer"
+          >
+            Return to Job Directory
+          </button>
+        </div>
       </div>
     );
+  }
+
+  const locationStr =
+    typeof job.location === "object"
+      ? job.location?.address || "Remote"
+      : job.location || "Remote";
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-5 sm:py-10 px-3 sm:px-6 font-sans text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] py-6 sm:py-8 px-4 sm:px-6 lg:px-8 font-sans transition-colors">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* --- HEADER --- */}
-        <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span
-                className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${job.status === "active" ? "bg-emerald-500/20 text-emerald-400" : job.status === "pending_approval" ? "bg-amber-500/20 text-amber-400" : "bg-rose-500/20 text-rose-400"}`}
-              >
-                {job.status.replace("_", " ")}
-              </span>
-              <span className="text-xs text-slate-400 font-mono">
-                ID: {job._id}
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-3 sm:mb-4 tracking-tight leading-tight">
+        {/* Navigation Breadcrumb */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[var(--theme-border)]">
+          <div className="flex items-center gap-2 text-xs font-mono text-[var(--theme-text-muted)]">
+            <button
+              type="button"
+              onClick={() => navigate("/admin/dashboard?tab=allJobs")}
+              className="hover:text-[var(--theme-text)] flex items-center gap-1 cursor-pointer"
+            >
+              <ArrowLeft size={13} />
+              <span>Job Moderation</span>
+            </button>
+            <span>/</span>
+            <span className="text-[var(--theme-text)] font-semibold truncate max-w-xs">
               {job.title}
-            </h1>
-            <div className="flex flex-wrap items-center text-slate-400 font-bold gap-3 mb-6">
-              <span className="text-indigo-400 text-sm">
-                <CompanyDisplay job={job} fallback="Confidential Employer" />
-              </span>
-              <span className="text-slate-600">•</span>
-              <Clock size={16} className="text-slate-500" /> Posted on{" "}
-              {formatDate(job.postedAt)}
-            </div>
+            </span>
           </div>
+
           <button
-            onClick={() => navigate("/admin/dashboard")}
-            className="w-full sm:w-auto justify-center bg-slate-800 px-5 py-2.5 rounded-xl font-bold hover:bg-slate-700 border border-slate-700 transition flex items-center gap-2 cursor-pointer shrink-0"
+            type="button"
+            onClick={() => navigate("/admin/dashboard?tab=allJobs")}
+            className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors cursor-pointer w-fit"
           >
-            Back to Dashboard
+            Dashboard
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* --- LEFT SIDEBAR: QUICK STATS & ACTIONS --- */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Master Action Block */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm sticky top-6">
-              {job.status === "pending_approval" ? (
-                <>
-                  <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4">
-                    Final Decision
-                  </h2>
-                  <div className="flex flex-col gap-3">
-                    <button
-                      onClick={() => handleStatusChange("active")}
-                      disabled={actionLoading}
-                      className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 disabled:opacity-50 transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-100"
-                    >
-                      <CheckCircle size={18} /> Approve & Publish
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange("rejected")}
-                      disabled={actionLoading}
-                      className="w-full bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50 py-3 rounded-xl font-bold hover:bg-rose-100 dark:hover:bg-rose-900/60 transition flex items-center justify-center gap-2"
-                    >
-                      <XCircle size={18} /> Reject Job
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange("hidden")}
-                      disabled={actionLoading}
-                      className="w-full mt-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center gap-2"
-                    >
-                      <EyeOff size={18} /> Hide Job
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4">
-                    Update Status
-                  </h2>
-                  <div className="flex flex-col gap-3">
-                    <select
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={job.status}
-                      onChange={(e) => handleStatusChange(e.target.value, true)}
-                      disabled={actionLoading}
-                    >
-                      <option value="active">Active (Published)</option>
-                      <option value="inactive">Inactive</option>
-                      <option value="hidden">Hidden</option>
-                      <option value="pending_approval">Pending Approval</option>
-                      <option value="rejected">Rejected</option>
-                      <option value="closed">Closed</option>
-                    </select>
-                    {actionLoading && <p className="text-xs text-slate-400 text-center animate-pulse">Updating status...</p>}
-                  </div>
-                </>
-              )}
+        {/* Executive Header Banner */}
+        <div className="p-6 sm:p-7 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2.5 mb-2">
+              <span
+                className={`px-2.5 py-0.5 rounded-md font-mono font-bold text-[10px] uppercase tracking-wider ${
+                  job.status === "active"
+                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                    : job.status === "pending_approval" || job.status === "pending"
+                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                    : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                }`}
+              >
+                {job.status.replace("_", " ")}
+              </span>
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)]">
+                Job ID: {job._id}
+              </span>
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)]">
+                • {job.industry}
+              </span>
             </div>
 
-            {/* Core Details Card */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-              <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">
-                Core Details
-              </h2>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold font-display tracking-tight text-[var(--theme-text)]">
+              {job.title}
+            </h1>
 
-              <DetailItem icon={<Briefcase />} label="Work Mode & Type">
-                {renderArray(job.jobType)} • {renderArray(job.mode)}
-              </DetailItem>
-
-              <DetailItem icon={<DollarSign />} label="Salary">
-                {job.salaryMin === 0 && job.salaryMax === 0
-                  ? "Unpaid / Volunteer"
-                  : `${job.salaryCurrency} ${job.salaryMin?.toLocaleString()} - ${job.salaryMax?.toLocaleString()}`}{" "}
-                / {job.salaryFrequency}
-              </DetailItem>
-
-              <DetailItem icon={<MapPin />} label="Location">
-                {job.location?.address || "Remote"}{" "}
-                {job.pinCode ? `(${job.pinCode})` : ""}
-              </DetailItem>
-
-              <DetailItem icon={<Users />} label="Openings">
-                {job.noOfPeopleRequired} Position(s)
-              </DetailItem>
+            <div className="flex flex-wrap items-center text-xs font-mono text-[var(--theme-text-muted)] gap-3 mt-2">
+              <span className="text-[var(--theme-text)] font-semibold">
+                <CompanyDisplay job={job} fallback={job.postedByCompany || "Company Confidential"} />
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <Clock size={12} /> Posted {formatDate(job.postedAt || job.createdAt)}
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <Users size={12} /> {job.applicants?.length || 0} Applicant(s)
+              </span>
             </div>
+          </div>
 
-            {/* Schedule & Deadlines Card */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-              <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">
-                Schedule & Deadlines
-              </h2>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {job.status !== "active" && (
+              <button
+                type="button"
+                onClick={() => handleStatusChange("active")}
+                disabled={actionLoading}
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
+              >
+                <CheckCircle2 size={14} />
+                <span>Approve & Publish</span>
+              </button>
+            )}
+            {job.status !== "rejected" && (
+              <button
+                type="button"
+                onClick={() => handleStatusChange("rejected")}
+                disabled={actionLoading}
+                className="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-mono text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <XCircle size={14} />
+                <span>Reject</span>
+              </button>
+            )}
+          </div>
+        </div>
 
-              <DetailItem icon={<CalendarDays />} label="Start / End Date">
-                {formatDate(job.startDate)} to{" "}
-                {job.isLongTerm ? "Long Term" : formatDate(job.endDate)}
-                {job.isFlexibleDuration && (
-                  <span className="ml-2 px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded">
-                    Flexible
-                  </span>
+        {/* 2-Column Split Workspace */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Column: Quick Parameters & Organization (4 cols) */}
+          <div className="lg:col-span-4 space-y-5">
+            {/* Decision Status Controller */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs space-y-3">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--theme-text-muted)] border-b border-[var(--theme-border)] pb-2.5">
+                Moderation Status
+              </h3>
+              <div className="space-y-2">
+                <select
+                  value={job.status}
+                  onChange={(e) => handleStatusChange(e.target.value, true)}
+                  disabled={actionLoading}
+                  className="w-full px-3 py-2 text-xs font-mono font-bold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                >
+                  <option value="active">Active (Published)</option>
+                  <option value="pending_approval">Pending Approval</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="hidden">Hidden</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="closed">Closed</option>
+                </select>
+                {actionLoading && (
+                  <p className="text-[10px] font-mono text-[var(--theme-text-muted)] animate-pulse text-center">
+                    Updating moderation state...
+                  </p>
                 )}
-              </DetailItem>
-
-              <DetailItem icon={<Clock />} label="Application Deadline">
-                {formatDate(job.applicationDeadline)}
-              </DetailItem>
-
-              <div className="pt-2">
-                <p className="text-xs text-slate-500 font-bold uppercase mb-1">
-                  Work Days
-                </p>
-                <p className="font-medium text-slate-900 dark:text-white text-sm">
-                  {job.workDaysPattern === "Custom"
-                    ? job.customWorkDaysDescription
-                    : job.workDaysPattern}
-                </p>
               </div>
+            </div>
 
-              <div className="pt-2">
-                <p className="text-xs text-slate-500 font-bold uppercase mb-2 flex items-center gap-2">
-                  Shifts
-                  {job.isFlexibleShifts && (
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded">
-                      Flexible
-                    </span>
-                  )}
-                </p>
-                <div className="space-y-2">
-                  {job.shifts && job.shifts.length > 0 ? (
-                    job.shifts.map((s, i) => (
+            {/* Core Parameters */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs space-y-4">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--theme-text-muted)] border-b border-[var(--theme-border)] pb-2.5">
+                Core Parameters
+              </h3>
+              <div className="space-y-3 text-xs font-mono">
+                <div className="flex items-center justify-between">
+                  <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
+                    <Briefcase size={13} /> Work Mode & Type
+                  </span>
+                  <span className="text-[var(--theme-text)] font-semibold text-right">
+                    {renderArray(job.jobType)} • {renderArray(job.mode)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
+                    <DollarSign size={13} /> Compensation
+                  </span>
+                  <span className="text-[var(--theme-text)] font-semibold text-right">
+                    {job.salaryMin === 0 && job.salaryMax === 0
+                      ? "Unpaid / Volunteer"
+                      : `${job.salaryCurrency || "INR"} ${job.salaryMin?.toLocaleString()} - ${job.salaryMax?.toLocaleString()} / ${job.salaryFrequency || "Month"}`}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
+                    <MapPin size={13} /> Location
+                  </span>
+                  <span className="text-[var(--theme-text)] text-right truncate max-w-xs">
+                    {locationStr} {job.pinCode ? `(${job.pinCode})` : ""}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
+                    <Users size={13} /> Required Openings
+                  </span>
+                  <span className="text-[var(--theme-text)]">
+                    {job.noOfPeopleRequired || 1} Position(s)
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
+                    <Layers size={13} /> Sector & Subdomain
+                  </span>
+                  <span className="text-[var(--theme-text)] text-right">
+                    {job.industry} / {job.subdomain || "General"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Schedule & Shifts */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs space-y-4">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--theme-text-muted)] border-b border-[var(--theme-border)] pb-2.5">
+                Schedule & Shifts
+              </h3>
+              <div className="space-y-3 text-xs font-mono">
+                <div className="flex items-center justify-between">
+                  <span className="text-[var(--theme-text-muted)]">Work Days Pattern</span>
+                  <span className="text-[var(--theme-text)]">
+                    {job.workDaysPattern === "Custom"
+                      ? job.customWorkDaysDescription || "Custom Pattern"
+                      : job.workDaysPattern || "Standard"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[var(--theme-text-muted)]">Application Deadline</span>
+                  <span className="text-[var(--theme-text)]">
+                    {formatDate(job.applicationDeadline)}
+                  </span>
+                </div>
+                {job.shifts && job.shifts.length > 0 && (
+                  <div className="pt-2 border-t border-[var(--theme-border)] space-y-1.5">
+                    <span className="text-[var(--theme-text-muted)] block text-[11px]">Configured Shifts</span>
+                    {job.shifts.map((s, idx) => (
                       <div
-                        key={i}
-                        className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 p-2 rounded-lg border border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200"
+                        key={idx}
+                        className="p-2 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-between"
                       >
-                        <span>{s.shiftName}</span>
-                        <span className="font-mono bg-white dark:bg-slate-900 px-2 py-1 rounded border border-slate-200 dark:border-slate-800">
+                        <span className="font-semibold text-[var(--theme-text)]">{s.shiftName}</span>
+                        <span className="text-[var(--theme-text-muted)]">
                           {s.startTime} - {s.endTime}
                         </span>
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-500">Not specified</p>
-                  )}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Employer Link */}
+            {job.postedBy && (
+              <div className="p-5 sm:p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs space-y-3">
+                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--theme-text-muted)] border-b border-[var(--theme-border)] pb-2.5 flex items-center gap-1.5">
+                  <Building2 size={14} /> Posting Organization
+                </h3>
+                <p className="text-sm font-bold text-[var(--theme-text)] font-display">
+                  {job.postedByCompany || job.postedByName || "Employer Profile"}
+                </p>
+                <Link
+                  to={`/admin/employer/${job.postedBy?._id || job.postedBy}`}
+                  className="w-full py-2 px-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-mono text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <span>Inspect Employer KYC Dossier</span>
+                  <ExternalLink size={12} />
+                </Link>
+              </div>
+            )}
           </div>
 
-          {/* --- RIGHT MAIN CONTENT --- */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Description & Responsibilities */}
-            <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
-              <div>
-                <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2 border-b pb-3">
-                  <FileText className="text-blue-600" /> Job Summary
-                </h2>
-                <div
-                  className="prose prose-sm max-w-none text-slate-600 dark:text-slate-300 prose-headings:text-slate-800 dark:text-white prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
-                  dangerouslySetInnerHTML={{ __html: job.jobSummary }}
-                />
-              </div>
-              
-              <div>
-                <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2 border-b pb-3">
-                  <Briefcase className="text-blue-600" /> Key Responsibilities
-                </h2>
-                <div
-                  className="prose prose-sm max-w-none text-slate-600 dark:text-slate-300 prose-headings:text-slate-800 dark:text-white prose-headings:font-bold prose-ul:list-disc prose-ul:pl-4 prose-li:my-1"
-                  dangerouslySetInnerHTML={{ __html: job.keyResponsibilities }}
-                />
+          {/* Right Column: Complete Job Content (8 cols) */}
+          <div className="lg:col-span-8 space-y-5">
+            {/* Job Summary */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs space-y-3">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--theme-text-muted)] border-b border-[var(--theme-border)] pb-2.5">
+                Executive Position Summary
+              </h3>
+              <div className="text-xs sm:text-sm text-[var(--theme-text)] whitespace-pre-wrap leading-relaxed font-sans opacity-90">
+                {job.jobSummary}
               </div>
             </div>
 
-            {/* Candidate Requirements */}
-            <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b pb-3">
-                <UserCircle2 className="text-indigo-600" /> Candidate
-                Demographics
-              </h2>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 mb-1">
-                    <GraduationCap size={12} /> Qualifications
-                  </p>
-                  <p className="text-sm font-bold text-slate-800 dark:text-white">
-                    {renderArray(job.qualifications)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 mb-1">
-                    <FileText size={12} /> Courses
-                  </p>
-                  <p className="text-sm font-bold text-slate-800 dark:text-white">
-                    {renderArray(job.courses)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 mb-1">
-                    <Languages size={12} /> Languages
-                  </p>
-                  <p className="text-sm font-bold text-slate-800 dark:text-white">
-                    {renderArray(job.languages)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 mb-1">
-                    <Users size={12} /> Gender
-                  </p>
-                  <p className="text-sm font-bold text-slate-800 dark:text-white">
-                    {job.genderPreference}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">
-                    Age Limit
-                  </p>
-                  <p className="text-sm font-bold text-slate-800 dark:text-white">
-                    {job.ageLimit?.isAny
-                      ? "Any Age"
-                      : job.ageLimit?.min
-                        ? `${job.ageLimit.min} to ${job.ageLimit.max} Years`
-                        : "Not specified"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">
-                    Experience (Relevant / Total)
-                  </p>
-                  <p className="text-sm font-bold text-slate-800 dark:text-white">
-                    {job.experience?.relevantExperience?.isAny
-                      ? "Any / Fresher"
-                      : `${job.experience?.relevantExperience?.min}-${job.experience?.relevantExperience?.max} Yrs`}
-                    <span className="text-slate-400 font-normal mx-2">/</span>
-                    {job.experience?.totalExperience?.isAny
-                      ? "Any / Fresher"
-                      : `${job.experience?.totalExperience?.min}-${job.experience?.totalExperience?.max} Yrs`}
-                  </p>
-                </div>
+            {/* Responsibilities */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs space-y-3">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--theme-text-muted)] border-b border-[var(--theme-border)] pb-2.5">
+                Key Responsibilities
+              </h3>
+              <div className="text-xs sm:text-sm text-[var(--theme-text)] whitespace-pre-wrap leading-relaxed font-sans opacity-90">
+                {job.keyResponsibilities}
               </div>
             </div>
 
-            {/* Arrays: Skills, Perks, Features, Questions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Skills */}
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">
-                  Skills Required
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {job.skillsRequired && job.skillsRequired.length > 0 ? (
-                    job.skillsRequired.map((skill, index) => (
-                      <span
-                        key={index}
-                        className="bg-slate-900 dark:bg-slate-800 text-white dark:text-slate-100 border border-transparent dark:border-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs shadow-sm"
-                      >
-                        {skill}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-slate-500 text-sm italic">
-                      None listed.
+            {/* Skills Required */}
+            {job.skillsRequired && job.skillsRequired.length > 0 && (
+              <div className="p-5 sm:p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs space-y-3">
+                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--theme-text-muted)] border-b border-[var(--theme-border)] pb-2.5">
+                  Required Competencies & Skills ({job.skillsRequired.length})
+                </h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {job.skillsRequired.map((s, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] text-xs font-mono"
+                    >
+                      {s}
                     </span>
-                  )}
+                  ))}
                 </div>
               </div>
+            )}
 
-              {/* Highlights */}
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                <h2 className="text-sm font-extrabold text-amber-500 uppercase tracking-widest mb-4 border-b border-amber-100 pb-2 flex items-center gap-2">
-                  <Zap size={14} /> Job Highlights
-                </h2>
-                <ul className="space-y-2">
-                  {job.jobFeatures &&
-                  job.jobFeatures.filter((f) => f.trim() !== "").length > 0 ? (
-                    job.jobFeatures
-                      .filter((f) => f.trim() !== "")
-                      .map((feature, index) => (
-                        <li
-                          key={index}
-                          className="text-sm font-bold text-amber-900 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 p-2 rounded-lg border border-amber-100 dark:border-amber-900/40"
-                        >
-                          {feature}
-                        </li>
-                      ))
-                  ) : (
-                    <span className="text-slate-500 text-sm italic">
-                      None listed.
-                    </span>
-                  )}
-                </ul>
-              </div>
-
-              {/* Perks */}
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                <h2 className="text-sm font-extrabold text-emerald-500 uppercase tracking-widest mb-4 border-b border-emerald-100 pb-2 flex items-center gap-2">
-                  <CheckCircle size={14} /> Perks & Incentives
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {job.incentives && job.incentives.length > 0 ? (
-                    job.incentives.map((inc, index) => (
-                      <span
-                        key={index}
-                        className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-bold px-3 py-1.5 rounded-lg text-xs border border-emerald-100 dark:border-emerald-900/40"
-                      >
-                        {inc}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-slate-500 text-sm italic">
-                      None listed.
-                    </span>
-                  )}
+            {/* Screening Questions */}
+            {job.screeningQuestions && job.screeningQuestions.length > 0 && (
+              <div className="p-5 sm:p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs space-y-3">
+                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--theme-text-muted)] border-b border-[var(--theme-border)] pb-2.5 flex items-center gap-1.5">
+                  <HelpCircle size={14} /> Screening Questions ({job.screeningQuestions.length})
+                </h3>
+                <div className="space-y-2">
+                  {job.screeningQuestions.map((q, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] flex items-start gap-2"
+                    >
+                      <span className="font-bold text-[var(--theme-text-muted)]">{idx + 1}.</span>
+                      <span>{q}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              {/* Screening Questions */}
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                <h2 className="text-sm font-extrabold text-purple-500 uppercase tracking-widest mb-4 border-b border-purple-100 pb-2 flex items-center gap-2">
-                  <HelpCircle size={14} /> Screening Questions
-                </h2>
-                <ul className="space-y-2">
-                  {job.screeningQuestions &&
-                  job.screeningQuestions.length > 0 ? (
-                    job.screeningQuestions.map((q, index) => (
-                      <li
-                        key={index}
-                        className="text-sm font-medium text-slate-700 dark:text-slate-300 bg-purple-50/50 dark:bg-purple-950/40 p-2 rounded-lg border border-purple-100 dark:border-purple-900/40"
-                      >
-                        <span className="font-bold text-purple-600 mr-2">
-                          Q{index + 1}.
-                        </span>{" "}
-                        {q}
-                      </li>
-                    ))
-                  ) : (
-                    <span className="text-slate-500 text-sm italic">
-                      No screening questions attached.
-                    </span>
-                  )}
-                </ul>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <AdminConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog((p) => ({ ...p, isOpen: false }))}
+        onConfirm={confirmDialog.action}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText={confirmDialog.confirmText}
+        variant={confirmDialog.variant}
+        loading={confirmDialog.loading}
+      />
     </div>
   );
 }
-
-// Helper Component for the Sidebar lists
-const DetailItem = ({ icon, label, children }) => (
-  <div>
-    <p className="text-xs text-slate-500 font-bold uppercase mb-1">{label}</p>
-    <p className="font-medium text-slate-900 dark:text-white flex items-start gap-2 mt-1 text-sm">
-      <span className="text-slate-400 mt-0.5 shrink-0">
-        {React.cloneElement(icon, { size: 14 })}
-      </span>
-      <span>{children}</span>
-    </p>
-  </div>
-);

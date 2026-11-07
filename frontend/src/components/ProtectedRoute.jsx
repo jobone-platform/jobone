@@ -9,10 +9,10 @@ export default function ProtectedRoute({ children }) {
   // 1. Wait for auth initialization before rendering or redirecting
   if (authStatus === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 text-sm">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground text-xs font-mono uppercase tracking-widest transition-colors duration-150">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <span>Verifying session...</span>
+          <div className="w-8 h-8 border-2 border-border border-t-foreground rounded-full animate-spin"></div>
+          <span className="text-muted-foreground">Verifying candidate session...</span>
         </div>
       </div>
     );

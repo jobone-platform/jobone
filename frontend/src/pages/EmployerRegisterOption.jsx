@@ -1,88 +1,88 @@
-import { API_BASE_URL } from "../config/api";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
-import { GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import login from "../assets/login.jpg";
+import { Building2, Mail, ArrowRight, User } from "lucide-react";
+import AuthLayout from "../components/AuthLayout";
+import GoogleAuthButton, { AuthDivider } from "../components/GoogleAuthButton";
 
+export default function EmployerRegisterOption() {
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
 
-import { useAuth } from "../routes/Context";
+  return (
+    <AuthLayout
+      title="Hire Verified Talent"
+      subtitle="Publish open requisitions and recruit pre-screened industry professionals"
+      badge="Employer ATS Gateway"
+      roleType="employer"
+    >
+      {/* Role Switch Tabs */}
+      <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] mb-6">
+        <button
+          type="button"
+          onClick={() => navigate("/register")}
+          className="flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors cursor-pointer"
+        >
+          <User className="w-3.5 h-3.5" />
+          <span>I'm a Candidate</span>
+        </button>
 
-const EmployerRegisterOption = () => {
-    const navigate = useNavigate();
-    const { loginEmployer } = useAuth();
-    const [error, setError] = React.useState("");
+        <button
+          type="button"
+          className="flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg bg-[var(--theme-surface)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-sm"
+        >
+          <Building2 className="w-3.5 h-3.5" />
+          <span>I'm an Employer</span>
+        </button>
+      </div>
 
-    const handleGoogleSuccess = async (credentialResponse) => {
-        try {
-            const { data } = await axios.post(`${API_BASE_URL}/employer/google-login`, {
-                token: credentialResponse.credential,
-            });
-
-            loginEmployer(data.token, data);
-            navigate("/employerdashboard");
-        } catch (err) {
-            console.error("Google Login Error:", err);
-            setError("Google Registration failed. Please try again.");
-        }
-    };
-
-    const handleEmailSignup = () => {
-        navigate("/employerregister"); // 👈 goes to your existing email registration page
-    };
-
-    return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-4" style={{ backgroundImage: `url(${login})` }}>
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
-                    Sign Up to Hire Talent
-                </h1>
-                <p className="text-gray-600 dark:text-slate-300 text-lg">
-                    Post job openings and hire verified candidates on <span className="font-semibold">JobOne</span>
-                </p>
-            </div>
-
-            <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 shadow-lg rounded-xl p-8 w-full max-w-md text-center">
-                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-                {/* Google Sign-up */}
-                <div className="mb-4 flex justify-center">
-                    <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={() => setError("Google Signup Failed")}
-                        text="signup_with"
-                        shape="rectangular"
-                        width="100%"
-                    />
-                </div>
-
-                {/* OR Divider */}
-                <button
-                    onClick={handleEmailSignup}
-                    className="w-full py-3 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 rounded-md hover:bg-gray-50 dark:hover:bg-slate-700 transition font-medium text-gray-700 dark:text-slate-100"
-                >
-                    Sign up with Email
-                </button>
-
-
-                {/* Terms */}
-                <p className="text-sm text-gray-500 mt-4">
-                    By signing up, you agree to our{" "}
-                    <Link to="/terms" className="text-blue-600 hover:underline">
-                        Terms and Conditions
-                    </Link>.
-                </p>
-
-                {/* Login link */}
-                <p className="mt-3 text-gray-600 text-sm">
-                    Already registered?{" "}
-                    <Link to="/login" className="text-blue-600 hover:underline">
-                        Login
-                    </Link>
-                </p>
-            </div>
+      {error && (
+        <div className="mb-5 p-3 rounded-xl bg-[var(--theme-danger-bg)] border border-[var(--theme-danger)]/30 text-xs text-rose-400 font-medium">
+          {error}
         </div>
-    );
-};
+      )}
 
-export default EmployerRegisterOption;
+      {/* Primary Email Registration CTA */}
+      <button
+        type="button"
+        onClick={() => navigate("/employerregister")}
+        className="w-full py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.005] active:scale-[0.99]"
+      >
+        <Mail className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+        <span>Continue to Employer Account Form</span>
+        <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+      </button>
+
+      {/* Divider */}
+      <AuthDivider text="or continue with" />
+
+      {/* Google Quick Registration */}
+      <div className="mb-6">
+        <GoogleAuthButton
+          role="employer"
+          mode="register"
+          onError={setError}
+        />
+      </div>
+
+      {/* Terms Notice */}
+      <p className="text-[11px] text-[var(--theme-text-subtle)] text-center mt-5 leading-relaxed">
+        By registering an employer account, you agree to our{" "}
+        <Link to="/contact?subject=terms" className="text-[var(--theme-text)] hover:underline font-medium">
+          Recruitment Terms
+        </Link>{" "}
+        and{" "}
+        <Link to="/contact?subject=privacy" className="text-[var(--theme-text)] hover:underline font-medium">
+          Privacy Policy
+        </Link>.
+      </p>
+
+      {/* Sign In Link */}
+      <div className="text-center text-xs text-[var(--theme-text-muted)] mt-6 pt-5 border-t border-[var(--theme-border)]">
+        Already have a recruiter account?{" "}
+        <Link to="/login?tab=employer" className="text-[var(--theme-text)] font-bold hover:underline">
+          Sign In here
+        </Link>
+      </div>
+    </AuthLayout>
+  );
+}

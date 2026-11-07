@@ -2,96 +2,269 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Semantic Theme Color Tokens */
+/* ==========================================================================
+   JOBONE CENTRALIZED DESIGN SYSTEM TOKENS (Monochromatic Black & Silver)
+   Default Theme: Dark (#050505)
+   Alternate Theme: Light (#F8FAFC)
+   ========================================================================== */
+
 :root {
+  /* Dark is the Default Visual Identity for JobOne */
+  --theme-bg: #050505;
+  --theme-surface: #111111;
+  --theme-surface-muted: #161616;
+  --theme-surface-elevated: #1c1c1c;
+  --theme-surface-hover: #222222;
+
+  --theme-border: rgba(255, 255, 255, 0.08);
+  --theme-border-muted: rgba(255, 255, 255, 0.04);
+  --theme-border-silver: rgba(255, 255, 255, 0.16);
+  --theme-border-focus: rgba(255, 255, 255, 0.4);
+
+  --theme-text: #ffffff;
+  --theme-text-muted: #a1a1aa;
+  --theme-text-subtle: #71717a;
+
+  --theme-card: #111111;
+  --theme-card-foreground: #ffffff;
+
+  --theme-input-bg: #151515;
+  --theme-input-border: rgba(255, 255, 255, 0.12);
+  --theme-input-text: #ffffff;
+  --theme-input-placeholder: #71717a;
+
+  --theme-accent-silver: #c0c0c0;
+  --theme-accent-silver-sheen: #e5e5e5;
+  --theme-accent-silver-dark: #888888;
+
+  --theme-success: #10b981;
+  --theme-success-bg: rgba(16, 185, 129, 0.1);
+  --theme-warning: #f59e0b;
+  --theme-warning-bg: rgba(245, 158, 11, 0.1);
+  --theme-danger: #ef4444;
+  --theme-danger-bg: rgba(239, 68, 68, 0.1);
+  --theme-info: #38bdf8;
+  --theme-info-bg: rgba(56, 189, 248, 0.1);
+
+  /* Shadows */
+  --theme-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --theme-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.7);
+  --theme-shadow-md: 0 12px 32px rgba(0, 0, 0, 0.85);
+  --theme-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.95);
+}
+
+html.dark,
+html[data-theme="dark"] {
+  --theme-bg: #050505;
+  --theme-surface: #111111;
+  --theme-surface-muted: #161616;
+  --theme-surface-elevated: #1c1c1c;
+  --theme-surface-hover: #222222;
+
+  --theme-border: rgba(255, 255, 255, 0.08);
+  --theme-border-muted: rgba(255, 255, 255, 0.04);
+  --theme-border-silver: rgba(255, 255, 255, 0.16);
+  --theme-border-focus: rgba(255, 255, 255, 0.4);
+
+  --theme-text: #ffffff;
+  --theme-text-muted: #a1a1aa;
+  --theme-text-subtle: #71717a;
+
+  --theme-card: #111111;
+  --theme-card-foreground: #ffffff;
+
+  --theme-input-bg: #151515;
+  --theme-input-border: rgba(255, 255, 255, 0.12);
+  --theme-input-text: #ffffff;
+  --theme-input-placeholder: #71717a;
+
+  --theme-accent-silver: #c0c0c0;
+  --theme-accent-silver-sheen: #e5e5e5;
+  --theme-accent-silver-dark: #888888;
+
+  --theme-success: #10b981;
+  --theme-success-bg: rgba(16, 185, 129, 0.1);
+  --theme-warning: #f59e0b;
+  --theme-warning-bg: rgba(245, 158, 11, 0.1);
+  --theme-danger: #ef4444;
+  --theme-danger-bg: rgba(239, 68, 68, 0.1);
+  --theme-info: #38bdf8;
+  --theme-info-bg: rgba(56, 189, 248, 0.1);
+}
+
+html.light,
+html[data-theme="light"] {
   --theme-bg: #f8fafc;
   --theme-surface: #ffffff;
   --theme-surface-muted: #f1f5f9;
   --theme-surface-elevated: #ffffff;
+  --theme-surface-hover: #f8fafc;
+
   --theme-border: #e2e8f0;
   --theme-border-muted: #f1f5f9;
+  --theme-border-silver: #cbd5e1;
+  --theme-border-focus: #0f172a;
+
   --theme-text: #0f172a;
   --theme-text-muted: #64748b;
   --theme-text-subtle: #94a3b8;
+
   --theme-card: #ffffff;
   --theme-card-foreground: #0f172a;
+
   --theme-input-bg: #ffffff;
-  --theme-input-border: #e2e8f0;
+  --theme-input-border: #cbd5e1;
   --theme-input-text: #0f172a;
   --theme-input-placeholder: #94a3b8;
-}
 
-html.dark {
-  --theme-bg: #020617;
-  --theme-surface: #0f172a;
-  --theme-surface-muted: #1e293b;
-  --theme-surface-elevated: #1e293b;
-  --theme-border: #334155;
-  --theme-border-muted: #1e293b;
-  --theme-text: #f8fafc;
-  --theme-text-muted: #94a3b8;
-  --theme-text-subtle: #64748b;
-  --theme-card: #0f172a;
-  --theme-card-foreground: #f8fafc;
-  --theme-input-bg: #1e293b;
-  --theme-input-border: #334155;
-  --theme-input-text: #f8fafc;
-  --theme-input-placeholder: #64748b;
+  --theme-accent-silver: #475569;
+  --theme-accent-silver-sheen: #1e293b;
+  --theme-accent-silver-dark: #334155;
+
+  --theme-success: #059669;
+  --theme-success-bg: rgba(5, 150, 105, 0.1);
+  --theme-warning: #d97706;
+  --theme-warning-bg: rgba(217, 119, 6, 0.1);
+  --theme-danger: #dc2626;
+  --theme-danger-bg: rgba(220, 38, 38, 0.1);
+  --theme-info: #0284c7;
+  --theme-info-bg: rgba(2, 132, 199, 0.1);
+
+  --theme-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --theme-shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --theme-shadow-md: 0 12px 32px rgba(15, 23, 42, 0.1);
+  --theme-shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.14);
 }
 
 html {
-    -webkit-text-size-adjust: 100%;
-    color-scheme: light;
-}
-
-html.dark {
-    color-scheme: dark;
-}
-
-body {
-  background-color: #f8fafc;
-  color: #0f172a;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-html.dark body {
-  background-color: #020617;
-  color: #f8fafc;
-}
-
-/* Global Dark Form Control Safety & Standards */
-html.dark select {
-  background-color: #1e293b !important;
-  color: #f8fafc !important;
-  border-color: #334155 !important;
+  -webkit-text-size-adjust: 100%;
   color-scheme: dark;
 }
 
-html.dark select option {
-  background-color: #0f172a !important;
-  color: #f8fafc !important;
+html.light {
+  color-scheme: light;
 }
 
-/* Prevent native stark white inputs in dark mode */
-html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="file"]):where(:not([class*="dark:bg-"]):not([class*="bg-transparent"])),
-html.dark textarea:where(:not([class*="dark:bg-"]):not([class*="bg-transparent"])) {
-  background-color: #1e293b;
-  color: #f8fafc;
-  border-color: #334155;
+body {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
 }
 
-html.dark input::placeholder,
-html.dark textarea::placeholder {
-  color: #94a3b8;
+/* Global Form Controls & Select Options */
+select {
+  background-color: var(--theme-card);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
 }
 
-/* Ensure transparent search and form inputs stay transparent in dark mode */
-html.dark input.bg-transparent,
-html.dark input[class*="bg-transparent"],
-html.dark input[class*="dark:bg-transparent"] {
-  background-color: transparent !important;
+select option {
+  background-color: var(--theme-surface);
+  color: var(--theme-text);
 }
 
+/* Ensure inputs respect design tokens */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="file"]):where(:not([class*="bg-transparent"])) {
+  background-color: var(--theme-input-bg);
+  color: var(--theme-input-text);
+  border-color: var(--theme-input-border);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--theme-input-placeholder);
+}
+
+/* Glass & Architectural Utility Classes */
+.floating-nav-glass {
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html.light .floating-nav-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.silver-shimmer {
+  background: linear-gradient(135deg, #c0c0c0 0%, #ffffff 50%, #888888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.silver-border {
+  border-color: var(--theme-border-silver);
+}
+
+/* Semantic Theme Bridge Utilities */
+.bg-surface {
+  background-color: var(--theme-surface);
+}
+.bg-surface-1 {
+  background-color: var(--theme-surface);
+}
+.bg-surface-2 {
+  background-color: var(--theme-surface-elevated);
+}
+.bg-surface-elevated {
+  background-color: var(--theme-surface-elevated);
+}
+.bg-surface-muted {
+  background-color: var(--theme-surface-muted);
+}
+.hover\:bg-surface-hover:hover {
+  background-color: var(--theme-surface-hover);
+}
+.hover\:bg-surface-elevated:hover {
+  background-color: var(--theme-surface-elevated);
+}
+.text-foreground {
+  color: var(--theme-text);
+}
+.text-muted-foreground {
+  color: var(--theme-text-muted);
+}
+.text-foreground-muted {
+  color: var(--theme-text-muted);
+}
+.border-border {
+  border-color: var(--theme-border);
+}
+.text-silver {
+  color: var(--theme-accent-silver);
+}
+.border-silver {
+  border-color: var(--theme-border-silver);
+}
+
+.obsidian-card {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+}
+
+.obsidian-card:hover {
+  border-color: var(--theme-border-silver);
+}
+
+/* Reduced Motion Support (WCAG 2.2 AA) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Global Ticker Animation */
 @keyframes live-ticker {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
@@ -101,24 +274,7 @@ html.dark input[class*="dark:bg-transparent"] {
   animation: live-ticker 40s linear infinite;
 }
 
-/* Premium Dark Liquid Glass Effect for Mobile Bottom Nav */
-.liquid-glass {
-  background: rgba(15, 23, 42, 0.3); /* highly transparent slate-900 */
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.3),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px) saturate(150%);
-  -webkit-backdrop-filter: blur(4px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* ==========================================================================
-   GLOBAL SCROLLBAR ERADICATION (Universal Across All Browsers & Containers)
-   Completely hides all scrollbar tracks & thumbs while preserving 100% smooth scrolling.
-   ========================================================================== */
-
-/* Modern Standard (Firefox 64+) & Legacy Microsoft Browsers */
+/* Scrollbar Eradication (Clean Architectural Lines Across All Browsers) */
 *,
 *::before,
 *::after,
@@ -129,7 +285,6 @@ body,
   -ms-overflow-style: none !important;
 }
 
-/* WebKit / Chromium Browsers (Chrome, Edge, Safari, Brave, Opera) */
 *::-webkit-scrollbar,
 *::-webkit-scrollbar-track,
 *::-webkit-scrollbar-thumb,
@@ -146,7 +301,6 @@ body::-webkit-scrollbar,
   visibility: hidden !important;
 }
 
-/* Utility and Component Class Overrides */
 .custom-scrollbar,
 .no-scrollbar,
 .hide-scrollbar,
@@ -158,9 +312,7 @@ body::-webkit-scrollbar,
 .custom-scrollbar::-webkit-scrollbar,
 .no-scrollbar::-webkit-scrollbar,
 .hide-scrollbar::-webkit-scrollbar,
-.scrollbar-none::-webkit-scrollbar,
-.custom-scrollbar::-webkit-scrollbar-track,
-.custom-scrollbar::-webkit-scrollbar-thumb {
+.scrollbar-none::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
@@ -169,16 +321,7 @@ body::-webkit-scrollbar,
   visibility: hidden !important;
 }
 
-/* ==========================================================================
-   JobOne Admin KPI Responsive Grid
-   Equal-width, equal-height, adaptive multi-column layout with zero overflow
-   Breakpoints:
-   - <480px: 1 column
-   - 480px–991px (Tablet): 2 columns
-   - 992px–1199px (Laptop): 3 columns
-   - 1200px–1599px (Desktop): 4 columns
-   - ≥1600px (Large Desktop): 7 columns
-   ========================================================================== */
+/* JobOne Admin KPI Responsive Grid */
 .admin-kpi-grid {
   display: grid;
   width: 100%;

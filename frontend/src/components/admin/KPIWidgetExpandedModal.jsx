@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   X,
   TrendingUp,
-  TrendingDown,
   ArrowRight,
   Download,
   Calendar,
@@ -40,7 +39,6 @@ export default function KPIWidgetExpandedModal({
     title,
     primaryValue,
     icon: Icon,
-    color,
     badge,
     badgeVariant,
     trendText,
@@ -60,39 +58,37 @@ export default function KPIWidgetExpandedModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="widget-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-xs animate-in fade-in duration-150 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-150 text-slate-900 dark:text-slate-100 flex flex-col max-h-[90vh]"
+        className="w-full max-w-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-150 text-[var(--theme-text)] flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ─── Modal Header ────────────────────────────────────────── */}
-        <div className="p-5 sm:p-7 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4 shrink-0 bg-slate-50/50 dark:bg-slate-950/40">
+        <div className="p-5 sm:p-6 border-b border-[var(--theme-border)] flex items-start justify-between gap-4 shrink-0 bg-[var(--theme-surface-elevated)]/40">
           <div className="flex items-start gap-4">
-            <div
-              className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xs ${widget.iconBg} ${widget.iconColor}`}
-            >
-              <Icon size={24} />
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+              <Icon size={22} />
             </div>
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
-                <h2 id="widget-modal-title" className="text-xl sm:text-2xl font-black">
-                  {title} Analytics & Details
+                <h2 id="widget-modal-title" className="text-xl sm:text-2xl font-display font-extrabold tracking-tight">
+                  {title} Analytics & Metrics
                 </h2>
                 {badge && (
                   <span
-                    className={`text-xs font-black px-2.5 py-0.5 rounded-full ${
+                    className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full ${
                       badgeVariant === "warning"
-                        ? "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300"
-                        : "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300"
+                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                        : "bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border-silver)]"
                     }`}
                   >
                     {badge}
                   </span>
                 )}
               </div>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-xs text-[var(--theme-text-muted)] mt-1">
                 Real-time platform insights and operational breakdown
               </p>
             </div>
@@ -102,33 +98,33 @@ export default function KPIWidgetExpandedModal({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+            className="p-1.5 rounded-xl text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition-colors cursor-pointer shrink-0"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* ─── Modal Scrollable Body ───────────────────────────────── */}
-        <div className="p-5 sm:p-7 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
+        <div className="p-5 sm:p-6 space-y-6 overflow-y-auto flex-1">
           {/* Top Metric & Period Selector */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[var(--theme-border)]">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Primary Metric
+              <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--theme-text-subtle)] font-bold">
+                Live Data Value
               </p>
               <div className="flex items-baseline gap-3 mt-1">
-                <span className="text-4xl sm:text-5xl font-black tracking-tight">
+                <span className="text-3xl sm:text-4xl font-display font-extrabold tracking-tight">
                   {typeof primaryValue === "number" ? primaryValue.toLocaleString() : primaryValue}
                 </span>
                 {trendText && (
                   <span
-                    className={`inline-flex items-center gap-1 text-xs sm:text-sm font-bold ${
+                    className={`inline-flex items-center gap-1 text-xs font-mono font-bold ${
                       isPositiveTrend
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-slate-500 dark:text-slate-400"
+                        ? "text-emerald-400"
+                        : "text-[var(--theme-text-muted)]"
                     }`}
                   >
-                    {isPositiveTrend ? <TrendingUp size={15} /> : null}
+                    {isPositiveTrend ? <TrendingUp size={14} /> : null}
                     <span>{trendText}</span>
                   </span>
                 )}
@@ -136,56 +132,61 @@ export default function KPIWidgetExpandedModal({
             </div>
 
             {/* Time Period Filter Tabs */}
-            <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800 self-start sm:self-auto">
+            <div className="inline-flex p-1 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] self-start sm:self-auto text-xs font-mono">
               <button
                 type="button"
                 onClick={() => setPeriod("7d")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                   period === "7d"
-                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                    : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                 }`}
               >
-                Last 7 Days
+                7 Days
               </button>
               <button
                 type="button"
                 onClick={() => setPeriod("30d")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                   period === "30d"
-                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                    : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                 }`}
               >
-                Last 30 Days
+                4 Weeks
               </button>
             </div>
           </div>
 
-          {/* Interactive Activity Trend Chart */}
+          {/* Historical Trend Bar Graph */}
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                <Calendar size={15} className="text-slate-400" />
-                <span>Activity Trend ({period === "7d" ? "Daily last 7 days" : "4-week breakdown"})</span>
-              </h4>
-              <span className="text-xs text-slate-400 font-medium">Peak: {maxVal} events</span>
+            <div className="flex items-center justify-between mb-3 text-xs">
+              <span className="font-mono uppercase tracking-wider text-[var(--theme-text-subtle)] font-semibold text-[11px]">
+                {period === "7d" ? "Daily Distribution (Last 7 Days)" : "Weekly Aggregation (Last 30 Days)"}
+              </span>
+              <span className="text-[11px] font-mono text-[var(--theme-text-muted)]">Peak: {maxVal} events</span>
             </div>
 
-            <div className="h-44 sm:h-52 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 flex items-end justify-between gap-2 relative">
+            <div className="h-32 p-4 rounded-2xl bg-[var(--theme-surface-elevated)]/60 border border-[var(--theme-border)] flex items-end justify-between gap-2">
               {chartData.map((val, idx) => {
-                const heightPct = Math.round((val / maxVal) * 100);
+                const heightPct = Math.max((val / maxVal) * 100, 8);
+                const label =
+                  period === "7d"
+                    ? ["6d ago", "5d ago", "4d ago", "3d ago", "2d ago", "Yday", "Today"][idx] || `D${idx}`
+                    : `W${idx + 1}`;
                 return (
-                  <div key={idx} className="flex-1 flex flex-col items-center h-full justify-end group relative">
-                    <span className="opacity-0 group-hover:opacity-100 text-[10px] font-bold text-slate-700 dark:text-slate-200 transition-opacity mb-1">
+                  <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                    <span className="text-[10px] font-mono text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text)] transition-colors opacity-0 group-hover:opacity-100 font-bold">
                       {val}
                     </span>
-                    <div
-                      style={{ height: `${Math.max(heightPct, 8)}%` }}
-                      className="w-full max-w-[28px] rounded-t-lg bg-slate-900 dark:bg-white group-hover:bg-indigo-600 dark:group-hover:bg-indigo-400 transition-all duration-200 shadow-xs"
-                    />
-                    <span className="text-[10px] text-slate-400 mt-2 font-semibold">
-                      {period === "7d" ? `D-${6 - idx}` : `W${idx + 1}`}
+                    <div className="w-full bg-[var(--theme-surface)] rounded-md h-full flex items-end overflow-hidden p-0.5 border border-[var(--theme-border)]">
+                      <div
+                        style={{ height: `${heightPct}%` }}
+                        className="w-full rounded-sm bg-[var(--theme-accent-silver)] group-hover:bg-[var(--theme-text)] transition-all duration-300"
+                      />
+                    </div>
+                    <span className="text-[9px] font-mono text-[var(--theme-text-subtle)] truncate w-full text-center">
+                      {label}
                     </span>
                   </div>
                 );
@@ -193,26 +194,24 @@ export default function KPIWidgetExpandedModal({
             </div>
           </div>
 
-          {/* Breakdown KPI Metrics Grid */}
-          {breakdown.length > 0 && (
+          {/* Operational Breakdown Items */}
+          {breakdown && breakdown.length > 0 && (
             <div>
-              <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
-                Distribution & Segment Statistics
-              </h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-subtle)] font-bold mb-3">
+                Operational Breakdown
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {breakdown.map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800"
+                    className="p-3.5 rounded-xl bg-[var(--theme-surface-elevated)]/40 border border-[var(--theme-border)]"
                   >
-                    <p className="text-xs font-semibold text-slate-400 truncate">{item.label}</p>
-                    <p className="text-xl font-black mt-1 text-slate-900 dark:text-white">
+                    <p className="text-xs text-[var(--theme-text-muted)]">{item.label}</p>
+                    <p className="text-xl font-display font-extrabold text-[var(--theme-text)] mt-0.5">
                       {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
                     </p>
                     {item.helper && (
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                        {item.helper}
-                      </p>
+                      <p className="text-[10px] font-mono text-[var(--theme-text-subtle)] mt-1">{item.helper}</p>
                     )}
                   </div>
                 ))}
@@ -220,52 +219,61 @@ export default function KPIWidgetExpandedModal({
             </div>
           )}
 
-          {/* Pending Items Fast-Action List (When Viewing Pending Widget) */}
-          {pendingItems.length > 0 && (
+          {/* Pending Action Items (for Pending queue widget) */}
+          {pendingItems && pendingItems.length > 0 && (
             <div>
-              <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center justify-between">
-                <span>Immediate Pending Review Queue</span>
-                <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">
-                  {pendingItems.length} awaiting decision
-                </span>
-              </h4>
-              <div className="space-y-2.5">
-                {pendingItems.slice(0, 4).map((item) => (
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-subtle)] font-bold">
+                  Queue Preview ({pendingItems.length} items)
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNavigate(targetTab);
+                    onClose();
+                  }}
+                  className="text-xs font-bold text-[var(--theme-accent-silver)] hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Open Full Queue</span>
+                  <ExternalLink size={12} />
+                </button>
+              </div>
+
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {pendingItems.slice(0, 5).map((item) => (
                   <div
                     key={`${item.type}-${item.id}`}
-                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3"
+                    className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-between gap-3 text-xs"
                   >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                        {item.title}
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                        {item.secondary} • {item.type === "job" ? "Job Posting" : "Employer Account"}
+                    <div className="min-w-0">
+                      <p className="font-bold text-[var(--theme-text)] truncate">{item.title}</p>
+                      <p className="text-[11px] text-[var(--theme-text-muted)] truncate font-mono">
+                        {item.secondary} • {item.date ? new Date(item.date).toLocaleDateString() : "Queued"}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
                       <button
                         type="button"
-                        onClick={() => {
-                          if (item.type === "job" && onReviewJob) onReviewJob(item.id, "active");
-                          else if (onReviewEmployer) onReviewEmployer(item.id, "approved");
-                        }}
-                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-colors cursor-pointer"
+                        onClick={() =>
+                          item.type === "job"
+                            ? onReviewJob && onReviewJob(item.id, "active")
+                            : onReviewEmployer && onReviewEmployer(item.id, "approved")
+                        }
+                        className="px-2.5 py-1 rounded-lg bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity"
                       >
-                        <Check size={13} />
-                        <span>Approve</span>
+                        Approve
                       </button>
                       <button
                         type="button"
-                        onClick={() => {
-                          if (item.type === "job" && onReviewJob) onReviewJob(item.id, "rejected");
-                          else if (onReviewEmployer) onReviewEmployer(item.id, "rejected");
-                        }}
-                        className="px-3 py-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/80 dark:hover:bg-rose-900 text-rose-700 dark:text-rose-300 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                        onClick={() =>
+                          item.type === "job"
+                            ? onReviewJob && onReviewJob(item.id, "rejected")
+                            : onReviewEmployer && onReviewEmployer(item.id, "rejected")
+                        }
+                        className="px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 text-xs font-bold transition-colors"
                       >
-                        <XCircle size={13} />
-                        <span>Reject</span>
+                        Reject
                       </button>
                     </div>
                   </div>
@@ -275,37 +283,31 @@ export default function KPIWidgetExpandedModal({
           )}
         </div>
 
-        {/* ─── Modal Footer Actions ─────────────────────────────────── */}
-        <div className="p-4 sm:p-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-950/40 shrink-0">
-          <p className="text-xs text-slate-400 font-medium">
-            Data sourced live from JobOne production database.
-          </p>
+        {/* ─── Modal Footer ────────────────────────────────────────── */}
+        <div className="p-4 border-t border-[var(--theme-border)] bg-[var(--theme-surface-muted)]/50 flex items-center justify-between gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-xs font-bold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] border border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)] transition-colors cursor-pointer"
+          >
+            Close
+          </button>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          {targetTab && (
             <button
               type="button"
-              onClick={onClose}
-              className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              onClick={() => {
+                onNavigate(targetTab);
+                onClose();
+              }}
+              className="px-5 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity inline-flex items-center gap-2 cursor-pointer shadow-sm"
             >
-              Close
+              <span>Explore Section in Table</span>
+              <ArrowRight size={13} />
             </button>
-            {targetTab && onNavigate && (
-              <button
-                type="button"
-                onClick={() => {
-                  onNavigate(targetTab);
-                  onClose();
-                }}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold text-xs hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>Go to {title} Management</span>
-                <ArrowRight size={14} />
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
-

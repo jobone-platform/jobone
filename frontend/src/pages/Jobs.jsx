@@ -1,6 +1,5 @@
-import { API_BASE_URL } from "../config/api";
 import React, { useState, useEffect, useMemo } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,27 +11,18 @@ import {
   Filter,
   X,
   Building2,
-  Target,
   Bookmark,
   Sparkles,
   SlidersHorizontal,
   ArrowUpDown,
-  Check,
   CheckCircle2,
-  Calendar,
-  Globe,
-  Laptop,
   LayoutGrid,
   List,
   RotateCcw,
-  Zap,
   ArrowRight,
-  ExternalLink,
-  ChevronDown,
-  ChevronRight,
   ShieldCheck,
-  Layers,
 } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 import CompanyDisplay from "../components/CompanyDisplay";
 import JobDetailsModal from "../components/JobDetailsModal";
 
@@ -108,9 +98,9 @@ const POPULAR_SEARCH_TAGS = [
   "Backend",
   "Full Stack",
   "Design",
-  "Data",
-  "Sales",
+  "DevOps",
   "Finance",
+  "Data",
 ];
 
 export default function Jobs() {
@@ -133,7 +123,7 @@ export default function Jobs() {
     datePosted: "all", // "all" | "24h" | "7d" | "30d"
   });
 
-  // Search Bar Local Input State (allows typing before pressing Enter or clicking search)
+  // Local Search Bar State
   const [searchTitle, setSearchTitle] = useState(queryParams.get("title") || "");
   const [searchLocation, setSearchLocation] = useState(queryParams.get("location") || "");
 
@@ -171,7 +161,7 @@ export default function Jobs() {
   });
   const [sortBy, setSortBy] = useState("newest"); // "newest" | "salary_high" | "title_asc"
 
-  // Bookmarked Jobs State (synced with localStorage key 'jobone_saved_jobs')
+  // Bookmarked Jobs State
   const [savedJobIds, setSavedJobIds] = useState(() => {
     try {
       const saved = localStorage.getItem("jobone_saved_jobs");
@@ -181,7 +171,6 @@ export default function Jobs() {
     }
   });
 
-  // Toggle Bookmark Handler
   const toggleBookmark = (e, jobId) => {
     e.stopPropagation();
     setSavedJobIds((prev) => {
@@ -201,7 +190,9 @@ export default function Jobs() {
     setViewMode(mode);
     try {
       localStorage.setItem("jobone_jobs_view_mode", mode);
-    } catch {}
+    } catch (_err) {
+      /* ignore */
+    }
   };
 
   // Fetch Jobs from backend API
@@ -224,7 +215,7 @@ export default function Jobs() {
               (j) =>
                 j.status !== "inactive" &&
                 j.status !== "closed" &&
-                j.status !== "deadline passed",
+                j.status !== "deadline passed"
             )
           : [];
         setAllJobs(activeJobs);
@@ -280,6 +271,27 @@ export default function Jobs() {
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
     if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
     return `${Math.floor(diff / 604800)}w ago`;
+  };
+
+  const formatSalary = (job) => {
+    const sMin = Number(job.salaryMin) || Number(job.salaryAmount) || 0;
+    const sMax = Number(job.salaryMax) || Number(job.salaryAmount) || 0;
+
+    if (sMin === 0 && sMax === 0) return "Competitive";
+
+    const toK = (val) => {
+      if (val >= 10000000) return `${(val / 10000000).toFixed(1).replace(/\.0$/, "")}Cr`;
+      if (val >= 100000) return `${(val / 100000).toFixed(1).replace(/\.0$/, "")}L`;
+      if (val >= 1000) return `${Math.round(val / 1000)}k`;
+      return val.toLocaleString();
+    };
+
+    if (sMin > 0 && sMax > 0 && sMin !== sMax) {
+      return `₹${toK(sMin)} - ₹${toK(sMax)}`;
+    }
+    if (sMin > 0) return `₹${toK(sMin)}`;
+    if (sMax > 0) return `₹${toK(sMax)}`;
+    return "Competitive";
   };
 
   // Execute Search from Hero Bar
@@ -438,55 +450,57 @@ export default function Jobs() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans pb-24 selection:bg-blue-600 selection:text-white transition-colors duration-150">
+    <div className="min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] font-sans pb-24 transition-colors duration-150">
       
       {/* ─── 1. HERO COMMAND SEARCH BANNER ───────────────────────────────── */}
-      <div className="relative pt-28 sm:pt-32 pb-12 sm:pb-16 bg-gradient-to-b from-blue-50/70 via-indigo-50/30 to-transparent dark:from-slate-900/80 dark:via-slate-950 dark:to-slate-950 border-b border-slate-200/70 dark:border-slate-800/80 overflow-hidden">
-        {/* Subtle decorative glow spots */}
-        <div className="absolute top-10 left-1/4 w-80 h-80 bg-blue-500/10 dark:bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-10 right-1/4 w-80 h-80 bg-indigo-500/10 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 bg-[var(--theme-surface)] border-b border-[var(--theme-border)] overflow-hidden">
+        {/* Subtle Ambient Light Glows */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/[0.015] rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/[0.01] rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Header Title & Badges */}
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs text-xs font-bold text-slate-700 dark:text-slate-300 mb-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text-muted)] mb-4 shadow-sm">
               <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span>Verified Job Listings & Direct Hiring</span>
-              <span className="text-slate-300 dark:text-slate-700">•</span>
-              <span className="text-blue-600 dark:text-blue-400">{allJobs.length} Live Openings</span>
+              <span className="font-semibold text-[var(--theme-text)]">Verified Enterprise Requisitions</span>
+              <span className="text-[var(--theme-text-subtle)]">•</span>
+              <span className="text-[var(--theme-text-muted)] font-mono">{allJobs.length} Live Openings</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-              Discover Opportunities Built for Your Ambition
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[var(--theme-text)] tracking-tight leading-tight">
+              Discover Positions Engineered for Impact
             </h1>
-            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-3 font-medium">
-              Explore thousands of verified roles across top technology, finance, engineering, and creative enterprises.
+            <p className="text-sm sm:text-base text-[var(--theme-text-muted)] mt-3 font-normal max-w-xl mx-auto leading-relaxed">
+              Direct recruitment listings from verified enterprises. Authentic compensation metrics, transparent pipelines, and one-click applications.
             </p>
           </div>
 
-          {/* Unified Hero Command Search Box */}
+          {/* Unified Architectural Search Box */}
           <form
             onSubmit={handleExecuteSearch}
-            className="max-w-5xl mx-auto bg-white dark:bg-slate-900 rounded-3xl p-2.5 sm:p-3 shadow-xl shadow-slate-200/50 dark:shadow-slate-950/80 border border-slate-200/90 dark:border-slate-800 transition-all flex flex-col md:flex-row items-stretch gap-2"
+            className="max-w-4xl mx-auto bg-[var(--theme-surface-elevated)] rounded-2xl md:rounded-full p-2.5 border border-[var(--theme-border-silver)] shadow-2xl flex flex-col md:flex-row items-stretch gap-2 transition-all focus-within:border-[var(--theme-border-focus)]"
           >
             {/* Input: Job title or keywords */}
-            <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-transparent focus-within:border-blue-500 focus-within:bg-white dark:focus-within:bg-slate-800 transition-all">
-              <Search className="text-blue-600 dark:text-blue-400 shrink-0" size={18} />
+            <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl md:rounded-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)]">
+              <Search className="text-[var(--theme-accent-silver)] shrink-0" size={17} />
               <input
                 type="text"
-                placeholder="Job title, skills, or company..."
+                placeholder="Job title, technical skills, or company..."
                 value={searchTitle}
                 onChange={(e) => setSearchTitle(e.target.value)}
-                className="w-full bg-transparent text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 outline-none"
+                aria-label="Job title or keywords"
+                className="w-full bg-transparent text-sm font-medium text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] outline-none"
               />
               {searchTitle && (
                 <button
                   type="button"
                   onClick={() => setSearchTitle("")}
-                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="p-1 text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)] cursor-pointer"
+                  aria-label="Clear title search"
                 >
                   <X size={14} />
                 </button>
@@ -494,20 +508,22 @@ export default function Jobs() {
             </div>
 
             {/* Input: Location */}
-            <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-transparent focus-within:border-blue-500 focus-within:bg-white dark:focus-within:bg-slate-800 transition-all">
-              <MapPin className="text-rose-500 shrink-0" size={18} />
+            <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl md:rounded-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)]">
+              <MapPin className="text-[var(--theme-accent-silver)] shrink-0" size={17} />
               <input
                 type="text"
-                placeholder="City, state, or 'Remote'..."
+                placeholder="City, region, or 'Remote'..."
                 value={searchLocation}
                 onChange={(e) => setSearchLocation(e.target.value)}
-                className="w-full bg-transparent text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 outline-none"
+                aria-label="Location"
+                className="w-full bg-transparent text-sm font-medium text-[var(--theme-text)] placeholder-[var(--theme-input-placeholder)] outline-none"
               />
               {searchLocation && (
                 <button
                   type="button"
                   onClick={() => setSearchLocation("")}
-                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="p-1 text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)] cursor-pointer"
+                  aria-label="Clear location search"
                 >
                   <X size={14} />
                 </button>
@@ -517,17 +533,17 @@ export default function Jobs() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="px-7 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0 shrink-0"
+              className="px-7 py-3 rounded-xl md:rounded-full bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
             >
-              <Search size={16} />
-              <span>Find Jobs</span>
+              <Search size={15} className="text-[var(--theme-accent-silver)]" />
+              <span>Search</span>
             </button>
           </form>
 
           {/* Popular Tag Quick Search Chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-4 max-w-4xl mx-auto text-xs font-semibold text-slate-500 dark:text-slate-400">
-            <span className="text-slate-400 dark:text-slate-500 flex items-center gap-1">
-              <Sparkles size={13} className="text-amber-500" />
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-4 max-w-3xl mx-auto text-xs text-[var(--theme-text-subtle)]">
+            <span className="font-semibold flex items-center gap-1 text-[var(--theme-text-muted)]">
+              <Sparkles size={13} className="text-[var(--theme-accent-silver)]" />
               <span>Popular searches:</span>
             </span>
             {POPULAR_SEARCH_TAGS.map((tag) => (
@@ -535,7 +551,7 @@ export default function Jobs() {
                 key={tag}
                 type="button"
                 onClick={() => handleTagClick(tag)}
-                className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-pointer shadow-2xs"
+                className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors cursor-pointer text-xs font-medium"
               >
                 {tag}
               </button>
@@ -548,18 +564,18 @@ export default function Jobs() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         
         {/* Top Control Bar: Results Count, Active Filters, Sorting & View Toggle */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-200/80 dark:border-slate-800">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-[var(--theme-border)]">
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                All Available Roles
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-xl sm:text-2xl font-black text-[var(--theme-text)] tracking-tight">
+                Available Positions
               </h2>
-              <span className="px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 text-xs font-extrabold">
+              <span className="px-2.5 py-0.5 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] text-xs font-bold font-mono">
                 {filteredJobs.length}
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Showing matching postings filtered by your preferences
+            <p className="text-xs sm:text-sm text-[var(--theme-text-muted)] mt-0.5 font-normal">
+              Requisitions filtered by your active preferences
             </p>
           </div>
 
@@ -568,57 +584,57 @@ export default function Jobs() {
             <button
               type="button"
               onClick={() => setShowMobileFilters(true)}
-              className="lg:hidden px-4 py-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-2 shadow-xs cursor-pointer"
+              className="lg:hidden px-4 py-2 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[var(--theme-text)] text-xs font-bold flex items-center gap-2 shadow-xs cursor-pointer"
             >
-              <Filter size={14} className="text-blue-600" />
+              <Filter size={14} className="text-[var(--theme-accent-silver)]" />
               <span>Filters</span>
               {activeFiltersList.length > 0 && (
-                <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">
+                <span className="w-5 h-5 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-[10px] flex items-center justify-center font-bold">
                   {activeFiltersList.length}
                 </span>
               )}
             </button>
 
             {/* Sort Dropdown */}
-            <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 px-3 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-              <ArrowUpDown size={13} className="text-slate-400" />
-              <span className="text-xs font-bold text-slate-400 hidden sm:inline">Sort:</span>
+            <div className="flex items-center gap-1.5 bg-[var(--theme-surface)] px-3 py-1.5 rounded-xl border border-[var(--theme-border)] shadow-xs">
+              <ArrowUpDown size={13} className="text-[var(--theme-text-subtle)]" />
+              <span className="text-xs font-semibold text-[var(--theme-text-muted)] hidden sm:inline">Sort:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-transparent text-xs font-bold text-slate-700 dark:text-slate-200 outline-none cursor-pointer"
+                className="bg-transparent text-xs font-bold text-[var(--theme-text)] outline-none cursor-pointer"
               >
-                <option value="newest">Most Recent</option>
-                <option value="salary_high">Highest Salary</option>
-                <option value="title_asc">Title (A-Z)</option>
+                <option value="newest" className="bg-[var(--theme-surface)] text-[var(--theme-text)]">Most Recent</option>
+                <option value="salary_high" className="bg-[var(--theme-surface)] text-[var(--theme-text)]">Highest Salary</option>
+                <option value="title_asc" className="bg-[var(--theme-surface)] text-[var(--theme-text)]">Title (A-Z)</option>
               </select>
             </div>
 
             {/* View Mode Toggle (List vs Grid) */}
-            <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
+            <div className="flex items-center bg-[var(--theme-surface)] p-1 rounded-xl border border-[var(--theme-border)]">
               <button
                 type="button"
                 onClick={() => handleToggleViewMode("list")}
                 title="List View"
-                className={`p-1.5 rounded-xl transition-all cursor-pointer ${
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                   viewMode === "list"
-                    ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
-                    : "text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-xs"
+                    : "text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)]"
                 }`}
               >
-                <List size={16} />
+                <List size={15} />
               </button>
               <button
                 type="button"
                 onClick={() => handleToggleViewMode("grid")}
                 title="Grid View"
-                className={`p-1.5 rounded-xl transition-all cursor-pointer ${
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                   viewMode === "grid"
-                    ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
-                    : "text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-xs"
+                    : "text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)]"
                 }`}
               >
-                <LayoutGrid size={16} />
+                <LayoutGrid size={15} />
               </button>
             </div>
           </div>
@@ -627,17 +643,18 @@ export default function Jobs() {
         {/* Active Filters Pill Strip */}
         {activeFiltersList.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 pt-3 pb-2">
-            <span className="text-xs font-bold text-slate-400 mr-1">Active filters:</span>
+            <span className="text-xs font-semibold text-[var(--theme-text-subtle)] mr-1">Active filters:</span>
             {activeFiltersList.map((item) => (
               <span
                 key={item.key}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] text-xs font-medium"
               >
                 <span>{item.label}</span>
                 <button
                   type="button"
                   onClick={() => removeSingleFilter(item.key)}
-                  className="hover:text-blue-900 dark:hover:text-white cursor-pointer"
+                  className="hover:text-[var(--theme-accent-silver-sheen)] cursor-pointer"
+                  aria-label={`Remove filter ${item.label}`}
                 >
                   <X size={12} />
                 </button>
@@ -646,7 +663,7 @@ export default function Jobs() {
             <button
               type="button"
               onClick={handleResetFilters}
-              className="text-xs font-bold text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 underline ml-2 cursor-pointer transition-colors"
+              className="text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] underline ml-2 cursor-pointer transition-colors"
             >
               Clear all
             </button>
@@ -658,17 +675,17 @@ export default function Jobs() {
           
           {/* ──── DESKTOP SIDEBAR FILTERS (3 of 12 cols) ───────────────── */}
           <aside className="hidden lg:block lg:col-span-3 sticky top-24 space-y-6">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs space-y-6 transition-colors">
-              <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                  <SlidersHorizontal size={16} className="text-blue-600" />
+            <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] p-6 shadow-sm space-y-6 transition-colors">
+              <div className="flex items-center justify-between pb-3.5 border-b border-[var(--theme-border)]">
+                <h3 className="text-xs font-bold text-[var(--theme-text)] uppercase tracking-wider flex items-center gap-2">
+                  <SlidersHorizontal size={14} className="text-[var(--theme-accent-silver)]" />
                   <span>Filter Roles</span>
                 </h3>
                 {activeFiltersList.length > 0 && (
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="text-xs font-bold text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 flex items-center gap-1 cursor-pointer transition-colors"
+                    className="text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <RotateCcw size={12} />
                     <span>Reset</span>
@@ -678,8 +695,8 @@ export default function Jobs() {
 
               {/* Filter Section: Industry & Subdomain */}
               <div className="space-y-3.5">
-                <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider block">
-                  Industry & Sector
+                <label className="text-[11px] font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider block">
+                  Industry & Discipline
                 </label>
                 <select
                   value={filters.industry}
@@ -690,11 +707,11 @@ export default function Jobs() {
                       subdomain: "",
                     })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] outline-none focus:border-[var(--theme-border-focus)] cursor-pointer"
                 >
                   <option value="">All Industries</option>
                   {Object.keys(INDUSTRY_SUBDOMAINS).map((ind) => (
-                    <option key={ind} value={ind}>
+                    <option key={ind} value={ind} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
                       {ind}
                     </option>
                   ))}
@@ -702,17 +719,17 @@ export default function Jobs() {
 
                 {filters.industry && (
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">
+                    <label className="text-[10px] font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider mb-1.5 block">
                       Speciality / Function
                     </label>
                     <select
                       value={filters.subdomain}
                       onChange={(e) => setFilters({ ...filters, subdomain: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] outline-none focus:border-[var(--theme-border-focus)] cursor-pointer"
                     >
                       <option value="">All {filters.industry} Roles</option>
                       {INDUSTRY_SUBDOMAINS[filters.industry].map((sub) => (
-                        <option key={sub} value={sub}>
+                        <option key={sub} value={sub} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
                           {sub}
                         </option>
                       ))}
@@ -722,42 +739,42 @@ export default function Jobs() {
               </div>
 
               {/* Filter Section: Work Mode (Remote / WFH) */}
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider block">
-                  Work Mode
+              <div className="pt-4 border-t border-[var(--theme-border)] space-y-3">
+                <label className="text-[11px] font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider block">
+                  Workplace Mode
                 </label>
-                <label className="flex items-center gap-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer group">
+                <label className="flex items-center gap-2.5 text-xs font-medium text-[var(--theme-text)] cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={filters.workFromHome}
                     onChange={(e) => setFilters({ ...filters, workFromHome: e.target.checked })}
-                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    className="w-4 h-4 rounded accent-[var(--theme-accent-silver)] cursor-pointer"
                   />
-                  <span className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    Remote / Work from Home
+                  <span className="group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors">
+                    Remote / Work from Home Only
                   </span>
                 </label>
               </div>
 
               {/* Filter Section: Employment Type */}
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider block">
+              <div className="pt-4 border-t border-[var(--theme-border)] space-y-3">
+                <label className="text-[11px] font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider block">
                   Employment Type
                 </label>
                 {[
                   { key: "fullTime", label: "Full-Time" },
                   { key: "partTime", label: "Part-Time" },
-                  { key: "contract", label: "Contract" },
+                  { key: "contract", label: "Contract Requisition" },
                   { key: "internship", label: "Internship" },
                 ].map((type) => (
-                  <label key={type.key} className="flex items-center gap-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer group">
+                  <label key={type.key} className="flex items-center gap-2.5 text-xs font-medium text-[var(--theme-text)] cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={filters[type.key]}
                       onChange={(e) => setFilters({ ...filters, [type.key]: e.target.checked })}
-                      className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      className="w-4 h-4 rounded accent-[var(--theme-accent-silver)] cursor-pointer"
                     />
-                    <span className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <span className="group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors">
                       {type.label}
                     </span>
                   </label>
@@ -765,12 +782,12 @@ export default function Jobs() {
               </div>
 
               {/* Filter Section: Minimum Salary */}
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+              <div className="pt-4 border-t border-[var(--theme-border)] space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider">
-                    Min Salary (Monthly)
+                  <label className="text-[11px] font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider">
+                    Min Compensation
                   </label>
-                  <span className="text-xs font-black text-blue-600 dark:text-blue-400">
+                  <span className="text-xs font-bold font-mono text-[var(--theme-text)]">
                     ₹{Number(filters.stipend).toLocaleString()}
                   </span>
                 </div>
@@ -781,19 +798,19 @@ export default function Jobs() {
                   step="5000"
                   value={filters.stipend}
                   onChange={(e) => setFilters({ ...filters, stipend: Number(e.target.value) })}
-                  className="w-full accent-blue-600 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                  className="w-full accent-[var(--theme-accent-silver)] h-1.5 bg-[var(--theme-surface-elevated)] rounded-lg appearance-none cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] font-bold text-slate-400">
+                <div className="flex justify-between text-[10px] font-semibold text-[var(--theme-text-subtle)]">
                   <span>₹0</span>
-                  <span>₹1,00,000</span>
-                  <span>₹2,00,000+</span>
+                  <span>₹1L</span>
+                  <span>₹2L+</span>
                 </div>
               </div>
 
               {/* Filter Section: Date Posted */}
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider block">
-                  Date Posted
+              <div className="pt-4 border-t border-[var(--theme-border)] space-y-3">
+                <label className="text-[11px] font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider block">
+                  Date Published
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
@@ -806,10 +823,10 @@ export default function Jobs() {
                       key={p.val}
                       type="button"
                       onClick={() => setFilters({ ...filters, datePosted: p.val })}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                         filters.datePosted === p.val
-                          ? "bg-blue-600 text-white shadow-xs"
-                          : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100"
+                          ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-xs"
+                          : "bg-[var(--theme-surface)] text-[var(--theme-text-muted)] border border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)] hover:text-[var(--theme-text)]"
                       }`}
                     >
                       {p.label}
@@ -824,28 +841,29 @@ export default function Jobs() {
           {showMobileFilters && (
             <div className="fixed inset-0 z-50 lg:hidden flex">
               <div
-                className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
+                className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
                 onClick={() => setShowMobileFilters(false)}
               />
-              <div className="relative ml-auto w-full max-w-sm bg-white dark:bg-slate-900 h-full overflow-y-auto p-6 shadow-2xl flex flex-col justify-between">
+              <div className="relative ml-auto w-full max-w-sm bg-[var(--theme-surface)] border-l border-[var(--theme-border)] h-full overflow-y-auto p-6 shadow-2xl flex flex-col justify-between">
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
-                    <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <Filter size={18} className="text-blue-600" />
-                      <span>Filter Postings</span>
+                  <div className="flex items-center justify-between pb-4 border-b border-[var(--theme-border)]">
+                    <h3 className="text-base font-bold text-[var(--theme-text)] flex items-center gap-2">
+                      <Filter size={16} className="text-[var(--theme-accent-silver)]" />
+                      <span>Filter Requisitions</span>
                     </h3>
                     <button
                       type="button"
                       onClick={() => setShowMobileFilters(false)}
-                      className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                      className="p-1.5 rounded-xl text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)] cursor-pointer"
+                      aria-label="Close filters"
                     >
-                      <X size={20} />
+                      <X size={18} />
                     </button>
                   </div>
 
                   {/* Industry on mobile */}
                   <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
+                    <label className="text-xs font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider mb-2 block">
                       Industry
                     </label>
                     <select
@@ -853,11 +871,11 @@ export default function Jobs() {
                       onChange={(e) =>
                         setFilters({ ...filters, industry: e.target.value, subdomain: "" })
                       }
-                      className="w-full px-3.5 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] outline-none"
                     >
                       <option value="">All Industries</option>
                       {Object.keys(INDUSTRY_SUBDOMAINS).map((ind) => (
-                        <option key={ind} value={ind}>
+                        <option key={ind} value={ind} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
                           {ind}
                         </option>
                       ))}
@@ -865,21 +883,21 @@ export default function Jobs() {
                   </div>
 
                   {/* Remote checkbox on mobile */}
-                  <label className="flex items-center gap-3 text-sm font-bold text-slate-700 dark:text-slate-300">
+                  <label className="flex items-center gap-3 text-xs font-medium text-[var(--theme-text)] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={filters.workFromHome}
                       onChange={(e) => setFilters({ ...filters, workFromHome: e.target.checked })}
-                      className="w-5 h-5 rounded text-blue-600"
+                      className="w-4 h-4 rounded accent-[var(--theme-accent-silver)]"
                     />
                     <span>Remote / Work from home only</span>
                   </label>
 
                   {/* Salary slider on mobile */}
                   <div className="space-y-2">
-                    <div className="flex justify-between text-xs font-bold">
-                      <span className="text-slate-400">Min Salary</span>
-                      <span className="text-blue-600 font-extrabold">₹{filters.stipend.toLocaleString()}</span>
+                    <div className="flex justify-between text-xs font-medium">
+                      <span className="text-[var(--theme-text-muted)]">Min Salary</span>
+                      <span className="text-[var(--theme-text)] font-bold font-mono">₹{filters.stipend.toLocaleString()}</span>
                     </div>
                     <input
                       type="range"
@@ -888,23 +906,23 @@ export default function Jobs() {
                       step="5000"
                       value={filters.stipend}
                       onChange={(e) => setFilters({ ...filters, stipend: Number(e.target.value) })}
-                      className="w-full accent-blue-600 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                      className="w-full accent-[var(--theme-accent-silver)] h-1.5 bg-[var(--theme-surface-elevated)] rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex gap-3">
+                <div className="pt-6 border-t border-[var(--theme-border)] flex gap-3">
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="flex-1 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                    className="flex-1 py-3 rounded-xl bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] font-semibold text-xs border border-[var(--theme-border)] cursor-pointer"
                   >
                     Reset
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowMobileFilters(false)}
-                    className="flex-1 py-3 rounded-2xl bg-blue-600 text-white font-bold text-xs"
+                    className="flex-1 py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs cursor-pointer"
                   >
                     Apply Filters
                   </button>
@@ -916,57 +934,57 @@ export default function Jobs() {
           {/* ──── JOB LISTINGS CONTENT (9 of 12 cols) ───────────────────── */}
           <main className="lg:col-span-9 w-full">
             {loading ? (
-              /* Loading Skeleton */
+              /* Loading Skeletons */
               <div className="space-y-4">
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200/80 dark:border-slate-800 animate-pulse flex flex-col justify-between h-48 shadow-xs"
+                    className="bg-[var(--theme-surface)] rounded-2xl p-6 border border-[var(--theme-border)] animate-pulse flex flex-col justify-between h-44 shadow-sm"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-slate-200 dark:bg-slate-800 shrink-0" />
+                      <div className="w-12 h-12 rounded-xl bg-[var(--theme-surface-muted)] shrink-0" />
                       <div className="space-y-2 flex-1">
-                        <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-1/3" />
-                        <div className="h-4 bg-slate-100 dark:bg-slate-800/60 rounded-md w-1/4" />
+                        <div className="h-4 bg-[var(--theme-surface-muted)] rounded w-1/3" />
+                        <div className="h-3 bg-[var(--theme-surface-muted)] rounded w-1/4" />
                       </div>
                     </div>
-                    <div className="h-8 bg-slate-100 dark:bg-slate-800/50 rounded-xl w-full" />
+                    <div className="h-8 bg-[var(--theme-surface-muted)] rounded-xl w-full" />
                   </div>
                 ))}
               </div>
             ) : error ? (
-              <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-rose-200 dark:border-rose-900/40 p-8 shadow-xs">
-                <p className="text-rose-600 dark:text-rose-400 font-bold text-base mb-2">{error}</p>
+              <div className="text-center py-16 bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-danger)]/30 p-8 shadow-sm">
+                <p className="text-rose-400 font-bold text-sm mb-3">{error}</p>
                 <button
                   type="button"
                   onClick={() => window.location.reload()}
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs cursor-pointer"
                 >
-                  Refresh Page
+                  Reload Openings
                 </button>
               </div>
             ) : filteredJobs.length === 0 ? (
               /* Empty State */
-              <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-8 shadow-xs">
-                <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center mx-auto mb-4 text-blue-600 dark:text-blue-400 shadow-xs">
-                  <Search size={28} />
+              <div className="text-center py-20 bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] p-8 shadow-sm">
+                <div className="w-14 h-14 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center mx-auto mb-4 text-[var(--theme-accent-silver)]">
+                  <Search size={24} />
                 </div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white">
-                  No matching jobs found
+                <h3 className="text-lg font-bold text-[var(--theme-text)]">
+                  No matching positions found
                 </h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 max-w-md mx-auto">
-                  We couldn't find any openings matching your search criteria. Try broadening your keywords or clearing some filters.
+                <p className="text-[var(--theme-text-muted)] text-xs sm:text-sm mt-1.5 max-w-md mx-auto leading-relaxed">
+                  We could not find active requisitions matching your filter parameters. Try broadening keywords or clearing selected filters.
                 </p>
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="mt-5 px-6 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm cursor-pointer shadow-md shadow-blue-600/20 transition-all"
+                  className="mt-5 px-6 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs cursor-pointer shadow-sm transition-all"
                 >
                   Reset All Filters
                 </button>
               </div>
             ) : viewMode === "grid" ? (
-              /* ─── GRID VIEW ────────────────────────────────────────── */
+              /* ─── GRID VIEW: EDITORIAL + DISTINCTIVE CARDS ─────────── */
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {filteredJobs.map((job) => {
                   const isBookmarked = savedJobIds.includes(job._id);
@@ -974,6 +992,7 @@ export default function Jobs() {
                     typeof job.location === "object"
                       ? job.location?.address || "Remote"
                       : job.location || "Remote";
+                  const formattedSalary = formatSalary(job);
 
                   return (
                     <motion.div
@@ -982,32 +1001,35 @@ export default function Jobs() {
                       animate={{ opacity: 1, y: 0 }}
                       whileHover={{ y: -3, transition: { duration: 0.18 } }}
                       onClick={() => setSelectedJob(job)}
-                      className="group bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl hover:shadow-blue-500/5 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden"
+                      className="group bg-[var(--theme-surface)] rounded-2xl p-6 border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden"
                     >
+                      {/* Top Sheen */}
+                      <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent-silver)]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
                       <div>
-                        {/* Card Top: Logo, Company & Bookmark */}
+                        {/* Top: Logo, Company & Bookmark */}
                         <div className="flex items-start justify-between gap-3 mb-4">
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center font-black text-base text-blue-600 dark:text-blue-400 shrink-0 overflow-hidden shadow-2xs">
+                            <div className="w-12 h-12 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center font-bold text-sm text-[var(--theme-text)] shrink-0 overflow-hidden p-2">
                               {job.postedByImage ? (
                                 <img
                                   src={job.postedByImage}
                                   alt="Company"
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full object-contain"
                                 />
                               ) : job.postedByCompany ? (
                                 job.postedByCompany.charAt(0).toUpperCase()
                               ) : (
-                                <Building2 size={20} />
+                                <Building2 size={20} className="text-[var(--theme-accent-silver)]" />
                               )}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 truncate">
+                              <p className="text-xs font-bold text-[var(--theme-text)] truncate group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors">
                                 <CompanyDisplay job={job} fallback="Confidential Employer" />
                               </p>
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                Actively Hiring
+                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                Verified Requisition
                               </span>
                             </div>
                           </div>
@@ -1016,54 +1038,50 @@ export default function Jobs() {
                             type="button"
                             onClick={(e) => toggleBookmark(e, job._id)}
                             title={isBookmarked ? "Remove bookmark" : "Save job"}
-                            className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                            className={`p-2 rounded-lg border transition-colors cursor-pointer ${
                               isBookmarked
-                                ? "bg-amber-50 dark:bg-amber-950/80 border-amber-300 text-amber-500"
-                                : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                                ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-border-silver)] text-amber-400"
+                                : "bg-[var(--theme-surface)] border-[var(--theme-border)] text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)]"
                             }`}
                           >
                             <Bookmark
                               size={15}
-                              className={isBookmarked ? "fill-amber-500" : ""}
+                              className={isBookmarked ? "fill-amber-400" : ""}
                             />
                           </button>
                         </div>
 
                         {/* Job Title */}
-                        <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 mb-2">
+                        <h3 className="text-base sm:text-lg font-bold text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors line-clamp-1 mb-3">
                           {job.title}
                         </h3>
 
-                        {/* Key Pills */}
-                        <div className="flex flex-wrap gap-1.5 mb-4 text-xs font-bold">
-                          <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-[11px]">
-                            <MapPin size={12} className="text-rose-500 shrink-0" />
+                        {/* Metadata Pills */}
+                        <div className="flex flex-wrap gap-2 mb-4 text-xs font-medium">
+                          <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] text-[11px]">
+                            <MapPin size={12} className="text-[var(--theme-accent-silver)] shrink-0" />
                             <span className="truncate max-w-[130px]">{displayLocation}</span>
                           </span>
-                          <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[11px] capitalize">
-                            <Briefcase size={12} className="shrink-0" />
+                          <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] text-[11px] capitalize">
+                            <Briefcase size={12} className="text-[var(--theme-accent-silver)] shrink-0" />
                             <span>{renderArray(job.jobType)}</span>
                           </span>
-                          <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px]">
-                            <IndianRupee size={12} className="shrink-0" />
-                            <span>
-                              {job.salaryMin === 0 && job.salaryMax === 0
-                                ? "Unpaid"
-                                : `${job.salaryMin?.toLocaleString() || 0} - ${job.salaryMax?.toLocaleString() || 0}`}
-                            </span>
+                          <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] text-[11px] font-bold">
+                            <IndianRupee size={12} className="text-[var(--theme-accent-silver)] shrink-0" />
+                            <span>{formattedSalary}</span>
                           </span>
                         </div>
                       </div>
 
                       {/* Card Bottom: Timestamp & View CTA */}
-                      <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-400">
+                      <div className="pt-3.5 border-t border-[var(--theme-border)] flex items-center justify-between text-xs font-medium text-[var(--theme-text-muted)]">
                         <span className="flex items-center gap-1 text-[11px]">
-                          <Clock size={12} />
+                          <Clock size={12} className="text-[var(--theme-text-subtle)]" />
                           <span>{formatTimeAgo(job.postedAt || job.createdAt)}</span>
                         </span>
-                        <span className="text-blue-600 dark:text-blue-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-1 font-extrabold">
+                        <span className="text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors flex items-center gap-1 font-bold">
                           <span>Details</span>
-                          <ArrowRight size={13} />
+                          <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
                         </span>
                       </div>
                     </motion.div>
@@ -1071,7 +1089,7 @@ export default function Jobs() {
                 })}
               </div>
             ) : (
-              /* ─── LIST VIEW ────────────────────────────────────────── */
+              /* ─── LIST VIEW: EDITORIAL + DISTINCTIVE CARDS ─────────── */
               <div className="space-y-4">
                 {filteredJobs.map((job) => {
                   const isBookmarked = savedJobIds.includes(job._id);
@@ -1079,6 +1097,7 @@ export default function Jobs() {
                     typeof job.location === "object"
                       ? job.location?.address || "Remote"
                       : job.location || "Remote";
+                  const formattedSalary = formatSalary(job);
 
                   return (
                     <motion.div
@@ -1087,68 +1106,63 @@ export default function Jobs() {
                       animate={{ opacity: 1, y: 0 }}
                       whileHover={{ y: -2, transition: { duration: 0.18 } }}
                       onClick={() => setSelectedJob(job)}
-                      className="group bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 md:p-7 border border-slate-200/80 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl hover:shadow-blue-500/5 transition-all cursor-pointer relative overflow-hidden"
+                      className="group bg-[var(--theme-surface)] rounded-2xl p-5 sm:p-6 border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] hover:shadow-xl transition-all cursor-pointer relative overflow-hidden"
                     >
+                      {/* Top Sheen */}
+                      <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent-silver)]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-                        
-                        {/* Company Logo & Core Details */}
-                        <div className="flex items-start sm:items-center gap-4 sm:gap-5 min-w-0 flex-1">
-                          {/* Logo Monogram */}
-                          <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 shrink-0 overflow-hidden shadow-xs">
+                        {/* Company Logo & Details */}
+                        <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
+                          <div className="w-13 h-13 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center text-sm font-bold text-[var(--theme-text)] shrink-0 overflow-hidden p-2">
                             {job.postedByImage ? (
                               <img
                                 src={job.postedByImage}
                                 alt="Company"
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain"
                               />
                             ) : job.postedByCompany ? (
                               job.postedByCompany.charAt(0).toUpperCase()
                             ) : (
-                              <Building2 size={24} />
+                              <Building2 size={22} className="text-[var(--theme-accent-silver)]" />
                             )}
                           </div>
 
-                          {/* Titles, Company & Pills */}
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 truncate">
+                              <p className="text-xs font-bold text-[var(--theme-text)] truncate group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors">
                                 <CompanyDisplay job={job} fallback="Confidential Employer" />
                               </p>
-                              <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                Direct Hiring
+                              <span className="w-1 h-1 rounded-full bg-[var(--theme-text-subtle)]" />
+                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400">
+                                <CheckCircle2 size={12} className="text-emerald-400" />
+                                Verified Requisition
                               </span>
                             </div>
 
-                            <h3 className="text-base sm:text-xl font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 mb-2.5">
+                            <h3 className="text-base sm:text-lg font-bold text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors line-clamp-1 mb-2">
                               {job.title}
                             </h3>
 
                             {/* Metadata Chips */}
-                            <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
-                              <span className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
-                                <MapPin size={13} className="text-rose-500 shrink-0" />
+                            <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
+                              <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] text-[11px]">
+                                <MapPin size={12} className="text-[var(--theme-accent-silver)] shrink-0" />
                                 <span className="truncate max-w-[140px] sm:max-w-[200px]">{displayLocation}</span>
                               </span>
 
-                              <span className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-800/60 capitalize">
-                                <Briefcase size={13} className="shrink-0" />
+                              <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] text-[11px] capitalize">
+                                <Briefcase size={12} className="text-[var(--theme-accent-silver)] shrink-0" />
                                 <span>{renderArray(job.jobType)}</span>
                               </span>
 
-                              <span className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800/60">
-                                <IndianRupee size={13} className="shrink-0" />
-                                <span>
-                                  {job.salaryMin === 0 && job.salaryMax === 0
-                                    ? "Unpaid"
-                                    : `${job.salaryMin?.toLocaleString() || 0} - ${job.salaryMax?.toLocaleString() || 0}`}
-                                </span>
+                              <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] text-[11px] font-bold">
+                                <IndianRupee size={12} className="text-[var(--theme-accent-silver)] shrink-0" />
+                                <span>{formattedSalary}</span>
                               </span>
 
                               {job.industry && (
-                                <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-100 dark:border-amber-800/60">
-                                  <Target size={13} className="shrink-0" />
+                                <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] text-[11px]">
                                   <span>{job.industry}</span>
                                 </span>
                               )}
@@ -1156,10 +1170,10 @@ export default function Jobs() {
                           </div>
                         </div>
 
-                        {/* Right Column: Bookmark, Time Ago, View Details */}
-                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+                        {/* Right: Bookmark, Time, Details CTA */}
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-[var(--theme-border)]">
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                            <span className="text-[11px] font-medium text-[var(--theme-text-subtle)] flex items-center gap-1">
                               <Clock size={12} />
                               <span>{formatTimeAgo(job.postedAt || job.createdAt)}</span>
                             </span>
@@ -1168,24 +1182,25 @@ export default function Jobs() {
                               type="button"
                               onClick={(e) => toggleBookmark(e, job._id)}
                               title={isBookmarked ? "Remove bookmark" : "Save this job"}
-                              className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                              className={`p-2 rounded-lg border transition-colors cursor-pointer ${
                                 isBookmarked
-                                  ? "bg-amber-50 dark:bg-amber-950/80 border-amber-300 text-amber-500"
-                                  : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                                  ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-border-silver)] text-amber-400"
+                                  : "bg-[var(--theme-surface)] border-[var(--theme-border)] text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)]"
                               }`}
                             >
                               <Bookmark
-                                size={15}
-                                className={isBookmarked ? "fill-amber-500" : ""}
+                                size={14}
+                                className={isBookmarked ? "fill-amber-400" : ""}
                               />
                             </button>
                           </div>
 
                           <button
                             type="button"
-                            className="px-5 py-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 text-blue-700 dark:text-blue-300 font-bold text-xs border border-blue-200/80 dark:border-blue-800/60 transition-all cursor-pointer shadow-xs"
+                            className="px-4 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
                           >
-                            View Details
+                            <span>View Details</span>
+                            <ArrowRight size={13} className="text-[var(--theme-accent-silver)]" />
                           </button>
                         </div>
                       </div>

@@ -27,7 +27,10 @@ import {
   Globe,
   CalendarClock,
   Loader2,
-  LogOut,
+  ExternalLink,
+  ShieldCheck,
+  Video,
+  Search,
 } from "lucide-react";
 import CompanyDisplay from "./CompanyDisplay";
 
@@ -61,10 +64,13 @@ export default function ApplicationDetailsModal({ application, onClose }) {
     appliedAt,
     employerMessage,
     meetingLink,
-    _id: applicationId,
+    _id: rawAppId,
+    applicationId: mappedAppId,
     applicantMessage,
     screeningAnswers,
   } = application;
+
+  const resolvedAppId = mappedAppId || rawAppId;
 
   const handleRescheduleSubmit = async (e) => {
     e.preventDefault();
@@ -75,20 +81,19 @@ export default function ApplicationDetailsModal({ application, onClose }) {
 
     try {
       const storedUser = localStorage.getItem("userInfo");
-      const token = JSON.parse(storedUser)?.token;
+      const token = JSON.parse(storedUser)?.token || localStorage.getItem("userToken");
 
       await axios.post(
-        `${API_BASE_URL}/applications/${applicationId}/reschedule`,
+        `${API_BASE_URL}/applications/${resolvedAppId}/reschedule`,
         rescheduleData,
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setRescheduleStatus("success");
       setRescheduleFeedback(
-        "Reschedule request sent successfully! The employer will be notified.",
+        "Reschedule request sent successfully! The employer will be notified."
       );
 
-      // Reset after a few seconds
       setTimeout(() => {
         setIsRescheduling(false);
         setRescheduleStatus("idle");
@@ -97,697 +102,384 @@ export default function ApplicationDetailsModal({ application, onClose }) {
       console.error("Reschedule Error:", err);
       setRescheduleStatus("error");
       setRescheduleFeedback(
-        err.response?.data?.message ||
-          "Failed to send request. Please try again.",
+        err.response?.data?.message || "Failed to send request. Please try again."
       );
     }
   };
 
-  const getStatusUI = (status) => {
-    switch (status) {
-      case "hired":
-        return {
-          color: "bg-emerald-50 text-emerald-700 border-emerald-200",
-          icon: <CheckCircle2 size={24} />,
-          title: "You're Hired!",
-          message:
-            "Congratulations! The employer has accepted your application.",
-        };
-      case "NCTT":
-        return {
-          color: "bg-rose-50 text-rose-700 border-rose-200",
-          icon: <XCircle size={24} />,
-          title: "Not Considered",
-          message:
-            "The employer has decided not to move forward with your application at this time.",
-        };
-      case "Interview Scheduled":
-        return {
-          color: "bg-purple-50 text-purple-700 border-purple-200",
-          icon: <Clock size={24} />,
-          title: "Interview Scheduled",
-          message:
-            "You have been shortlisted for an interview! Check the message below for details.",
-        };
-      case "Assignment Scheduled":
-        return {
-          color: "bg-orange-50 text-orange-700 border-orange-200",
-          icon: <FileText size={24} />,
-          title: "Assignment Scheduled",
-          message:
-            "The employer has assigned you a task. Check the message below for instructions.",
-        };
-      case "shortlisted":
-        return {
-          color: "bg-blue-50 text-blue-700 border-blue-200",
-          icon: <CheckCircle2 size={24} />,
-          title: "Shortlisted",
-          message:
-            "You have been shortlisted! The employer will contact you soon.",
-        };
-      default: // applied
-        return {
-          color: "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700",
-          icon: <AlertCircle size={24} />,
-          title: "Application Under Review",
-          message:
-            "Your application has been sent. We will notify you once the employer reviews it.",
-        };
+  const getStatusUI = (st) => {
+    const s = (st || "").toLowerCase();
+    if (s === "hired") {
+      return {
+        color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+        icon: <CheckCircle2 size={20} />,
+        title: "Candidate Selected — Offer Extended",
+        message: "Congratulations! The hiring team has accepted your application and moved forward to hire.",
+      };
     }
+    if (s === "nctt" || s === "rejected") {
+      return {
+        color: "bg-destructive/10 text-destructive border-destructive/20",
+        icon: <XCircle size={20} />,
+        title: "Not Considered at this Stage",
+        message: "The employer has chosen to proceed with other candidates whose profiles align more closely with current requisition requirements.",
+      };
+    }
+    if (s.includes("interview")) {
+      return {
+        color: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+        icon: <Calendar size={20} />,
+        title: "Interview Round Scheduled",
+        message: "You have been shortlisted for an interview! Review the schedule and meeting access details below.",
+      };
+    }
+    if (s === "assignment scheduled") {
+      return {
+        color: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+        icon: <FileText size={20} />,
+        title: "Technical Assessment Assigned",
+        message: "The employer has assigned a skills exercise. Review the instructions provided in their message.",
+      };
+    }
+    if (s === "shortlisted") {
+      return {
+        color: "bg-silver/20 text-foreground border-silver/40",
+        icon: <Zap size={20} />,
+        title: "Profile Shortlisted by Hiring Manager",
+        message: "Your profile has passed primary recruiter screening and is in active review by the hiring manager.",
+      };
+    }
+    return {
+      color: "bg-surface-elevated text-foreground border-border",
+      icon: <Clock size={20} />,
+      title: "Application Delivered & Under Review",
+      message: "Your application dossier has been received and is queued for talent review.",
+    };
   };
 
   const statusUI = getStatusUI(status);
 
   const renderArray = (val) => {
     if (!val) return "Not specified";
-    if (Array.isArray(val))
-      return val.length > 0 ? val.join(", ") : "Not specified";
+    if (Array.isArray(val)) return val.length > 0 ? val.join(", ") : "Not specified";
     return String(val);
   };
 
   const modeStr = renderArray(job.mode);
-  const isRemote =
-    modeStr.toLowerCase().includes("home") || modeStr === "Online";
-
+  const isRemote = modeStr.toLowerCase().includes("home") || modeStr === "Online";
   const displayLocation = isRemote
     ? "Remote"
-    : `${typeof job.location === "object" ? job.location?.address : job.location || "Location not specified"}${job.pinCode ? ` - ${job.pinCode}` : ""}`;
+    : `${typeof job.location === "object" ? job.location?.address : job.location || "Office"}${
+        job.pinCode ? ` - ${job.pinCode}` : ""
+      }`;
 
-  const validFeatures =
-    job.jobFeatures?.filter((f) => f && f.trim() !== "") || [];
+  const _validFeatures = job.jobFeatures?.filter((f) => f && f.trim() !== "") || [];
+  const companyName = job.postedByCompany || job.postedByName || "Verified Employer";
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 sm:p-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200"
       onClick={onClose}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        onClick={(e) => e.stopPropagation()}
+      <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="app-details-title"
-        className="bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative"
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface border border-border text-foreground w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative animate-in zoom-in-95 duration-200"
       >
-        {/* --- PREMIUM HEADER --- */}
-        <header className="bg-white dark:bg-slate-900 p-6 sm:p-8 border-b border-slate-200 dark:border-slate-800 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative shrink-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none -mt-20 -mr-20"></div>
-
-          <div className="relative z-10 flex gap-4 sm:gap-6 items-center w-full">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 flex items-center justify-center text-3xl shrink-0 text-indigo-600 font-extrabold shadow-sm">
+        {/* --- HEADER --- */}
+        <header className="p-6 sm:p-8 border-b border-border bg-surface-elevated/40 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative shrink-0">
+          <div className="flex gap-4 sm:gap-5 items-center w-full">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-surface border border-border flex items-center justify-center text-xl shrink-0 text-silver font-bold font-mono uppercase shadow-xs">
               {job.postedByImage ? (
                 <img
                   src={job.postedByImage}
-                  alt="Company"
+                  alt={companyName}
                   className="w-full h-full object-cover rounded-2xl"
                 />
-              ) : job.postedByCompany ? (
-                job.postedByCompany.charAt(0)
-              ) : job.postedByName ? (
-                job.postedByName.charAt(0)
               ) : (
-                <Building2 size={32} />
+                companyName[0] || <Building2 size={24} />
               )}
             </div>
-            <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1">
-                  <AlertCircle size={10} /> {status?.replace("_", " ") || "APPLIED"}
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest bg-silver/10 text-silver border border-silver/20">
+                  {status || "APPLIED"}
                 </span>
-                <span className="px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest bg-surface border border-border text-muted-foreground">
                   {modeStr}
                 </span>
-                <span className="px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-100">
-                  {renderArray(job.jobType)}
-                </span>
               </div>
-              <h1 id="app-details-title" className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+
+              <h2
+                id="app-details-title"
+                className="text-xl sm:text-2xl font-bold tracking-tight text-foreground truncate"
+              >
                 {job.title}
-              </h1>
-              <div className="flex flex-wrap items-center text-slate-500 text-xs sm:text-sm font-bold gap-3 mt-2">
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (job.postedBy) navigate(`/company/${job.postedBy}`);
-                  }}
-                  className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 hover:underline cursor-pointer"
-                >
-                  <CompanyDisplay job={job} fallback="Confidential Employer" />
-                </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+              </h2>
+
+              <div className="flex flex-wrap items-center text-muted-foreground text-xs font-mono gap-3 mt-1">
+                <span className="font-semibold text-foreground truncate">{companyName}</span>
+                <span>•</span>
                 <span className="flex items-center gap-1">
-                  <MapPin size={14} className="text-slate-400" />{" "}
-                  {displayLocation}
+                  <MapPin size={12} className="text-silver" /> {displayLocation}
                 </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                <span className="flex items-center gap-1">
-                  <Clock size={14} className="text-slate-400" /> Applied{" "}
-                  {new Date(appliedAt).toLocaleDateString()}
-                </span>
+                <span>•</span>
+                <span>Applied {new Date(appliedAt).toLocaleDateString()}</span>
               </div>
             </div>
           </div>
 
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close application details"
-            className="absolute top-6 right-6 p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 border border-transparent dark:border-slate-700 rounded-full transition-colors z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="absolute top-6 right-6 p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </header>
 
         {/* --- SCROLLABLE BODY --- */}
-        <div className="overflow-y-auto custom-scrollbar p-4 sm:p-8 flex-1">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            {/* --- MAIN CONTENT (LEFT) --- */}
+        <div className="overflow-y-auto p-5 sm:p-8 flex-1 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            {/* LEFT 2 COLS: STATUS, INTERVIEWS & NOTES */}
             <div className="lg:col-span-2 space-y-6">
-              
               {/* Application Status Alert Block */}
-              <div className={`p-5 sm:p-6 rounded-3xl border relative overflow-hidden shadow-sm ${statusUI.color}`}>
-                <div className="flex items-center gap-3 font-bold text-base relative z-10">
-                  {statusUI.icon} {statusUI.title}
+              <div className={`p-5 sm:p-6 rounded-2xl border shadow-xs space-y-3 ${statusUI.color}`}>
+                <div className="flex items-center gap-2.5 font-bold text-sm tracking-tight">
+                  {statusUI.icon}
+                  <span>{statusUI.title}</span>
                 </div>
-                <p className="text-sm font-medium leading-relaxed opacity-90 pl-9 mt-1 relative z-10">
+                <p className="text-xs font-medium leading-relaxed opacity-90 pl-7">
                   {statusUI.message}
                 </p>
 
-                {/* Reschedule Button / Meet Link */}
-                {status === "Interview Scheduled" && (
-                  <div className="mt-4 pl-9 relative z-10">
+                {/* Interview Meeting Link & Reschedule Controls */}
+                {(status || "").toLowerCase().includes("interview") && (
+                  <div className="pl-7 pt-2 flex flex-wrap items-center gap-3">
                     {meetingLink && (
                       <a
-                        href={
-                          meetingLink.startsWith("http")
-                            ? meetingLink
-                            : `https://${meetingLink}`
-                        }
+                        href={meetingLink.startsWith("http") ? meetingLink : `https://${meetingLink}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-indigo-700 transition-all active:scale-95 w-fit"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500 text-white text-xs font-bold hover:bg-purple-600 transition-colors shadow-sm"
                       >
-                        <Globe size={16} /> Join Meeting
+                        <Video size={14} /> Launch Interview Room
                       </a>
                     )}
+
                     {application.rescheduleRequest?.isRequested ? (
-                      <div
-                        className={`mt-3 p-4 rounded-xl text-sm font-medium border shadow-sm ${
-                          application.rescheduleRequest.requestStatus === "pending"
-                            ? "bg-orange-50 border-orange-200 text-orange-700"
-                            : application.rescheduleRequest.requestStatus ===
-                                "approved"
-                              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                              : "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300"
-                        }`}
-                      >
-                        <span className="uppercase tracking-wider text-[10px] font-bold block mb-1">
-                          Reschedule Status
-                        </span>
-                        {application.rescheduleRequest.requestStatus === "pending" &&
-                          "Pending Employer Approval for: " +
-                            application.rescheduleRequest.proposedTime}
-                        {application.rescheduleRequest.requestStatus === "approved" &&
-                          "Approved! Check employer messages for the final link."}
-                        {application.rescheduleRequest.requestStatus === "rejected" &&
-                          "Request Denied. Please attend the original time or message the employer."}
-                      </div>
+                      <span className="text-xs font-mono px-3 py-1.5 rounded-xl bg-surface border border-border text-muted-foreground">
+                        Reschedule Status: {application.rescheduleRequest.requestStatus?.toUpperCase() || "PENDING"} (
+                        {application.rescheduleRequest.proposedTime})
+                      </span>
                     ) : !isRescheduling ? (
                       <button
+                        type="button"
                         onClick={() => setIsRescheduling(true)}
-                        className="mt-3 flex items-center gap-2 bg-white dark:bg-slate-800 border border-purple-200 text-purple-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-purple-50 transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface border border-border text-foreground hover:bg-surface-elevated text-xs font-semibold transition-colors"
                       >
-                        <CalendarClock size={16} /> Request Reschedule
+                        <CalendarClock size={14} /> Request Reschedule
                       </button>
                     ) : null}
                   </div>
                 )}
               </div>
 
-              {/* Reschedule Form Modal/Dropdown */}
+              {/* Reschedule Form */}
               {isRescheduling && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-purple-100 shadow-sm overflow-hidden"
-                >
-                  <h3 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4">
-                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
-                      <CalendarClock size={18} />
-                    </div>{" "}
-                    Request a New Time
-                  </h3>
+                <div className="p-5 rounded-2xl border border-border bg-surface-elevated space-y-4">
+                  <div className="flex items-center justify-between border-b border-border pb-3">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
+                      <CalendarClock size={15} className="text-silver" /> Propose New Interview Time
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => setIsRescheduling(false)}
+                      className="text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      Cancel
+                    </button>
+                  </div>
 
                   {rescheduleStatus === "success" ? (
-                    <div className="p-4 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium flex items-center gap-2 border border-emerald-100">
-                      <CheckCircle2 size={18} className="shrink-0" />{" "}
-                      {rescheduleFeedback}
+                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium flex items-center gap-2">
+                      <CheckCircle2 size={16} /> {rescheduleFeedback}
                     </div>
                   ) : (
-                    <form onSubmit={handleRescheduleSubmit} className="space-y-4">
-                      <div>
-                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">
-                          Reason for Rescheduling
+                    <form onSubmit={handleRescheduleSubmit} className="space-y-3 text-xs">
+                      <div className="space-y-1">
+                        <label className="block font-bold text-muted-foreground">
+                          Reason for Reschedule Request *
                         </label>
                         <textarea
                           required
+                          rows={2}
                           value={rescheduleData.reason}
                           onChange={(e) =>
-                            setRescheduleData({
-                              ...rescheduleData,
-                              reason: e.target.value,
-                            })
+                            setRescheduleData({ ...rescheduleData, reason: e.target.value })
                           }
-                          placeholder="E.g., I have an unexpected medical appointment..."
-                          className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:bg-white dark:focus:bg-slate-750 focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-slate-100 transition-all resize-none font-medium"
-                          rows="2"
+                          placeholder="Please explain the scheduling conflict..."
+                          className="w-full p-3 rounded-xl bg-surface border border-border text-foreground placeholder:text-muted-foreground outline-none focus:border-silver focus:ring-1 focus:ring-silver/40 transition-all resize-none"
                         />
                       </div>
-                      <div>
-                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">
-                          Proposed Date & Time
+
+                      <div className="space-y-1">
+                        <label className="block font-bold text-muted-foreground">
+                          Proposed Date & Time *
                         </label>
                         <input
                           type="text"
                           required
                           value={rescheduleData.proposedTime}
                           onChange={(e) =>
-                            setRescheduleData({
-                              ...rescheduleData,
-                              proposedTime: e.target.value,
-                            })
+                            setRescheduleData({ ...rescheduleData, proposedTime: e.target.value })
                           }
-                          placeholder="E.g., Tomorrow at 3:00 PM EST"
-                          className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:bg-white dark:focus:bg-slate-750 focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-slate-100 transition-all font-medium"
+                          placeholder="E.g., Friday, Nov 7 at 3:00 PM IST"
+                          className="w-full p-2.5 rounded-xl bg-surface border border-border text-foreground placeholder:text-muted-foreground outline-none focus:border-silver focus:ring-1 focus:ring-silver/40 transition-all"
                         />
                       </div>
 
                       {rescheduleStatus === "error" && (
-                        <p className="text-xs text-rose-600 font-medium bg-rose-50 p-3 rounded-xl flex items-center gap-1.5 border border-rose-100">
-                          <AlertCircle size={14} /> {rescheduleFeedback}
-                        </p>
+                        <p className="text-destructive text-xs">{rescheduleFeedback}</p>
                       )}
 
                       <div className="flex justify-end gap-2 pt-2">
                         <button
-                          type="button"
-                          onClick={() => setIsRescheduling(false)}
-                          className="px-5 py-2.5 text-slate-500 dark:text-slate-400 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-sm"
-                        >
-                          Cancel
-                        </button>
-                        <button
                           type="submit"
                           disabled={rescheduleStatus === "loading"}
-                          className="px-5 py-2.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-colors text-sm flex items-center gap-2 disabled:opacity-70 shadow-sm"
+                          className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-foreground text-background font-bold text-xs hover:opacity-90 transition-opacity disabled:opacity-50"
                         >
                           {rescheduleStatus === "loading" ? (
-                            <Loader2 size={16} className="animate-spin" />
+                            <Loader2 size={14} className="animate-spin" />
                           ) : (
-                            <CalendarClock size={16} />
+                            <CalendarClock size={14} />
                           )}
-                          {rescheduleStatus === "loading"
-                            ? "Sending..."
-                            : "Send Request"}
+                          Send Reschedule Request
                         </button>
                       </div>
                     </form>
                   )}
-                </motion.div>
+                </div>
               )}
 
-              {/* Employer Message */}
+              {/* Employer Message Card */}
               {employerMessage && (
-                <div className="bg-indigo-50 dark:bg-slate-900 border border-indigo-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
-                  <h3 className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-3 flex items-center gap-2 border-b border-indigo-100/50 dark:border-slate-800 pb-3">
-                    <MessageSquare size={16} className="text-indigo-500" />{" "}
-                    Message from Employer
-                  </h3>
-                  <div className="text-indigo-900/90 dark:text-slate-200 font-medium whitespace-pre-wrap leading-relaxed text-sm bg-white dark:bg-slate-800 p-4 rounded-xl border border-indigo-50 dark:border-slate-700 shadow-sm">
+                <div className="p-5 sm:p-6 rounded-2xl border border-border bg-surface-elevated space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-foreground">
+                    <MessageSquare size={14} className="text-silver" /> Direct Update from Employer
+                  </div>
+                  <div className="p-4 rounded-xl bg-surface border border-border text-xs leading-relaxed text-foreground whitespace-pre-wrap pl-4 border-l-2 border-silver">
                     {employerMessage}
                   </div>
                 </div>
               )}
 
-              {/* Cover Letter Block */}
-              {applicantMessage && (
-                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
-                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-                    <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
-                      <FileText size={18} />
-                    </div>{" "}
-                    Cover Letter / Pitch
-                  </h2>
-                  <div className="bg-slate-50 dark:bg-slate-800/80 rounded-xl p-5 text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed whitespace-pre-wrap border border-slate-100 dark:border-slate-700">
-                    {applicantMessage}
-                  </div>
-                </section>
-              )}
-
-              {/* Job Highlights */}
-              {validFeatures.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {validFeatures.map((feature, i) => (
-                    <div
-                      key={i}
-                      className="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-100 p-4 sm:p-5 rounded-2xl flex items-start gap-3 sm:gap-4 shadow-sm"
-                    >
-                      <div className="p-2 bg-amber-100/50 rounded-lg shrink-0">
-                        <Zap className="text-amber-500" size={18} />
-                      </div>
-                      <p className="text-xs sm:text-sm font-bold text-amber-900 mt-0.5 sm:mt-1 leading-snug">
-                        {feature}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Candidate Requirements */}
-              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
-                <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-                  <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                    <UserCircle2 size={18} />
-                  </div>{" "}
-                  Candidate Profile
-                </h2>
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-                  <div className="flex flex-col">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mb-1">
-                      <GraduationCap size={12} className="text-indigo-400" />{" "}
-                      Education
-                    </p>
-                    <p className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
-                      {renderArray(job.qualifications)}
-                      {job.courses?.length > 0 && (
-                        <span className="text-[11px] text-slate-500 font-medium">
-                          ({job.courses.join(", ")})
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="hidden sm:block w-px h-8 bg-slate-200"></div>
-                  <div className="flex flex-col">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mb-1">
-                      <Languages size={12} className="text-indigo-400" />{" "}
-                      Languages
-                    </p>
-                    <p className="text-sm font-bold text-slate-800 dark:text-white">
-                      {renderArray(job.languages)}
-                    </p>
-                  </div>
-                  <div className="hidden sm:block w-px h-8 bg-slate-200"></div>
-                  <div className="flex flex-col">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mb-1">
-                      <Users size={12} className="text-indigo-400" /> Age Limit
-                    </p>
-                    <p className="text-sm font-bold text-slate-800 dark:text-white">
-                      {job.ageLimit?.isAny
-                        ? "Any Age"
-                        : job.ageLimit?.min
-                          ? `${job.ageLimit.min}-${job.ageLimit.max} Yrs`
-                          : "Not Specified"}
-                    </p>
-                  </div>
-                  <div className="hidden sm:block w-px h-8 bg-slate-200"></div>
-                  <div className="flex flex-col">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mb-1">
-                      <UserCircle2 size={12} className="text-indigo-400" />{" "}
-                      Gender
-                    </p>
-                    <p className="text-sm font-bold text-slate-800 dark:text-white">
-                      {job.genderPreference || "No Preference"}
-                    </p>
-                  </div>
-                </div>
-              </section>
-
-              {/* Required Skills */}
-              {job.skillsRequired?.length > 0 && (
-                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
-                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-3">
-                    <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
-                      <CheckCircle2 size={18} />
-                    </div>{" "}
-                    Required Skills
-                  </h2>
-                  <div className="flex flex-wrap gap-2">
-                    {job.skillsRequired.map((skill, i) => (
-                      <span
-                        key={i}
-                        className="px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-900 text-white rounded-xl text-[10px] sm:text-xs font-bold shadow-sm"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Application Assessment (Responses) */}
+              {/* Screening Answers Card */}
               {screeningAnswers && screeningAnswers.length > 0 && (
-                <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
-                  <h2 className="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-3">
-                    <div className="p-2 bg-rose-50 rounded-lg text-rose-600">
-                      <HelpCircle size={18} />
-                    </div>{" "}
-                    Application Assessment
-                  </h2>
-                  <p className="text-xs font-bold text-slate-500 mb-5">
-                    Your responses to the employer's screening questions:
-                  </p>
-                  <div className="space-y-4">
-                    {screeningAnswers.map((item, index) => (
-                      <div
-                        key={index}
-                        className="bg-slate-50 dark:bg-slate-850/60 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 overflow-hidden"
-                      >
-                        <h4 className="text-sm font-extrabold text-slate-800 dark:text-white mb-3 flex items-start gap-2">
-                          <span className="text-rose-500">Q{index + 1}.</span>{" "}
-                          <span>{item.question}</span>
-                        </h4>
-                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 text-sm font-medium text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800 shadow-sm">
+                <div className="p-5 sm:p-6 rounded-2xl border border-border bg-surface-elevated space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-foreground">
+                    <HelpCircle size={14} className="text-silver" /> Submitted Screening Responses
+                  </div>
+                  <div className="space-y-2.5">
+                    {screeningAnswers.map((item, idx) => (
+                      <div key={idx} className="p-3 rounded-xl bg-surface border border-border space-y-1 text-xs">
+                        <p className="font-bold text-foreground">
+                          Q{idx + 1}: {item.question}
+                        </p>
+                        <p className="text-muted-foreground pl-3 border-l-2 border-silver">
                           {item.answer}
-                        </div>
+                        </p>
                       </div>
                     ))}
                   </div>
-                </section>
+                </div>
+              )}
+
+              {/* Candidate Pitch / Cover Note */}
+              {applicantMessage && (
+                <div className="p-5 sm:p-6 rounded-2xl border border-border bg-surface-elevated space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-foreground">
+                    <FileText size={14} className="text-silver" /> Your Submitted Pitch Note
+                  </div>
+                  <p className="p-4 rounded-xl bg-surface border border-border text-xs leading-relaxed text-foreground whitespace-pre-wrap pl-4 border-l-2 border-silver">
+                    {applicantMessage}
+                  </p>
+                </div>
               )}
             </div>
 
-            {/* --- SIDEBAR DETAILS (RIGHT) --- */}
-            <div className="lg:col-span-1 space-y-6">
-              {/* Premium Compensation Card */}
-              <section className="bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-xl text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+            {/* RIGHT 1 COL: JOB SPECIFICATIONS DOSSIER */}
+            <div className="space-y-4">
+              <div className="p-5 rounded-2xl border border-border bg-surface-elevated space-y-4 text-xs">
+                <h4 className="font-bold uppercase tracking-wider text-foreground font-mono text-[11px]">
+                  Requisition Overview
+                </h4>
 
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-5 sm:mb-6 relative z-10">
-                  Compensation
-                </h3>
-                <div className="relative z-10">
-                  <p className="text-slate-400 text-[10px] font-bold mb-1 uppercase tracking-wide flex items-center gap-1.5">
-                    <IndianRupee size={12} /> Total Salary
-                  </p>
-                  <div className="flex items-baseline gap-1.5 sm:gap-2 mb-5 sm:mb-6">
-                    <span className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                      {(() => {
-                        const sMin =
-                          Number(job.salaryMin) ||
-                          Number(job.salaryAmount) ||
-                          0;
-                        const sMax =
-                          Number(job.salaryMax) ||
-                          Number(job.salaryAmount) ||
-                          0;
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground">Compensation</span>
+                    <p className="font-bold text-sm text-foreground font-mono mt-0.5">
+                      {job.salary ? `₹${Number(job.salary).toLocaleString()}` : "TBD / Flexible"}
+                    </p>
+                  </div>
 
-                        if (sMin === 0 && sMax === 0) return "UNPAID";
-                        return `${job.salaryCurrency || "₹"} ${sMin.toLocaleString()} - ${sMax.toLocaleString()}`;
-                      })()}
-                    </span>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground">Work Arrangement</span>
+                    <p className="font-bold text-foreground mt-0.5">{modeStr}</p>
                   </div>
-                  <div className="bg-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/10 flex justify-between items-center text-xs sm:text-sm font-bold backdrop-blur-md">
-                    <span className="text-slate-300">Frequency</span>
-                    <span className="text-emerald-400 uppercase tracking-wider">
-                      {job.salaryFrequency || "Monthly"}
-                    </span>
+
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-muted-foreground">Employment Type</span>
+                    <p className="font-bold text-foreground mt-0.5">{renderArray(job.jobType)}</p>
                   </div>
-                  {job.incentives?.length > 0 && (
-                    <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-white/10">
-                      <p className="text-[10px] text-amber-400 font-bold uppercase tracking-widest mb-2 flex items-center gap-1">
-                        <Zap size={12} /> Perks & Benefits
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {job.incentives.map((inc, i) => (
+
+                  {job.experienceLevel && (
+                    <div>
+                      <span className="text-[10px] font-mono uppercase text-muted-foreground">Experience Bracket</span>
+                      <p className="font-bold text-foreground mt-0.5">{job.experienceLevel}</p>
+                    </div>
+                  )}
+
+                  {job.skillsRequired && (
+                    <div>
+                      <span className="text-[10px] font-mono uppercase text-muted-foreground">Skills Evaluated</span>
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                        {(Array.isArray(job.skillsRequired)
+                          ? job.skillsRequired
+                          : String(job.skillsRequired).split(",")
+                        ).map((sk, i) => (
                           <span
                             key={i}
-                            className="bg-white/10 border border-white/5 px-2 py-1 rounded text-xs text-slate-200"
+                            className="px-2 py-0.5 rounded-md bg-surface border border-border text-[11px] font-mono text-silver"
                           >
-                            {inc}
+                            {sk.trim()}
                           </span>
                         ))}
                       </div>
                     </div>
                   )}
                 </div>
-              </section>
+              </div>
 
-              {/* Schedule & Timings */}
-              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
-                <div className="flex justify-between items-center mb-5 sm:mb-6 border-b border-slate-100 dark:border-slate-800 pb-3">
-                  <h3 className="text-[10px] sm:text-xs font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
-                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-600">
-                      <Clock size={16} />
-                    </div>{" "}
-                    Schedule
-                  </h3>
-                  {job.isFlexibleShifts && (
-                    <span className="px-2 py-1 bg-blue-50 text-blue-600 font-bold text-[10px] uppercase tracking-wider rounded-lg border border-blue-100">
-                      Flexible
-                    </span>
-                  )}
-                </div>
-
-                <div className="mb-5 sm:mb-6">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">
-                    Working Days
-                  </p>
-                  <div className="inline-block px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300">
-                    {job.workDaysPattern === "Custom"
-                      ? job.customWorkDaysDescription
-                      : job.workDaysPattern || renderArray(job.workDays)}
-                  </div>
-                </div>
-
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">
-                  Standard Shift Timings
-                </p>
-                <div className="flex flex-col gap-2.5">
-                  {job.shifts?.map((shift, i) => (
-                    <div
-                      key={i}
-                      className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700"
-                    >
-                      <span className="font-bold text-slate-800 dark:text-white text-xs truncate mr-2">
-                        {shift.shiftName}
-                      </span>
-                      <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 px-2 py-1 border border-slate-200 dark:border-slate-700 rounded-md shadow-sm shrink-0">
-                        {shift.startTime || "--:--"} -{" "}
-                        {shift.endTime || "--:--"}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Job Overview */}
-              <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center justify-between mb-5 sm:mb-6 border-b border-slate-100 dark:border-slate-800 pb-3">
-                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Job Overview
-                  </h3>
-                  {job.isFlexibleDuration && (
-                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">
-                      Flexible Dates
-                    </span>
-                  )}
-                </div>
-                <div className="space-y-4">
-                  <DetailRow
-                    icon={<CalendarDays size={16} className="text-blue-500" />}
-                    label="Start Date"
-                    value={
-                      job.startDate
-                        ? new Date(job.startDate).toLocaleDateString()
-                        : "TBD"
-                    }
-                  />
-                  <DetailRow
-                    icon={<Calendar size={16} className="text-rose-500" />}
-                    label="End Date"
-                    value={
-                      job.isLongTerm
-                        ? "Long Term"
-                        : job.endDate
-                          ? new Date(job.endDate).toLocaleDateString()
-                          : "TBD"
-                    }
-                  />
-
-                  {/* Render specific duration details if provided */}
-                  {(job.durationType || job.noOfDays) && (
-                    <DetailRow
-                      icon={<Timer size={16} className="text-orange-500" />}
-                      label="Duration"
-                      value={`${job.noOfDays || ""} ${job.durationType || "Days"}`}
-                    />
-                  )}
-
-                  {job.applicationDeadline && (
-                    <>
-                      <div className="h-px bg-slate-100 my-2"></div>
-                      <DetailRow
-                        icon={<Clock size={16} className="text-amber-500" />}
-                        label="Apply Before"
-                        value={new Date(
-                          job.applicationDeadline,
-                        ).toLocaleDateString()}
-                      />
-                    </>
-                  )}
-                  {job.expiringAt && (
-                    <DetailRow
-                      icon={<Activity size={16} className="text-rose-500" />}
-                      label="Listing Expires"
-                      value={new Date(job.expiringAt).toLocaleDateString()}
-                    />
-                  )}
-                  <div className="h-px bg-slate-100 my-2"></div>
-                  <DetailRow
-                    icon={<Users size={16} className="text-purple-500" />}
-                    label="Openings"
-                    value={`${job.noOfPeopleRequired} Position(s)`}
-                  />
-                </div>
-              </section>
+              {/* Action: View Original Requisition */}
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  navigate(`/jobs?q=${encodeURIComponent(job.title || "")}`);
+                }}
+                className="w-full py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-elevated text-xs font-semibold text-foreground transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Search size={14} /> Search Similar Roles
+              </button>
             </div>
           </div>
         </div>
-
-        {/* --- FOOTER ACTION --- */}
-        <div className="p-4 sm:p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end items-center">
-          <button
-            onClick={onClose}
-            className="px-8 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-lg active:scale-95"
-          >
-            Close Window
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-// Minimal Detail Row Component
-function DetailRow({ icon, label, value }) {
-  return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-slate-50 dark:bg-slate-800/80 rounded-lg border border-slate-100 dark:border-slate-700 shadow-sm">
-          {icon}
-        </div>
-        <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-          {label}
-        </span>
       </div>
-      <span
-        className="text-slate-900 dark:text-white font-extrabold text-xs sm:text-sm text-right truncate max-w-[45%]"
-        title={value}
-      >
-        {value}
-      </span>
     </div>
   );
 }

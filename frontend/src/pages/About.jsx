@@ -1,15 +1,228 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  ShieldCheck,
+  Cpu,
+  Target,
+  Sparkles,
+  ArrowRight,
+  CheckCircle2,
+  Lock,
+  Zap,
+  Building2,
+  Users,
+} from "lucide-react";
 
 export default function About() {
-    return(
-<section id="about" className="min-h-screen bg-slate-50 dark:bg-slate-950 py-32 transition-colors duration-150">
-    <div className="container mx-auto px-6 text-center">
-        <h3 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-6">About Us</h3>
-        <p className="text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-            JOBONE Portal is dedicated to bridging the gap between job seekers and recruiters.
-            With innovative tools and a user-friendly platform, we aim to make hiring and job
-            searching easier and more effective for everyone.
-        </p>
+  const principles = [
+    {
+      number: "01",
+      title: "Meritocracy Over Keyword Density",
+      description:
+        "Traditional ATS platforms reward keyword stuffing and resume games. JobOne evaluates candidates on demonstrable technical competencies, verified project history, and real domain achievements.",
+    },
+    {
+      number: "02",
+      title: "Direct Recruiter Connections",
+      description:
+        "We remove intermediaries and headhunting markups. Verified hiring managers and engineering leads communicate directly with qualified talent with transparent compensation brackets.",
+    },
+    {
+      number: "03",
+      title: "Deterministic Verification",
+      description:
+        "Every corporate requisition and candidate credential undergoes rigorous identity and qualification checks before publication, maintaining a zero-spam recruitment environment.",
+    },
+    {
+      number: "04",
+      title: "Privacy & Data Governance",
+      description:
+        "Your career profile and corporate hiring mandates are protected under SOC 2 Type II and GDPR protocols. We never monetize, scrape, or resell your professional identity.",
+    },
+  ];
+
+  const milestones = [
+    { metric: "10,000+", label: "Verified Professionals Active" },
+    { metric: "48 Hours", label: "Median Time to Candidate Shortlist" },
+    { metric: "96%", label: "Candidate Verification Pass Rate" },
+    { metric: "Zero", label: "Third-Party Recruitment Spam" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background text-foreground pt-24 pb-24 transition-colors">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
+        {/* --- EDITORIAL HERO --- */}
+        <section className="text-center pt-8 pb-12 relative overflow-hidden">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-2 border border-border text-[11px] font-mono text-silver mb-6">
+            <ShieldCheck size={13} className="text-silver" />
+            <span>ARCHITECTURAL RECRUITMENT MANIFESTO</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl font-display font-bold tracking-tight text-foreground max-w-4xl mx-auto leading-tight mb-6">
+            Engineering a High-Signal Career Marketplace.
+          </h1>
+
+          <p className="text-base sm:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed font-sans">
+            JobOne was engineered to eliminate recruitment noise. We connect high-caliber engineering, design, and executive talent directly with verified hiring teams.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
+            <Link
+              to="/jobs"
+              className="px-6 py-3 rounded-xl bg-foreground text-background font-semibold text-xs sm:text-sm hover:opacity-90 transition shadow-md"
+            >
+              Explore Active Requisitions
+            </Link>
+            <Link
+              to="/contact"
+              className="px-6 py-3 rounded-xl border border-border text-foreground hover:bg-surface-2 font-semibold text-xs sm:text-sm transition"
+            >
+              Contact Advisory Team
+            </Link>
+          </div>
+        </section>
+
+        {/* --- TELEMETRY METRICS STRIP --- */}
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 sm:p-8 rounded-3xl bg-surface-1 border border-border shadow-xl">
+          {milestones.map((item, idx) => (
+            <div key={idx} className="text-center p-3">
+              <div className="text-2xl sm:text-4xl font-display font-extrabold text-foreground mb-1">
+                {item.metric}
+              </div>
+              <p className="text-[11px] sm:text-xs font-mono uppercase tracking-wider text-foreground/50">
+                {item.label}
+              </p>
+            </div>
+          ))}
+        </section>
+
+        {/* --- CORE PHILOSOPHY & EDITORIAL ESSAY --- */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <div className="lg:col-span-5 space-y-4">
+            <span className="text-xs font-mono uppercase tracking-widest text-silver">
+              The Problem We Solve
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground tracking-tight">
+              The traditional hiring pipeline is broken by noise.
+            </h2>
+            <p className="text-sm text-foreground/70 leading-relaxed font-sans">
+              Candidates submit hundreds of applications into black-box algorithms, while recruiters sift through thousands of hallucinated resumes generated by automated bots.
+            </p>
+            <p className="text-sm text-foreground/70 leading-relaxed font-sans">
+              JobOne restores clarity through verified identities, structured skill evaluations, transparent compensation, and high-signal matching.
+            </p>
+          </div>
+
+          <div className="lg:col-span-7 space-y-4">
+            {principles.map((p) => (
+              <div
+                key={p.number}
+                className="p-6 rounded-2xl bg-surface-1 border border-border hover:border-silver/50 transition-colors"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-xs font-mono text-silver font-bold">{p.number}</span>
+                  <h3 className="text-base font-display font-bold text-foreground">
+                    {p.title}
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm text-foreground/70 leading-relaxed font-sans pl-7">
+                  {p.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* --- PLATFORM VERIFICATION STANDARD --- */}
+        <section className="p-8 sm:p-12 rounded-3xl bg-surface-1 border border-border shadow-2xl relative overflow-hidden">
+          <div className="max-w-3xl">
+            <span className="text-xs font-mono uppercase tracking-widest text-silver mb-3 block">
+              Integrity & Trust Framework
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-4">
+              The JobOne Verification Standard
+            </h2>
+            <p className="text-sm text-foreground/70 leading-relaxed mb-8">
+              Every participant in our career network undergoes strict validation:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-surface-2 border border-border">
+                <CheckCircle2 size={18} className="text-silver shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-1">
+                    Corporate Domain & GST Check
+                  </h4>
+                  <p className="text-xs text-foreground/60">
+                    All hiring organizations are authenticated through corporate registries and official email domains.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-surface-2 border border-border">
+                <CheckCircle2 size={18} className="text-silver shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-1">
+                    Verified Compensation Brackets
+                  </h4>
+                  <p className="text-xs text-foreground/60">
+                    Every requisition specifies benchmarked compensation ranges to eliminate bait-and-switch interviews.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-surface-2 border border-border">
+                <CheckCircle2 size={18} className="text-silver shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-1">
+                    Direct Screening Assessment
+                  </h4>
+                  <p className="text-xs text-foreground/60">
+                    Tailored qualification prompts evaluate candidate depth before submission reach the hiring manager.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-surface-2 border border-border">
+                <CheckCircle2 size={18} className="text-silver shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-1">
+                    Zero Resale Privacy Guarantee
+                  </h4>
+                  <p className="text-xs text-foreground/60">
+                    Candidacy profiles are shared solely with the specific employers the candidate approves.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* --- CALL TO ACTION --- */}
+        <section className="text-center py-10 border-t border-border">
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-3">
+            Ready to experience high-signal hiring?
+          </h2>
+          <p className="text-xs sm:text-sm text-foreground/60 max-w-md mx-auto mb-6">
+            Join thousands of professionals and forward-thinking companies building their future on JobOne.
+          </p>
+          <div className="flex justify-center gap-3">
+            <Link
+              to="/register"
+              className="px-6 py-3 rounded-xl bg-foreground text-background font-semibold text-xs tracking-wide hover:opacity-90 transition"
+            >
+              Create Account
+            </Link>
+            <Link
+              to="/companies"
+              className="px-6 py-3 rounded-xl border border-border text-foreground font-semibold text-xs hover:bg-surface-2 transition"
+            >
+              Explore Companies
+            </Link>
+          </div>
+        </section>
+      </div>
     </div>
-</section>
-    )}
+  );
+}
