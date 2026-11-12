@@ -56,7 +56,7 @@ export default function Contact() {
   const QUICK_SUBJECTS = [
     "Requisition Verification",
     "Candidate Dossier Query",
-    "Enterprise ATS Integration",
+    "Enterprise Hiring Integration",
     "Technical Bug Report",
     "Billing & Invoicing",
   ];

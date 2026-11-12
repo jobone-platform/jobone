@@ -47,13 +47,13 @@ export default function EmployerLogoutModal({ isOpen, onClose, onConfirm }) {
               Sign out of JobOne?
             </h3>
             <p className="text-xs text-[var(--theme-text-muted)] font-medium">
-              Employer Hiring Command Center
+              Employer Workspace
             </p>
           </div>
         </div>
 
         <p className="text-sm text-[var(--theme-text-muted)] leading-relaxed mb-6">
-          You are about to sign out of your employer hiring portal. Active job listings and candidate pipelines will remain running, but you must sign in again to review applicants or edit postings.
+          You are about to sign out of your Employer Dashboard. Active job listings and candidate pipelines will remain running, but you must sign in again to review applicants or edit postings.
         </p>
 
         {/* Action Buttons */}

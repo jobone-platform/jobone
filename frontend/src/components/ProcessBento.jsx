@@ -26,7 +26,7 @@ export default function ProcessBento() {
     {
       num: "03",
       title: "Direct Submission",
-      desc: "Apply straight into employer ATS pipelines with verified credentials and structured documents.",
+      desc: "Apply straight into employer hiring pipelines with verified credentials and structured documents.",
       icon: Send,
     },
     {

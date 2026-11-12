@@ -404,7 +404,14 @@ export default function EmployerInterviews() {
 
   if (loading) {
     return (
-      <EmployerLayout activeTab="interviews">
+      <EmployerLayout
+      activeTab="interviews"
+      title="Interviews"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "Interviews" },
+      ]}
+    >
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
           <Loader2 className="animate-spin text-silver mb-3" size={36} />
           <p className="text-xs font-mono tracking-widest text-foreground/50 uppercase">
@@ -416,7 +423,14 @@ export default function EmployerInterviews() {
   }
 
   return (
-    <EmployerLayout activeTab="interviews">
+    <EmployerLayout
+      activeTab="interviews"
+      title="Interviews"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "Interviews" },
+      ]}
+    >
       <div className="space-y-6 pb-20">
         {/* HEADER & ACTIONS */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">

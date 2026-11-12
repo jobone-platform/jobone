@@ -54,14 +54,14 @@ export default function EmployerSidebar({
   const navItems = [
     {
       id: "dashboard",
-      label: "Hiring Dashboard",
+      label: "Dashboard",
       path: "/employerdashboard",
       icon: LayoutDashboard,
       requiresApproval: false,
     },
     {
       id: "createjob",
-      label: "Post New Job",
+      label: "Create Job",
       path: "/createjob",
       icon: PlusCircle,
       requiresApproval: true,
@@ -69,7 +69,7 @@ export default function EmployerSidebar({
     },
     {
       id: "candidates",
-      label: "Find Candidates",
+      label: "Candidates",
       path: "/candidates",
       icon: Search,
       requiresApproval: true,
@@ -77,7 +77,7 @@ export default function EmployerSidebar({
     },
     {
       id: "my-candidates",
-      label: "My Candidates",
+      label: "Candidate Pipeline",
       path: "/my-candidates",
       icon: Users,
       requiresApproval: true,
@@ -85,7 +85,7 @@ export default function EmployerSidebar({
     },
     {
       id: "interviews",
-      label: "Interview Calendar",
+      label: "Interviews",
       path: "/interviews",
       icon: CalendarClock,
       requiresApproval: true,
@@ -121,7 +121,7 @@ export default function EmployerSidebar({
     },
     {
       id: "settings",
-      label: "Edit Profile",
+      label: "Settings",
       path: "/employereditprofile",
       icon: Settings,
       requiresApproval: false,

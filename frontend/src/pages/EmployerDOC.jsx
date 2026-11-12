@@ -64,7 +64,14 @@ export default function EmployerDocumentManager() {
 
   if (loading) {
     return (
-      <EmployerLayout activeTab="documents">
+      <EmployerLayout
+      activeTab="documents"
+      title="KYC & Documents"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "KYC & Documents" },
+      ]}
+    >
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
           <Loader2 className="animate-spin text-silver mb-3" size={36} />
           <p className="text-xs font-mono tracking-widest text-foreground/50 uppercase">
@@ -77,7 +84,14 @@ export default function EmployerDocumentManager() {
 
   if (!profile) {
     return (
-      <EmployerLayout activeTab="documents">
+      <EmployerLayout
+      activeTab="documents"
+      title="KYC & Documents"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "KYC & Documents" },
+      ]}
+    >
         <div className="p-16 rounded-3xl bg-surface border border-border text-center">
           <AlertTriangle size={36} className="mx-auto text-rose-400 mb-3" />
           <h3 className="text-lg font-display font-bold text-foreground">
@@ -106,7 +120,14 @@ export default function EmployerDocumentManager() {
   const completionPercentage = Math.round((totalUploaded / Math.max(totalRequired, 1)) * 100);
 
   return (
-    <EmployerLayout activeTab="documents">
+    <EmployerLayout
+      activeTab="documents"
+      title="KYC & Documents"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "KYC & Documents" },
+      ]}
+    >
       <div className="space-y-6 pb-20 max-w-5xl mx-auto">
         {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">

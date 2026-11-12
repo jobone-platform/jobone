@@ -61,7 +61,7 @@ export default function NavBar() {
     "/admin/login",
   ].includes(currentPath);
 
-  // Dedicated authenticated portal layouts (Admin, Employer ATS, Candidate Command Center)
+  // Dedicated authenticated portal layouts (Admin, Employer Workspace, Candidate Command Center)
   const isPortalLayout =
     currentPath.startsWith("/admin") ||
     [
@@ -164,7 +164,7 @@ export default function NavBar() {
   const portalLabel = isAdmin
     ? "Admin Console"
     : isEmployer
-    ? "ATS Portal"
+    ? "Employer Dashboard"
     : "Career Center";
 
   // --- 3. PUBLIC NAVIGATION LINKS ---
@@ -281,9 +281,13 @@ export default function NavBar() {
               <div className="flex items-center gap-2">
                 <Link
                   to={portalRoute}
-                  className="px-3.5 py-1.5 rounded-full text-xs font-bold border border-[var(--theme-border-silver)] bg-[var(--theme-card)] hover:bg-[var(--theme-surface-hover)] text-[var(--theme-text)] transition flex items-center gap-1.5 shadow-xs"
+                  className="px-3.5 py-1.5 rounded-full text-xs font-bold border border-[var(--theme-border-silver)] bg-[var(--theme-card)] hover:bg-[var(--theme-surface-hover)] text-[var(--theme-text)] transition flex items-center gap-1.5 shadow-xs whitespace-nowrap shrink-0"
                 >
-                  <LayoutDashboard className="w-3.5 h-3.5 text-zinc-400" />
+                  {isEmployer ? (
+                    <Building2 className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  ) : (
+                    <LayoutDashboard className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  )}
                   <span>{portalLabel}</span>
                 </Link>
 
@@ -333,8 +337,12 @@ export default function NavBar() {
                             onClick={() => setUserDropdownOpen(false)}
                             className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition"
                           >
-                            <LayoutDashboard className="w-3.5 h-3.5 text-zinc-400" />
-                            <span>Dashboard Command</span>
+                            {isEmployer ? (
+                              <Building2 className="w-3.5 h-3.5 text-zinc-400" />
+                            ) : (
+                              <LayoutDashboard className="w-3.5 h-3.5 text-zinc-400" />
+                            )}
+                            <span>{isEmployer ? "Employer Dashboard" : "Dashboard"}</span>
                           </Link>
 
                           {isJobseeker && (
@@ -484,9 +492,9 @@ export default function NavBar() {
                   <Link
                     to={portalRoute}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[var(--theme-text)] text-[var(--theme-bg)] shrink-0"
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[var(--theme-text)] text-[var(--theme-bg)] shrink-0 whitespace-nowrap"
                   >
-                    Open Portal
+                    {isEmployer ? "Employer Dashboard" : "Open Dashboard"}
                   </Link>
                 </div>
               )}

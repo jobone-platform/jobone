@@ -136,7 +136,14 @@ export default function Candidates() {
   const masterList = candidates.map((c) => c._id);
 
   return (
-    <EmployerLayout activeTab="candidates">
+    <EmployerLayout
+      activeTab="candidates"
+      title="Candidates"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "Candidates" },
+      ]}
+    >
       <div className="space-y-6 pb-20">
         {/* HEADER & TALENT SOURCING TITLE */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">

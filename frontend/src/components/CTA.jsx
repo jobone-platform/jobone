@@ -71,7 +71,7 @@ export default function CTASection() {
 
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[11px] font-semibold text-[var(--theme-text-muted)] mb-3">
                 <Sparkles className="w-3 h-3 text-[var(--theme-accent-silver)]" />
-                <span>For Enterprises & ATS</span>
+                <span>For Employers &amp; Hiring Teams</span>
               </div>
 
               <h3 className="text-2xl sm:text-3xl font-black text-[var(--theme-text)] mb-3 tracking-tight">
@@ -79,7 +79,7 @@ export default function CTASection() {
               </h3>
 
               <p className="text-sm text-[var(--theme-text-muted)] mb-8 max-w-md font-normal leading-relaxed">
-                Post positions, review authenticated candidate profiles, and manage your full talent pipeline directly with built-in ATS features.
+                Post positions, review authenticated candidate profiles, and manage your full talent pipeline directly within a unified hiring workspace.
               </p>
 
               <div className="flex flex-wrap items-center gap-3">

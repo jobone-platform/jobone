@@ -30,7 +30,7 @@ export default function Services() {
     },
     {
       badge: "Recruitment Infrastructure",
-      title: "Enterprise ATS & Pipeline Management",
+      title: "Enterprise Hiring & Pipeline Management",
       description:
         "Streamline your entire talent acquisition workflow with a unified candidate management system. Move candidates seamlessly from applied to interview, assignment, offer, and hire.",
       features: [

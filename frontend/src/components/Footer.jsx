@@ -54,7 +54,7 @@ export default function Footer() {
     "/admin/login",
   ].includes(currentPath);
 
-  // Dedicated authenticated portal layouts (Admin, Employer ATS, Candidate Command Center)
+  // Dedicated authenticated portal layouts (Admin, Employer Workspace, Candidate Command Center)
   const isPortalLayout =
     currentPath.startsWith("/admin") ||
     [
@@ -161,7 +161,7 @@ export default function Footer() {
             </Link>
 
             <p className="text-sm leading-relaxed text-[var(--theme-text-muted)] max-w-sm font-normal">
-              Connecting verified career seekers with premier enterprises through high-precision matching, transparent recruitment pipelines, and modern ATS infrastructure.
+              Connecting verified career seekers with premier enterprises through high-precision matching, transparent recruitment pipelines, and modern hiring infrastructure.
             </p>
 
             {/* Platform Operational Telemetry Badge */}
@@ -172,7 +172,7 @@ export default function Footer() {
               </span>
               <span className="font-medium text-[var(--theme-text)]">Systems Operational</span>
               <span className="text-[var(--theme-text-subtle)]">•</span>
-              <span className="text-[11px] text-[var(--theme-text-subtle)] font-mono">99.98% ATS Uptime</span>
+              <span className="text-[11px] text-[var(--theme-text-subtle)] font-mono">99.98% Platform Uptime</span>
             </div>
 
             {/* Social channels */}
@@ -249,7 +249,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Column 2: For Employers & ATS */}
+            {/* Column 2: For Employers */}
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
                 <Building2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
@@ -269,7 +269,7 @@ export default function Footer() {
                     to="/employerdashboard"
                     className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
                   >
-                    ATS Recruiter Portal
+                    Employer Dashboard
                   </Link>
                 </li>
                 <li>

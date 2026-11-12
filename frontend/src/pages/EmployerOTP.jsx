@@ -103,8 +103,8 @@ export default function EmployerOTP() {
 
       setMessage(
         res.data.alreadyVerified
-          ? "Account verified! Redirecting to employer recruitment dashboard..."
-          : "Employer account verified! Redirecting to recruitment console..."
+          ? "Account verified! Redirecting to Employer Dashboard..."
+          : "Employer account verified! Redirecting to Employer Dashboard..."
       );
       setIsError(false);
 
@@ -210,7 +210,7 @@ export default function EmployerOTP() {
             </>
           ) : (
             <>
-              <span>Verify & Launch Recruitment Console</span>
+              <span>Verify &amp; Open Employer Dashboard</span>
               <ArrowRight size={16} />
             </>
           )}

@@ -195,7 +195,14 @@ export default function EmployerTeam() {
   };
 
   return (
-    <EmployerLayout activeTab="team">
+    <EmployerLayout
+      activeTab="team"
+      title="Team Management"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "Team Management" },
+      ]}
+    >
       <div className="space-y-6 pb-20">
         {/* HEADER & INVITE ACTION */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">

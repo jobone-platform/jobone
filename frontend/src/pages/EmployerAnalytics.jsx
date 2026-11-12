@@ -166,7 +166,14 @@ export default function EmployerAnalytics() {
 
   if (loading) {
     return (
-      <EmployerLayout activeTab="analytics">
+      <EmployerLayout
+      activeTab="analytics"
+      title="Hiring Analytics"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "Hiring Analytics" },
+      ]}
+    >
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
           <Loader2 className="animate-spin text-silver mb-3" size={36} />
           <p className="text-xs font-mono tracking-widest text-foreground/50 uppercase">
@@ -178,7 +185,14 @@ export default function EmployerAnalytics() {
   }
 
   return (
-    <EmployerLayout activeTab="analytics">
+    <EmployerLayout
+      activeTab="analytics"
+      title="Hiring Analytics"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "Hiring Analytics" },
+      ]}
+    >
       <div className="space-y-6 pb-20">
         {/* HEADER & CONTROLS */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">

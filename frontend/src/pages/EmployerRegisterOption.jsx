@@ -12,7 +12,7 @@ export default function EmployerRegisterOption() {
     <AuthLayout
       title="Hire Verified Talent"
       subtitle="Publish open requisitions and recruit pre-screened industry professionals"
-      badge="Employer ATS Gateway"
+      badge="Employer Workspace"
       roleType="employer"
     >
       {/* Role Switch Tabs */}

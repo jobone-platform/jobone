@@ -230,7 +230,7 @@ export default function EmployerDashboard() {
   return (
     <EmployerLayout
       activeTab="dashboard"
-      title="Hiring Command Center"
+      title="Employer Dashboard"
       approvalStatus={approvalStatus}
       employerInfo={employerProfile}
     >
@@ -239,9 +239,9 @@ export default function EmployerDashboard() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[var(--theme-accent-silver)] bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] px-2 py-0.5 rounded">
-              Hiring Portal
+              Employer Workspace
             </span>
-            <span className="text-xs text-[var(--theme-text-subtle)] font-mono">• Live ATS</span>
+            <span className="text-xs text-[var(--theme-text-subtle)] font-mono">• Active Workspace</span>
           </div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[var(--theme-text)] tracking-tight">
             Welcome back, {employerName}
@@ -338,7 +338,7 @@ export default function EmployerDashboard() {
               </div>
               <div className="p-3.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] opacity-60">
                 <span className="text-[10px] font-mono text-[var(--theme-text-subtle)] font-bold">STEP 3</span>
-                <p className="text-xs font-bold text-[var(--theme-text)] mt-1">Full ATS Access</p>
+                <p className="text-xs font-bold text-[var(--theme-text)] mt-1">Full Workspace Access</p>
                 <p className="text-[11px] text-[var(--theme-text-muted)] mt-0.5">Pending Step 2</p>
               </div>
             </div>
