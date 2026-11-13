@@ -203,13 +203,13 @@ export default function EmployerRegister() {
             <button
               type="button"
               onClick={() => setFormData((prev) => ({ ...prev, userType: "Recruiter" }))}
-              className={`py-2 px-3 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              className={`py-2 px-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer ${
                 formData.userType === "Recruiter"
                   ? "bg-foreground text-background shadow-sm"
                   : "text-foreground/70 hover:text-foreground"
               }`}
             >
-              <UserCheck size={14} /> Agency / Recruiter
+              <UserCheck size={14} /> Agency / Recruiter / FreeLancer
             </button>
           </div>
         </div>

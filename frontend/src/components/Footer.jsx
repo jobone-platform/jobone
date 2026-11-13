@@ -54,7 +54,7 @@ export default function Footer() {
     "/admin/login",
   ].includes(currentPath);
 
-  // Dedicated authenticated portal layouts (Admin, Employer ATS, Candidate Command Center)
+  // Dedicated authenticated portal layouts (Admin, Employer Workspace, Candidate Command Center)
   const isPortalLayout =
     currentPath.startsWith("/admin") ||
     [
@@ -92,6 +92,8 @@ export default function Footer() {
   if (isStandaloneAuth || isPortalLayout || window.__TAURI__) {
     return null;
   }
+
+  const isEmployerHome = currentPath === "/employer";
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -161,7 +163,7 @@ export default function Footer() {
             </Link>
 
             <p className="text-sm leading-relaxed text-[var(--theme-text-muted)] max-w-sm font-normal">
-              Connecting verified career seekers with premier enterprises through high-precision matching, transparent recruitment pipelines, and modern ATS infrastructure.
+              Connecting verified career seekers with premier enterprises through high-precision matching, transparent recruitment pipelines, and modern hiring infrastructure.
             </p>
 
             {/* Platform Operational Telemetry Badge */}
@@ -172,7 +174,7 @@ export default function Footer() {
               </span>
               <span className="font-medium text-[var(--theme-text)]">Systems Operational</span>
               <span className="text-[var(--theme-text-subtle)]">•</span>
-              <span className="text-[11px] text-[var(--theme-text-subtle)] font-mono">99.98% ATS Uptime</span>
+              <span className="text-[11px] text-[var(--theme-text-subtle)] font-mono">99.98% Platform Uptime</span>
             </div>
 
             {/* Social channels */}
@@ -198,210 +200,342 @@ export default function Footer() {
           </div>
 
           {/* Link Columns (Span 8 cols -> 4 sub-columns on desktop) */}
-          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
-            {/* Column 1: Talent Discovery */}
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
-                <Briefcase className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
-                Discovery
-              </h3>
-              <ul className="space-y-2.5 text-sm font-medium">
-                <li>
-                  <Link
-                    to="/jobs"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Browse All Jobs
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/companies"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Explore Companies
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/recommended-jobs"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Recommended Jobs
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/jobs?workplaceType=Remote"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Remote Positions
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/jobs?industry=Technology"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Tech & Engineering
-                  </Link>
-                </li>
-              </ul>
-            </div>
+          {isEmployerHome ? (
+            <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+              {/* Employer Column 1: Hiring Workspace */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
+                  <Building2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                  Hiring Workspace
+                </h3>
+                <ul className="space-y-2.5 text-sm font-medium">
+                  <li>
+                    <Link
+                      to="/employerdashboard"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Employer Dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/createjob"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Post a Job
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/candidates"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Candidate Search
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/interviews"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Interview Scheduling
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
-            {/* Column 2: For Employers & ATS */}
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
-                <Building2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
-                For Employers
-              </h3>
-              <ul className="space-y-2.5 text-sm font-medium">
-                <li>
-                  <Link
-                    to="/employerregister"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Post a Position
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/employerdashboard"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    ATS Recruiter Portal
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/candidates"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Candidate Search
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/services"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Hiring Solutions
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/about#verification"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Employer Verification
-                  </Link>
-                </li>
-              </ul>
-            </div>
+              {/* Employer Column 2: Capabilities */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                  Platform
+                </h3>
+                <ul className="space-y-2.5 text-sm font-medium">
+                  <li>
+                    <a
+                      href="#employer-features"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Hiring Features
+                    </a>
+                  </li>
+                  <li>
+                    <Link
+                      to="/employerdocupload"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Company Verification
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/analytics"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Hiring Analytics
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/employerregister"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Create Employer Account
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
-            {/* Column 3: Platform & Company */}
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
-                <Globe2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
-                Company
-              </h3>
-              <ul className="space-y-2.5 text-sm font-medium">
-                <li>
-                  <Link
-                    to="/about"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    About JobOne
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/services"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Enterprise Services
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/contact"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Direct Contact Desk
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/about#story"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Our Mission
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="https://simtrak.in"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors"
-                  >
-                    Simtrak Solutions
-                    <ExternalLink className="w-3 h-3 opacity-60" />
-                  </a>
-                </li>
-              </ul>
-            </div>
+              {/* Employer Column 3: Company & Audience */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
+                  <Globe2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                  Company
+                </h3>
+                <ul className="space-y-2.5 text-sm font-medium">
+                  <li>
+                    <Link
+                      to="/contact"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Contact
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/about"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      About JobOne
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/services"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Services
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Candidate Homepage
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
-            {/* Column 4: Trust, Security & Legal */}
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
-                Trust & Legal
-              </h3>
-              <ul className="space-y-2.5 text-sm font-medium">
-                <li>
-                  <Link
-                    to="/contact?subject=privacy"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/contact?subject=terms"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/contact?subject=security"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Security Standards
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/about#verification"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Verification Guarantee
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/contact"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
-                  >
-                    Candidate Help Desk
-                  </Link>
-                </li>
-              </ul>
+              {/* Employer Column 4: Privacy & Terms */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                  Trust &amp; Legal
+                </h3>
+                <ul className="space-y-2.5 text-sm font-medium">
+                  <li>
+                    <Link
+                      to="/contact?subject=privacy"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Privacy Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/contact?subject=terms"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Terms of Service
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/about#verification"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Verification Standards
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+              {/* Candidate Column 1: Discovery */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
+                  <Briefcase className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                  Discovery
+                </h3>
+                <ul className="space-y-2.5 text-sm font-medium">
+                  <li>
+                    <Link
+                      to="/jobs"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Find Jobs
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/companies"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Companies
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/recommended-jobs"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Recommended Jobs
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/jobs?location=Remote"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Remote Positions
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Candidate Column 2: Candidate Resources & Tools */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                  Candidate Tools
+                </h3>
+                <ul className="space-y-2.5 text-sm font-medium">
+                  <li>
+                    <Link
+                      to="/resume-builder"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Resume Tools
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/services"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Candidate Resources
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/myapplications"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Application Tracking
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/jobseeker-documents"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Career Documents
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Candidate Column 3: Account & Employers */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
+                  <Globe2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                  Account
+                </h3>
+                <ul className="space-y-2.5 text-sm font-medium">
+                  <li>
+                    <Link
+                      to="/login"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Sign In
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/userregister"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Create Account
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/employer"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      For Employers
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/contact"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Contact
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Candidate Column 4: Privacy & Terms */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                  Privacy &amp; Terms
+                </h3>
+                <ul className="space-y-2.5 text-sm font-medium">
+                  <li>
+                    <Link
+                      to="/contact?subject=privacy"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Privacy Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/contact?subject=terms"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      Terms of Service
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/about"
+                      className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                    >
+                      About JobOne
+                    </Link>
+                  </li>
+                  <li>
+                    <a
+                      href="https://simtrak.in"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors"
+                    >
+                      Simtrak Solutions
+                      <ExternalLink className="w-3 h-3 opacity-60" />
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Contact Strip: Phone, Email, Location */}
@@ -453,8 +587,6 @@ export default function Footer() {
             >
               Simtrak Solutions
             </a>
-            <span>•</span>
-            <span className="font-mono text-[11px]">Recruitment Architecture</span>
           </p>
         </div>
       </div>

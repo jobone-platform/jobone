@@ -7,6 +7,7 @@ import expressAsyncHandler from "express-async-handler";
 import { OAuth2Client } from 'google-auth-library';
 import bcrypt from "bcrypt";
 import UserOTP from '../models/userVerification.js';
+import PendingRegistration from '../models/pendingRegistration.js';
 import sendEmail from '../utils/sendEmail.js';
 import { validationResult } from 'express-validator';
 import {
@@ -80,28 +81,30 @@ export const createUser = expressAsyncHandler(async (req, res) => {
   const formattedPhone = phoneCheck.formatted;
   const rawDigits = phoneCheck.rawDigits;
 
-  // 5. Check Duplicate Email
-  const existingUser = await User.findOne({ email: normalizedEmail });
-  if (existingUser) {
-    if (existingUser.isVerified) {
-      res.status(400);
-      throw new Error("An account with this email already exists. Please log in.");
-    }
+  // 5. Check Duplicate Email across verified accounts
+  const existingVerifiedUser = await User.findOne({ email: normalizedEmail, isVerified: true });
+  if (existingVerifiedUser) {
+    res.status(400);
+    throw new Error("An account with this email already exists. Please log in.");
   }
 
-  const existingEmployer = await Employer.findOne({ email: normalizedEmail });
-  if (existingEmployer) {
+  const existingVerifiedEmployer = await Employer.findOne({ email: normalizedEmail, isVerified: true });
+  if (existingVerifiedEmployer) {
     res.status(400);
     throw new Error("This email is already registered as an Employer.");
   }
 
-  // 6. Check Duplicate Phone across Jobseekers and Employers
+  // Clean up any stale unverified candidate records that were left over from previous incomplete attempts
+  await User.deleteMany({ email: normalizedEmail, isVerified: false });
+
+  // 6. Check Duplicate Phone across verified Jobseekers and Employers
   const phoneQuery = {
     $or: [{ phone: formattedPhone }, { phone: rawDigits }],
+    isVerified: true,
   };
 
   const phoneInUser = await User.findOne(phoneQuery);
-  if (phoneInUser && (!existingUser || phoneInUser._id.toString() !== existingUser._id.toString())) {
+  if (phoneInUser) {
     res.status(400);
     throw new Error("This mobile number is already registered to a candidate account.");
   }
@@ -112,56 +115,49 @@ export const createUser = expressAsyncHandler(async (req, res) => {
     throw new Error("This mobile number is already registered to an Employer account.");
   }
 
+  // Hash password with bcrypt cost 10
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  let savedUser;
-  if (existingUser && !existingUser.isVerified) {
-    // Refresh existing unverified user
-    existingUser.name = nameCheck.value;
-    existingUser.password = hashedPassword;
-    existingUser.phone = formattedPhone;
-    savedUser = await existingUser.save();
-    await UserOTP.deleteMany({ userId: savedUser._id });
-  } else {
-    const user = new User({
+  // Generate 6-digit OTP using cryptographically secure random generator
+  const otpCode = generateSecureOTP(6);
+  const hashedOTP = await bcrypt.hash(otpCode, 10);
+
+  // Remove any previous pending registration for this email and role
+  await PendingRegistration.deleteMany({ email: normalizedEmail, role: "candidate" });
+
+  // Create isolated temporary PendingRegistration record (TTL: 10 minutes)
+  // SECURITY MANDATE: Do NOT create any permanent User record!
+  const pendingReg = await PendingRegistration.create({
+    role: "candidate",
+    email: normalizedEmail,
+    data: {
       name: nameCheck.value,
-      email: normalizedEmail,
       password: hashedPassword,
       phone: formattedPhone,
-    });
-    savedUser = await user.save();
-  }
-
-  const otpCode = generateSecureOTP(6);
+      countryCode: countryCode || "+91",
+    },
+    otp: hashedOTP,
+    attempts: 0,
+    lastResendAt: new Date(),
+    resendCount: 0,
+  });
 
   try {
-    const hashedOTP = await bcrypt.hash(otpCode, 10);
-    await UserOTP.deleteMany({ userId: savedUser._id });
-    await UserOTP.create({
-      userId: savedUser._id,
-      otp: hashedOTP,
-      type: "verification",
-      attempts: 0,
-    });
-
     await sendEmail({
-      email: savedUser.email,
-      subject: 'Verify your JobOne Account',
+      email: normalizedEmail,
+      subject: "Verify your JobOne Account",
       message: `Your verification code is: ${otpCode}. It expires in 10 minutes.`,
     });
 
     res.status(201).json({
-      message: 'Registration successful. Please check your email to verify your account.',
-      email: savedUser.email
+      message: "Registration initiated. Please check your email to verify your account.",
+      email: normalizedEmail,
     });
-
   } catch (error) {
-    if (!existingUser) {
-      await User.deleteOne({ _id: savedUser._id });
-    }
-    await UserOTP.deleteMany({ userId: savedUser._id });
+    await PendingRegistration.deleteMany({ _id: pendingReg._id });
+    console.error("Candidate OTP email dispatch failed:", error);
     res.status(500);
-    throw new Error('Verification email failed to send. Please try again.');
+    throw new Error("Verification email failed to send. Please try again.");
   }
 });
 
@@ -169,134 +165,186 @@ export const createUser = expressAsyncHandler(async (req, res) => {
 export const verifyUserOTP = expressAsyncHandler(async (req, res) => {
   const { email, otp } = req.body;
   if (!email || !otp) {
-    res.status(400); throw new Error("Email and OTP are required");
+    res.status(400);
+    throw new Error("Email and OTP are required");
   }
 
   const normalizedEmail = normalizeEmail(email);
-  const user = await User.findOne({ email: normalizedEmail });
-  if (!user) {
-    res.status(404); throw new Error("Candidate account not found");
-  }
 
-  // Handle already verified user
-  if (user.isVerified) {
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '5h' }
-    );
-    return res.status(200).json({
-      message: "Email is already verified. You can log in.",
-      alreadyVerified: true,
-      token,
-      userId: user._id,
-      id: user._id,
-      user: { id: user._id, name: user.name, email: user.email },
-      isProfileComplete: user.isProfileComplete || false
-    });
-  }
+  // Look up isolated pending registration
+  const pending = await PendingRegistration.findOne({ email: normalizedEmail, role: "candidate" });
 
-  const userOTP = await UserOTP.findOne({ userId: user._id, type: "verification" });
-  if (!userOTP) {
-    res.status(400); throw new Error("Verification code has expired or does not exist. Please request a new code.");
+  if (!pending) {
+    // Check if user already completed verification previously
+    const verifiedUser = await User.findOne({ email: normalizedEmail, isVerified: true });
+    if (verifiedUser) {
+      const token = jwt.sign(
+        { id: verifiedUser._id, email: verifiedUser.email },
+        process.env.JWT_SECRET,
+        { expiresIn: "5h" }
+      );
+      return res.status(200).json({
+        message: "Email is already verified. You can log in.",
+        alreadyVerified: true,
+        token,
+        userId: verifiedUser._id,
+        id: verifiedUser._id,
+        user: { id: verifiedUser._id, name: verifiedUser.name, email: verifiedUser.email },
+        isProfileComplete: verifiedUser.isProfileComplete || false,
+      });
+    }
+
+    res.status(400);
+    throw new Error("Registration session has expired or does not exist. Please register again from the beginning.");
   }
 
   // Explicit 10-minute expiry check
-  const isExpired = Date.now() - new Date(userOTP.createdAt).getTime() > 10 * 60 * 1000;
+  const isExpired = Date.now() - new Date(pending.createdAt).getTime() > 10 * 60 * 1000;
   if (isExpired) {
-    await UserOTP.deleteMany({ userId: user._id, type: "verification" });
-    res.status(400); throw new Error("Verification code has expired. Please request a new code.");
+    await PendingRegistration.deleteMany({ email: normalizedEmail, role: "candidate" });
+    res.status(400);
+    throw new Error("Verification code has expired. Registration discarded. Please register again from the beginning.");
   }
 
   // Attempt limit check (maximum 5 attempts)
-  if (userOTP.attempts >= 5) {
-    await UserOTP.deleteMany({ userId: user._id, type: "verification" });
-    return res.status(429).json({ message: "Too many failed attempts. Please request a new verification code." });
-  }
-
-  let isMatch = false;
-  if (userOTP.otp.startsWith("$2b$") || userOTP.otp.startsWith("$2a$")) {
-    isMatch = await bcrypt.compare(String(otp).trim(), userOTP.otp);
-  } else {
-    isMatch = userOTP.otp.trim() === String(otp).trim();
-  }
-
-  if (!isMatch) {
-    userOTP.attempts = (userOTP.attempts || 0) + 1;
-    await userOTP.save();
-    const remaining = 5 - userOTP.attempts;
-    return res.status(400).json({
-      message: remaining > 0 
-        ? `Invalid verification code. ${remaining} attempt(s) remaining.` 
-        : "Invalid verification code. Maximum attempts reached. Please request a new code."
+  if (pending.attempts >= 5) {
+    await PendingRegistration.deleteMany({ email: normalizedEmail, role: "candidate" });
+    return res.status(429).json({
+      message: "Too many failed attempts. Registration discarded for security. Please register again from the beginning.",
     });
   }
 
-  user.isVerified = true;
-  await user.save();
-  await UserOTP.deleteMany({ userId: user._id, type: "verification" });
+  let isMatch = false;
+  if (pending.otp.startsWith("$2b$") || pending.otp.startsWith("$2a$")) {
+    isMatch = await bcrypt.compare(String(otp).trim(), pending.otp);
+  } else {
+    isMatch = pending.otp.trim() === String(otp).trim();
+  }
 
-  const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '5h' });
+  if (!isMatch) {
+    pending.attempts = (pending.attempts || 0) + 1;
+    await pending.save();
+    const remaining = 5 - pending.attempts;
+    if (remaining <= 0) {
+      await PendingRegistration.deleteMany({ email: normalizedEmail, role: "candidate" });
+      return res.status(400).json({
+        message: "Invalid verification code. Maximum attempts reached. Registration discarded. Please register again.",
+      });
+    }
+    return res.status(400).json({
+      message: `Invalid verification code. ${remaining} attempt(s) remaining.`,
+    });
+  }
+
+  // =========================================================================
+  // MANDATORY SECURITY RULE: Account is created ONLY after successful OTP match!
+  // =========================================================================
+  // Clean up any stale unverified records if any exist
+  await User.deleteMany({ email: normalizedEmail, isVerified: false });
+
+  const newUser = new User({
+    name: pending.data.name,
+    email: pending.email,
+    password: pending.data.password, // Pre-hashed with bcrypt
+    phone: pending.data.phone,
+    isVerified: true,
+  });
+  const savedUser = await newUser.save();
+
+  // Invalidate and delete pending registration so OTP can never be replayed
+  await PendingRegistration.deleteMany({ email: normalizedEmail, role: "candidate" });
+
+  const token = jwt.sign(
+    { id: savedUser._id, email: savedUser.email },
+    process.env.JWT_SECRET,
+    { expiresIn: "5h" }
+  );
 
   res.status(200).json({
-    message: "Email verified successfully",
+    message: "Email verified successfully! Welcome to JobOne.",
     token,
-    userId: user._id,
-    id: user._id,
-    user: { id: user._id, name: user.name, email: user.email },
-    isProfileComplete: user.isProfileComplete || false
+    userId: savedUser._id,
+    id: savedUser._id,
+    user: { id: savedUser._id, name: savedUser.name, email: savedUser.email },
+    isProfileComplete: savedUser.isProfileComplete || false,
   });
 });
 
 export const resendUserOTP = expressAsyncHandler(async (req, res) => {
   const { email } = req.body;
   if (!email) {
-    res.status(400); throw new Error("Email is required");
+    res.status(400);
+    throw new Error("Email is required");
   }
 
   const normalizedEmail = normalizeEmail(email);
-  const user = await User.findOne({ email: normalizedEmail });
-  if (!user) {
-    res.status(404); throw new Error("Candidate account not found");
-  }
-  if (user.isVerified) {
-    res.status(400); throw new Error("This account is already verified. Please log in.");
+
+  // Look up active pending registration
+  const pending = await PendingRegistration.findOne({ email: normalizedEmail, role: "candidate" });
+  if (!pending) {
+    // Check if already verified
+    const verifiedUser = await User.findOne({ email: normalizedEmail, isVerified: true });
+    if (verifiedUser) {
+      res.status(400);
+      throw new Error("This account is already verified. Please log in.");
+    }
+    res.status(400);
+    throw new Error("Registration session has expired or does not exist. Please register again from the beginning.");
   }
 
-  // Rate limiting: Prevent requesting a new OTP within 30 seconds
-  const existingOTP = await UserOTP.findOne({ userId: user._id, type: "verification" });
-  if (existingOTP && (Date.now() - new Date(existingOTP.createdAt).getTime()) < 30 * 1000) {
-    const remainingSec = Math.ceil((30 * 1000 - (Date.now() - new Date(existingOTP.createdAt).getTime())) / 1000);
+  // Enforce server-side cooldown (60 seconds)
+  const elapsed = Date.now() - new Date(pending.lastResendAt || pending.createdAt).getTime();
+  if (elapsed < 60 * 1000) {
+    const remainingSec = Math.ceil((60 * 1000 - elapsed) / 1000);
     res.status(429);
     throw new Error(`Please wait ${remainingSec} seconds before requesting another code.`);
   }
 
-  // Delete existing verification OTPs
-  await UserOTP.deleteMany({ userId: user._id, type: "verification" });
+  // Enforce maximum resend limit (5 resends)
+  if (pending.resendCount >= 5) {
+    await PendingRegistration.deleteMany({ email: normalizedEmail, role: "candidate" });
+    res.status(429);
+    throw new Error("Maximum resend limit reached. Registration discarded for security. Please start over.");
+  }
 
-  // Create new hashed OTP using cryptographically secure random generator
+  // Generate new OTP & hash
   const otpCode = generateSecureOTP(6);
   const hashedOTP = await bcrypt.hash(otpCode, 10);
-  await UserOTP.create({
-    userId: user._id,
-    otp: hashedOTP,
-    type: "verification",
-    attempts: 0,
-  });
+
+  // Update pending registration
+  pending.otp = hashedOTP;
+  pending.attempts = 0;
+  pending.lastResendAt = new Date();
+  pending.resendCount = (pending.resendCount || 0) + 1;
+  pending.createdAt = new Date(); // Refresh 10-minute TTL
+  await pending.save();
 
   try {
     await sendEmail({
-      email: user.email,
-      subject: 'Your New Verification Code - JobOne',
+      email: normalizedEmail,
+      subject: "Your New Verification Code - JobOne",
       message: `Your new verification code is: ${otpCode}. It expires in 10 minutes.`,
     });
 
     res.status(200).json({ message: "A new verification code has been sent to your email." });
   } catch (error) {
-    await UserOTP.deleteMany({ userId: user._id, type: "verification" });
+    console.error("Candidate OTP resend email dispatch failed:", error);
     res.status(500);
     throw new Error("Could not send verification email. Please try again later.");
   }
+});
+
+
+export const cancelUserRegistration = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (email) {
+    const normalizedEmail = normalizeEmail(email);
+    // Discard any active pending registration
+    await PendingRegistration.deleteMany({ email: normalizedEmail, role: "candidate" });
+    // Ensure no unverified account lingers
+    await User.deleteMany({ email: normalizedEmail, isVerified: false });
+  }
+  res.status(200).json({ message: "Registration cancelled and temporary data discarded successfully." });
 });
 
 
@@ -452,11 +500,15 @@ export const userDetails = expressAsyncHandler(async (req, res) => {
       try {
         const token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if (decoded.id && decoded.id.toString() === userId.toString()) {
+        const targetId = decoded.id || (decoded.employer && decoded.employer.id);
+        if (targetId && targetId.toString() === userId.toString()) {
           isAuthorized = true;
-        } else if (decoded.id) {
-          const admin = await Admin.findById(decoded.id);
-          if (admin) isAuthorized = true;
+        } else if (targetId) {
+          const [admin, employer] = await Promise.all([
+            Admin.findById(targetId),
+            Employer.findById(targetId),
+          ]);
+          if (admin || employer) isAuthorized = true;
         }
       } catch (e) {
         // Invalid token, treat as public/unauthorized

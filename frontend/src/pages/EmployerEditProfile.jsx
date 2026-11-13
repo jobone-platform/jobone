@@ -5,6 +5,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 import EmployerLayout from "../components/employer/EmployerLayout.jsx";
 import LocationPicker from "../components/LocationPicker.jsx";
+import { INDUSTRIES } from "../constants/taxonomy";
 import {
   Loader2,
   Save,
@@ -408,14 +409,22 @@ export default function EmployerEditProfile() {
               <label className="block text-xs font-bold text-[var(--theme-text)] mb-1">
                 Industry Sector
               </label>
-              <input
-                type="text"
+              <select
                 name="industry"
-                value={form.industry}
+                value={form.industry || ""}
                 onChange={onChange}
-                placeholder="e.g. Information Technology & SaaS"
-                className="w-full p-2.5 text-xs rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)]"
-              />
+                className="w-full p-2.5 text-xs rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-none focus:border-[var(--theme-border-silver)]"
+              >
+                <option value="">Select Industry Vertical</option>
+                {INDUSTRIES.map((ind) => (
+                  <option key={ind.id} value={ind.name}>
+                    {ind.name}
+                  </option>
+                ))}
+                {form.industry && !INDUSTRIES.some((i) => i.name === form.industry) && (
+                  <option value={form.industry}>{form.industry} (Current)</option>
+                )}
+              </select>
             </div>
 
             {form.employerType === "company" && (

@@ -8,7 +8,7 @@ import { useAuth } from "../../routes/Context";
 export default function EmployerLayout({
   children,
   activeTab = "dashboard",
-  title = "Hiring Command Center",
+  title = "Employer Dashboard",
   breadcrumbs = [],
   approvalStatus = "approved",
   employerInfo: propEmployerInfo,

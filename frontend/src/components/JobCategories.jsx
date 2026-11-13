@@ -10,11 +10,6 @@ import {
   HeartPulse,
   Cpu,
   Truck,
-  Headphones,
-  Users,
-  GraduationCap,
-  Scale,
-  Palette,
   Building2,
   Briefcase,
   Search,
@@ -25,240 +20,27 @@ import {
   SlidersHorizontal,
   Layers,
   AlertCircle,
-  Sparkles,
+  ShoppingBag,
 } from "lucide-react";
+import { INDUSTRIES, normalizeIndustry } from "../constants/taxonomy";
 
-// Predefined core job categories with realistic popular roles and subdomains
-const BASE_CATEGORIES = [
-  {
-    name: "IT & Software",
-    icon: Code2,
-    group: "tech",
-    popularRoles: [
-      "Software Developer",
-      "Full Stack Developer",
-      "Data Analyst",
-      "DevOps Engineer",
-    ],
-    subdomains: [
-      "Software Development",
-      "Data & Analytics",
-      "Infrastructure & Cloud",
-      "Security & Testing",
-      "Design & Product",
-    ],
-  },
-  {
-    name: "Banking & Finance",
-    icon: TrendingUp,
-    group: "finance",
-    popularRoles: [
-      "Financial Analyst",
-      "Accountant",
-      "Investment Banker",
-      "Risk Officer",
-    ],
-    subdomains: [
-      "Corporate Banking",
-      "Finance & Accounting",
-      "Retail Banking",
-      "Wealth & Asset Mgmt",
-      "Risk & Insurance",
-    ],
-  },
-  {
-    name: "Sales & Marketing",
-    icon: Megaphone,
-    group: "marketing",
-    popularRoles: [
-      "Marketing Manager",
-      "Sales Executive",
-      "SEO Specialist",
-      "Content Strategist",
-    ],
-    subdomains: [
-      "B2B Corporate Sales",
-      "Digital Marketing",
-      "Brand Strategy",
-      "Retail & B2C Sales",
-      "Growth & Communications",
-    ],
-  },
-  {
-    name: "Healthcare & Pharma",
-    icon: HeartPulse,
-    group: "healthcare",
-    popularRoles: [
-      "Clinical Researcher",
-      "Pharmacist",
-      "Medical Officer",
-      "Staff Nurse",
-    ],
-    subdomains: [
-      "Clinical & Medical",
-      "Pharmaceuticals",
-      "Hospital Admin",
-      "Medical Support",
-      "Life Sciences",
-    ],
-  },
-  {
-    name: "Engineering & Manufacturing",
-    icon: Cpu,
-    group: "engineering",
-    popularRoles: [
-      "Mechanical Engineer",
-      "CAD Designer",
-      "Quality Engineer",
-      "Plant Supervisor",
-    ],
-    subdomains: [
-      "Core Engineering",
-      "Plant Operations",
-      "Quality Assurance",
-      "R&D & CAD Drafting",
-      "Robotics & Automation",
-    ],
-  },
-  {
-    name: "Operations & Logistics",
-    icon: Truck,
-    group: "operations",
-    popularRoles: [
-      "Supply Chain Executive",
-      "Warehouse Manager",
-      "Logistics Coordinator",
-      "Operations Analyst",
-    ],
-    subdomains: [
-      "Supply Chain & Freight",
-      "E-commerce Delivery",
-      "Warehousing & Inventory",
-      "Vendor Management",
-      "Business Operations",
-    ],
-  },
-  {
-    name: "Customer Support",
-    icon: Headphones,
-    group: "support",
-    popularRoles: [
-      "Customer Success Specialist",
-      "Technical Helpdesk",
-      "Support Associate",
-      "Voice Process Lead",
-    ],
-    subdomains: [
-      "Voice Operations",
-      "Digital & Chat Support",
-      "Technical Helpdesk",
-      "Client Management",
-      "BPO & Escalations",
-    ],
-  },
-  {
-    name: "HR & Admin",
-    icon: Users,
-    group: "hr",
-    popularRoles: [
-      "HR Generalist",
-      "Talent Acquisition",
-      "Payroll Executive",
-      "Admin Officer",
-    ],
-    subdomains: [
-      "Talent Acquisition",
-      "Core Human Resources",
-      "Payroll & Compliance",
-      "Training & Development",
-      "Office Administration",
-    ],
-  },
-  {
-    name: "Education & EdTech",
-    icon: GraduationCap,
-    group: "services",
-    popularRoles: [
-      "Instructional Designer",
-      "Subject Matter Expert",
-      "Academic Counselor",
-      "Curriculum Developer",
-    ],
-    subdomains: [
-      "Teaching & Academics",
-      "EdTech Content",
-      "Corporate Training",
-      "Student Counseling",
-      "Institutional Operations",
-    ],
-  },
-  {
-    name: "Legal & Compliance",
-    icon: Scale,
-    group: "services",
-    popularRoles: [
-      "Legal Advisor",
-      "Compliance Officer",
-      "Contracts Specialist",
-      "Paralegal Associate",
-    ],
-    subdomains: [
-      "Corporate Law",
-      "Regulatory Compliance",
-      "Intellectual Property",
-      "Contract Management",
-      "Litigation Support",
-    ],
-  },
-  {
-    name: "Design & Creative",
-    icon: Palette,
-    group: "marketing",
-    popularRoles: [
-      "UI/UX Designer",
-      "Graphic Designer",
-      "Motion Artist",
-      "Product Designer",
-    ],
-    subdomains: [
-      "Product Design",
-      "Visual & Graphic Design",
-      "Brand Identity",
-      "Motion Graphics",
-      "Creative Direction",
-    ],
-  },
-  {
-    name: "Real Estate & Construction",
-    icon: Building2,
-    group: "engineering",
-    popularRoles: [
-      "Site Engineer",
-      "Project Architect",
-      "Property Consultant",
-      "Quantity Surveyor",
-    ],
-    subdomains: [
-      "Civil Construction",
-      "Architecture & Planning",
-      "Property Management",
-      "Commercial Leasing",
-      "Site Supervision",
-    ],
-  },
-];
+// Genuine 24 Industries
+const BASE_CATEGORIES = INDUSTRIES;
 
-// Clean sector filter pill groups
+
+
+// Macroeconomic sector filter pill groups for the 24 genuine industries
 const SECTOR_GROUPS = [
   { id: "all", label: "All Industries", icon: Layers },
-  { id: "tech", label: "IT & Software", icon: Code2 },
-  { id: "finance", label: "Finance", icon: TrendingUp },
-  { id: "healthcare", label: "Healthcare", icon: HeartPulse },
-  { id: "engineering", label: "Engineering", icon: Cpu },
-  { id: "marketing", label: "Sales & Marketing", icon: Megaphone },
-  { id: "operations", label: "Operations", icon: Truck },
-  { id: "support", label: "Customer Support", icon: Headphones },
-  { id: "hr", label: "HR & Admin", icon: Users },
+  { id: "tech", label: "Tech & Telecom", icon: Code2 },
+  { id: "finance", label: "Banking & Finance", icon: TrendingUp },
+  { id: "healthcare", label: "Health & Pharma", icon: HeartPulse },
+  { id: "engineering", label: "Engineering & Auto", icon: Cpu },
+  { id: "commerce", label: "Retail & FMCG", icon: ShoppingBag },
+  { id: "marketing", label: "Marketing & Media", icon: Megaphone },
+  { id: "operations", label: "Logistics & Transport", icon: Truck },
+  { id: "infrastructure", label: "Real Estate & Energy", icon: Building2 },
+  { id: "services", label: "Professional Services", icon: Briefcase },
 ];
 
 export default function JobCategories() {
@@ -293,26 +75,10 @@ export default function JobCategories() {
     fetchCategoryCounts();
   }, [fetchCategoryCounts]);
 
-  // Dynamically merge any industries returned from backend that aren't in BASE_CATEGORIES
+  // Dynamic list derived from genuine 24 industries
   const allCategories = useMemo(() => {
-    const list = [...BASE_CATEGORIES];
-    const existingNames = new Set(list.map((c) => c.name.toLowerCase()));
-
-    Object.keys(realCounts).forEach((catName) => {
-      if (catName && !existingNames.has(catName.toLowerCase())) {
-        list.push({
-          name: catName,
-          icon: Briefcase,
-          group: "services",
-          popularRoles: ["Specialist", "Associate", "Lead"],
-          subdomains: ["General Roles", "Specialized Positions"],
-        });
-        existingNames.add(catName.toLowerCase());
-      }
-    });
-
-    return list;
-  }, [realCounts]);
+    return [...BASE_CATEGORIES];
+  }, []);
 
   // Filter & sort categories: Default puts industries with more available jobs first
   const processedCategories = useMemo(() => {
@@ -327,21 +93,22 @@ export default function JobCategories() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       list = list.filter((cat) => {
-        const nameMatch = cat.name.toLowerCase().includes(q);
+        const nameMatch = cat.name.toLowerCase().includes(q) || cat.shortName?.toLowerCase().includes(q);
         const roleMatch = cat.popularRoles?.some((r) =>
           r.toLowerCase().includes(q)
         );
-        const subdomainMatch = cat.subdomains?.some((sub) =>
-          sub.toLowerCase().includes(q)
+        const deptMatch = cat.departments?.some((dept) =>
+          dept.toLowerCase().includes(q)
         );
-        return nameMatch || roleMatch || subdomainMatch;
+        const descMatch = cat.description?.toLowerCase().includes(q);
+        return nameMatch || roleMatch || deptMatch || descMatch;
       });
     }
 
     // Sorting
     list.sort((a, b) => {
-      const countA = realCounts[a.name] || 0;
-      const countB = realCounts[b.name] || 0;
+      const countA = realCounts[a.name] || realCounts[a.shortName] || 0;
+      const countB = realCounts[b.name] || realCounts[b.shortName] || 0;
 
       if (sortBy === "jobs") {
         if (countB !== countA) {
@@ -389,17 +156,11 @@ export default function JobCategories() {
         {/* HEADER SECTION */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text-muted)] mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
-              <span className="font-semibold uppercase tracking-wider text-[11px]">
-                Industry Directory
-              </span>
-            </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--theme-text)] leading-tight">
               Explore Positions by Sector
             </h2>
             <p className="mt-2 text-[var(--theme-text-muted)] text-sm sm:text-base leading-relaxed">
-              Targeted requisitions mapped to technical domains, operational disciplines, and functional specializations.
+              Find open positions organized by industry and functional specialization.
             </p>
           </div>
 
@@ -560,7 +321,7 @@ export default function JobCategories() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
             {visibleCategories.map((cat) => {
               const CategoryIcon = cat.icon || Briefcase;
-              const liveCount = realCounts[cat.name] || 0;
+              const liveCount = realCounts[cat.name] || realCounts[cat.shortName] || 0;
 
               return (
                 <div
@@ -588,7 +349,7 @@ export default function JobCategories() {
                         <span>
                           {liveCount > 0
                             ? `${liveCount.toLocaleString()} ${liveCount === 1 ? "opening" : "openings"}`
-                            : "Requisitions pending"}
+                            : "Explore roles"}
                         </span>
                       </span>
                     </div>
@@ -598,10 +359,17 @@ export default function JobCategories() {
                       {cat.name}
                     </h3>
 
+                    {/* DESCRIPTION */}
+                    {cat.description && (
+                      <p className="text-xs text-[var(--theme-text-muted)] line-clamp-2 leading-relaxed mb-3">
+                        {cat.description}
+                      </p>
+                    )}
+
                     {/* POPULAR ROLES CHIPS */}
                     {cat.popularRoles && cat.popularRoles.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-[var(--theme-border)]">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--theme-text-subtle)] mb-2">
+                      <div className="mt-2.5 pt-2.5 border-t border-[var(--theme-border)]">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--theme-text-subtle)] mb-1.5">
                           High-Demand Roles
                         </p>
                         <div className="flex flex-wrap gap-1.5">
@@ -619,12 +387,20 @@ export default function JobCategories() {
                         </div>
                       </div>
                     )}
+
+                    {/* DEPARTMENTS SUMMARY */}
+                    {cat.departments && cat.departments.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-[var(--theme-border)]/50 flex items-center gap-1.5 text-[10px] text-[var(--theme-text-subtle)] truncate">
+                        <span className="font-semibold text-[var(--theme-text-muted)]">Departments:</span>
+                        <span className="truncate">{cat.departments.slice(0, 2).join(", ")}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* BOTTOM ACTION CTA */}
                   <div className="mt-4 pt-3 border-t border-[var(--theme-border)] flex items-center justify-between text-xs font-bold text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)]">
                     <span>
-                      {liveCount > 0 ? `View ${liveCount} Postings` : "View Sector"}
+                      View {cat.shortName || "Industry"} Jobs
                     </span>
                     <ArrowRight
                       size={14}

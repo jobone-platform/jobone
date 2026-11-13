@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from "react";
+import { MotionConfig } from "framer-motion";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 
@@ -21,6 +22,7 @@ const RouteFallback = () => (
 
 // --- PUBLIC PAGES (Home loaded statically for instant landing render) ---
 import Home from "./pages/Home";
+const EmployersHome = lazy(() => import("./pages/EmployersHome"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const UserRegister = lazy(() => import("./pages/UserRegister"));
@@ -47,6 +49,8 @@ const UserOTP = lazy(() => import("./pages/UserOTP"));
 const ApplyPage = lazy(() => import("./pages/ApplyPage"));
 const JobseekerDOC = lazy(() => import("./pages/JobseekerDOC"));
 const ResumeBuilder = lazy(() => import("./pages/ResumeBuilder"));
+const CandidateJobs = lazy(() => import("./pages/candidate/CandidateJobs"));
+const CandidateCompanies = lazy(() => import("./pages/candidate/CandidateCompanies"));
 
 // --- EMPLOYER PAGES (Role-split) ---
 const EmployerDashboard = lazy(() => import("./pages/EmployerDashboard"));
@@ -122,7 +126,10 @@ const AppLayout = ({ children }) => {
     "/jobseekerdoc",
     "/resume-builder",
     "/resumebuilder",
+    "/candidate/jobs",
+    "/candidate/companies",
   ].some((p) => cleanPath === p || cleanPath.startsWith(p + "/")) ||
+  cleanPath.startsWith("/candidate/") ||
   (hasCandidateSession && (cleanPath === "/recommended-jobs" || cleanPath === "/recommendedjobs")) ||
   cleanPath.startsWith("/apply/");
 
@@ -150,6 +157,7 @@ const AppLayout = ({ children }) => {
 
   const noPaddingRoutes = [
     "/",
+    "/employer",
     "/userdashboard",
     "/myapplications",
     "/profile",
@@ -159,6 +167,8 @@ const AppLayout = ({ children }) => {
     "/jobseekerdoc",
     "/resume-builder",
     "/resumebuilder",
+    "/candidate/jobs",
+    "/candidate/companies",
     "/recommended-jobs",
     "/recommendedjobs",
     "/apply",
@@ -220,12 +230,16 @@ const AppLayout = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      <AppLayout>
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            {/* ================= PUBLIC ROUTES ================= */}
-            <Route path="/" element={<Home />} />
+    <MotionConfig reducedMotion="user">
+      <Router>
+        <AppLayout>
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              {/* ================= PUBLIC ROUTES ================= */}
+              <Route path="/" element={<Home />} />
+              <Route path="/employer" element={<EmployersHome />} />
+              <Route path="/employers" element={<Navigate to="/employer" replace />} />
+              <Route path="/for-employers" element={<Navigate to="/employer" replace />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/jobs" element={<Jobs />} />
@@ -373,6 +387,22 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/candidate/jobs"
+              element={
+                <ProtectedRoute>
+                  <CandidateJobs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/candidate/companies"
+              element={
+                <ProtectedRoute>
+                  <CandidateCompanies />
+                </ProtectedRoute>
+              }
+            />
 
             {/* ================= EMPLOYER PROTECTED ROUTES ================= */}
             <Route
@@ -514,6 +544,7 @@ function App() {
         </Suspense>
       </AppLayout>
     </Router>
+    </MotionConfig>
   );
 }
 

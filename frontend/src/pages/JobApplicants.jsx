@@ -383,7 +383,14 @@ export default function JobApplicants() {
 
   if (loading) {
     return (
-      <EmployerLayout activeTab="my-candidates">
+      <EmployerLayout
+      activeTab="my-candidates"
+      title="Candidate Pipeline"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "Candidate Pipeline" },
+      ]}
+    >
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
           <Loader2 className="animate-spin text-silver mb-3" size={36} />
           <p className="text-xs font-mono tracking-widest text-foreground/50 uppercase">
@@ -395,7 +402,14 @@ export default function JobApplicants() {
   }
 
   return (
-    <EmployerLayout activeTab="my-candidates">
+    <EmployerLayout
+      activeTab="my-candidates"
+      title="Candidate Pipeline"
+      breadcrumbs={[
+        { label: "Dashboard", path: "/employerdashboard" },
+        { label: "Candidate Pipeline" },
+      ]}
+    >
       <div className="space-y-6 pb-20">
         {/* HEADER & JOB INFO BAR */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">

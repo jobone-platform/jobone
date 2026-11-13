@@ -46,11 +46,37 @@ export default function PublicProfile() {
   const [employerMessage, setEmployerMessage] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
 
+  // Authentication & Session Preservation
+  const getAuthToken = () => {
+    try {
+      const userStored = localStorage.getItem("userInfo");
+      const userToken = localStorage.getItem("userToken") || (userStored ? JSON.parse(userStored)?.token : null);
+      if (userToken) return userToken;
+      const empStored = localStorage.getItem("employerInfo");
+      const empToken = localStorage.getItem("employerToken") || (empStored ? JSON.parse(empStored)?.token : null);
+      if (empToken) return empToken;
+      const adminStored = localStorage.getItem("adminInfo");
+      const adminToken = localStorage.getItem("adminToken") || (adminStored ? JSON.parse(adminStored)?.token : null);
+      return adminToken || null;
+    } catch {
+      return null;
+    }
+  };
+
+  const isCandidateLoggedIn = Boolean(
+    localStorage.getItem("userToken") ||
+    (localStorage.getItem("userInfo") && JSON.parse(localStorage.getItem("userInfo"))?.token)
+  );
+
+  const isEmployerLoggedIn = Boolean(
+    localStorage.getItem("employerToken") ||
+    (localStorage.getItem("employerInfo") && JSON.parse(localStorage.getItem("employerInfo"))?.token)
+  );
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const stored = localStorage.getItem("employerInfo");
-        const token = stored ? JSON.parse(stored).token : null;
+        const token = getAuthToken();
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
         const { data } = await axios.get(`${API_BASE_URL}/user/${userId}`, {
@@ -88,12 +114,11 @@ export default function PublicProfile() {
     if (!applicationId) return;
     setActionLoading(true);
     try {
-      const stored = localStorage.getItem("employerInfo");
-      const { token } = JSON.parse(stored);
+      const token = getAuthToken();
       await axios.patch(
         `${API_BASE_URL}/applications/${applicationId}/status`,
         { status: actionModal.status, employerMessage: employerMessage },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
       setStatus(actionModal.status);
     } catch (error) {
@@ -119,8 +144,7 @@ export default function PublicProfile() {
 
     setIsDownloading(true);
     try {
-      const stored = localStorage.getItem("employerInfo");
-      const token = stored ? JSON.parse(stored).token : null;
+      const token = getAuthToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       const { data } = await axios.get(
@@ -193,50 +217,85 @@ export default function PublicProfile() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                if (window.history.length > 1) {
+                  navigate(-1);
+                } else if (isCandidateLoggedIn) {
+                  navigate("/userdashboard");
+                } else if (isEmployerLoggedIn) {
+                  navigate("/employerdashboard");
+                } else {
+                  navigate("/");
+                }
+              }}
               className="p-2.5 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] transition-all cursor-pointer"
+              title="Go Back"
+              aria-label="Go Back"
             >
               <ArrowLeft size={16} />
             </button>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-display font-bold text-[var(--theme-text)]">
-                  Applicant Dossier
+                  {applicationId ? "Applicant Dossier" : "Candidate Public Profile"}
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-accent-silver)]">
                   Verified Candidate
                 </span>
               </div>
               <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
-                Evaluation console for requisition candidate review
+                {applicationId
+                  ? "Evaluation console for requisition candidate review"
+                  : "Verified professional portfolio & career credentials"}
               </p>
             </div>
           </div>
 
-          {/* Stepper if list passed */}
-          {applicantList.length > 1 && (
-            <div className="flex items-center gap-2 text-xs font-mono">
+          <div className="flex items-center gap-2">
+            {isCandidateLoggedIn && (
               <button
                 type="button"
-                onClick={goToPrev}
-                disabled={currentIndex === 0}
-                className="px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] disabled:opacity-40 cursor-pointer transition-all"
+                onClick={() => navigate("/userdashboard")}
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-[var(--theme-text)] transition-all cursor-pointer flex items-center gap-1.5"
               >
-                ← Prev
+                Return to Workspace
               </button>
-              <span className="text-[var(--theme-text-muted)]">
-                {currentIndex + 1} of {applicantList.length}
-              </span>
+            )}
+            {isEmployerLoggedIn && (
               <button
                 type="button"
-                onClick={goToNext}
-                disabled={currentIndex === applicantList.length - 1}
-                className="px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] disabled:opacity-40 cursor-pointer transition-all"
+                onClick={() => navigate("/employerdashboard")}
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-[var(--theme-text)] transition-all cursor-pointer flex items-center gap-1.5"
               >
-                Next →
+                Employer Portal
               </button>
-            </div>
-          )}
+            )}
+
+            {/* Stepper if list passed */}
+            {applicantList.length > 1 && (
+              <div className="flex items-center gap-2 text-xs font-mono ml-2">
+                <button
+                  type="button"
+                  onClick={goToPrev}
+                  disabled={currentIndex === 0}
+                  className="px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] disabled:opacity-40 cursor-pointer transition-all"
+                >
+                  ← Prev
+                </button>
+                <span className="text-[var(--theme-text-muted)]">
+                  {currentIndex + 1} of {applicantList.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={goToNext}
+                  disabled={currentIndex === applicantList.length - 1}
+                  className="px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] disabled:opacity-40 cursor-pointer transition-all"
+                >
+                  Next →
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Action Bar (Shortlist, Interview, Assignment, NCTT, Hire) */}

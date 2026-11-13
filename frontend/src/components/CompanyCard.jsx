@@ -126,7 +126,7 @@ export default function CompanyCard() {
                     Recruiter Telemetry
                   </div>
                   <div className="text-sm font-bold text-[var(--theme-text)] mt-0.5">
-                    Direct Hiring Pipeline & ATS
+                    Direct Hiring Pipeline
                   </div>
                 </div>
                 <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />

@@ -1,19 +1,25 @@
 import mongoose from "mongoose";
+import { VALID_INDUSTRY_NAMES } from "../constants/taxonomy.js";
+
+const LEGACY_INDUSTRIES = [
+  "IT & Software", "Banking & Finance", "Sales & Marketing", 
+  "Healthcare & Pharma", "Engineering & Manufacturing", 
+  "Operations & Logistics", "Customer Support", "HR & Admin", "Education & EdTech"
+];
+
+const ALL_ALLOWED_INDUSTRIES = Array.from(new Set([...VALID_INDUSTRY_NAMES, ...LEGACY_INDUSTRIES]));
 
 const JobSchema = new mongoose.Schema({
   title: { type: String, required: true }, 
   
-  // FACT: Added the 9 specific Industries and Subdomain requirement
+  // Real-world Industry Taxonomy (24 industries + legacy compatibility)
   industry: { 
     type: String, 
     required: true,
-    enum: [
-      "IT & Software", "Banking & Finance", "Sales & Marketing", 
-      "Healthcare & Pharma", "Engineering & Manufacturing", 
-      "Operations & Logistics", "Customer Support", "HR & Admin", "Education & EdTech"
-    ]
+    enum: ALL_ALLOWED_INDUSTRIES
   },
-  subdomain: { type: String, required: true },
+  department: { type: String, default: "" },
+  subdomain: { type: String, default: "" },
 
   jobSummary: { type: String, required: true },
   keyResponsibilities: { type: String, required: true }, 
@@ -106,6 +112,8 @@ JobSchema.index({ location: "2dsphere" });
 JobSchema.index({ status: 1, postedAt: -1 });
 JobSchema.index({ postedBy: 1, status: 1 });
 JobSchema.index({ industry: 1, status: 1 });
+JobSchema.index({ department: 1, status: 1 });
+JobSchema.index({ industry: 1, department: 1, status: 1 });
 JobSchema.index({ createdAt: -1 });
 
 const Job = mongoose.model("Job", JobSchema);

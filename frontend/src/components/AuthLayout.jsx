@@ -10,7 +10,7 @@ export default function AuthLayout({
   title = "Welcome Back",
   subtitle = "Authenticate to access your verified career workspace",
   visualHeading = "Architecting Direct Pathways Between Verified Talent & Premier Enterprises.",
-  visualSubheading = "JobOne is the double-sided recruitment marketplace built for transparency. Eliminate recruitment agency noise with direct employer requisitions, authentic compensation, and real-time ATS application tracking.",
+  visualSubheading = "JobOne is the double-sided recruitment marketplace built for transparency. Eliminate recruitment agency noise with direct employer requisitions, authentic compensation, and real-time application tracking.",
   metrics = null,
   quote = null,
   roleType = "general", // "candidate" | "employer" | "admin" | "general"
@@ -98,7 +98,7 @@ export default function AuthLayout({
               </div>
               <div className="flex items-center gap-3 text-xs font-medium text-[var(--theme-text-muted)]">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Real-time ATS submission telemetry and status updates</span>
+                <span>Real-time application telemetry and hiring status updates</span>
               </div>
               <div className="flex items-center gap-3 text-xs font-medium text-[var(--theme-text-muted)]">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />

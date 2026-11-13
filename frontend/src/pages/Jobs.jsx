@@ -25,72 +25,7 @@ import {
 import { API_BASE_URL } from "../config/api";
 import CompanyDisplay from "../components/CompanyDisplay";
 import JobDetailsModal from "../components/JobDetailsModal";
-
-const INDUSTRY_SUBDOMAINS = {
-  "IT & Software": [
-    "Software Development",
-    "Data & Analytics",
-    "Infrastructure & Cloud",
-    "Security & Testing",
-    "Design & Product",
-  ],
-  "Banking & Finance": [
-    "Corporate & Investment Banking",
-    "Core Finance & Accounting",
-    "Retail Banking",
-    "Wealth & Asset Management",
-    "Risk & Insurance",
-  ],
-  "Sales & Marketing": [
-    "B2B & Corporate Sales",
-    "Digital Marketing",
-    "Brand & Strategy",
-    "Retail & B2C Sales",
-    "Communications",
-  ],
-  "Healthcare & Pharma": [
-    "Clinical & Medical",
-    "Pharmaceuticals",
-    "Healthcare Administration",
-    "Medical Sales & Support",
-    "Life Sciences",
-  ],
-  "Engineering & Manufacturing": [
-    "Core Engineering",
-    "Production & Plant Operations",
-    "Quality & Process Improvement",
-    "Design & Drafting",
-    "Emerging Sectors",
-  ],
-  "Operations & Logistics": [
-    "Supply Chain & Logistics",
-    "E-commerce & Delivery",
-    "Inventory & Warehousing",
-    "Vendor Management",
-    "Business Operations",
-  ],
-  "Customer Support": [
-    "Voice Operations",
-    "Non-Voice/Digital Support",
-    "Technical Support",
-    "Client Management",
-    "Outsourcing",
-  ],
-  "HR & Admin": [
-    "Talent Acquisition",
-    "Core HR",
-    "Operations & Compliance",
-    "Employee Development",
-    "Administration",
-  ],
-  "Education & EdTech": [
-    "Teaching & Academics",
-    "EdTech Content",
-    "Student Services",
-    "Institutional Operations",
-    "Corporate Training",
-  ],
-};
+import { INDUSTRIES, DEPARTMENTS, normalizeIndustry, getDepartmentsForIndustry } from "../constants/taxonomy";
 
 const POPULAR_SEARCH_TAGS = [
   "Remote",
@@ -113,6 +48,7 @@ export default function Jobs() {
     profile: queryParams.get("title") || "",
     location: queryParams.get("location") || "",
     industry: queryParams.get("industry") || "",
+    department: queryParams.get("department") || "",
     subdomain: queryParams.get("subdomain") || "",
     stipend: 0,
     workFromHome: false,
@@ -133,6 +69,7 @@ export default function Jobs() {
     const newTitle = params.get("title") !== null ? (params.get("title") || "") : filters.profile;
     const newLoc = params.get("location") !== null ? (params.get("location") || "") : filters.location;
     const newInd = params.get("industry") !== null ? (params.get("industry") || "") : filters.industry;
+    const newDept = params.get("department") !== null ? (params.get("department") || "") : filters.department;
     const newSub = params.get("subdomain") !== null ? (params.get("subdomain") || "") : filters.subdomain;
 
     setFilters((prev) => ({
@@ -140,6 +77,7 @@ export default function Jobs() {
       profile: newTitle,
       location: newLoc,
       industry: newInd,
+      department: newDept,
       subdomain: newSub,
     }));
     setSearchTitle(newTitle);
@@ -320,6 +258,7 @@ export default function Jobs() {
       profile: "",
       location: "",
       industry: "",
+      department: "",
       subdomain: "",
       stipend: 0,
       workFromHome: false,
@@ -379,8 +318,15 @@ export default function Jobs() {
       const matchContract = filters.contract ? jobTypes.some((t) => t.includes("contract")) : true;
       const matchInternship = filters.internship ? jobTypes.some((t) => t.includes("intern")) : true;
 
-      // Industry & Subdomain
-      const matchIndustry = filters.industry ? job.industry === filters.industry : true;
+      // Genuine Industry & Department Separation
+      const matchIndustry = filters.industry
+        ? (normalizeIndustry(job.industry)?.name === normalizeIndustry(filters.industry)?.name ||
+           (job.industry || "").toLowerCase().includes(filters.industry.toLowerCase()))
+        : true;
+      const matchDepartment = filters.department
+        ? ((job.department && job.department.toLowerCase() === filters.department.toLowerCase()) ||
+           (job.subdomain && job.subdomain.toLowerCase() === filters.department.toLowerCase()))
+        : true;
       const matchSubdomain = filters.subdomain ? job.subdomain === filters.subdomain : true;
 
       // Date Posted
@@ -403,6 +349,7 @@ export default function Jobs() {
         matchContract &&
         matchInternship &&
         matchIndustry &&
+        matchDepartment &&
         matchSubdomain &&
         matchDate
       );
@@ -431,6 +378,7 @@ export default function Jobs() {
     if (filters.profile) list.push({ key: "profile", label: `Keyword: "${filters.profile}"` });
     if (filters.location) list.push({ key: "location", label: `Location: "${filters.location}"` });
     if (filters.industry) list.push({ key: "industry", label: `Industry: ${filters.industry}` });
+    if (filters.department) list.push({ key: "department", label: `Department: ${filters.department}` });
     if (filters.subdomain) list.push({ key: "subdomain", label: `Speciality: ${filters.subdomain}` });
     if (filters.stipend > 0) list.push({ key: "stipend", label: `Min ₹${Number(filters.stipend).toLocaleString()}` });
     if (filters.workFromHome) list.push({ key: "workFromHome", label: "Remote / WFH" });
@@ -445,7 +393,8 @@ export default function Jobs() {
   const removeSingleFilter = (key) => {
     if (key === "stipend") setFilters((prev) => ({ ...prev, stipend: 0 }));
     else if (key === "datePosted") setFilters((prev) => ({ ...prev, datePosted: "all" }));
-    else if (key === "industry") setFilters((prev) => ({ ...prev, industry: "", subdomain: "" }));
+    else if (key === "industry") setFilters((prev) => ({ ...prev, industry: "", department: "", subdomain: "" }));
+    else if (key === "department") setFilters((prev) => ({ ...prev, department: "" }));
     else setFilters((prev) => ({ ...prev, [key]: typeof prev[key] === "boolean" ? false : "" }));
   };
 
@@ -693,10 +642,10 @@ export default function Jobs() {
                 )}
               </div>
 
-              {/* Filter Section: Industry & Subdomain */}
+              {/* Filter Section: Industry & Department */}
               <div className="space-y-3.5">
                 <label className="text-[11px] font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider block">
-                  Industry & Discipline
+                  Industry Sector
                 </label>
                 <select
                   value={filters.industry}
@@ -704,38 +653,39 @@ export default function Jobs() {
                     setFilters({
                       ...filters,
                       industry: e.target.value,
+                      department: "",
                       subdomain: "",
                     })
                   }
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] outline-none focus:border-[var(--theme-border-focus)] cursor-pointer"
                 >
-                  <option value="">All Industries</option>
-                  {Object.keys(INDUSTRY_SUBDOMAINS).map((ind) => (
-                    <option key={ind} value={ind} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
-                      {ind}
+                  <option value="">All Industries (24 Sectors)</option>
+                  {INDUSTRIES.map((ind) => (
+                    <option key={ind.id} value={ind.name} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
+                      {ind.name}
                     </option>
                   ))}
                 </select>
 
-                {filters.industry && (
-                  <div>
-                    <label className="text-[10px] font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider mb-1.5 block">
-                      Speciality / Function
-                    </label>
-                    <select
-                      value={filters.subdomain}
-                      onChange={(e) => setFilters({ ...filters, subdomain: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] outline-none focus:border-[var(--theme-border-focus)] cursor-pointer"
-                    >
-                      <option value="">All {filters.industry} Roles</option>
-                      {INDUSTRY_SUBDOMAINS[filters.industry].map((sub) => (
-                        <option key={sub} value={sub} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
-                          {sub}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                <div>
+                  <label className="text-[10px] font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider mb-1.5 block">
+                    Department / Functional Area
+                  </label>
+                  <select
+                    value={filters.department}
+                    onChange={(e) => setFilters({ ...filters, department: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] outline-none focus:border-[var(--theme-border-focus)] cursor-pointer"
+                  >
+                    <option value="">
+                      {filters.industry ? `All ${filters.industry} Departments` : "All Departments"}
+                    </option>
+                    {(filters.industry ? getDepartmentsForIndustry(filters.industry) : DEPARTMENTS).map((dept) => (
+                      <option key={dept} value={dept} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
+                        {dept}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* Filter Section: Work Mode (Remote / WFH) */}
@@ -862,24 +812,46 @@ export default function Jobs() {
                   </div>
 
                   {/* Industry on mobile */}
-                  <div>
-                    <label className="text-xs font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider mb-2 block">
-                      Industry
-                    </label>
-                    <select
-                      value={filters.industry}
-                      onChange={(e) =>
-                        setFilters({ ...filters, industry: e.target.value, subdomain: "" })
-                      }
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] outline-none"
-                    >
-                      <option value="">All Industries</option>
-                      {Object.keys(INDUSTRY_SUBDOMAINS).map((ind) => (
-                        <option key={ind} value={ind} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
-                          {ind}
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider mb-2 block">
+                        Industry Sector
+                      </label>
+                      <select
+                        value={filters.industry}
+                        onChange={(e) =>
+                          setFilters({ ...filters, industry: e.target.value, department: "", subdomain: "" })
+                        }
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] outline-none"
+                      >
+                        <option value="">All Industries (24 Sectors)</option>
+                        {INDUSTRIES.map((ind) => (
+                          <option key={ind.id} value={ind.name} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
+                            {ind.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-[var(--theme-text-subtle)] uppercase tracking-wider mb-2 block">
+                        Department / Function
+                      </label>
+                      <select
+                        value={filters.department}
+                        onChange={(e) => setFilters({ ...filters, department: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--theme-input-bg)] border border-[var(--theme-border)] text-xs font-medium text-[var(--theme-text)] outline-none"
+                      >
+                        <option value="">
+                          {filters.industry ? `All ${filters.industry} Departments` : "All Departments"}
                         </option>
-                      ))}
-                    </select>
+                        {(filters.industry ? getDepartmentsForIndustry(filters.industry) : DEPARTMENTS).map((dept) => (
+                          <option key={dept} value={dept} className="bg-[var(--theme-surface)] text-[var(--theme-text)]">
+                            {dept}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   {/* Remote checkbox on mobile */}
@@ -1070,6 +1042,11 @@ export default function Jobs() {
                             <IndianRupee size={12} className="text-[var(--theme-accent-silver)] shrink-0" />
                             <span>{formattedSalary}</span>
                           </span>
+                          {job.industry && (
+                            <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] text-[11px] truncate max-w-[150px]">
+                              <span>{job.industry}</span>
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -1164,6 +1141,11 @@ export default function Jobs() {
                               {job.industry && (
                                 <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] text-[11px]">
                                   <span>{job.industry}</span>
+                                </span>
+                              )}
+                              {job.department && (
+                                <span className="hidden lg:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-accent-silver)] text-[11px]">
+                                  <span>{job.department}</span>
                                 </span>
                               )}
                             </div>

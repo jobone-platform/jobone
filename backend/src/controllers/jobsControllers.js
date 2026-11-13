@@ -7,6 +7,7 @@ import Employer from "../models/employer.js";
 import Application from "../models/applications.js";
 import jwt from "jsonwebtoken";
 import { escapeRegex, clampPagination } from "../utils/validators.js";
+import { INDUSTRIES, DEPARTMENTS, normalizeIndustry } from "../constants/taxonomy.js";
 
 
 
@@ -75,7 +76,7 @@ export const createJob = expressAsyncHandler(async (req, res) => {
   }
 
   const { 
-    title, industry, subdomain, jobSummary, keyResponsibilities, jobType, workDaysPattern, customWorkDaysDescription,
+    title, industry, department, subdomain, jobSummary, keyResponsibilities, jobType, workDaysPattern, customWorkDaysDescription,
     skillsRequired, salaryMin, salaryMax, salaryFrequency, salaryCurrency, incentives, 
     screeningQuestions, requestedDocuments, durationType, startDate, endDate, isFlexibleDuration,
     shifts, isFlexibleShifts, mode, noOfDays, noOfPeopleRequired, 
@@ -83,6 +84,11 @@ export const createJob = expressAsyncHandler(async (req, res) => {
     pinCode, location, useOfficeLocation ,applicationDeadline,
     isThirdPartyRecruiting, hiringCompanyName, showHiringCompanyName,
   } = req.body;
+
+  const matchedIndustry = normalizeIndustry(industry);
+  const resolvedIndustry = matchedIndustry ? matchedIndustry.name : (industry || "").trim();
+  const resolvedDepartment = (department || "").trim();
+  const resolvedSubdomain = (subdomain || resolvedDepartment || "").trim();
 
   let locationData;
   if (useOfficeLocation) {
@@ -105,8 +111,9 @@ export const createJob = expressAsyncHandler(async (req, res) => {
 
   const newJob = new Job({
     title, 
-    industry, // <-- ADDED
-    subdomain, // <-- ADDED
+    industry: resolvedIndustry,
+    department: resolvedDepartment,
+    subdomain: resolvedSubdomain,
     jobSummary, 
     keyResponsibilities,
     jobType,
@@ -218,11 +225,21 @@ export const getJobs = expressAsyncHandler(async (req, res) => {
   if (queryObj.jobType && typeof queryObj.jobType === 'string') {
     filters.jobType = queryObj.jobType.trim();
   }
-  // Backend filtering for Industry and Subdomain
-  if (queryObj.industry && typeof queryObj.industry === 'string') {
-    filters.industry = queryObj.industry.trim();
+  // Backend filtering for Industry, Department, and Subdomain
+  if (queryObj.industry && typeof queryObj.industry === 'string' && queryObj.industry.trim()) {
+    const rawInd = queryObj.industry.trim();
+    const matched = normalizeIndustry(rawInd);
+    if (matched) {
+      const allNames = Array.from(new Set([matched.name, matched.shortName, matched.slug, ...matched.aliases]));
+      filters.industry = { $in: allNames.map(n => new RegExp(`^${escapeRegex(n)}$`, 'i')) };
+    } else {
+      filters.industry = { $regex: escapeRegex(rawInd), $options: 'i' };
+    }
   }
-  if (queryObj.subdomain && typeof queryObj.subdomain === 'string') {
+  if (queryObj.department && typeof queryObj.department === 'string' && queryObj.department.trim()) {
+    filters.department = { $regex: escapeRegex(queryObj.department.trim()), $options: 'i' };
+  }
+  if (queryObj.subdomain && typeof queryObj.subdomain === 'string' && queryObj.subdomain.trim()) {
     filters.subdomain = queryObj.subdomain.trim();
   }
   if (queryObj.skillsRequired && typeof queryObj.skillsRequired === 'string') {
@@ -286,15 +303,32 @@ export const getJobCountsByIndustry = expressAsyncHandler(async (req, res) => {
     { $group: { _id: "$industry", count: { $sum: 1 } } }
   ]);
 
-  // Convert the array into a simple lookup dictionary: { "IT & Software": 15, "HR & Admin": 3 }
+  // Convert the array into a comprehensive lookup dictionary initialized for all 24 genuine industries
   const countMap = {};
-  counts.forEach(item => {
-    if (item._id) {
+  INDUSTRIES.forEach((ind) => {
+    countMap[ind.name] = 0;
+  });
+
+  counts.forEach((item) => {
+    if (!item._id) return;
+    const matched = normalizeIndustry(item._id);
+    if (matched) {
+      countMap[matched.name] = (countMap[matched.name] || 0) + item.count;
+      // Also provide shortName alias for convenience
+      countMap[matched.shortName] = countMap[matched.name];
+    } else {
       countMap[item._id] = item.count;
     }
   });
 
   res.status(200).json(countMap);
+});
+
+export const getTaxonomy = expressAsyncHandler(async (req, res) => {
+  res.status(200).json({
+    industries: INDUSTRIES,
+    departments: DEPARTMENTS,
+  });
 });
 
 // FACT: We are using a MongoDB aggregation pipeline to count every ATS stage dynamically.

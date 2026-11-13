@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 /**
- * Brevo Email Dispatcher for JobOne ATS
+ * Brevo Email Dispatcher for JobOne
  * 
  * Uses Brevo REST API v3: https://api.brevo.com/v3/smtp/email
  * Authenticates using `process.env.BREVO_API_KEY`
@@ -31,14 +31,14 @@ const sendEmail = async (options) => {
     htmlContent = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 30px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; color: #1e293b;">
         <div style="text-align: center; margin-bottom: 24px;">
-          <h1 style="color: #4f46e5; margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">JobOne ATS</h1>
-          <p style="color: #64748b; margin-top: 4px; font-size: 14px;">Next-Generation Hiring & Career Portal</p>
+          <h1 style="color: #4f46e5; margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">JobOne</h1>
+          <p style="color: #64748b; margin-top: 4px; font-size: 14px;">Next-Generation Hiring & Career Platform</p>
         </div>
         <div style="background-color: #f8fafc; border-radius: 8px; padding: 24px; margin-bottom: 24px; border: 1px solid #edf2f7;">
           <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #334155;">${options.message}</p>
         </div>
         <p style="font-size: 13px; color: #94a3b8; text-align: center; margin: 0;">
-          This is an automated security email from JobOne ATS. Please do not reply directly to this email.
+          This is an automated security email from JobOne. Please do not reply directly to this email.
         </p>
       </div>
     `;
@@ -46,7 +46,7 @@ const sendEmail = async (options) => {
 
   const data = {
     sender: {
-      name: 'JobOne ATS',
+      name: 'JobOne',
       email: senderEmail,
     },
     to: [

@@ -561,7 +561,7 @@ export default function HeroSection() {
                           </div>
                           <div>
                             <h4 className="text-sm font-bold text-[var(--theme-text)]">
-                              Transparent ATS Pipelines
+                              Transparent Hiring Pipelines
                             </h4>
                             <p className="text-xs text-[var(--theme-text-muted)]">
                               Real-time application status and interview telemetry
@@ -613,7 +613,7 @@ export default function HeroSection() {
                         {user?.name || employer?.companyName || employer?.name || "Welcome Back"}
                       </h3>
                       <p className="text-xs text-[var(--theme-text-muted)]">
-                        {employer ? "Employer ATS Console" : "Candidate Career Center"}
+                        {employer ? "Employer Workspace" : "Candidate Career Center"}
                       </p>
                     </div>
                   </div>
@@ -628,7 +628,7 @@ export default function HeroSection() {
                       onClick={() => navigate(employer ? "/employerdashboard" : "/userdashboard")}
                       className="w-full py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
                     >
-                      <span>Open {employer ? "Employer ATS Portal" : "Candidate Dashboard"}</span>
+                      <span>Open {employer ? "Employer Dashboard" : "Candidate Dashboard"}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
 

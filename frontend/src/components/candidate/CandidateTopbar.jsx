@@ -109,9 +109,9 @@ export default function CandidateTopbar({
     const query = searchQuery.trim();
     setIsMobileSearchOpen(false);
     if (query) {
-      navigate(`/jobs?q=${encodeURIComponent(query)}`);
+      navigate(`/candidate/jobs?q=${encodeURIComponent(query)}`);
     } else {
-      navigate("/jobs");
+      navigate("/candidate/jobs");
     }
   };
 
@@ -122,7 +122,15 @@ export default function CandidateTopbar({
     userInfo?.id ||
     userInfo?.user?.id ||
     userInfo?.user?._id ||
-    userInfo?._id;
+    userInfo?._id ||
+    (() => {
+      try {
+        const stored = JSON.parse(localStorage.getItem("userInfo"));
+        return stored?._id || stored?.id || stored?.user?._id || stored?.user?.id;
+      } catch {
+        return null;
+      }
+    })();
 
   const initials = candidateName
     .split(" ")

@@ -161,7 +161,7 @@ export default function Login() {
           }`}
         >
           <Building2 className="w-3.5 h-3.5" />
-          <span>Employer ATS</span>
+          <span>Employer</span>
         </button>
       </div>
 
@@ -233,7 +233,7 @@ export default function Login() {
             <span>Signing in...</span>
           ) : (
             <>
-              <span>Sign In to {activeTab === "employer" ? "ATS Console" : "Workspace"}</span>
+              <span>Sign In to {activeTab === "employer" ? "Employer Dashboard" : "Workspace"}</span>
               <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)]" />
             </>
           )}

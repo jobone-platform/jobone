@@ -24,7 +24,7 @@ export default function EmployerTopbar({
   onOpenMobile,
   employerInfo = {},
   approvalStatus = "approved",
-  title = "Hiring Command Center",
+  title = "Employer Dashboard",
   breadcrumbs = [],
   onLogout,
   onSearch,
@@ -220,7 +220,7 @@ export default function EmployerTopbar({
                 {companyName}
               </p>
               <p className="text-[10px] text-[var(--theme-text-muted)] truncate">
-                {approvalStatus === "approved" ? "Verified ATS" : "Pending"}
+                {approvalStatus === "approved" ? "Verified Employer" : "Pending"}
               </p>
             </div>
             <ChevronDown

@@ -6,6 +6,7 @@ import { validationResult } from 'express-validator';
 import Employer from '../models/employer.js'; // Adjust path as needed
 import {protectEmployer} from '../middleware/employercheck.js';
 import OTP from '../models/verification.js';
+import PendingRegistration from '../models/pendingRegistration.js';
 import sendEmail from '../utils/sendEmail.js';
 import {S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand} from '@aws-sdk/client-s3';
 import crypto from 'crypto';
@@ -97,96 +98,85 @@ export const registerEmployer = expressAsyncHandler(async (req, res) => {
     throw new Error("Company name is required for company registrations");
   }
 
-  // 6. Duplicate Email Check
-  const existingEmployer = await Employer.findOne({ email: normalizedEmail });
-  if (existingEmployer && existingEmployer.isVerified) {
+  // 6. Duplicate Email Check across verified accounts
+  const existingEmployer = await Employer.findOne({ email: normalizedEmail, isVerified: true });
+  if (existingEmployer) {
     res.status(400);
-    throw new Error('An employer account with this email already exists. Please log in.');
+    throw new Error("An employer account with this email already exists. Please log in.");
   }
 
-  const existingUser = await User.findOne({ email: normalizedEmail });
+  const existingUser = await User.findOne({ email: normalizedEmail, isVerified: true });
   if (existingUser) {
     res.status(400);
-    throw new Error('This email is already registered as a Jobseeker account.');
+    throw new Error("This email is already registered as a Jobseeker account.");
   }
 
-  // 7. Duplicate Phone Check across Employers and Users
+  // Clean up any stale unverified employer records left over from previous incomplete attempts
+  await Employer.deleteMany({ email: normalizedEmail, isVerified: false });
+
+  // 7. Duplicate Phone Check across verified Employers and Users
   const phoneQuery = {
     $or: [{ phone: formattedPhone }, { phone: rawDigits }],
+    isVerified: true,
   };
 
   const phoneInEmployer = await Employer.findOne(phoneQuery);
-  if (phoneInEmployer && (!existingEmployer || phoneInEmployer._id.toString() !== existingEmployer._id.toString())) {
+  if (phoneInEmployer) {
     res.status(400);
-    throw new Error('This mobile number is already registered to an Employer account.');
+    throw new Error("This mobile number is already registered to an Employer account.");
   }
 
   const phoneInUser = await User.findOne(phoneQuery);
   if (phoneInUser) {
     res.status(400);
-    throw new Error('This mobile number is already registered to a candidate account.');
+    throw new Error("This mobile number is already registered to a candidate account.");
   }
 
-  // 8. Hash password
+  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // 9. Save or refresh Employer record
-  let savedEmployer;
-  if (existingEmployer && !existingEmployer.isVerified) {
-    existingEmployer.name = nameCheck.value;
-    existingEmployer.password = hashedPassword;
-    existingEmployer.phone = formattedPhone;
-    existingEmployer.employerType = normalizedUserType;
-    existingEmployer.companyName = sanitizedCompany;
-    savedEmployer = await existingEmployer.save();
-    await OTP.deleteMany({ employerId: savedEmployer._id });
-  } else {
-    const employer = new Employer({
+  // Generate 6-digit OTP using cryptographically secure random generator
+  const otpCode = generateSecureOTP(6);
+  const hashedOTP = await bcrypt.hash(otpCode, 10);
+
+  // Remove any previous pending registration for this email and role
+  await PendingRegistration.deleteMany({ email: normalizedEmail, role: "employer" });
+
+  // Create isolated temporary PendingRegistration record (TTL: 10 minutes)
+  // SECURITY MANDATE: Do NOT create any permanent Employer record!
+  const pendingReg = await PendingRegistration.create({
+    role: "employer",
+    email: normalizedEmail,
+    data: {
       name: nameCheck.value,
-      email: normalizedEmail,
       password: hashedPassword,
       phone: formattedPhone,
+      countryCode: countryCode || "+91",
       employerType: normalizedUserType,
       companyName: sanitizedCompany,
-    });
-    savedEmployer = await employer.save();
-  }
-
-  // 10. Generate 6-digit OTP using cryptographically secure random generator
-  const otpCode = generateSecureOTP(6);
+    },
+    otp: hashedOTP,
+    attempts: 0,
+    lastResendAt: new Date(),
+    resendCount: 0,
+  });
 
   try {
-    const hashedOTP = await bcrypt.hash(otpCode, 10);
-    await OTP.deleteMany({ employerId: savedEmployer._id });
-    await OTP.create({
-      employerId: savedEmployer._id,
-      otp: hashedOTP,
-      type: "verification",
-      attempts: 0,
-    });
-
     await sendEmail({
-      email: savedEmployer.email,
-      subject: 'Verify your JobOne Employer Account',
+      email: normalizedEmail,
+      subject: "Verify your JobOne Employer Account",
       message: `Your verification code is: ${otpCode}. It expires in 10 minutes.`,
     });
 
-    // SECURITY: Never return savedEmployer or hashed passwords in response!
     res.status(201).json({
-      message: 'Registration successful. Please check your email to verify your account.',
-      email: savedEmployer.email,
-      employerId: savedEmployer._id
+      message: "Registration initiated. Please check your email to verify your account.",
+      email: normalizedEmail,
     });
-    
   } catch (error) {
-    if (!existingEmployer) {
-      await Employer.deleteOne({ _id: savedEmployer._id });
-    }
-    await OTP.deleteMany({ employerId: savedEmployer._id });
-    
-    console.error("Registration failed during OTP step:", error);
+    await PendingRegistration.deleteMany({ _id: pendingReg._id });
+    console.error("Employer OTP email dispatch failed:", error);
     res.status(500);
-    throw new Error('Could not send verification email. Please try registering again.');
+    throw new Error("Could not send verification email. Please try registering again.");
   }
 });
 
@@ -279,145 +269,186 @@ export const verifyOTP = expressAsyncHandler(async (req, res) => {
   }
 
   const normalizedEmail = normalizeEmail(email);
-  const employer = await Employer.findOne({ email: normalizedEmail });
-  
-  if (!employer) {
-    res.status(404);
-    throw new Error("Employer account not found");
-  }
 
-  // Handle already verified employer
-  if (employer.isVerified) {
-    const token = jwt.sign(
-      { employer: { id: employer._id } }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: '5h' }
-    );
-    return res.status(200).json({ 
-      message: "Account is already verified. You can log in.", 
-      alreadyVerified: true,
-      token,
-      employerId: employer._id,
-      id: employer._id,
-      email: employer.email,
-      employerType: employer.employerType,
-      isProfileComplete: employer.isProfileComplete || false
-    });
-  }
+  // Look up isolated pending registration
+  const pending = await PendingRegistration.findOne({ email: normalizedEmail, role: "employer" });
 
-  const otpRecord = await OTP.findOne({ employerId: employer._id, type: "verification" });
-  if (!otpRecord) {
+  if (!pending) {
+    // Check if employer already completed verification previously
+    const verifiedEmployer = await Employer.findOne({ email: normalizedEmail, isVerified: true });
+    if (verifiedEmployer) {
+      const token = jwt.sign(
+        { employer: { id: verifiedEmployer._id } },
+        process.env.JWT_SECRET,
+        { expiresIn: "5h" }
+      );
+      return res.status(200).json({
+        message: "Account is already verified. You can log in.",
+        alreadyVerified: true,
+        token,
+        employerId: verifiedEmployer._id,
+        id: verifiedEmployer._id,
+        email: verifiedEmployer.email,
+        employerType: verifiedEmployer.employerType,
+        isProfileComplete: verifiedEmployer.isProfileComplete || false,
+      });
+    }
+
     res.status(400);
-    throw new Error("Verification code has expired or does not exist. Please request a new code.");
+    throw new Error("Registration session has expired or does not exist. Please register again from the beginning.");
   }
 
   // Explicit 10-minute expiry check
-  const isExpired = Date.now() - new Date(otpRecord.createdAt).getTime() > 10 * 60 * 1000;
+  const isExpired = Date.now() - new Date(pending.createdAt).getTime() > 10 * 60 * 1000;
   if (isExpired) {
-    await OTP.deleteMany({ employerId: employer._id, type: "verification" });
+    await PendingRegistration.deleteMany({ email: normalizedEmail, role: "employer" });
     res.status(400);
-    throw new Error("Verification code has expired. Please request a new code.");
+    throw new Error("Verification code has expired. Registration discarded. Please register again from the beginning.");
   }
 
   // Attempt limit check (maximum 5 attempts)
-  if (otpRecord.attempts >= 5) {
-    await OTP.deleteMany({ employerId: employer._id, type: "verification" });
-    res.status(429);
-    throw new Error("Too many failed attempts. Please request a new verification code.");
+  if (pending.attempts >= 5) {
+    await PendingRegistration.deleteMany({ email: normalizedEmail, role: "employer" });
+    return res.status(429).json({
+      message: "Too many failed attempts. Registration discarded for security. Please register again from the beginning.",
+    });
   }
 
-  // Verify OTP (support bcrypt hash with fallback for plain text)
+  // Verify OTP
   let isMatch = false;
-  if (otpRecord.otp.startsWith("$2b$") || otpRecord.otp.startsWith("$2a$")) {
-    isMatch = await bcrypt.compare(String(otp).trim(), otpRecord.otp);
+  if (pending.otp.startsWith("$2b$") || pending.otp.startsWith("$2a$")) {
+    isMatch = await bcrypt.compare(String(otp).trim(), pending.otp);
   } else {
-    isMatch = otpRecord.otp.trim() === String(otp).trim();
+    isMatch = pending.otp.trim() === String(otp).trim();
   }
 
   if (!isMatch) {
-    otpRecord.attempts = (otpRecord.attempts || 0) + 1;
-    await otpRecord.save();
-    const remaining = 5 - otpRecord.attempts;
-    res.status(400);
-    throw new Error(remaining > 0
-      ? `Invalid verification code. ${remaining} attempt(s) remaining.`
-      : "Invalid verification code. Maximum attempts reached. Please request a new code.");
+    pending.attempts = (pending.attempts || 0) + 1;
+    await pending.save();
+    const remaining = 5 - pending.attempts;
+    if (remaining <= 0) {
+      await PendingRegistration.deleteMany({ email: normalizedEmail, role: "employer" });
+      return res.status(400).json({
+        message: "Invalid verification code. Maximum attempts reached. Registration discarded. Please register again.",
+      });
+    }
+    return res.status(400).json({
+      message: `Invalid verification code. ${remaining} attempt(s) remaining.`,
+    });
   }
 
-  // Mark Verified
-  employer.isVerified = true;
-  await employer.save();
+  // =========================================================================
+  // MANDATORY SECURITY RULE: Account is created ONLY after successful OTP match!
+  // =========================================================================
+  // Clean up any stale unverified records if any exist
+  await Employer.deleteMany({ email: normalizedEmail, isVerified: false });
 
-  // Clean up verification OTP
-  await OTP.deleteMany({ employerId: employer._id, type: "verification" });
+  const newEmployer = new Employer({
+    name: pending.data.name,
+    email: pending.email,
+    password: pending.data.password, // Pre-hashed with bcrypt
+    phone: pending.data.phone,
+    employerType: pending.data.employerType,
+    companyName: pending.data.companyName,
+    isVerified: true,
+  });
+  const savedEmployer = await newEmployer.save();
 
-  // Generate Token & Login immediately
+  // Invalidate and delete pending registration so OTP can never be replayed
+  await PendingRegistration.deleteMany({ email: normalizedEmail, role: "employer" });
+
   const token = jwt.sign(
-    { employer: { id: employer._id } }, 
-    process.env.JWT_SECRET, 
-    { expiresIn: '5h' }
+    { employer: { id: savedEmployer._id } },
+    process.env.JWT_SECRET,
+    { expiresIn: "5h" }
   );
-  
-  res.status(200).json({ 
-    message: "Account verified successfully!", 
+
+  res.status(200).json({
+    message: "Employer account verified successfully! Welcome to JobOne.",
     token,
-    employerId: employer._id,
-    id: employer._id,
-    email: employer.email,
-    employerType: employer.employerType,
-    isProfileComplete: employer.isProfileComplete || false
+    employerId: savedEmployer._id,
+    id: savedEmployer._id,
+    email: savedEmployer.email,
+    employerType: savedEmployer.employerType,
+    isProfileComplete: savedEmployer.isProfileComplete || false,
   });
 });
 
 export const resendOTP = expressAsyncHandler(async (req, res) => {
   const { email } = req.body;
   if (!email) {
-    res.status(400); throw new Error("Email is required");
+    res.status(400);
+    throw new Error("Email is required");
   }
 
   const normalizedEmail = normalizeEmail(email);
-  const employer = await Employer.findOne({ email: normalizedEmail });
-  if (!employer) {
-    res.status(404); throw new Error("Employer account not found");
-  }
-  if (employer.isVerified) {
-    res.status(400); throw new Error("This employer account is already verified. Please log in.");
+
+  // Look up active pending registration
+  const pending = await PendingRegistration.findOne({ email: normalizedEmail, role: "employer" });
+  if (!pending) {
+    // Check if already verified
+    const verifiedEmployer = await Employer.findOne({ email: normalizedEmail, isVerified: true });
+    if (verifiedEmployer) {
+      res.status(400);
+      throw new Error("This employer account is already verified. Please log in.");
+    }
+    res.status(400);
+    throw new Error("Registration session has expired or does not exist. Please register again from the beginning.");
   }
 
-  // Rate limiting: Prevent requesting a new OTP within 30 seconds
-  const existingOTP = await OTP.findOne({ employerId: employer._id, type: "verification" });
-  if (existingOTP && (Date.now() - new Date(existingOTP.createdAt).getTime()) < 30 * 1000) {
-    const remainingSec = Math.ceil((30 * 1000 - (Date.now() - new Date(existingOTP.createdAt).getTime())) / 1000);
+  // Enforce server-side cooldown (60 seconds)
+  const elapsed = Date.now() - new Date(pending.lastResendAt || pending.createdAt).getTime();
+  if (elapsed < 60 * 1000) {
+    const remainingSec = Math.ceil((60 * 1000 - elapsed) / 1000);
     res.status(429);
     throw new Error(`Please wait ${remainingSec} seconds before requesting another code.`);
   }
 
-  // Delete existing verification OTPs
-  await OTP.deleteMany({ employerId: employer._id, type: "verification" });
+  // Enforce maximum resend limit (5 resends)
+  if (pending.resendCount >= 5) {
+    await PendingRegistration.deleteMany({ email: normalizedEmail, role: "employer" });
+    res.status(429);
+    throw new Error("Maximum resend limit reached. Registration discarded for security. Please start over.");
+  }
 
-  // Create new hashed OTP using cryptographically secure random generator
+  // Generate new OTP & hash
   const otpCode = generateSecureOTP(6);
   const hashedOTP = await bcrypt.hash(otpCode, 10);
-  await OTP.create({
-    employerId: employer._id,
-    otp: hashedOTP,
-    type: "verification",
-    attempts: 0,
-  });
+
+  // Update pending registration
+  pending.otp = hashedOTP;
+  pending.attempts = 0;
+  pending.lastResendAt = new Date();
+  pending.resendCount = (pending.resendCount || 0) + 1;
+  pending.createdAt = new Date(); // Refresh 10-minute TTL
+  await pending.save();
 
   try {
     await sendEmail({
-      email: employer.email,
-      subject: 'Your New Verification Code - JobOne Employer',
+      email: normalizedEmail,
+      subject: "Your New Verification Code - JobOne Employer",
       message: `Your new verification code is: ${otpCode}. It expires in 10 minutes.`,
     });
 
     res.status(200).json({ message: "A new verification code has been sent to your business email." });
   } catch (error) {
-    await OTP.deleteMany({ employerId: employer._id, type: "verification" });
+    console.error("Employer OTP resend email dispatch failed:", error);
     res.status(500);
     throw new Error("Could not send verification email. Please try again later.");
   }
+});
+
+
+export const cancelEmployerRegistration = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (email) {
+    const normalizedEmail = normalizeEmail(email);
+    // Discard any active pending registration
+    await PendingRegistration.deleteMany({ email: normalizedEmail, role: "employer" });
+    // Ensure no unverified account lingers
+    await Employer.deleteMany({ email: normalizedEmail, isVerified: false });
+  }
+  res.status(200).json({ message: "Employer registration cancelled and temporary data discarded successfully." });
 });
 
 
