@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { normalizeIndustry } from "../../constants/taxonomy";
 import {
   BarChart3,
   TrendingUp,
@@ -229,35 +230,21 @@ export default function AdminAnalyticsView({
 
   // ─── CHART 4: INDUSTRY SECTOR BREAKDOWN ──────────────────────────────────
   const industryDistribution = useMemo(() => {
-    const sectors = {
-      Technology: 0,
-      Finance: 0,
-      Healthcare: 0,
-      Engineering: 0,
-      Marketing: 0,
-      Education: 0,
-      Logistics: 0,
-      Other: 0,
-    };
-
+    const counts = {};
     allJobs.forEach((job) => {
-      const ind = (job.industry || "").toLowerCase();
-      if (ind.includes("tech") || ind.includes("it") || ind.includes("software")) sectors.Technology += 1;
-      else if (ind.includes("fin") || ind.includes("bank")) sectors.Finance += 1;
-      else if (ind.includes("health") || ind.includes("medic")) sectors.Healthcare += 1;
-      else if (ind.includes("eng") || ind.includes("manu")) sectors.Engineering += 1;
-      else if (ind.includes("mark") || ind.includes("media")) sectors.Marketing += 1;
-      else if (ind.includes("edu")) sectors.Education += 1;
-      else if (ind.includes("logist") || ind.includes("supply")) sectors.Logistics += 1;
-      else sectors.Other += 1;
+      const norm = normalizeIndustry(job.industry);
+      const name = norm ? norm.shortName || norm.name : (job.industry || "Other");
+      counts[name] = (counts[name] || 0) + 1;
     });
 
     const total = allJobs.length || 1;
-    return Object.entries(sectors).map(([name, count]) => ({
+    const entries = Object.entries(counts).map(([name, count]) => ({
       name,
       count,
       pct: Math.round((count / total) * 100),
     }));
+
+    return entries.sort((a, b) => b.count - a.count);
   }, [allJobs]);
 
   return (
@@ -681,7 +668,7 @@ export default function AdminAnalyticsView({
                   Job Distribution by Industry Vertical
                 </h3>
                 <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
-                  Concentration of platform job listings across 8 key market taxonomies
+                  Concentration of platform job listings across genuine industry verticals
                 </p>
               </div>
               <span className="text-xs font-mono text-[var(--theme-text-muted)]">

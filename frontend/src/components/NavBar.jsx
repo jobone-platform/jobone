@@ -167,18 +167,32 @@ export default function NavBar() {
     ? "Employer Dashboard"
     : "Career Center";
 
-  // --- 3. PUBLIC NAVIGATION LINKS ---
-  const publicLinks = [
-    { to: "/jobs", label: "Find Jobs", icon: Briefcase },
-    { to: "/companies", label: "Companies", icon: Building2 },
-    { to: "/services", label: "Services", icon: Sparkles },
-    { to: "/about", label: "About", icon: Info },
-    { to: "/contact", label: "Contact", icon: PhoneCall },
-  ];
+  // --- 3. PUBLIC NAVIGATION LINKS (Role-Aware) ---
+  const isEmployerHome = currentPath === "/employer";
+  const publicLinks = isEmployerHome
+    ? [
+        { to: "/candidates", label: "Find Candidates", icon: User },
+        { to: "/companies", label: "Companies", icon: Building2 },
+        { to: "/services", label: "Services", icon: Sparkles },
+        { to: "/about", label: "About", icon: Info },
+        { to: "/contact", label: "Contact", icon: PhoneCall },
+      ]
+    : [
+        { to: "/jobs", label: "Find Jobs", icon: Briefcase },
+        { to: "/companies", label: "Companies", icon: Building2 },
+        { to: "/services", label: "Services", icon: Sparkles },
+        { to: "/about", label: "About", icon: Info },
+        { to: "/contact", label: "Contact", icon: PhoneCall },
+      ];
+
+  const audienceSwitch = isEmployerHome
+    ? { to: "/", label: "Candidate", icon: User, ariaLabel: "Switch to Candidate Homepage" }
+    : { to: "/employer", label: "Employer", icon: Building2, ariaLabel: "Switch to Employer Homepage" };
+  const AudienceIcon = audienceSwitch.icon;
 
   const isLinkActive = (to) => {
-    if (to === "/") return location.pathname === "/";
-    return location.pathname === to || location.pathname.startsWith(to + "/");
+    if (to === "/") return currentPath === "/";
+    return currentPath === to || currentPath.startsWith(to + "/");
   };
 
   const handleLogout = () => {
@@ -204,14 +218,14 @@ export default function NavBar() {
               width={140}
               height={40}
               textColor={isDark ? "#FFFFFF" : "#0F172A"}
-              className="h-7 sm:h-8 w-auto group-hover:opacity-90 transition-opacity"
+              className="h-6 sm:h-8 w-auto group-hover:opacity-90 transition-opacity"
             />
           </Link>
 
           {/* ──── DESKTOP NAVIGATION MENU ────────────────────────────────── */}
           <nav
             aria-label="Public Navigation"
-            className="hidden md:flex items-center gap-1 lg:gap-1.5"
+            className="hidden lg:flex items-center gap-1 lg:gap-1.5"
           >
             {publicLinks.map((link) => {
               const active = isLinkActive(link.to);
@@ -219,7 +233,8 @@ export default function NavBar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 select-none ${
+                  aria-current={active ? "page" : undefined}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-accent-silver)] ${
                     active
                       ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-xs"
                       : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)]"
@@ -232,7 +247,7 @@ export default function NavBar() {
           </nav>
 
           {/* ──── RIGHT ACTION CONTROLS ──────────────────────────────────── */}
-          <div className="hidden md:flex items-center gap-2.5 shrink-0">
+          <div className="hidden lg:flex items-center gap-2.5 shrink-0">
             {/* Theme Toggle Pill (Light, Dark, System) */}
             <div className="flex items-center p-0.5 rounded-full border border-[var(--theme-border)] bg-[var(--theme-card)] shadow-2xs">
               <button
@@ -275,6 +290,16 @@ export default function NavBar() {
                 <Monitor className="w-3.5 h-3.5" />
               </button>
             </div>
+
+            {/* Audience Switcher (Always visible on desktop, preserves auth & theme) */}
+            <Link
+              to={audienceSwitch.to}
+              aria-label={audienceSwitch.ariaLabel}
+              className="px-3 py-1.5 rounded-full text-xs font-semibold border border-[var(--theme-border-silver)] bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] text-[var(--theme-text)] transition flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-accent-silver)]"
+            >
+              <AudienceIcon className="w-3.5 h-3.5 text-[var(--theme-accent-silver)] shrink-0" />
+              <span>{audienceSwitch.label}</span>
+            </Link>
 
             {/* If Authenticated: Portal Shortcut Pill + User Avatar Menu */}
             {authStatus === "authenticated" && activeUser ? (
@@ -404,27 +429,27 @@ export default function NavBar() {
                 </div>
               </div>
             ) : (
-              /* If Guest: Sign In & Hire Talent CTAs */
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/login"
-                  className="px-3.5 py-1.5 rounded-full text-xs font-bold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/employerregisteroption"
-                  className="px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-white text-black hover:bg-zinc-200 dark:hover:bg-zinc-200 transition shadow-sm active:scale-95 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span>Hire Talent</span>
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
+              /* If Guest: Sign In */
+              <Link
+                to="/login"
+                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[var(--theme-text)] text-[var(--theme-bg)] hover:opacity-90 transition shadow-xs whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-accent-silver)]"
+              >
+                Sign In
+              </Link>
             )}
           </div>
 
-          {/* ──── MOBILE CONTROLS ────────────────────────────────────────── */}
-          <div className="flex md:hidden items-center gap-2">
+          {/* ──── MOBILE & TABLET CONTROLS ────────────────────────────────── */}
+          <div className="flex lg:hidden items-center gap-1.5 shrink-0">
+            <Link
+              to={audienceSwitch.to}
+              aria-label={audienceSwitch.ariaLabel}
+              className="px-2.5 py-1.5 rounded-xl border border-[var(--theme-border-silver)] bg-[var(--theme-card)] text-[var(--theme-text)] text-[11px] font-bold flex items-center gap-1 shrink-0"
+            >
+              <AudienceIcon className="w-3.5 h-3.5 text-[var(--theme-accent-silver)] shrink-0" aria-hidden="true" />
+              <span>{audienceSwitch.label}</span>
+            </Link>
+
             <button
               type="button"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -449,10 +474,10 @@ export default function NavBar() {
         </div>
       </header>
 
-      {/* ──── MOBILE RESPONSIVE NAVIGATION DRAWER ─────────────────────── */}
+      {/* ──── MOBILE & TABLET RESPONSIVE NAVIGATION DRAWER ─────────────── */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 z-40 flex">
+          <div className="lg:hidden fixed inset-0 z-40 flex">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -509,7 +534,8 @@ export default function NavBar() {
                       key={link.to}
                       to={link.to}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
+                      aria-current={active ? "page" : undefined}
+                      className={`flex items-center gap-3 px-4 py-3 min-h-[44px] rounded-2xl text-sm font-semibold transition-all ${
                         active
                           ? "bg-[var(--theme-card)] text-[var(--theme-text)] font-bold border border-[var(--theme-border)]"
                           : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-card)]"
@@ -522,23 +548,55 @@ export default function NavBar() {
                 })}
               </div>
 
+              {/* Mobile Audience Switcher & Theme Selector */}
+              <div className="pt-2 border-t border-[var(--theme-border)] space-y-3">
+                <Link
+                  to={audienceSwitch.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-label={audienceSwitch.ariaLabel}
+                  className="w-full py-3 min-h-[44px] rounded-2xl font-bold text-sm border border-[var(--theme-border-silver)] bg-[var(--theme-card)] text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] flex items-center justify-center gap-2 transition"
+                >
+                  <AudienceIcon className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+                  <span>{audienceSwitch.label}</span>
+                </Link>
+
+                {/* Theme Switcher (Light / Dark / Default) */}
+                <div className="flex items-center justify-between px-3 py-2 rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-card)]">
+                  <span className="text-xs font-semibold text-[var(--theme-text-muted)]">Theme</span>
+                  <div className="flex items-center gap-1">
+                    {[
+                      { id: "light", label: "Light", Icon: Sun },
+                      { id: "dark", label: "Dark", Icon: Moon },
+                      { id: "default", label: "Default", Icon: Monitor },
+                    ].map(({ id, label, Icon }) => (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setTheme(id)}
+                        aria-label={`Switch to ${label} theme`}
+                        className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 cursor-pointer transition ${
+                          theme === id
+                            ? "bg-[var(--theme-text)] text-[var(--theme-bg)]"
+                            : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               {/* Guest Actions */}
               {authStatus !== "authenticated" && (
-                <div className="pt-2 border-t border-[var(--theme-border)] space-y-2.5">
+                <div className="pt-2 border-t border-[var(--theme-border)]">
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-3 rounded-2xl font-bold text-sm border border-[var(--theme-border)] text-center block text-[var(--theme-text)] hover:bg-[var(--theme-card)] transition"
+                    className="w-full py-3 min-h-[44px] rounded-2xl font-bold text-sm bg-[var(--theme-text)] text-[var(--theme-bg)] text-center flex items-center justify-center hover:opacity-90 transition"
                   >
                     Sign In
-                  </Link>
-                  <Link
-                    to="/employerregisteroption"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-3 rounded-2xl font-bold text-sm bg-white dark:bg-white text-black text-center flex items-center justify-center gap-2 hover:bg-zinc-200 transition shadow-md cursor-pointer"
-                  >
-                    <span>Hire Talent &bull; Employer Onboarding</span>
-                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               )}

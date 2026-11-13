@@ -48,6 +48,7 @@ import AdminAuditLogsView from "../components/admin/AdminAuditLogsView";
 import AdminNotificationsView from "../components/admin/AdminNotificationsView";
 import AdminSettingsView from "../components/admin/AdminSettingsView";
 import AdminExportCentre from "../components/admin/AdminExportCentre";
+import { INDUSTRIES, normalizeIndustry } from "../constants/taxonomy";
 import AdminActivityWorkspace from "../components/admin/AdminActivityWorkspace";
 
 export default function AdminDashboard() {
@@ -668,7 +669,11 @@ export default function AdminDashboard() {
     }
 
     if (jobModIndustryFilter !== "all") {
-      list = list.filter((j) => j.industry === jobModIndustryFilter);
+      list = list.filter(
+        (j) =>
+          normalizeIndustry(j.industry)?.name === normalizeIndustry(jobModIndustryFilter)?.name ||
+          (j.industry || "").toLowerCase().includes(jobModIndustryFilter.toLowerCase())
+      );
     }
 
     if (jobModSort === "newest") {
@@ -1388,16 +1393,12 @@ export default function AdminDashboard() {
                 }}
                 className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
               >
-                <option value="all">All Sectors</option>
-                <option value="IT & Software">IT & Software</option>
-                <option value="Banking & Finance">Banking & Finance</option>
-                <option value="Sales & Marketing">Sales & Marketing</option>
-                <option value="Healthcare & Pharma">Healthcare & Pharma</option>
-                <option value="Engineering & Manufacturing">Engineering</option>
-                <option value="Operations & Logistics">Operations</option>
-                <option value="Customer Support">Customer Support</option>
-                <option value="HR & Admin">HR & Admin</option>
-                <option value="Education & EdTech">Education</option>
+                <option value="all">All Industries (24 Sectors)</option>
+                {INDUSTRIES.map((ind) => (
+                  <option key={ind.id} value={ind.name}>
+                    {ind.shortName || ind.name}
+                  </option>
+                ))}
               </select>
 
               <select

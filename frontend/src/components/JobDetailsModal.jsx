@@ -157,6 +157,16 @@ export default function JobDetailsModal({ job, onClose }) {
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-surface-2 text-foreground/80 border border-border">
                       {renderArray(job.jobType)}
                     </span>
+                    {job.industry && (
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-surface-2 text-foreground/80 border border-border">
+                        {job.industry}
+                      </span>
+                    )}
+                    {job.department && (
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-surface-2 text-silver border border-border">
+                        {job.department}
+                      </span>
+                    )}
                   </div>
 
                   <h1

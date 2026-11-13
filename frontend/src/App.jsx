@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from "react";
+import { MotionConfig } from "framer-motion";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 
@@ -21,6 +22,7 @@ const RouteFallback = () => (
 
 // --- PUBLIC PAGES (Home loaded statically for instant landing render) ---
 import Home from "./pages/Home";
+const EmployersHome = lazy(() => import("./pages/EmployersHome"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const UserRegister = lazy(() => import("./pages/UserRegister"));
@@ -150,6 +152,7 @@ const AppLayout = ({ children }) => {
 
   const noPaddingRoutes = [
     "/",
+    "/employer",
     "/userdashboard",
     "/myapplications",
     "/profile",
@@ -220,12 +223,16 @@ const AppLayout = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      <AppLayout>
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            {/* ================= PUBLIC ROUTES ================= */}
-            <Route path="/" element={<Home />} />
+    <MotionConfig reducedMotion="user">
+      <Router>
+        <AppLayout>
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              {/* ================= PUBLIC ROUTES ================= */}
+              <Route path="/" element={<Home />} />
+              <Route path="/employer" element={<EmployersHome />} />
+              <Route path="/employers" element={<Navigate to="/employer" replace />} />
+              <Route path="/for-employers" element={<Navigate to="/employer" replace />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/jobs" element={<Jobs />} />
@@ -514,6 +521,7 @@ function App() {
         </Suspense>
       </AppLayout>
     </Router>
+    </MotionConfig>
   );
 }
 

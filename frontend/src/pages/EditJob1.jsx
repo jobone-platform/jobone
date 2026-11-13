@@ -9,6 +9,11 @@ import CourseSuggestionsDropdown from "../components/CourseSuggestionsDropdown.j
 import LanguageSuggestionsDropdown from "../components/LanguageSuggestionsDropdown.jsx";
 import SkillSuggestionsDropdown from "../components/SkillSuggestionsDropdown.jsx";
 import {
+  INDUSTRIES,
+  DEPARTMENTS,
+  getDepartmentsForIndustry,
+} from "../constants/taxonomy";
+import {
   Loader2,
   Save,
   ArrowLeft,
@@ -39,6 +44,9 @@ export default function EditJob() {
 
   const [job, setJob] = useState({
     title: "",
+    industry: "Information Technology & Software",
+    department: "Engineering & Development",
+    subdomain: "",
     status: "active",
     description: "",
     jobFeatures: ["", ""],
@@ -144,6 +152,9 @@ export default function EditJob() {
 
         setJob({
           title: d.title || "",
+          industry: d.industry || "Information Technology & Software",
+          department: d.department || "Engineering & Development",
+          subdomain: d.subdomain || "",
           status: d.status || "active",
           jobFeatures: d.jobFeatures?.length === 2 ? d.jobFeatures : ["", ""],
           skillsRequired: d.skillsRequired || [],
@@ -387,6 +398,75 @@ export default function EditJob() {
                   name="noOfPeopleRequired"
                   value={job.noOfPeopleRequired}
                   onChange={handleChange}
+                  className="w-full p-2.5 text-xs rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)]"
+                />
+              </div>
+            </div>
+
+            {/* Real-World Industry Taxonomy & Department Classification */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+              <div>
+                <label className="block text-xs font-bold text-[var(--theme-text)] mb-1">
+                  Industry Vertical
+                </label>
+                <select
+                  value={job.industry || "Information Technology & Software"}
+                  onChange={(e) => {
+                    const newInd = e.target.value;
+                    const deps = getDepartmentsForIndustry(newInd);
+                    setJob((prev) => ({
+                      ...prev,
+                      industry: newInd,
+                      department: deps[0] || prev.department || "Engineering & Development",
+                    }));
+                  }}
+                  className="w-full p-2.5 text-xs rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)]"
+                >
+                  {INDUSTRIES.map((ind) => (
+                    <option key={ind.id} value={ind.name}>
+                      {ind.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[var(--theme-text)] mb-1">
+                  Department / Function
+                </label>
+                <select
+                  value={job.department || "Engineering & Development"}
+                  onChange={(e) => setJob((prev) => ({ ...prev, department: e.target.value }))}
+                  className="w-full p-2.5 text-xs rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)]"
+                >
+                  <optgroup label="Key Industry Departments">
+                    {getDepartmentsForIndustry(job.industry).map((dept) => (
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Other Corporate Functions">
+                    {DEPARTMENTS.filter(
+                      (d) => !getDepartmentsForIndustry(job.industry).includes(d)
+                    ).map((dept) => (
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[var(--theme-text)] mb-1">
+                  Specialization / Subdomain
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Cloud, Wealth Mgmt"
+                  value={job.subdomain || ""}
+                  onChange={(e) => setJob((prev) => ({ ...prev, subdomain: e.target.value }))}
                   className="w-full p-2.5 text-xs rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)]"
                 />
               </div>

@@ -170,21 +170,11 @@ export default function FeaturedJobs() {
         {/* Editorial Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 sm:mb-12 gap-6">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text-muted)]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              <span className="font-semibold text-[var(--theme-text)] uppercase tracking-wider text-[11px]">
-                Active Recruiter Pipelines
-              </span>
-            </div>
-
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--theme-text)] tracking-tight leading-tight">
               Featured Opportunities
             </h2>
             <p className="text-sm sm:text-base text-[var(--theme-text-muted)] max-w-2xl font-normal leading-relaxed">
-              Curated verified postings from technology, engineering, finance, and operations employers actively reviewing candidate profiles.
+              Explore recent job openings from verified employers actively hiring.
             </p>
           </div>
 
