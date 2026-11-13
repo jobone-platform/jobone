@@ -61,7 +61,7 @@ export default function CandidateSidebar({
         {
           id: "find-jobs",
           label: "Find Jobs",
-          path: "/jobs",
+          path: "/candidate/jobs",
           icon: Search,
         },
         {
@@ -115,7 +115,7 @@ export default function CandidateSidebar({
         {
           id: "companies",
           label: "Explore Companies",
-          path: "/companies",
+          path: "/candidate/companies",
           icon: Building2,
         },
       ],
@@ -132,7 +132,7 @@ export default function CandidateSidebar({
       return current === "/userdashboard";
     }
     if (item.id === "find-jobs") {
-      return current === "/jobs";
+      return current === "/candidate/jobs" || current.startsWith("/candidate/jobs") || current === "/jobs";
     }
     if (item.id === "recommended") {
       return current === "/recommended-jobs" || current === "/recommendedjobs";
@@ -153,7 +153,7 @@ export default function CandidateSidebar({
       return current === "/editprofile" || current === "/editprofile2";
     }
     if (item.id === "companies") {
-      return current === "/companies" || current === "/explorecompanies";
+      return current === "/candidate/companies" || current.startsWith("/candidate/companies");
     }
 
     return current === itemPath || current.startsWith(itemPath + "/");

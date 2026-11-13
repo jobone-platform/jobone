@@ -24,12 +24,32 @@ axios.interceptors.response.use(
             window.location.href = "/admin/login";
           }
         } else {
-          localStorage.removeItem("userInfo");
-          localStorage.removeItem("userToken");
-          localStorage.removeItem("employerInfo");
-          localStorage.removeItem("employerToken");
-          if (!window.location.pathname.includes("/login")) {
-            window.location.href = "/login";
+          // Only clear session and redirect if an authorization token was actually sent and rejected
+          const sentAuth = Boolean(
+            error.config?.headers?.Authorization || error.config?.headers?.authorization
+          );
+          if (sentAuth) {
+            const isEmployerRequest =
+              url.includes("/employer") || window.location.pathname.startsWith("/employer");
+            if (isEmployerRequest) {
+              localStorage.removeItem("employerInfo");
+              localStorage.removeItem("employerToken");
+            } else {
+              localStorage.removeItem("userInfo");
+              localStorage.removeItem("userToken");
+            }
+
+            const currentPath = window.location.pathname;
+            const isPublicPage =
+              currentPath === "/" ||
+              currentPath === "/employer" ||
+              ["/profile/", "/company/", "/jobs", "/companies", "/about", "/services", "/contact"].some(
+                (p) => currentPath.startsWith(p)
+              );
+
+            if (!isPublicPage && !currentPath.includes("/login")) {
+              window.location.href = isEmployerRequest ? "/login" : "/login";
+            }
           }
         }
       }

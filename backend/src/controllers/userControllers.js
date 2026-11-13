@@ -500,11 +500,15 @@ export const userDetails = expressAsyncHandler(async (req, res) => {
       try {
         const token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if (decoded.id && decoded.id.toString() === userId.toString()) {
+        const targetId = decoded.id || (decoded.employer && decoded.employer.id);
+        if (targetId && targetId.toString() === userId.toString()) {
           isAuthorized = true;
-        } else if (decoded.id) {
-          const admin = await Admin.findById(decoded.id);
-          if (admin) isAuthorized = true;
+        } else if (targetId) {
+          const [admin, employer] = await Promise.all([
+            Admin.findById(targetId),
+            Employer.findById(targetId),
+          ]);
+          if (admin || employer) isAuthorized = true;
         }
       } catch (e) {
         // Invalid token, treat as public/unauthorized

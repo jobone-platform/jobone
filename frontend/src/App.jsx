@@ -49,6 +49,8 @@ const UserOTP = lazy(() => import("./pages/UserOTP"));
 const ApplyPage = lazy(() => import("./pages/ApplyPage"));
 const JobseekerDOC = lazy(() => import("./pages/JobseekerDOC"));
 const ResumeBuilder = lazy(() => import("./pages/ResumeBuilder"));
+const CandidateJobs = lazy(() => import("./pages/candidate/CandidateJobs"));
+const CandidateCompanies = lazy(() => import("./pages/candidate/CandidateCompanies"));
 
 // --- EMPLOYER PAGES (Role-split) ---
 const EmployerDashboard = lazy(() => import("./pages/EmployerDashboard"));
@@ -124,7 +126,10 @@ const AppLayout = ({ children }) => {
     "/jobseekerdoc",
     "/resume-builder",
     "/resumebuilder",
+    "/candidate/jobs",
+    "/candidate/companies",
   ].some((p) => cleanPath === p || cleanPath.startsWith(p + "/")) ||
+  cleanPath.startsWith("/candidate/") ||
   (hasCandidateSession && (cleanPath === "/recommended-jobs" || cleanPath === "/recommendedjobs")) ||
   cleanPath.startsWith("/apply/");
 
@@ -162,6 +167,8 @@ const AppLayout = ({ children }) => {
     "/jobseekerdoc",
     "/resume-builder",
     "/resumebuilder",
+    "/candidate/jobs",
+    "/candidate/companies",
     "/recommended-jobs",
     "/recommendedjobs",
     "/apply",
@@ -377,6 +384,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ApplyPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/candidate/jobs"
+              element={
+                <ProtectedRoute>
+                  <CandidateJobs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/candidate/companies"
+              element={
+                <ProtectedRoute>
+                  <CandidateCompanies />
                 </ProtectedRoute>
               }
             />

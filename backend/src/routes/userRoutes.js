@@ -36,7 +36,7 @@ router.post("/resend-otp", otpResendLimiter, resendUserOTP);
 router.post("/cancel-registration", cancelUserRegistration);
 router.post("/google-login", authLimiter, googleLogin);
 router.patch("/:id", protect, updateUser);
-router.get("/:id", protectAny, userDetails);
+router.get("/:id", userDetails);
 router.post("/forgot-password", otpResendLimiter, forgotPasswordUser);
 router.post("/reset-password", otpVerifyLimiter, resetPasswordUser);
 
