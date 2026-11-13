@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { Building2, Mail, ArrowRight, Loader2, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Building2, Mail, ArrowRight, Loader2, RefreshCw, CheckCircle2, AlertTriangle } from "lucide-react";
 import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../routes/Context";
 import AuthLayout from "../components/AuthLayout";
@@ -17,6 +17,7 @@ export default function EmployerOTP() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [timer, setTimer] = useState(60);
@@ -33,6 +34,48 @@ export default function EmployerOTP() {
     }
     return () => clearInterval(interval);
   }, [timer]);
+
+  // Handle browser back button: discard pending registration
+  useEffect(() => {
+    const handlePopState = () => {
+      if (email) {
+        try {
+          if (navigator.sendBeacon) {
+            const blob = new Blob(
+              [JSON.stringify({ email: email.trim().toLowerCase() })],
+              { type: "application/json" }
+            );
+            navigator.sendBeacon(`${API_BASE_URL}/employer/cancel-registration`, blob);
+          } else {
+            axios.post(`${API_BASE_URL}/employer/cancel-registration`, {
+              email: email.trim().toLowerCase(),
+            });
+          }
+        } catch (_err) {
+          /* ignore */
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [email]);
+
+  const handleCancelRegistration = async () => {
+    if (cancelling) return;
+    setCancelling(true);
+    try {
+      if (email) {
+        await axios.post(`${API_BASE_URL}/employer/cancel-registration`, {
+          email: email.trim().toLowerCase(),
+        });
+      }
+    } catch (_err) {
+      /* ignore */
+    } finally {
+      navigate("/employerregister", { replace: true });
+    }
+  };
 
   const handleOtpChange = (e) => {
     const val = e.target.value.replace(/\D/g, "").slice(0, 6);
@@ -104,18 +147,57 @@ export default function EmployerOTP() {
       setMessage(
         res.data.alreadyVerified
           ? "Account verified! Redirecting to Employer Dashboard..."
-          : "Employer account verified! Redirecting to Employer Dashboard..."
+          : "Employer account verified! Welcome to JobOne. Redirecting to dashboard..."
       );
       setIsError(false);
 
       setTimeout(() => navigate("/employerdashboard"), 1100);
     } catch (err) {
-      setMessage(err.response?.data?.message || "Invalid or expired verification code. Please check your corporate email.");
+      const errMsg =
+        err.response?.data?.message ||
+        "Invalid or expired verification code. If abandoned or expired, please register again.";
+      setMessage(errMsg);
       setIsError(true);
     } finally {
       setLoading(false);
     }
   };
+
+  // If user lands directly on this route with no registration session
+  if (!email && !initialEmail) {
+    return (
+      <AuthLayout
+        title="Employer Verification"
+        subtitle="No active registration session found"
+        badge="Session Inactive"
+        visualHeading="Start your enterprise recruiting."
+        visualSubheading="Employer accounts are securely created only after verifying corporate email. Inactive registrations are discarded automatically."
+      >
+        <div className="text-center py-8 space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] mx-auto flex items-center justify-center text-[var(--theme-accent-silver)]">
+            <AlertTriangle size={24} />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-[var(--theme-text)]">
+              No Pending Verification
+            </h3>
+            <p className="text-xs text-[var(--theme-text-muted)] max-w-sm mx-auto">
+              You must complete the employer registration form to receive a verification code. Inactive registrations are discarded.
+            </p>
+          </div>
+          <div className="pt-2">
+            <Link
+              to="/employerregister"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-semibold hover:opacity-90 transition-opacity"
+            >
+              <span>Start Employer Registration</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout
@@ -234,12 +316,15 @@ export default function EmployerOTP() {
             )}
           </p>
 
-          <Link
-            to="/employerregister"
-            className="text-xs text-foreground/40 hover:text-foreground transition-colors"
+          <button
+            type="button"
+            onClick={handleCancelRegistration}
+            disabled={cancelling}
+            className="text-xs text-foreground/40 hover:text-foreground transition-colors cursor-pointer inline-flex items-center gap-1 mt-1"
           >
-            ← Back to Employer Registration
-          </Link>
+            {cancelling ? <Loader2 size={12} className="animate-spin" /> : null}
+            <span>← Cancel &amp; Start Over</span>
+          </button>
         </div>
       </form>
     </AuthLayout>

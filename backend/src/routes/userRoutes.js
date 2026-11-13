@@ -1,6 +1,6 @@
 import express from "express";
 import { 
-  createUser, loginUser, updateUser, userDetails, verifyUserOTP, resendUserOTP, googleLogin,
+  createUser, loginUser, updateUser, userDetails, verifyUserOTP, resendUserOTP, cancelUserRegistration, googleLogin,
   getResumeUploadUrl, saveResumeKey, getViewableResumeUrl, getDownloadableResumeUrl, getProfilePicUploadUrl,
   forgotPasswordUser, resetPasswordUser,
   getJobseekerDocumentUploadUrl, saveJobseekerDocumentKey, getViewableJobseekerDocumentUrl, getDownloadableJobseekerDocumentUrl, deleteJobseekerDocument
@@ -33,6 +33,7 @@ router.post("/register", authLimiter, registerRules, createUser);
 router.post("/login", authLimiter, loginUser);
 router.post("/verifyotp", otpVerifyLimiter, verifyUserOTP);
 router.post("/resend-otp", otpResendLimiter, resendUserOTP);
+router.post("/cancel-registration", cancelUserRegistration);
 router.post("/google-login", authLimiter, googleLogin);
 router.patch("/:id", protect, updateUser);
 router.get("/:id", protectAny, userDetails);
