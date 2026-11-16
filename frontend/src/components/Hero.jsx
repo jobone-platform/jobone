@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -50,6 +50,19 @@ export default function HeroSection() {
 
   // --- Role Typewriter State ---
   const [roleIndex, setRoleIndex] = useState(0);
+  const heroVideoRef = useRef(null);
+
+  useEffect(() => {
+    if (heroVideoRef.current) {
+      heroVideoRef.current.defaultMuted = true;
+      heroVideoRef.current.muted = true;
+      heroVideoRef.current.playsInline = true;
+      const p = heroVideoRef.current.play();
+      if (p !== undefined) {
+        p.catch(() => {});
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -173,12 +186,21 @@ export default function HeroSection() {
       {/* Background Architectural Video with Dark Fade Overlay */}
       {!window.__TAURI__ && (
         <video
+          ref={heroVideoRef}
           className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none hidden md:block"
           src={heroVideo}
           autoPlay
           loop
           muted
           playsInline
+          preload="metadata"
+          webkit-playsinline="true"
+          x5-playsinline="true"
+          style={{
+            transform: "translateZ(0)",
+            WebkitTransform: "translateZ(0)",
+            willChange: "transform",
+          }}
         />
       )}
 

@@ -18,6 +18,7 @@ import {
 import { API_BASE_URL } from "../../config/api";
 import { cachedGet } from "../../utils/apiCache";
 import HeroBackgroundVideo from "../shared/HeroBackgroundVideo";
+import HeroStatusPanel from "./HeroStatusPanel";
 
 const POPULAR_SEARCHES = [
   { label: "Remote", type: "remote", val: "Remote" },
@@ -262,120 +263,14 @@ export default function CandidateHero() {
             </div>
           </div>
 
-          {/* RIGHT: Candidate Statistics & Highlights Panel (5 cols) */}
+          {/* RIGHT: Candidate / Employer Dual-Mode Status Panel (5 cols) */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.18 }}
             className="lg:col-span-5 min-w-0"
           >
-            <div className="rounded-3xl border border-[var(--theme-border-silver)] bg-[var(--theme-surface)]/95 backdrop-blur-md p-4 sm:p-7 shadow-2xl">
-              <div className="flex items-center justify-between gap-3 pb-4 mb-5 border-b border-[var(--theme-border)]">
-                <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--theme-accent-silver)]">
-                    Live Platform Snapshot
-                  </span>
-                  <h2 className="text-lg font-bold text-[var(--theme-text)] mt-0.5">
-                    Candidate Opportunity Index
-                  </h2>
-                </div>
-                <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center text-emerald-500 shrink-0">
-                  <ShieldCheck className="w-5 h-5" aria-hidden="true" />
-                </div>
-              </div>
-
-              {statsLoading ? (
-                <div className="grid grid-cols-2 gap-3 mb-5">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="h-24 rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-4 animate-pulse"
-                    />
-                  ))}
-                </div>
-              ) : hasLiveStats ? (
-                <div className="grid grid-cols-1 min-[380px]:grid-cols-2 gap-3 mb-5">
-                  <div className="rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-4">
-                    <div className="flex items-center justify-between text-xs text-[var(--theme-text-muted)] mb-2">
-                      <span>Verified Openings</span>
-                      <Briefcase className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
-                    </div>
-                    <div className="text-2xl font-black font-mono text-[var(--theme-text)]">
-                      {Number(publicStats.liveJobs).toLocaleString()}
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-4">
-                    <div className="flex items-center justify-between text-xs text-[var(--theme-text-muted)] mb-2">
-                      <span>Verified Employers</span>
-                      <Building2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
-                    </div>
-                    <div className="text-2xl font-black font-mono text-[var(--theme-text)]">
-                      {Number(publicStats.companies).toLocaleString()}
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-4">
-                    <div className="flex items-center justify-between text-xs text-[var(--theme-text-muted)] mb-2">
-                      <span>Hiring Locations</span>
-                      <MapPin className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
-                    </div>
-                    <div className="text-2xl font-black font-mono text-[var(--theme-text)]">
-                      {Number(publicStats.locations || 0) > 0
-                        ? Number(publicStats.locations).toLocaleString()
-                        : "Remote + Cities"}
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-4">
-                    <div className="flex items-center justify-between text-xs text-[var(--theme-text-muted)] mb-2">
-                      <span>Active Sectors</span>
-                      <Layers className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
-                    </div>
-                    <div className="text-2xl font-black font-mono text-[var(--theme-text)]">
-                      {categoryCount ? Number(categoryCount).toLocaleString() : "Multi-Sector"}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-3 mb-5">
-                  {CANDIDATE_HIGHLIGHTS.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <div
-                        key={item.title}
-                        className="rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-3.5 flex items-start gap-3"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] flex items-center justify-center text-[var(--theme-accent-silver)] shrink-0">
-                          <Icon className="w-4 h-4" aria-hidden="true" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-[var(--theme-text)]">{item.title}</p>
-                          <p className="text-[11px] text-[var(--theme-text-muted)] mt-0.5">{item.desc}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              <div className="pt-4 border-t border-[var(--theme-border)] flex flex-wrap items-center justify-between gap-3 text-xs">
-                <Link
-                  to="/companies"
-                  className="font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition inline-flex items-center gap-1"
-                >
-                  <span>Browse Companies</span>
-                  <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-                </Link>
-                <Link
-                  to="/employer"
-                  className="font-bold text-[var(--theme-text)] hover:underline inline-flex items-center gap-1.5"
-                >
-                  <Building2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
-                  <span>Hiring? Employer Home</span>
-                </Link>
-              </div>
-            </div>
+            <HeroStatusPanel />
           </motion.div>
         </div>
       </div>

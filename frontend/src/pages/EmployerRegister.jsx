@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { Building2, UserCheck, ShieldCheck, Mail, Phone, Lock, User, ArrowRight, Loader2 } from "lucide-react";
+import { Building2, UserCheck, ShieldCheck, Mail, Phone, Lock, User, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import { API_BASE_URL } from "../config/api";
 import AuthLayout from "../components/AuthLayout";
 import GoogleAuthButton, { AuthDivider } from "../components/GoogleAuthButton";
@@ -35,6 +35,7 @@ export default function EmployerRegister() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -329,16 +330,24 @@ export default function EmployerRegister() {
           </label>
           <div className="relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Create a strong recruitment password"
               minLength={6}
               required
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-2 border border-border text-foreground placeholder-foreground/40 text-sm focus:outline-none focus:border-silver/60 transition-colors"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-surface-2 border border-border text-foreground placeholder-foreground/40 text-sm focus:outline-none focus:border-silver/60 transition-colors"
             />
-            <Lock size={16} className="absolute left-3.5 top-3 text-foreground/40 pointer-events-none" />
+            <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none" />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-silver/60 rounded p-0.5 transition-colors"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </div>
         </div>
 

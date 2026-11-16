@@ -167,28 +167,14 @@ export default function NavBar() {
     ? "Employer Dashboard"
     : "Career Center";
 
-  // --- 3. PUBLIC NAVIGATION LINKS (Role-Aware) ---
-  const isEmployerHome = currentPath === "/employer";
-  const publicLinks = isEmployerHome
-    ? [
-        { to: "/candidates", label: "Find Candidates", icon: User },
-        { to: "/companies", label: "Companies", icon: Building2 },
-        { to: "/services", label: "Services", icon: Sparkles },
-        { to: "/about", label: "About", icon: Info },
-        { to: "/contact", label: "Contact", icon: PhoneCall },
-      ]
-    : [
-        { to: "/jobs", label: "Find Jobs", icon: Briefcase },
-        { to: "/companies", label: "Companies", icon: Building2 },
-        { to: "/services", label: "Services", icon: Sparkles },
-        { to: "/about", label: "About", icon: Info },
-        { to: "/contact", label: "Contact", icon: PhoneCall },
-      ];
-
-  const audienceSwitch = isEmployerHome
-    ? { to: "/", label: "Candidate", icon: User, ariaLabel: "Switch to Candidate Homepage" }
-    : { to: "/employer", label: "Employer", icon: Building2, ariaLabel: "Switch to Employer Homepage" };
-  const AudienceIcon = audienceSwitch.icon;
+  // --- 3. UNIVERSAL PUBLIC NAVIGATION LINKS ---
+  const publicLinks = [
+    { to: "/jobs", label: "Find Jobs", icon: Briefcase },
+    { to: "/companies", label: "Companies", icon: Building2 },
+    { to: "/services", label: "Services", icon: Sparkles },
+    { to: "/about", label: "About", icon: Info },
+    { to: "/contact", label: "Contact", icon: PhoneCall },
+  ];
 
   const isLinkActive = (to) => {
     if (to === "/") return currentPath === "/";
@@ -290,16 +276,6 @@ export default function NavBar() {
                 <Monitor className="w-3.5 h-3.5" />
               </button>
             </div>
-
-            {/* Audience Switcher (Always visible on desktop, preserves auth & theme) */}
-            <Link
-              to={audienceSwitch.to}
-              aria-label={audienceSwitch.ariaLabel}
-              className="px-3 py-1.5 rounded-full text-xs font-semibold border border-[var(--theme-border-silver)] bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] text-[var(--theme-text)] transition flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-accent-silver)]"
-            >
-              <AudienceIcon className="w-3.5 h-3.5 text-[var(--theme-accent-silver)] shrink-0" />
-              <span>{audienceSwitch.label}</span>
-            </Link>
 
             {/* If Authenticated: Portal Shortcut Pill + User Avatar Menu */}
             {authStatus === "authenticated" && activeUser ? (
@@ -441,15 +417,6 @@ export default function NavBar() {
 
           {/* ──── MOBILE & TABLET CONTROLS ────────────────────────────────── */}
           <div className="flex lg:hidden items-center gap-1.5 shrink-0">
-            <Link
-              to={audienceSwitch.to}
-              aria-label={audienceSwitch.ariaLabel}
-              className="px-2.5 py-1.5 rounded-xl border border-[var(--theme-border-silver)] bg-[var(--theme-card)] text-[var(--theme-text)] text-[11px] font-bold flex items-center gap-1 shrink-0"
-            >
-              <AudienceIcon className="w-3.5 h-3.5 text-[var(--theme-accent-silver)] shrink-0" aria-hidden="true" />
-              <span>{audienceSwitch.label}</span>
-            </Link>
-
             <button
               type="button"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}

@@ -237,9 +237,9 @@ function App() {
             <Routes>
               {/* ================= PUBLIC ROUTES ================= */}
               <Route path="/" element={<Home />} />
-              <Route path="/employer" element={<EmployersHome />} />
-              <Route path="/employers" element={<Navigate to="/employer" replace />} />
-              <Route path="/for-employers" element={<Navigate to="/employer" replace />} />
+              <Route path="/employer" element={<Navigate to="/" replace />} />
+              <Route path="/employers" element={<Navigate to="/" replace />} />
+              <Route path="/for-employers" element={<Navigate to="/" replace />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/jobs" element={<Jobs />} />

@@ -7,6 +7,42 @@ import App from "./App.jsx";
 
 import { ThemeProvider, AuthProvider } from "./routes/Context.jsx";
 
+// Cross-platform safe localStorage polyfill for Safari Private Browsing & storage quota limits
+try {
+  const testKey = "__jobone_storage_test__";
+  window.localStorage.setItem(testKey, testKey);
+  window.localStorage.removeItem(testKey);
+} catch (_storageErr) {
+  const memoryStore = new Map();
+  const safeStorage = {
+    getItem: (key) => (memoryStore.has(key) ? memoryStore.get(key) : null),
+    setItem: (key, val) => { memoryStore.set(key, String(val)); },
+    removeItem: (key) => { memoryStore.delete(key); },
+    clear: () => { memoryStore.clear(); },
+    get length() { return memoryStore.size; },
+    key: (i) => Array.from(memoryStore.keys())[i] || null,
+  };
+  try {
+    Object.defineProperty(window, "localStorage", {
+      value: safeStorage,
+      writable: true,
+      configurable: true,
+    });
+  } catch (_defErr) {
+    /* fallback ignored */
+  }
+}
+
+// Suppress benign Safari / WebKit ResizeObserver loop warnings
+window.addEventListener("error", (e) => {
+  if (
+    e.message === "ResizeObserver loop limit exceeded" ||
+    e.message === "ResizeObserver loop completed with undelivered notifications."
+  ) {
+    e.stopImmediatePropagation();
+  }
+});
+
 // Configure reasonable request timeout (15s)
 axios.defaults.timeout = 15000;
 
