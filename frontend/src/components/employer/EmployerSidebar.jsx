@@ -194,7 +194,7 @@ export default function EmployerSidebar({
       <div
         className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
           isActive
-            ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-sm font-semibold"
+            ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shadow-sm font-semibold"
             : isGated
             ? "text-[var(--theme-text-subtle)] hover:bg-[var(--theme-surface-hover)]/50 cursor-not-allowed opacity-60"
             : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)]"
@@ -204,7 +204,7 @@ export default function EmployerSidebar({
           size={18}
           className={`shrink-0 transition-colors ${
             isActive
-              ? "text-[var(--theme-accent-silver)]"
+              ? "text-[var(--theme-gold)]"
               : isGated
               ? "text-[var(--theme-text-subtle)]"
               : "text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text)]"
@@ -220,7 +220,7 @@ export default function EmployerSidebar({
         )}
 
         {(!isCollapsed || isMobile) && !isGated && item.badge && (
-          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[var(--theme-surface-hover)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
             {item.badge}
           </span>
         )}
@@ -300,7 +300,7 @@ export default function EmployerSidebar({
                 height={32}
                 textColor={isDark ? "#FFFFFF" : "#0A0A0A"}
               />
-              <span className="text-[10px] font-mono font-bold tracking-widest uppercase px-1.5 py-0.5 rounded bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+              <span className="text-[10px] font-mono font-bold tracking-widest uppercase px-1.5 py-0.5 rounded bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
                 Employer
               </span>
             </Link>
@@ -358,7 +358,7 @@ export default function EmployerSidebar({
           <div className="p-3 border-b border-[var(--theme-border)]/40">
             <Link
               to="/createjob"
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] hover:opacity-90 font-bold text-xs transition-opacity shadow-sm"
+              className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] font-bold text-xs transition-all shadow-md hover:shadow-lg"
             >
               <PlusCircle size={15} />
               <span>Post New Job</span>
@@ -453,7 +453,7 @@ export default function EmployerSidebar({
                   height={32}
                   textColor={isDark ? "#FFFFFF" : "#0A0A0A"}
                 />
-                <span className="text-[10px] font-mono font-bold tracking-widest uppercase px-1.5 py-0.5 rounded bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+                <span className="text-[10px] font-mono font-bold tracking-widest uppercase px-1.5 py-0.5 rounded bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
                   Employer
                 </span>
               </div>
@@ -486,7 +486,7 @@ export default function EmployerSidebar({
                 <Link
                   to="/createjob"
                   onClick={onCloseMobile}
-                  className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs shadow-sm"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] font-bold text-xs transition-all shadow-md"
                 >
                   <PlusCircle size={15} />
                   <span>Post New Job</span>

@@ -128,8 +128,8 @@ export default function JobAdminView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[var(--theme-bg)] flex flex-col justify-center items-center">
-        <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mb-3">
-          <Loader2 className="animate-spin text-[var(--theme-text)]" size={20} />
+        <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center mb-3 text-[var(--theme-gold)]">
+          <Loader2 className="animate-spin text-[var(--theme-gold)]" size={20} />
         </div>
         <p className="text-xs font-mono font-medium text-[var(--theme-text-muted)]">
           Retrieving Job Moderation Dossier...
@@ -275,7 +275,7 @@ export default function JobAdminView() {
                   value={job.status}
                   onChange={(e) => handleStatusChange(e.target.value, true)}
                   disabled={actionLoading}
-                  className="w-full px-3 py-2 text-xs font-mono font-bold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                  className="w-full px-3 py-2 text-xs font-mono font-bold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
                 >
                   <option value="active">Active (Published)</option>
                   <option value="pending_approval">Pending Approval</option>
@@ -393,7 +393,7 @@ export default function JobAdminView() {
                 </p>
                 <Link
                   to={`/admin/employer/${job.postedBy?._id || job.postedBy}`}
-                  className="w-full py-2 px-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-mono text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full py-2 px-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-mono text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <span>Inspect Employer KYC Dossier</span>
                   <ExternalLink size={12} />

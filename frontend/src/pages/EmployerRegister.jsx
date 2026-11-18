@@ -354,7 +354,7 @@ export default function EmployerRegister() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-3 py-3 rounded-xl bg-foreground text-background font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
+          className="w-full mt-3 py-3.5 rounded-xl bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
         >
           {loading ? (
             <>

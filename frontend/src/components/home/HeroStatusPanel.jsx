@@ -124,7 +124,7 @@ export default function HeroStatusPanel({ className = "" }) {
           aria-controls="hero-status-panel-candidate"
           tabIndex={activeMode === "candidate" ? 0 : -1}
           onClick={() => setActiveMode("candidate")}
-          className={`relative z-10 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-focus)] ${
+          className={`relative z-10 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)] ${
             activeMode === "candidate"
               ? "text-[var(--theme-text)]"
               : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
@@ -133,23 +133,23 @@ export default function HeroStatusPanel({ className = "" }) {
           {activeMode === "candidate" && (
             <motion.div
               layoutId="heroAudiencePill"
-              className="absolute inset-0 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] shadow-sm -z-10"
+              className="absolute inset-0 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-gold-border)] shadow-sm -z-10"
               transition={{ type: "spring", stiffness: 450, damping: 32 }}
             />
           )}
           <User
             className={`w-4 h-4 shrink-0 ${
-              activeMode === "candidate" ? "text-[var(--theme-text)]" : "text-[var(--theme-text-muted)]"
+              activeMode === "candidate" ? "text-[var(--theme-gold)]" : "text-[var(--theme-text-muted)]"
             }`}
             aria-hidden="true"
           />
           <span>Candidate</span>
-          {activeMode === "candidate" && (
+          {/* {activeMode === "candidate" && (
             <span
-              className="w-1.5 h-1.5 rounded-full bg-[var(--theme-accent-silver)]"
+              className="w-1.5 h-1.5 rounded-full bg-[var(--theme-gold)]"
               aria-hidden="true"
             />
-          )}
+          )} */}
         </button>
 
         {/* Employer Tab */}
@@ -161,7 +161,7 @@ export default function HeroStatusPanel({ className = "" }) {
           aria-controls="hero-status-panel-employer"
           tabIndex={activeMode === "employer" ? 0 : -1}
           onClick={() => setActiveMode("employer")}
-          className={`relative z-10 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-focus)] ${
+          className={`relative z-10 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)] ${
             activeMode === "employer"
               ? "text-[var(--theme-text)]"
               : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
@@ -170,23 +170,23 @@ export default function HeroStatusPanel({ className = "" }) {
           {activeMode === "employer" && (
             <motion.div
               layoutId="heroAudiencePill"
-              className="absolute inset-0 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] shadow-sm -z-10"
+              className="absolute inset-0 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-gold-border)] shadow-sm -z-10"
               transition={{ type: "spring", stiffness: 450, damping: 32 }}
             />
           )}
           <Building2
             className={`w-4 h-4 shrink-0 ${
-              activeMode === "employer" ? "text-[var(--theme-text)]" : "text-[var(--theme-text-muted)]"
+              activeMode === "employer" ? "text-[var(--theme-gold)]" : "text-[var(--theme-text-muted)]"
             }`}
             aria-hidden="true"
           />
           <span>Employer</span>
-          {activeMode === "employer" && (
+          {/* {activeMode === "employer" && (
             <span
-              className="w-1.5 h-1.5 rounded-full bg-[var(--theme-accent-silver)]"
+              className="w-1.5 h-1.5 rounded-full bg-[var(--theme-gold)]"
               aria-hidden="true"
             />
-          )}
+          )} */}
         </button>
       </div>
 
@@ -212,16 +212,16 @@ export default function HeroStatusPanel({ className = "" }) {
             {/* Header */}
             <div className="flex items-center justify-between gap-3 pb-2.5 border-b border-[var(--theme-border)] shrink-0">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--theme-accent-silver)] flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--theme-gold)] flex items-center gap-1.5">
+                  <Sparkles className="w-3 h-3 text-[var(--theme-gold)]" aria-hidden="true" />
                   Candidate Career Center
                 </span>
                 <h3 className="text-base sm:text-lg font-bold text-[var(--theme-text)] mt-0.5">
                   Opportunity Index
                 </h3>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/[0.04] text-[var(--theme-text-muted)] border border-[var(--theme-border)] shrink-0">
-                <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shrink-0">
+                <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                 <span>Verified Direct</span>
               </span>
             </div>
@@ -233,10 +233,10 @@ export default function HeroStatusPanel({ className = "" }) {
                 return (
                   <div
                     key={item.title}
-                    className="group rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-3 flex flex-col justify-between hover:border-[var(--theme-border-silver)] transition-colors duration-150 min-h-[78px]"
+                    className="group rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-3 flex flex-col justify-between hover:border-[var(--theme-gold-border)] transition-colors duration-150 min-h-[78px]"
                   >
                     <div className="flex items-start gap-2 mb-1">
-                      <div className="w-6 h-6 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] flex items-center justify-center text-[var(--theme-accent-silver)] shrink-0 group-hover:scale-105 transition-transform duration-150">
+                      <div className="w-6 h-6 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)] shrink-0 group-hover:scale-105 transition-transform duration-150">
                         <Icon className="w-3.5 h-3.5" aria-hidden="true" />
                       </div>
                       <h4 className="text-xs font-bold text-[var(--theme-text)] leading-snug">
@@ -258,7 +258,7 @@ export default function HeroStatusPanel({ className = "" }) {
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs px-0.5">
                     <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5 text-[11px]">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       Candidate Session Active
                     </span>
                     <span className="font-bold text-[var(--theme-text)] truncate max-w-[150px] text-xs">
@@ -269,19 +269,19 @@ export default function HeroStatusPanel({ className = "" }) {
                   <div className="grid grid-cols-3 gap-2">
                     <Link
                       to="/userdashboard"
-                      className="px-2 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs flex items-center justify-center gap-1 shadow-sm hover:opacity-90 transition text-center"
+                      className="px-2 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs flex items-center justify-center gap-1 shadow-sm hover:bg-[var(--theme-gold-bright)] transition text-center"
                     >
                       <span>Career Center</span>
                     </Link>
                     <Link
                       to="/myapplications"
-                      className="px-2 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-semibold text-xs flex items-center justify-center gap-1 transition text-center"
+                      className="px-2 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] font-semibold text-xs flex items-center justify-center gap-1 transition text-center"
                     >
                       <span>Applications</span>
                     </Link>
                     <Link
                       to="/profile"
-                      className="px-2 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-semibold text-xs flex items-center justify-center gap-1 transition text-center"
+                      className="px-2 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] font-semibold text-xs flex items-center justify-center gap-1 transition text-center"
                     >
                       <span>My Profile</span>
                     </Link>
@@ -300,7 +300,7 @@ export default function HeroStatusPanel({ className = "" }) {
                   </div>
                   <Link
                     to="/employerdashboard"
-                    className="px-3 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs flex items-center gap-1 shrink-0"
+                    className="px-3 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs flex items-center gap-1 shrink-0 hover:bg-[var(--theme-gold-bright)] transition"
                   >
                     <span>Console</span>
                     <ArrowRight className="w-3 h-3" />
@@ -313,18 +313,18 @@ export default function HeroStatusPanel({ className = "" }) {
                     {/* More action: Explore Jobs */}
                     <Link
                       to="/jobs"
-                      className="px-3 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:opacity-90 transition cursor-pointer"
+                      className="px-3 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:bg-[var(--theme-gold-bright)] transition cursor-pointer"
                     >
                       <span>Explore Jobs</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[var(--theme-bg)]" aria-hidden="true" />
+                      <ArrowRight className="w-3.5 h-3.5 text-black" aria-hidden="true" />
                     </Link>
 
                     {/* Candidate Sign Up */}
                     <Link
                       to="/userregister"
-                      className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                      className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
                     >
-                      <UserPlus className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                      <UserPlus className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       <span>Candidate Sign Up</span>
                     </Link>
                   </div>
@@ -333,18 +333,18 @@ export default function HeroStatusPanel({ className = "" }) {
                     {/* More action: ATS Resume Builder */}
                     <Link
                       to="/resume-builder"
-                      className="hover:text-[var(--theme-text)] transition flex items-center gap-1 text-[11px] font-medium"
+                      className="hover:text-[var(--theme-gold)] transition flex items-center gap-1 text-[11px] font-medium"
                     >
-                      <FileText className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                      <FileText className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       <span>ATS Resume Builder</span>
                     </Link>
 
                     {/* Candidate Sign In */}
                     <Link
                       to="/login"
-                      className="text-[var(--theme-text)] hover:text-[var(--theme-accent-silver)] transition font-bold inline-flex items-center gap-1 text-[11px]"
+                      className="text-[var(--theme-text)] hover:text-[var(--theme-gold)] transition font-bold inline-flex items-center gap-1 text-[11px]"
                     >
-                      <LogIn className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                      <LogIn className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       <span>Candidate Sign In →</span>
                     </Link>
                   </div>
@@ -370,16 +370,16 @@ export default function HeroStatusPanel({ className = "" }) {
             {/* Header */}
             <div className="flex items-center justify-between gap-3 pb-2.5 border-b border-[var(--theme-border)] shrink-0">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--theme-accent-silver)] flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--theme-gold)] flex items-center gap-1.5">
+                  <Sparkles className="w-3 h-3 text-[var(--theme-gold)]" aria-hidden="true" />
                   Hiring Team Workspace
                 </span>
                 <h3 className="text-base sm:text-lg font-bold text-[var(--theme-text)] mt-0.5">
                   Employer Recruitment
                 </h3>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/[0.04] text-[var(--theme-text-muted)] border border-[var(--theme-border)] shrink-0">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                 <span>Verified Enterprise</span>
               </span>
             </div>
@@ -391,10 +391,10 @@ export default function HeroStatusPanel({ className = "" }) {
                 return (
                   <div
                     key={item.title}
-                    className="group rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-3 flex flex-col justify-between hover:border-[var(--theme-border-silver)] transition-colors duration-150 min-h-[78px]"
+                    className="group rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] p-3 flex flex-col justify-between hover:border-[var(--theme-gold-border)] transition-colors duration-150 min-h-[78px]"
                   >
                     <div className="flex items-start gap-2 mb-1">
-                      <div className="w-6 h-6 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] flex items-center justify-center text-[var(--theme-accent-silver)] shrink-0 group-hover:scale-105 transition-transform duration-150">
+                      <div className="w-6 h-6 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)] shrink-0 group-hover:scale-105 transition-transform duration-150">
                         <Icon className="w-3.5 h-3.5" aria-hidden="true" />
                       </div>
                       <h4 className="text-xs font-bold text-[var(--theme-text)] leading-snug">
@@ -416,7 +416,7 @@ export default function HeroStatusPanel({ className = "" }) {
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs px-0.5">
                     <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5 text-[11px]">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       Employer Session Active
                     </span>
                     <span className="font-bold text-[var(--theme-text)] truncate max-w-[150px] text-xs">
@@ -427,19 +427,19 @@ export default function HeroStatusPanel({ className = "" }) {
                   <div className="grid grid-cols-3 gap-2">
                     <Link
                       to="/employerdashboard"
-                      className="px-2 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs flex items-center justify-center gap-1 shadow-sm hover:opacity-90 transition text-center"
+                      className="px-2 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs flex items-center justify-center gap-1 shadow-sm hover:bg-[var(--theme-gold-bright)] transition text-center"
                     >
                       <span>Dashboard</span>
                     </Link>
                     <Link
                       to="/createjob"
-                      className="px-2 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-semibold text-xs flex items-center justify-center gap-1 transition text-center"
+                      className="px-2 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] font-semibold text-xs flex items-center justify-center gap-1 transition text-center"
                     >
                       <span>Post a Job</span>
                     </Link>
                     <Link
                       to="/candidates"
-                      className="px-2 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-semibold text-xs flex items-center justify-center gap-1 transition text-center"
+                      className="px-2 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] font-semibold text-xs flex items-center justify-center gap-1 transition text-center"
                     >
                       <span>Applicants</span>
                     </Link>
@@ -458,7 +458,7 @@ export default function HeroStatusPanel({ className = "" }) {
                   </div>
                   <Link
                     to="/userdashboard"
-                    className="px-3 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs flex items-center gap-1 shrink-0"
+                    className="px-3 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs flex items-center gap-1 shrink-0 hover:bg-[var(--theme-gold-bright)] transition"
                   >
                     <span>Portal</span>
                     <ArrowRight className="w-3 h-3" />
@@ -471,18 +471,18 @@ export default function HeroStatusPanel({ className = "" }) {
                     {/* More action: Post a Job */}
                     <Link
                       to="/createjob"
-                      className="px-3 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:opacity-90 transition cursor-pointer"
+                      className="px-3 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:bg-[var(--theme-gold-bright)] transition cursor-pointer"
                     >
                       <span>Post a Job</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[var(--theme-bg)]" aria-hidden="true" />
+                      <ArrowRight className="w-3.5 h-3.5 text-black" aria-hidden="true" />
                     </Link>
 
                     {/* Employer Sign Up */}
                     <Link
                       to="/employerregister"
-                      className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                      className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
                     >
-                      <UserPlus className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                      <UserPlus className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       <span>Employer Sign Up</span>
                     </Link>
                   </div>
@@ -491,18 +491,18 @@ export default function HeroStatusPanel({ className = "" }) {
                     {/* More action: Search Candidates */}
                     <Link
                       to="/candidates"
-                      className="hover:text-[var(--theme-text)] transition flex items-center gap-1 text-[11px] font-medium"
+                      className="hover:text-[var(--theme-gold)] transition flex items-center gap-1 text-[11px] font-medium"
                     >
-                      <Users className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                      <Users className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       <span>Search Candidates</span>
                     </Link>
 
                     {/* Employer Sign In */}
                     <Link
                       to="/login"
-                      className="text-[var(--theme-text)] hover:text-[var(--theme-accent-silver)] transition font-bold inline-flex items-center gap-1 text-[11px]"
+                      className="text-[var(--theme-text)] hover:text-[var(--theme-gold)] transition font-bold inline-flex items-center gap-1 text-[11px]"
                     >
-                      <LogIn className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                      <LogIn className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       <span>Employer Sign In →</span>
                     </Link>
                   </div>

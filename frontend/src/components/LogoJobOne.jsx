@@ -3,10 +3,10 @@ import React from "react";
 export default function JobOneLogo({
   width = 400,
   height = 300,
-  primaryDotColor = "#00E5FF", // Glowing Cyan
-  secondaryDotColor = "#0088CC", // Mid Blue
-  tertiaryDotColor = "#004488", // Dark Blue
-  textColor = "#FFFFFF", // Text color
+  primaryDotColor = "#D4AF37", // Primary Gold
+  secondaryDotColor = "#E6C65A", // Bright Gold
+  tertiaryDotColor = "#B8860B", // Deep Gold
+  textColor = "currentColor", // Theme dynamic text color
   className = "",
   ...props
 }) {
@@ -108,7 +108,7 @@ export default function JobOneLogo({
           fontWeight="400"
           letterSpacing="2"
         >
-          Jobone
+          JobOne
         </text>
 
         {/* Subtitle */}

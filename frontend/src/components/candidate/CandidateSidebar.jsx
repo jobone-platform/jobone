@@ -319,7 +319,7 @@ export default function CandidateSidebar({
               className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide ${
                 isProfileComplete
                   ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                  : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                  : "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]"
               }`}
             >
               <ShieldCheck size={11} />
@@ -331,7 +331,7 @@ export default function CandidateSidebar({
         <div className="py-2.5 flex justify-center border-b border-[var(--theme-border)]/60 shrink-0">
           <span
             title="Candidate Profile Active"
-            className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs"
+            className="w-2.5 h-2.5 rounded-full bg-[var(--theme-gold)] shadow-xs"
           />
         </div>
       )}

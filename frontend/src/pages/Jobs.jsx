@@ -435,7 +435,7 @@ export default function Jobs() {
           >
             {/* Input: Job title or keywords */}
             <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl md:rounded-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)]">
-              <Search className="text-[var(--theme-accent-silver)] shrink-0" size={17} />
+              <Search className="text-[var(--theme-gold)] shrink-0" size={17} />
               <input
                 type="text"
                 placeholder="Job title, technical skills, or company..."
@@ -458,7 +458,7 @@ export default function Jobs() {
 
             {/* Input: Location */}
             <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl md:rounded-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)]">
-              <MapPin className="text-[var(--theme-accent-silver)] shrink-0" size={17} />
+              <MapPin className="text-[var(--theme-gold)] shrink-0" size={17} />
               <input
                 type="text"
                 placeholder="City, region, or 'Remote'..."
@@ -482,9 +482,9 @@ export default function Jobs() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="px-7 py-3 rounded-xl md:rounded-full bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
+              className="px-8 py-3 rounded-xl md:rounded-full bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
             >
-              <Search size={15} className="text-[var(--theme-accent-silver)]" />
+              <Search size={15} className="text-black" />
               <span>Search</span>
             </button>
           </form>

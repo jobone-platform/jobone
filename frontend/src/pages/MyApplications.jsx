@@ -194,7 +194,7 @@ export default function MyApplications() {
     const s = (status || "").toLowerCase();
     if (s.includes("interview")) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
           <Calendar size={12} /> Interview Round
         </span>
       );
@@ -262,8 +262,8 @@ export default function MyApplications() {
             </div>
 
             <Link
-              to="/jobs"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-90 transition-opacity shrink-0 shadow-sm self-start md:self-auto"
+              to="/candidate/jobs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:opacity-90 transition-opacity shrink-0 shadow-sm self-start md:self-auto"
             >
               <Search size={14} /> Find More Jobs
             </Link>
@@ -455,8 +455,8 @@ export default function MyApplications() {
                 </button>
               ) : (
                 <Link
-                  to="/jobs"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-90 transition-opacity"
+                  to="/candidate/jobs"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:opacity-90 transition-opacity shadow-sm"
                 >
                   Browse Open Positions <ArrowRight size={14} />
                 </Link>
@@ -550,9 +550,9 @@ export default function MyApplications() {
 
                     {/* Interview Meeting Link Banner */}
                     {hasMeetingLink && (
-                      <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-between gap-2 text-xs">
+                      <div className="p-3 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-between gap-2 text-xs">
                         <div className="flex items-center gap-2">
-                          <Video size={14} className="text-purple-400 shrink-0" />
+                          <Video size={14} className="text-[var(--theme-gold)] shrink-0" />
                           <span className="font-bold text-foreground">
                             Interview Video Room Ready
                           </span>
@@ -562,7 +562,7 @@ export default function MyApplications() {
                           target="_blank"
                           rel="noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="px-2.5 py-1 rounded-lg bg-purple-500 text-white font-bold text-[11px] hover:bg-purple-600 transition-colors inline-flex items-center gap-1 shrink-0"
+                          className="px-2.5 py-1 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-[11px] hover:bg-[var(--theme-gold-bright)] transition-colors inline-flex items-center gap-1 shrink-0 shadow-sm"
                         >
                           Join <ExternalLink size={10} />
                         </a>

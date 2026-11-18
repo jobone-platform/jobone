@@ -25,11 +25,11 @@ export default function FeatureGrid({ items = [], columns = 3 }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.35, delay: Math.min(idx * 0.05, 0.3) }}
-            className="group relative rounded-2xl border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] bg-[var(--theme-surface)] p-6 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between"
+            className="group relative rounded-2xl border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] bg-[var(--theme-surface)] p-6 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between gap-3 mb-4">
-                <div className="w-11 h-11 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center text-[var(--theme-accent-silver)] group-hover:scale-105 transition-transform">
+                <div className="w-11 h-11 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center text-[var(--theme-gold)] group-hover:scale-105 transition-transform">
                   {Icon && <Icon className="w-5 h-5" />}
                 </div>
                 {item.tag && (
@@ -52,7 +52,7 @@ export default function FeatureGrid({ items = [], columns = 3 }) {
               <div className="mt-5 pt-4 border-t border-[var(--theme-border)]">
                 <Link
                   to={item.to}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text)] hover:text-[var(--theme-accent-silver)] transition-colors group/link"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text)] hover:text-[var(--theme-gold)] transition-colors group/link"
                 >
                   <span>{item.ctaLabel}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />

@@ -266,8 +266,8 @@ export default function RecommendedJobs() {
             We could not find active recommendations matching this specific filter. You can explore the full open catalog.
           </p>
           <Link
-            to="/jobs"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-90 transition-opacity"
+            to="/candidate/jobs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:opacity-90 transition-opacity shadow-sm"
           >
             Explore All Jobs <ArrowRight size={14} />
           </Link>
@@ -355,7 +355,7 @@ export default function RecommendedJobs() {
                     <Link
                       to={`/apply/${job._id}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="px-3 py-1 rounded-lg bg-foreground text-background font-bold text-xs hover:opacity-90 transition-opacity"
+                      className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity shadow-xs"
                     >
                       Apply
                     </Link>

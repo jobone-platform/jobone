@@ -140,11 +140,11 @@ export default function Login() {
           }}
           className={`flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeTab === "user"
-              ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-sm border border-[var(--theme-border-silver)]"
+              ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-sm border border-[var(--theme-gold-border)]"
               : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
           }`}
         >
-          <User className="w-3.5 h-3.5" />
+          <User className={`w-3.5 h-3.5 ${activeTab === "user" ? "text-[var(--theme-gold)]" : ""}`} />
           <span>Candidate</span>
         </button>
 
@@ -156,11 +156,11 @@ export default function Login() {
           }}
           className={`flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeTab === "employer"
-              ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-sm border border-[var(--theme-border-silver)]"
+              ? "bg-[var(--theme-surface)] text-[var(--theme-text)] shadow-sm border border-[var(--theme-gold-border)]"
               : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
           }`}
         >
-          <Building2 className="w-3.5 h-3.5" />
+          <Building2 className={`w-3.5 h-3.5 ${activeTab === "employer" ? "text-[var(--theme-gold)]" : ""}`} />
           <span>Employer</span>
         </button>
       </div>
@@ -227,14 +227,14 @@ export default function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
+          className="w-full py-3.5 rounded-xl bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
         >
           {loading ? (
             <span>Signing in...</span>
           ) : (
             <>
               <span>Sign In to {activeTab === "employer" ? "Employer Dashboard" : "Workspace"}</span>
-              <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+              <ArrowRight className="w-4 h-4 text-black" />
             </>
           )}
         </button>

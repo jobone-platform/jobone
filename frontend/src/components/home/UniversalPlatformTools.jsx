@@ -140,8 +140,8 @@ export default function UniversalPlatformTools() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-accent-silver)] mb-3">
-              <ShieldCheck className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] mb-3">
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
               <span>Full-Stack Platform Capabilities</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-[var(--theme-text)] tracking-tight">
@@ -159,7 +159,7 @@ export default function UniversalPlatformTools() {
               onClick={() => setAudience("candidate")}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                 audience === "candidate"
-                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-sm"
+                  ? "bg-[var(--theme-gold)] text-black shadow-sm"
                   : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
               }`}
             >
@@ -172,7 +172,7 @@ export default function UniversalPlatformTools() {
               onClick={() => setAudience("employer")}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                 audience === "employer"
-                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-sm"
+                  ? "bg-[var(--theme-gold)] text-black shadow-sm"
                   : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
               }`}
             >

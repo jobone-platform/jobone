@@ -440,7 +440,7 @@ export default function EmployerInterviews() {
                 Hiring Workspace
               </span>
               <span className="text-foreground/30 font-mono">/</span>
-              <span className="text-xs font-mono text-silver uppercase">
+              <span className="text-xs font-mono text-[var(--theme-gold)] uppercase font-semibold">
                 Interview Operations
               </span>
             </div>
@@ -449,14 +449,14 @@ export default function EmployerInterviews() {
             </h1>
             <p className="text-xs font-sans text-foreground/50 mt-1">
               Real-time schedule of candidate interviews across all positions. Timezone:{" "}
-              <span className="font-mono text-silver">Local Device Time (IST / UTC +05:30)</span>
+              <span className="font-mono text-[var(--theme-gold)]">Local Device Time (IST / UTC +05:30)</span>
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setScheduleModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors inline-flex items-center gap-2 shadow-sm"
+              className="px-4 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-2 shadow-md hover:shadow-lg"
             >
               <Plus size={16} /> Schedule Interview
             </button>
@@ -639,10 +639,10 @@ export default function EmployerInterviews() {
                           onClick={() => setSelectedEvent(evt)}
                           className={`w-full text-left p-1.5 rounded-lg border text-[10px] font-mono truncate transition-all ${
                             evt.status === "Interview Conducted"
-                              ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/30"
+                              ? "bg-[var(--theme-gold-surface)]/60 text-[var(--theme-gold-bright)] border-[var(--theme-gold-border)]"
                               : evt.rescheduleRequest?.requestStatus === "pending"
                               ? "bg-amber-500/10 text-amber-300 border-amber-500/30"
-                              : "bg-purple-500/10 text-purple-300 border-purple-500/30 hover:border-purple-400"
+                              : "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)] hover:border-[var(--theme-gold)]"
                           }`}
                           title={`${evt.candidate?.name || "Candidate"} - ${evt.job?.title || "Job"}`}
                         >
@@ -706,7 +706,7 @@ export default function EmployerInterviews() {
                           className="p-2.5 rounded-xl bg-elevated border border-border hover:border-silver/40 cursor-pointer transition-all space-y-1.5 shadow-sm"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-mono text-purple-400 font-bold uppercase">
+                            <span className="text-[10px] font-mono text-[var(--theme-gold)] font-bold uppercase">
                               {evt.type}
                             </span>
                           </div>
@@ -808,7 +808,7 @@ export default function EmployerInterviews() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="px-3 py-1.5 rounded-lg bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors inline-flex items-center gap-1.5"
+                            className="px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1.5 shadow-sm"
                           >
                             <Video size={13} /> Launch Video
                           </a>
@@ -843,7 +843,7 @@ export default function EmployerInterviews() {
                 </p>
                 <button
                   onClick={() => setScheduleModalOpen(true)}
-                  className="px-4 py-2 rounded-xl bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors"
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
                 >
                   Schedule an Interview
                 </button>
@@ -881,8 +881,8 @@ export default function EmployerInterviews() {
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider border ${
                             evt.status === "Interview Conducted"
-                              ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/30"
-                              : "bg-purple-500/10 text-purple-400 border-purple-500/30 font-bold"
+                              ? "bg-[var(--theme-gold-surface)]/60 text-[var(--theme-gold-bright)] border-[var(--theme-gold-border)]"
+                              : "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)] font-bold"
                           }`}
                         >
                           {evt.status === "Interview Conducted" ? "Conducted" : "Scheduled"}
@@ -914,7 +914,7 @@ export default function EmployerInterviews() {
                               href={evt.meetingLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-2.5 py-1 rounded-lg bg-foreground text-background text-[11px] font-bold hover:bg-silver transition-colors inline-flex items-center gap-1"
+                              className="px-2.5 py-1 rounded-lg bg-[var(--theme-gold)] text-black text-[11px] font-bold hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1 shadow-sm"
                             >
                               <Video size={12} /> Launch
                             </a>
@@ -933,7 +933,7 @@ export default function EmployerInterviews() {
 
                       <button
                         onClick={() => navigate(`/profile/${evt.candidate?._id}`)}
-                        className="px-3.5 py-1.5 rounded-xl bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors inline-flex items-center gap-1"
+                        className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1 shadow-sm"
                       >
                         Profile &rarr;
                       </button>
@@ -959,7 +959,7 @@ export default function EmployerInterviews() {
               >
                 <div className="flex items-center justify-between mb-4 border-b border-border pb-3">
                   <div className="flex items-center gap-2">
-                    <CalendarClock size={20} className="text-silver" />
+                    <CalendarClock size={20} className="text-[var(--theme-gold)]" />
                     <h3 className="font-display font-bold text-lg text-foreground">
                       Schedule Candidate Interview
                     </h3>
@@ -1122,7 +1122,7 @@ export default function EmployerInterviews() {
                     <button
                       type="submit"
                       disabled={actionLoading || schedulableCandidates.length === 0}
-                      className="px-5 py-2 rounded-xl text-xs font-mono font-bold text-background bg-foreground hover:bg-silver transition-colors disabled:opacity-50 inline-flex items-center gap-1.5"
+                      className="px-5 py-2 rounded-xl text-xs font-mono font-bold text-black bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] transition-all disabled:opacity-50 inline-flex items-center gap-1.5 shadow-md hover:shadow-lg"
                     >
                       {actionLoading ? <Loader2 size={13} className="animate-spin" /> : null}
                       Confirm & Send Invite

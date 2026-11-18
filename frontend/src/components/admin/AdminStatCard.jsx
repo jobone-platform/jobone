@@ -2,39 +2,39 @@ import React from "react";
 
 const colorStyles = {
   Users: {
-    bg: "bg-blue-50 dark:bg-blue-950/60",
-    text: "text-blue-600 dark:text-blue-400",
-    hoverBorder: "hover:border-blue-300 dark:hover:border-blue-800",
+    bg: "bg-[var(--theme-gold-surface)]",
+    text: "text-[var(--theme-gold)]",
+    hoverBorder: "hover:border-[var(--theme-gold-border)]",
   },
   Companies: {
-    bg: "bg-purple-50 dark:bg-purple-950/60",
-    text: "text-purple-600 dark:text-purple-400",
-    hoverBorder: "hover:border-purple-300 dark:hover:border-purple-800",
+    bg: "bg-[var(--theme-surface-elevated)]",
+    text: "text-[var(--theme-gold)]",
+    hoverBorder: "hover:border-[var(--theme-gold-border)]",
   },
   Active: {
-    bg: "bg-emerald-50 dark:bg-emerald-950/60",
-    text: "text-emerald-600 dark:text-emerald-400",
-    hoverBorder: "hover:border-emerald-300 dark:hover:border-emerald-800",
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-500",
+    hoverBorder: "hover:border-emerald-500/30",
   },
   Jobs: {
-    bg: "bg-indigo-50 dark:bg-indigo-950/60",
-    text: "text-indigo-600 dark:text-indigo-400",
-    hoverBorder: "hover:border-indigo-300 dark:hover:border-indigo-800",
+    bg: "bg-[var(--theme-gold-surface)]",
+    text: "text-[var(--theme-gold)]",
+    hoverBorder: "hover:border-[var(--theme-gold-border)]",
   },
   Applications: {
-    bg: "bg-cyan-50 dark:bg-cyan-950/60",
-    text: "text-cyan-600 dark:text-cyan-400",
-    hoverBorder: "hover:border-cyan-300 dark:hover:border-cyan-800",
+    bg: "bg-[var(--theme-surface-elevated)]",
+    text: "text-[var(--theme-gold)]",
+    hoverBorder: "hover:border-[var(--theme-gold-border)]",
   },
   Pending: {
-    bg: "bg-amber-50 dark:bg-amber-950/60",
-    text: "text-amber-600 dark:text-amber-400",
-    hoverBorder: "hover:border-amber-300 dark:hover:border-amber-800",
+    bg: "bg-amber-500/10",
+    text: "text-amber-500",
+    hoverBorder: "hover:border-amber-500/30",
   },
   Reported: {
-    bg: "bg-slate-100 dark:bg-slate-800",
-    text: "text-slate-600 dark:text-slate-400",
-    hoverBorder: "hover:border-slate-300 dark:hover:border-slate-700",
+    bg: "bg-rose-500/10",
+    text: "text-rose-500",
+    hoverBorder: "hover:border-rose-500/30",
   },
 };
 
@@ -49,20 +49,20 @@ export default function AdminStatCard({
 }) {
   if (loading) {
     return (
-      <div className="p-3.5 sm:p-4.5 lg:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 animate-pulse h-32 sm:h-36 lg:h-40 flex flex-col justify-between shadow-xs">
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-slate-100 dark:bg-slate-800"></div>
+      <div className="p-3.5 sm:p-4.5 lg:p-5 rounded-2xl sm:rounded-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] animate-pulse h-32 sm:h-36 lg:h-40 flex flex-col justify-between shadow-xs">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[var(--theme-surface-hover)]"></div>
         <div>
-          <div className="h-6 sm:h-8 w-14 sm:w-16 bg-slate-200 dark:bg-slate-700 rounded-lg mb-2"></div>
-          <div className="h-3.5 sm:h-4 w-16 sm:w-20 bg-slate-100 dark:bg-slate-800 rounded-md"></div>
+          <div className="h-6 sm:h-8 w-14 sm:w-16 bg-[var(--theme-surface-elevated)] rounded-lg mb-2"></div>
+          <div className="h-3.5 sm:h-4 w-16 sm:w-20 bg-[var(--theme-surface-hover)] rounded-md"></div>
         </div>
       </div>
     );
   }
 
   const scheme = colorStyles[title] || {
-    bg: "bg-slate-100 dark:bg-slate-800",
-    text: "text-slate-700 dark:text-slate-200",
-    hoverBorder: "hover:border-slate-400 dark:hover:border-slate-600",
+    bg: "bg-[var(--theme-gold-surface)]",
+    text: "text-[var(--theme-gold)]",
+    hoverBorder: "hover:border-[var(--theme-gold-border)]",
   };
 
   return (
@@ -71,7 +71,7 @@ export default function AdminStatCard({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => e.key === "Enter" && onClick() : undefined}
-      className={`group relative p-3.5 sm:p-4.5 lg:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between h-32 sm:h-36 lg:h-40 ${
+      className={`group relative p-3.5 sm:p-4.5 lg:p-5 rounded-2xl sm:rounded-3xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between h-32 sm:h-36 lg:h-40 ${
         onClick
           ? `cursor-pointer ${scheme.hoverBorder}`
           : ""
@@ -87,10 +87,10 @@ export default function AdminStatCard({
           <span
             className={`text-[10px] sm:text-[11px] font-extrabold px-2 sm:px-2.5 py-0.5 rounded-full ${
               badgeVariant === "warning"
-                ? "bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
+                ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
                 : badgeVariant === "danger"
-                ? "bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                ? "bg-rose-500/10 text-rose-500 border border-rose-500/20"
+                : "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]"
             }`}
           >
             {badge}
@@ -99,10 +99,10 @@ export default function AdminStatCard({
       </div>
 
       <div>
-        <p className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+        <p className="text-2xl sm:text-3xl lg:text-4xl font-black text-[var(--theme-text)] tracking-tight leading-none">
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
-        <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-1.5 sm:mt-2 truncate group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+        <p className="text-xs sm:text-sm font-bold text-[var(--theme-text-muted)] mt-1.5 sm:mt-2 truncate group-hover:text-[var(--theme-text)] transition-colors">
           {title}
         </p>
       </div>

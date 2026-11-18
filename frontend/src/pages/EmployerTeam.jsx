@@ -27,7 +27,7 @@ const ROLES = [
     id: "Admin",
     title: "Admin",
     description: "Full recruitment access: post jobs, manage KYC filings, review candidates, and invite team members.",
-    badgeClass: "bg-purple-500/10 text-purple-400 border-purple-500/30",
+    badgeClass: "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]",
   },
   {
     id: "Recruiter",
@@ -39,7 +39,7 @@ const ROLES = [
     id: "Interviewer",
     title: "Interviewer",
     description: "Evaluation access: view assigned candidate profiles, launch interview sessions, and submit notes.",
-    badgeClass: "bg-silver/10 text-silver border-silver/30",
+    badgeClass: "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]",
   },
 ];
 
@@ -212,7 +212,7 @@ export default function EmployerTeam() {
                 Enterprise Administration
               </span>
               <span className="text-foreground/30 font-mono">/</span>
-              <span className="text-xs font-mono text-silver uppercase">
+              <span className="text-xs font-mono text-[var(--theme-gold)] uppercase font-semibold">
                 Collaborator Management
               </span>
             </div>
@@ -227,7 +227,7 @@ export default function EmployerTeam() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setInviteModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors inline-flex items-center gap-2 shadow-sm"
+              className="px-4 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-2 shadow-md hover:shadow-lg"
             >
               <UserPlus size={16} /> Invite Collaborator
             </button>
@@ -330,7 +330,7 @@ export default function EmployerTeam() {
                             <div className="font-display font-bold text-sm text-foreground flex items-center gap-1.5">
                               {member.name}
                               {member.isOwner && (
-                                <span className="text-[9px] font-mono uppercase bg-silver/20 text-silver px-1.5 py-0.2 rounded border border-silver/30">
+                                <span className="text-[9px] font-mono uppercase bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] px-1.5 py-0.5 rounded border border-[var(--theme-gold-border)] font-bold">
                                   Owner
                                 </span>
                               )}
@@ -430,7 +430,7 @@ export default function EmployerTeam() {
               >
                 <div className="flex items-center justify-between mb-4 border-b border-border pb-3">
                   <div className="flex items-center gap-2">
-                    <UserPlus size={18} className="text-silver" />
+                    <UserPlus size={18} className="text-[var(--theme-gold)]" />
                     <h3 className="font-display font-bold text-base text-foreground">
                       Invite Team Member
                     </h3>
@@ -509,7 +509,7 @@ export default function EmployerTeam() {
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-xl text-xs font-mono font-bold text-background bg-foreground hover:bg-silver transition-colors"
+                      className="px-5 py-2 rounded-xl text-xs font-mono font-bold text-black bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
                     >
                       Send Invitation
                     </button>
@@ -560,7 +560,7 @@ export default function EmployerTeam() {
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 rounded-xl text-xs font-mono font-bold bg-foreground text-background hover:bg-silver"
+                      className="px-4 py-2 rounded-xl text-xs font-mono font-bold text-black bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
                     >
                       Save Role
                     </button>

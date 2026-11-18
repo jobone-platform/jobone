@@ -253,7 +253,7 @@ export default function AdminAnalyticsView({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[var(--theme-border)]">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-accent-silver)]">
+            <div className="w-9 h-9 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <BarChart3 size={18} />
             </div>
             <div>
@@ -283,7 +283,7 @@ export default function AdminAnalyticsView({
                 onClick={() => setDateRange(p.id)}
                 className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                   dateRange === p.id
-                    ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                    ? "bg-[var(--theme-gold)] text-black font-bold shadow-xs"
                     : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)]"
                 }`}
               >
@@ -293,8 +293,8 @@ export default function AdminAnalyticsView({
           </div>
 
           {/* Period Badge */}
-          <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[11px] font-mono font-bold text-[var(--theme-text)]">
-            <Calendar size={13} className="text-[#C0C0C0]" />
+          <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] text-[11px] font-mono font-bold text-[var(--theme-text)]">
+            <Calendar size={13} className="text-[var(--theme-gold)]" />
             <span>Active Window: {dateRange.toUpperCase()}</span>
           </span>
         </div>
@@ -308,7 +308,7 @@ export default function AdminAnalyticsView({
             <span className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-muted)] font-bold">
               Total Platform Users
             </span>
-            <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-text)]">
+            <div className="w-8 h-8 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <Users size={15} />
             </div>
           </div>
@@ -338,7 +338,7 @@ export default function AdminAnalyticsView({
             <span className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-muted)] font-bold">
               Active Job Listings
             </span>
-            <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-text)]">
+            <div className="w-8 h-8 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <Briefcase size={15} />
             </div>
           </div>
@@ -368,7 +368,7 @@ export default function AdminAnalyticsView({
             <span className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-muted)] font-bold">
               KYC Verification Rate
             </span>
-            <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-text)]">
+            <div className="w-8 h-8 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <ShieldCheck size={15} />
             </div>
           </div>
@@ -393,7 +393,7 @@ export default function AdminAnalyticsView({
             <span className="text-xs font-mono uppercase tracking-wider text-[var(--theme-text-muted)] font-bold">
               Applications Volume
             </span>
-            <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-text)]">
+            <div className="w-8 h-8 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <FileText size={15} />
             </div>
           </div>
@@ -430,11 +430,11 @@ export default function AdminAnalyticsView({
               onClick={() => setActiveChartTab(tab.id)}
               className={`px-3.5 py-2 rounded-xl text-xs font-mono font-semibold flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer ${
                 isActive
-                  ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-xs"
+                  ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shadow-xs font-bold"
                   : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface)]"
               }`}
             >
-              <Icon size={14} className={isActive ? "text-[#C0C0C0]" : ""} />
+              <Icon size={14} className={isActive ? "text-[var(--theme-gold)]" : ""} />
               <span>{tab.label}</span>
             </button>
           );
@@ -459,12 +459,12 @@ export default function AdminAnalyticsView({
               {/* Monochromatic Legend */}
               <div className="flex items-center gap-4 text-xs font-mono">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-xs bg-[var(--theme-text)] border border-[var(--theme-border-silver)]" />
+                  <span className="w-3 h-3 rounded-xs bg-[var(--theme-text)] border border-[var(--theme-border)]" />
                   <span className="text-[var(--theme-text)] font-semibold">Candidates</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-xs bg-[#C0C0C0]" />
-                  <span className="text-[var(--theme-text-muted)]">Employers</span>
+                  <span className="w-3 h-3 rounded-xs bg-[var(--theme-gold)]" />
+                  <span className="text-[var(--theme-gold)] font-semibold">Employers</span>
                 </div>
               </div>
             </div>
@@ -486,7 +486,7 @@ export default function AdminAnalyticsView({
                     >
                       {/* Tooltip on hover */}
                       {isHovered && (
-                        <div className="absolute -top-12 z-20 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] shadow-xl text-[10px] font-mono text-[var(--theme-text)] whitespace-nowrap animate-in fade-in duration-150">
+                        <div className="absolute -top-12 z-20 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] shadow-xl text-[10px] font-mono text-[var(--theme-text)] whitespace-nowrap animate-in fade-in duration-150">
                           {d.candidates} Candidates • {d.employers} Employers
                         </div>
                       )}
@@ -500,7 +500,7 @@ export default function AdminAnalyticsView({
                         {/* Employers bar */}
                         <div
                           style={{ height: `${Math.max(empHeight, 4)}%` }}
-                          className="w-1/2 max-w-[20px] bg-[#C0C0C0] rounded-t-sm transition-all duration-300 group-hover:brightness-125"
+                          className="w-1/2 max-w-[20px] bg-[var(--theme-gold)] rounded-t-sm transition-all duration-300 group-hover:brightness-125"
                         />
                       </div>
 
@@ -645,7 +645,7 @@ export default function AdminAnalyticsView({
               ))}
             </div>
 
-            <div className="p-4 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+            <div className="p-4 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={16} className="text-emerald-400" />
                 <span className="text-[var(--theme-text)]">

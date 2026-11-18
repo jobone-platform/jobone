@@ -327,7 +327,7 @@ export default function CandidateCompanies() {
                       onClick={() =>
                         navigate(`/candidate/jobs?q=${encodeURIComponent(displayName)}`)
                       }
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-[var(--theme-text)] font-semibold transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--theme-gold-surface)] hover:bg-[var(--theme-gold)] hover:text-black border border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold text-xs transition-all cursor-pointer shadow-xs"
                     >
                       <span>View Open Jobs</span>
                       <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />

@@ -185,7 +185,7 @@ export default function JobDetailsModal({ job, onClose }) {
                       className="text-foreground hover:text-silver transition-colors cursor-pointer font-semibold flex items-center gap-1"
                     >
                       <CompanyDisplay job={job} fallback="Confidential Enterprise" />
-                      <ShieldCheck size={13} className="text-silver" />
+                      <ShieldCheck size={13} className="text-[var(--theme-gold)]" />
                     </span>
                     <span className="w-1 h-1 rounded-full bg-border" />
                     <span className="flex items-center gap-1">
@@ -603,9 +603,9 @@ export default function JobDetailsModal({ job, onClose }) {
               <button
                 type="button"
                 onClick={() => setShowApplyModal(true)}
-                className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-foreground text-background font-semibold text-xs sm:text-sm flex items-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md cursor-pointer"
+                className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm flex items-center gap-2 hover:bg-[var(--theme-gold-bright)] active:scale-[0.99] transition shadow-md cursor-pointer"
               >
-                <Send size={15} />
+                <Send size={15} className="text-black" />
                 <span>Apply for Position</span>
               </button>
             </div>

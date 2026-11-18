@@ -843,7 +843,7 @@ export default function CandidateJobs() {
                               e.stopPropagation();
                               navigate(`/apply/${job._id}`);
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-[var(--theme-text)] transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[var(--theme-gold-surface)] hover:bg-[var(--theme-gold)] hover:text-black border border-[var(--theme-gold-border)] text-[var(--theme-gold)] transition-all cursor-pointer shadow-xs"
                           >
                             <span>Apply</span>
                             <ArrowRight size={13} />
@@ -958,7 +958,7 @@ export default function CandidateJobs() {
                           e.stopPropagation();
                           navigate(`/apply/${job._id}`);
                         }}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--theme-text)] text-[var(--theme-bg)] hover:opacity-90 transition-all cursor-pointer min-h-[38px]"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[var(--theme-gold)] text-black hover:opacity-90 transition-all cursor-pointer min-h-[38px] shadow-xs"
                       >
                         <span>Apply</span>
                         <ArrowRight size={13} />

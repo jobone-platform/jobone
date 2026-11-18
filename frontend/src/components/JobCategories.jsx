@@ -223,7 +223,7 @@ export default function JobCategories() {
             {/* SORTING SELECTOR */}
             <div className="flex items-center gap-2 shrink-0">
               <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-semibold text-[var(--theme-text-muted)]">
-                <SlidersHorizontal size={13} className="text-[var(--theme-accent-silver)]" />
+                <SlidersHorizontal size={13} className="text-[var(--theme-gold)]" />
                 <span className="hidden sm:inline">Sort:</span>
                 <select
                   value={sortBy}
@@ -262,11 +262,11 @@ export default function JobCategories() {
                   onClick={() => setActiveGroup(tab.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer border ${
                     isActive
-                      ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border-[var(--theme-border-silver)] shadow-sm"
+                      ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)] shadow-sm"
                       : "bg-[var(--theme-surface)] text-[var(--theme-text-muted)] border-[var(--theme-border)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)]"
                   }`}
                 >
-                  <TabIcon size={12} className={isActive ? "text-[var(--theme-accent-silver)]" : ""} />
+                  <TabIcon size={12} className={isActive ? "text-[var(--theme-gold)]" : ""} />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -327,12 +327,12 @@ export default function JobCategories() {
                 <div
                   key={cat.name}
                   onClick={() => handleCategoryClick(cat.name)}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl p-5 sm:p-6 bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl p-5 sm:p-6 bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer"
                 >
                   <div>
                     {/* TOP SECTION: ICON + JOB COUNT BADGE */}
                     <div className="flex items-center justify-between gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] text-[var(--theme-gold)] border border-[var(--theme-border)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                         <CategoryIcon size={18} />
                       </div>
 
@@ -355,7 +355,7 @@ export default function JobCategories() {
                     </div>
 
                     {/* CATEGORY TITLE */}
-                    <h3 className="text-base sm:text-lg font-bold text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors line-clamp-1 mb-1">
+                    <h3 className="text-base sm:text-lg font-bold text-[var(--theme-text)] group-hover:text-[var(--theme-gold)] transition-colors line-clamp-1 mb-1">
                       {cat.name}
                     </h3>
 

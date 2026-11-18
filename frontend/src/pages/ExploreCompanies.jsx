@@ -80,8 +80,8 @@ export default function ExploreCompanies() {
           </button>
 
           <div className="relative z-10 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-2 border border-border text-[11px] font-mono text-silver mb-4">
-              <ShieldCheck size={13} className="text-silver" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[11px] font-mono text-[var(--theme-gold)] mb-4">
+              <ShieldCheck size={13} className="text-[var(--theme-gold)]" />
               <span>VERIFIED EMPLOYER DIRECTORY</span>
             </div>
 
@@ -168,7 +168,7 @@ export default function ExploreCompanies() {
                   <div
                     key={company._id}
                     onClick={() => navigate(`/company/${company._id}`)}
-                    className="p-6 rounded-2xl bg-surface-1 border border-border hover:border-silver/50 transition-all duration-200 cursor-pointer group flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-0.5"
+                    className="p-6 rounded-2xl bg-surface-1 border border-border hover:border-[var(--theme-gold-border)] transition-all duration-200 cursor-pointer group flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-0.5"
                   >
                     <div>
                       {/* Logo and Job Count Badge */}
@@ -191,9 +191,9 @@ export default function ExploreCompanies() {
                         </span>
                       </div>
 
-                      <h3 className="text-base sm:text-lg font-display font-bold text-foreground group-hover:text-silver transition-colors mb-2 line-clamp-1 flex items-center gap-1.5">
+                      <h3 className="text-base sm:text-lg font-display font-bold text-foreground group-hover:text-[var(--theme-gold)] transition-colors mb-2 line-clamp-1 flex items-center gap-1.5">
                         <span>{displayName}</span>
-                        <ShieldCheck size={14} className="text-silver shrink-0" />
+                        <ShieldCheck size={14} className="text-[var(--theme-gold)] shrink-0" />
                       </h3>
 
                       <div className="space-y-1.5 text-xs text-foreground/60 mb-6">

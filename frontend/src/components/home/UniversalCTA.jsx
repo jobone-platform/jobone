@@ -19,12 +19,12 @@ export default function UniversalCTA() {
       className="py-16 sm:py-24 bg-[var(--theme-bg)] text-[var(--theme-text)] border-t border-[var(--theme-border)] transition-colors duration-150"
     >
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl border border-[var(--theme-border-silver)] bg-[var(--theme-surface)] p-8 sm:p-14 shadow-2xl overflow-hidden text-center">
+        <div className="relative rounded-3xl border border-[var(--theme-gold-border)] bg-[var(--theme-surface)] p-8 sm:p-14 shadow-2xl overflow-hidden text-center">
           {/* Subtle Ambient Sheen */}
-          <div className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent-silver)]/40 to-transparent" />
+          <div className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[var(--theme-gold)]/40 to-transparent" />
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-accent-silver)] mb-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] mb-4">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Join the Marketplace</span>
           </div>
@@ -41,19 +41,19 @@ export default function UniversalCTA() {
             {/* Candidate Primary Action */}
             <Link
               to="/jobs"
-              className="inline-flex items-center gap-2 px-6 py-3.5 min-h-[46px] rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-sm hover:opacity-90 transition shadow-md group"
+              className="inline-flex items-center gap-2 px-6 py-3.5 min-h-[46px] rounded-xl bg-[var(--theme-gold)] text-black font-bold text-sm hover:bg-[var(--theme-gold-bright)] transition shadow-md group"
             >
-              <Briefcase className="w-4 h-4 shrink-0" />
+              <Briefcase className="w-4 h-4 shrink-0 text-black" />
               <span>Explore Jobs</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform text-black" />
             </Link>
 
             {/* Employer Primary Action */}
             <Link
               to={isEmployerLoggedIn ? "/createjob" : "/employerregisteroption"}
-              className="inline-flex items-center gap-2 px-6 py-3.5 min-h-[46px] rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-sm transition"
+              className="inline-flex items-center gap-2 px-6 py-3.5 min-h-[46px] rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] hover:border-[var(--theme-gold)] text-[var(--theme-text)] font-bold text-sm transition"
             >
-              <PlusCircle className="w-4 h-4 text-[var(--theme-accent-silver)] shrink-0" />
+              <PlusCircle className="w-4 h-4 text-[var(--theme-gold)] shrink-0" />
               <span>Post a Job</span>
             </Link>
 

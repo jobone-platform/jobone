@@ -159,7 +159,7 @@ export default function AdminActivityFeed({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--theme-border)]">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+            <div className="p-1.5 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
               <Activity size={15} />
             </div>
             <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-[var(--theme-text)]">
@@ -189,7 +189,7 @@ export default function AdminActivityFeed({
               onClick={() => setFilterType(tab.id)}
               className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer shrink-0 ${
                 filterType === tab.id
-                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-xs"
+                  ? "bg-[var(--theme-gold)] text-black font-bold shadow-xs"
                   : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] border border-[var(--theme-border)]"
               }`}
             >
@@ -217,7 +217,7 @@ export default function AdminActivityFeed({
                 className="py-3 sm:py-3.5 flex items-center justify-between gap-3 group hover:bg-[var(--theme-surface-elevated)]/40 px-2 -mx-2 rounded-xl transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] flex items-center justify-center shrink-0">
                     {getIcon(item.type)}
                   </div>
                   <div className="min-w-0">

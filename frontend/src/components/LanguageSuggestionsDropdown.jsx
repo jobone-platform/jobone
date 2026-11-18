@@ -155,13 +155,13 @@ export default function LanguageSuggestionsDropdown({ languages, onAdd, onRemove
                     {languages.map((lang, idx) => (
                         <span
                             key={idx}
-                            className="bg-indigo-50 text-indigo-700 text-[10px] px-2.5 py-1 border border-indigo-200 rounded-lg flex items-center gap-1 font-semibold"
+                            className="bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] text-[10px] font-mono px-2.5 py-1 rounded-lg flex items-center gap-1 font-semibold"
                         >
               {lang}
                             <button
                                 type="button"
                                 onClick={() => onRemove(idx)}
-                                className="text-red-400 hover:text-red-600 leading-none text-sm"
+                                className="text-[var(--theme-text-muted)] hover:text-rose-400 leading-none text-sm cursor-pointer ml-1"
                             >
                 ×
               </button>
@@ -172,10 +172,10 @@ export default function LanguageSuggestionsDropdown({ languages, onAdd, onRemove
 
             {/* Input trigger */}
             <div
-                className={`flex items-center gap-2 p-2 border rounded-lg cursor-text transition-all ${
+                className={`flex items-center gap-2 p-2 border rounded-xl cursor-text transition-all ${
                     open
-                        ? "border-indigo-400 ring-2 ring-indigo-100 dark:ring-indigo-900/30 bg-white dark:bg-slate-800"
-                        : "border-indigo-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300"
+                        ? "border-[var(--theme-gold-border)] ring-1 ring-[var(--theme-gold-border)] bg-[var(--theme-surface-elevated)]"
+                        : "border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] hover:border-[var(--theme-gold-border)]"
                 }`}
                 onClick={() => setOpen(true)}
             >
@@ -198,30 +198,30 @@ export default function LanguageSuggestionsDropdown({ languages, onAdd, onRemove
                             ? "Add more languages..."
                             : "Click to browse or search languages..."
                     }
-                    className="flex-1 outline-none text-xs bg-transparent text-indigo-800 placeholder-indigo-300"
+                    className="flex-1 outline-none text-xs bg-transparent text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] font-mono"
                 />
                 {query && (
                     <button
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={handleCustomAdd}
-                        className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200 hover:bg-indigo-100 whitespace-nowrap"
+                        className="text-[10px] font-bold text-black bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] px-2 py-0.5 rounded shadow-sm whitespace-nowrap cursor-pointer transition-colors"
                     >
                         Add "{query}"
                     </button>
                 )}
-                <span className="text-indigo-300 text-xs select-none">
+                <span className="text-[var(--theme-text-muted)] text-xs select-none">
           {open ? "▴" : "▾"}
         </span>
             </div>
 
             {/* Dropdown panel */}
             {open && (
-                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1.5 bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto">
                     {visibleCategories.every((c) => c.languages.length === 0) ? (
-                        <div className="px-4 py-3 text-xs text-gray-400 text-center">
+                        <div className="px-4 py-3 text-xs text-[var(--theme-text-muted)] text-center font-mono">
                             No matches — press Enter or click{" "}
-                            <span className="font-bold text-indigo-600">
+                            <span className="font-bold text-[var(--theme-gold)]">
                 Add "{query}"
               </span>{" "}
                             to save it
@@ -235,24 +235,24 @@ export default function LanguageSuggestionsDropdown({ languages, onAdd, onRemove
                             return (
                                 <div
                                     key={cat.category}
-                                    className="border-b border-gray-50 last:border-0"
+                                    className="border-b border-[var(--theme-border)] last:border-0"
                                 >
                                     {/* Category header */}
                                     <button
                                         type="button"
                                         onMouseDown={(e) => e.preventDefault()}
                                         onClick={() => toggleCategory(cat.category)}
-                                        className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-indigo-50 transition-colors group"
+                                        className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-[var(--theme-surface-hover)] transition-colors group cursor-pointer"
                                     >
                                         <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wide text-indigo-500 group-hover:text-indigo-700">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wide text-[var(--theme-gold)] group-hover:text-[var(--theme-gold-bright)] font-mono">
                         {cat.category}
                       </span>
-                                            <span className="text-[9px] bg-indigo-100 text-indigo-500 px-1.5 py-0.5 rounded-full font-bold">
+                                            <span className="text-[9px] bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] px-1.5 py-0.5 rounded-full font-bold font-mono">
                         {cat.languages.length}
                       </span>
                                         </div>
-                                        <span className="text-indigo-300 text-[10px]">
+                                        <span className="text-[var(--theme-text-muted)] text-[10px]">
                       {isExpanded ? "▴" : "▾"}
                     </span>
                                     </button>
@@ -266,9 +266,9 @@ export default function LanguageSuggestionsDropdown({ languages, onAdd, onRemove
                                                     type="button"
                                                     onMouseDown={(e) => e.preventDefault()}
                                                     onClick={() => handleSelect(lang)}
-                                                    className="w-full text-left px-5 py-1.5 text-xs text-gray-700 dark:text-slate-300 hover:bg-indigo-50 hover:text-indigo-800 transition-colors flex items-center gap-2"
+                                                    className="w-full text-left px-5 py-1.5 text-xs text-[var(--theme-text)] hover:bg-[var(--theme-gold-surface)] hover:text-[var(--theme-gold)] transition-colors flex items-center gap-2 cursor-pointer font-mono"
                                                 >
-                                                    <span className="w-1 h-1 rounded-full bg-indigo-300 flex-shrink-0" />
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--theme-gold)] flex-shrink-0" />
                                                     {lang}
                                                 </button>
                                             ))}

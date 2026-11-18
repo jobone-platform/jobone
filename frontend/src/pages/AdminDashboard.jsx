@@ -702,8 +702,8 @@ export default function AdminDashboard() {
   if (loading || !adminInfo) {
     return (
       <div className="min-h-screen bg-[var(--theme-bg)] flex flex-col justify-center items-center">
-        <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mb-3 shadow-xs">
-          <Loader2 className="animate-spin text-[var(--theme-text)]" size={20} />
+        <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center mb-3 shadow-xs">
+          <Loader2 className="animate-spin text-[var(--theme-gold)]" size={20} />
         </div>
         <p className="text-xs font-mono font-medium text-[var(--theme-text-muted)]">
           Authenticating Executive Session...
@@ -740,7 +740,7 @@ export default function AdminDashboard() {
                 <h1 className="text-2xl sm:text-3xl font-extrabold font-display tracking-tight text-[var(--theme-text)]">
                   {greeting}, {adminInfo?.name?.split(" ")[0] || "Executive"}
                 </h1>
-                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] uppercase tracking-wider">
+                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] uppercase tracking-wider">
                   {adminInfo?.role === "superAdmin"
                     ? "Super Administrator"
                     : adminInfo?.role === "employerAdmin"
@@ -767,7 +767,7 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={() => handleExport("all")}
-                className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
                 title="Download platform data archive"
               >
                 <Download size={13} />
@@ -778,9 +778,9 @@ export default function AdminDashboard() {
 
           {/* Conditional Pending Alert Banner */}
           {pendingApprovalsList.length > 0 && (
-            <div className="p-4 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+            <div className="p-4 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[#C0C0C0] shrink-0">
+                <div className="p-2.5 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] shrink-0">
                   <ShieldAlert size={18} />
                 </div>
                 <div>
@@ -788,7 +788,7 @@ export default function AdminDashboard() {
                     <p className="text-sm font-bold text-[var(--theme-text)] font-display">
                       Executive Moderation Required
                     </p>
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[var(--theme-text)] text-[var(--theme-bg)]">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[var(--theme-gold)] text-black">
                       {pendingApprovalsList.length} PENDING
                     </span>
                   </div>
@@ -802,7 +802,7 @@ export default function AdminDashboard() {
                 <button
                   type="button"
                   onClick={() => handleSelectTab("pendingJobs")}
-                  className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-xs flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-colors cursor-pointer shadow-md hover:shadow-lg flex items-center gap-1.5"
                 >
                   <span>Open Moderation Queue</span>
                   <ArrowRight size={13} />
@@ -838,14 +838,14 @@ export default function AdminDashboard() {
               <div>
                 <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[var(--theme-border)]">
                   <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                    <div className="p-1.5 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                       <ShieldAlert size={15} />
                     </div>
                     <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-[var(--theme-text)]">
                       Pending Approvals
                     </h3>
                     {pendingApprovalsList.length > 0 && (
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)]">
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
                         {pendingApprovalsList.length}
                       </span>
                     )}
@@ -874,7 +874,7 @@ export default function AdminDashboard() {
                     {pendingApprovalsList.slice(0, 4).map((item) => (
                       <div
                         key={`${item.type}-${item.id}`}
-                        className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-between gap-3 hover:border-[var(--theme-border-silver)] transition-colors"
+                        className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-between gap-3 hover:border-[var(--theme-gold-border)] transition-colors"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] flex items-center justify-center font-mono font-bold text-xs shrink-0 text-[var(--theme-text)]">
@@ -963,7 +963,7 @@ export default function AdminDashboard() {
             {/* Card Header: Title on Left, Status & Export on Right */}
             <div className="p-4 sm:p-5 border-b border-[var(--theme-border)] flex flex-col md:flex-row md:items-center justify-between gap-3.5">
               <div className="flex flex-wrap items-center gap-3">
-                <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                <div className="p-1.5 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                   <Briefcase size={15} />
                 </div>
                 <div>
@@ -976,7 +976,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {selectedJobIds.length > 0 && (
-                  <div className="flex items-center gap-2 bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] px-3 py-1 rounded-lg text-xs font-mono animate-in fade-in">
+                  <div className="flex items-center gap-2 bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] px-3 py-1 rounded-lg text-xs font-mono animate-in fade-in">
                     <span className="font-bold">{selectedJobIds.length} selected</span>
                     <span>•</span>
                     <button
@@ -1018,7 +1018,7 @@ export default function AdminDashboard() {
                       setJobsPage(1);
                     }}
                     placeholder="Search jobs by title or company..."
-                    className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] w-full sm:w-56 md:w-64 transition-colors"
+                    className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-gold-border)] w-full sm:w-56 md:w-64 transition-colors"
                   />
                 </div>
 
@@ -1029,7 +1029,7 @@ export default function AdminDashboard() {
                     setJobsStatusFilter(e.target.value);
                     setJobsPage(1);
                   }}
-                  className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                  className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
                 >
                   <option value="all">All Statuses</option>
                   <option value="active">Active</option>
@@ -1041,7 +1041,7 @@ export default function AdminDashboard() {
                 <button
                   type="button"
                   onClick={() => handleExport("all")}
-                  className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Download size={13} />
                   <span>Export</span>
@@ -1251,7 +1251,7 @@ export default function AdminDashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
             <div>
               <div className="flex items-center gap-2.5">
-                <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                <div className="p-1.5 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                   <Briefcase size={16} />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-[var(--theme-text)]">
@@ -1265,7 +1265,7 @@ export default function AdminDashboard() {
             <button
               type="button"
               onClick={() => handleExport("all")}
-              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer w-fit"
+              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer w-fit"
             >
               <Download size={13} />
               <span>Export All Jobs</span>
@@ -1365,7 +1365,7 @@ export default function AdminDashboard() {
                   setJobModPage(1);
                 }}
                 placeholder="Search job title, company name, recruiter..."
-                className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] w-full transition-colors"
+                className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-gold-border)] w-full transition-colors"
               />
             </div>
 
@@ -1376,7 +1376,7 @@ export default function AdminDashboard() {
                   setJobModStatusFilter(e.target.value);
                   setJobModPage(1);
                 }}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="all">All Statuses</option>
                 <option value="active">Active (Live)</option>
@@ -1391,7 +1391,7 @@ export default function AdminDashboard() {
                   setJobModIndustryFilter(e.target.value);
                   setJobModPage(1);
                 }}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="all">All Industries (24 Sectors)</option>
                 {INDUSTRIES.map((ind) => (
@@ -1404,7 +1404,7 @@ export default function AdminDashboard() {
               <select
                 value={jobModSort}
                 onChange={(e) => setJobModSort(e.target.value)}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -1415,7 +1415,7 @@ export default function AdminDashboard() {
 
           {/* Contextual Bulk Action Bar */}
           {selectedJobModIds.length > 0 && (
-            <div className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xs text-xs font-mono">
+            <div className="p-3 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xs text-xs font-mono">
               <span className="font-bold text-[var(--theme-text)]">
                 {selectedJobModIds.length} position listing{selectedJobModIds.length === 1 ? "" : "s"} selected
               </span>
@@ -1643,7 +1643,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] p-8 shadow-xs text-center">
-            <div className="w-12 h-12 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] flex items-center justify-center mx-auto mb-3">
               <FileText size={20} className="text-[#C0C0C0]" />
             </div>
             <p className="text-sm font-bold text-[var(--theme-text)] font-display">
@@ -1678,7 +1678,7 @@ export default function AdminDashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
             <div>
               <div className="flex items-center gap-2.5">
-                <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                <div className="p-1.5 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                   <Building2 size={16} />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-[var(--theme-text)]">
@@ -1692,7 +1692,7 @@ export default function AdminDashboard() {
             <button
               type="button"
               onClick={() => handleExport("employers")}
-              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer w-fit"
+              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer w-fit"
             >
               <Download size={13} />
               <span>Export Employers (XLSX)</span>
@@ -1792,7 +1792,7 @@ export default function AdminDashboard() {
                   setEmpPage(1);
                 }}
                 placeholder="Search company name, contact person, email..."
-                className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] w-full transition-colors"
+                className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-gold-border)] w-full transition-colors"
               />
             </div>
 
@@ -1803,7 +1803,7 @@ export default function AdminDashboard() {
                   setEmpEntityFilter(e.target.value);
                   setEmpPage(1);
                 }}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="all">All Entity Types</option>
                 <option value="company">Corporate Company</option>
@@ -1816,7 +1816,7 @@ export default function AdminDashboard() {
                   setEmpApprovalFilter(e.target.value);
                   setEmpPage(1);
                 }}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="all">All Approvals</option>
                 <option value="approved">Approved</option>
@@ -1830,7 +1830,7 @@ export default function AdminDashboard() {
                   setEmpFreezeFilter(e.target.value);
                   setEmpPage(1);
                 }}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="all">All Statuses</option>
                 <option value="active">Active Only</option>
@@ -1840,7 +1840,7 @@ export default function AdminDashboard() {
               <select
                 value={empSort}
                 onChange={(e) => setEmpSort(e.target.value)}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -1851,7 +1851,7 @@ export default function AdminDashboard() {
 
           {/* Contextual Bulk Action Bar */}
           {selectedEmpIds.length > 0 && (
-            <div className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xs text-xs font-mono">
+            <div className="p-3 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xs text-xs font-mono">
               <span className="font-bold text-[var(--theme-text)]">
                 {selectedEmpIds.length} employer account{selectedEmpIds.length === 1 ? "" : "s"} selected
               </span>
@@ -2045,7 +2045,7 @@ export default function AdminDashboard() {
                               <button
                                 type="button"
                                 onClick={() => handleFreezeToggle(emp._id, emp.isFrozen, "employer")}
-                                className="px-2 py-0.5 rounded-md border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-mono text-[10px] cursor-pointer transition-colors"
+                                className="px-2 py-0.5 rounded-md border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-mono text-[10px] cursor-pointer transition-colors"
                               >
                                 {emp.isFrozen ? "Unfreeze" : "Freeze"}
                               </button>
@@ -2118,7 +2118,7 @@ export default function AdminDashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
             <div>
               <div className="flex items-center gap-2.5">
-                <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                <div className="p-1.5 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                   <Users size={16} />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-[var(--theme-text)]">
@@ -2132,7 +2132,7 @@ export default function AdminDashboard() {
             <button
               type="button"
               onClick={() => handleExport("jobseekers")}
-              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer w-fit"
+              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] text-xs font-mono font-semibold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer w-fit"
             >
               <Download size={13} />
               <span>Export Candidates (XLSX)</span>
@@ -2187,7 +2187,7 @@ export default function AdminDashboard() {
                   setUserPage(1);
                 }}
                 placeholder="Search candidate name, email address, phone..."
-                className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] w-full transition-colors"
+                className="pl-9 pr-3.5 py-1.5 text-xs font-mono rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-gold-border)] w-full transition-colors"
               />
             </div>
 
@@ -2198,7 +2198,7 @@ export default function AdminDashboard() {
                   setUserStatusFilter(e.target.value);
                   setUserPage(1);
                 }}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="all">All Accounts</option>
                 <option value="active">Active Accounts</option>
@@ -2211,7 +2211,7 @@ export default function AdminDashboard() {
                   setUserVerificationFilter(e.target.value);
                   setUserPage(1);
                 }}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="all">All Verification</option>
                 <option value="verified">Verified Email</option>
@@ -2221,7 +2221,7 @@ export default function AdminDashboard() {
               <select
                 value={userSort}
                 onChange={(e) => setUserSort(e.target.value)}
-                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-border-silver)] transition-colors"
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] outline-none cursor-pointer focus:border-[var(--theme-gold-border)] transition-colors"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -2232,7 +2232,7 @@ export default function AdminDashboard() {
 
           {/* Contextual Bulk Action Bar */}
           {selectedUserIds.length > 0 && (
-            <div className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xs text-xs font-mono">
+            <div className="p-3 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xs text-xs font-mono">
               <span className="font-bold text-[var(--theme-text)]">
                 {selectedUserIds.length} candidate account{selectedUserIds.length === 1 ? "" : "s"} selected
               </span>
@@ -2388,7 +2388,7 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => handleFreezeToggle(u._id, u.isFrozen, "user")}
-                              className="px-2 py-0.5 rounded-md border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-mono text-[10px] cursor-pointer transition-colors"
+                              className="px-2 py-0.5 rounded-md border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-mono text-[10px] cursor-pointer transition-colors"
                             >
                               {u.isFrozen ? "Unfreeze" : "Freeze"}
                             </button>
@@ -2447,7 +2447,7 @@ export default function AdminDashboard() {
             Job Categories & Taxonomies
           </h2>
           <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] p-8 shadow-xs text-center">
-            <div className="w-12 h-12 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] flex items-center justify-center mx-auto mb-3">
               <Layers size={20} className="text-[#C0C0C0]" />
             </div>
             <p className="text-sm font-bold text-[var(--theme-text)] font-display">

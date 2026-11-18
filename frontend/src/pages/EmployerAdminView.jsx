@@ -204,8 +204,8 @@ export default function EmployerAdminView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[var(--theme-bg)] flex flex-col justify-center items-center">
-        <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mb-3">
-          <Loader2 className="animate-spin text-[var(--theme-text)]" size={20} />
+        <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center mb-3 text-[var(--theme-gold)]">
+          <Loader2 className="animate-spin text-[var(--theme-gold)]" size={20} />
         </div>
         <p className="text-xs font-mono font-medium text-[var(--theme-text-muted)]">
           Loading Employer KYC Dossier...
@@ -270,7 +270,7 @@ export default function EmployerAdminView() {
             <button
               type="button"
               onClick={handleExportSingleProfile}
-              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-gold-surface)] hover:opacity-85 border border-[var(--theme-gold-border)] text-[var(--theme-gold)] text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Download size={13} />
               <span>Export Dossier</span>
@@ -299,7 +299,7 @@ export default function EmployerAdminView() {
         {/* Executive Verification Header Banner */}
         <div className="p-6 sm:p-7 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-16 h-16 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center font-display font-extrabold text-2xl text-[var(--theme-text)] shrink-0 shadow-xs">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center font-display font-extrabold text-2xl text-[var(--theme-gold)] shrink-0 shadow-xs">
               {employer.companyName ? employer.companyName.charAt(0).toUpperCase() : employer.name.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -524,7 +524,7 @@ export default function EmployerAdminView() {
                         <button
                           type="button"
                           onClick={() => handleViewDocument(doc.field)}
-                          className="px-3 py-1.5 rounded-lg bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-mono text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg bg-[var(--theme-surface)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-mono text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <Eye size={13} />
                           <span>View Document</span>
@@ -538,7 +538,7 @@ export default function EmployerAdminView() {
 
             {/* Document Viewer Canvas */}
             {viewUrl && (
-              <div className="p-4 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] shadow-xl space-y-3 animate-in fade-in">
+              <div className="p-4 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] shadow-xl space-y-3 animate-in fade-in">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono font-bold text-[var(--theme-text)]">
                     Secure Document Inspection Canvas
@@ -589,7 +589,7 @@ export default function EmployerAdminView() {
                       </div>
                       <Link
                         to={`/admin/job/${job._id}`}
-                        className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-[var(--theme-text)] font-mono text-[11px] flex items-center gap-1 transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-gold)] text-[var(--theme-text)] font-mono text-[11px] flex items-center gap-1 transition-colors"
                       >
                         <span>View Job</span>
                         <ExternalLink size={11} />

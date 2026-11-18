@@ -58,14 +58,14 @@ export default function AdminChartPanel({ jobs = [] }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[var(--theme-border)]">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+            <div className="p-1.5 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
               <BarChart3 size={15} />
             </div>
             <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-[var(--theme-text)]">
               Industry Distribution
             </h3>
-            <span className="text-[10px] sm:text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] flex items-center gap-1.5">
-              <TrendingUp size={11} className="text-[#C0C0C0]" /> {totalActiveCount} Active of {totalJobsCount} ({activeRate}%)
+            <span className="text-[10px] sm:text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-gold-border)] flex items-center gap-1.5">
+              <TrendingUp size={11} className="text-[var(--theme-gold)]" /> {totalActiveCount} Active of {totalJobsCount} ({activeRate}%)
             </span>
           </div>
           <p className="text-xs text-[var(--theme-text-muted)] mt-1.5">
@@ -73,15 +73,15 @@ export default function AdminChartPanel({ jobs = [] }) {
           </p>
         </div>
 
-        {/* Monochromatic Legend: Black/White and Silver series */}
+        {/* Monochromatic Legend: Black/White and Gold series */}
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-medium text-[var(--theme-text-muted)]">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-xs bg-[var(--theme-text)] shadow-xs border border-[var(--theme-border-silver)]" />
+            <span className="w-3 h-3 rounded-xs bg-[var(--theme-text)] shadow-xs border border-[var(--theme-border)]" />
             <span className="text-[var(--theme-text)] font-semibold">Total Postings</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-xs bg-[#C0C0C0] opacity-80" />
-            <span>Active Listings</span>
+            <span className="w-3 h-3 rounded-xs bg-[var(--theme-gold)] opacity-90" />
+            <span className="text-[var(--theme-gold)] font-semibold">Active Listings</span>
           </div>
         </div>
       </div>
@@ -120,10 +120,10 @@ export default function AdminChartPanel({ jobs = [] }) {
               >
                 {/* Floating tooltip */}
                 {isHovered && (
-                  <div className="absolute -top-12 z-20 px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-medium shadow-xl pointer-events-none whitespace-nowrap animate-in fade-in duration-150">
+                  <div className="absolute -top-12 z-20 px-3 py-1.5 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] text-xs font-medium shadow-xl pointer-events-none whitespace-nowrap animate-in fade-in duration-150">
                     <span className="text-[var(--theme-text-muted)]">{d.label}: </span>
                     <span className="font-mono font-bold text-[var(--theme-text)]">{d.total} total</span>
-                    <span className="text-[var(--theme-text-muted)] font-mono"> ({d.active} active)</span>
+                    <span className="text-[var(--theme-gold)] font-mono"> ({d.active} active)</span>
                   </div>
                 )}
 
@@ -141,13 +141,13 @@ export default function AdminChartPanel({ jobs = [] }) {
                     )}
                   </div>
 
-                  {/* Bar 2: Active Jobs (Silver accent) */}
+                  {/* Bar 2: Active Jobs (Gold accent) */}
                   <div
                     style={{ height: `${Math.max(hActive, 4)}%` }}
-                    className="w-2 sm:w-3.5 md:w-5 rounded-t-sm bg-[#C0C0C0] dark:bg-[#A0A0A0] transition-all duration-300 group-hover:brightness-110 origin-bottom relative shadow-xs"
+                    className="w-2 sm:w-3.5 md:w-5 rounded-t-sm bg-[var(--theme-gold)] transition-all duration-300 group-hover:brightness-110 origin-bottom relative shadow-xs"
                   >
                     {isHovered && d.active > 0 && (
-                      <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-[#C0C0C0]">
+                      <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-[var(--theme-gold)]">
                         {d.active}
                       </span>
                     )}

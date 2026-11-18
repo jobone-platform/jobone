@@ -245,7 +245,7 @@ export default function ApplyPage() {
           >
             <ArrowLeft size={16} /> Back to Job Details
           </button>
-          <span className="text-xs font-mono font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-silver/10 text-silver border border-silver/20">
+          <span className="text-xs font-mono font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
             JobOne Talent Gateway
           </span>
         </div>
@@ -306,9 +306,9 @@ export default function ApplyPage() {
                       <div
                         className={`w-7 h-7 rounded-full flex items-center justify-center font-mono text-xs font-bold transition-all ${
                           isPassed
-                            ? "bg-silver text-background"
+                            ? "bg-[var(--theme-gold)] text-black"
                             : isCurrent
-                            ? "bg-foreground text-background ring-2 ring-silver/40"
+                            ? "bg-foreground text-background ring-2 ring-[var(--theme-gold)]"
                             : "bg-surface border border-border text-muted-foreground"
                         }`}
                       >
@@ -320,7 +320,7 @@ export default function ApplyPage() {
                         isCurrent
                           ? "text-foreground"
                           : isPassed
-                          ? "text-silver"
+                          ? "text-[var(--theme-gold)]"
                           : "text-muted-foreground"
                       }`}
                     >
@@ -606,11 +606,11 @@ export default function ApplyPage() {
                 type="button"
                 disabled={submitting}
                 onClick={handleFinalSubmit}
-                className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-40 shadow-sm"
+                className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-40 shadow-sm"
               >
                 {submitting ? (
                   <>
-                    <Loader2 size={14} className="animate-spin" /> Delivering Application...
+                    <Loader2 size={14} className="animate-spin text-black" /> Delivering Application...
                   </>
                 ) : (
                   <>
@@ -632,7 +632,7 @@ export default function ApplyPage() {
             </div>
 
             <div className="space-y-2 max-w-md mx-auto">
-              <span className="text-xs font-mono font-bold uppercase tracking-widest text-silver">
+              <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--theme-gold)]">
                 Application Transmitted
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
@@ -648,12 +648,12 @@ export default function ApplyPage() {
             <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
               <Link
                 to="/myapplications"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-90 transition-opacity shadow-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:opacity-90 transition-opacity shadow-sm"
               >
                 <Briefcase size={14} /> Track in Applications
               </Link>
               <Link
-                to="/jobs"
+                to="/candidate/jobs"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-elevated border border-border text-foreground hover:bg-surface-hover text-xs font-semibold transition-colors"
               >
                 Browse Other Roles

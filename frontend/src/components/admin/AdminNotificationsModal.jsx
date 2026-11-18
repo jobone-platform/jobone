@@ -49,7 +49,7 @@ export default function AdminNotificationsModal({
         {/* Header */}
         <div className="p-4 border-b border-[var(--theme-border)] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-accent-silver)] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] flex items-center justify-center">
               <Bell size={15} />
             </div>
             <div>
@@ -164,7 +164,7 @@ export default function AdminNotificationsModal({
               onNavigateTab("notifications");
               onClose();
             }}
-            className="text-xs font-bold text-[var(--theme-accent-silver)] hover:underline inline-flex items-center gap-1 cursor-pointer"
+            className="text-xs font-bold text-[var(--theme-gold)] hover:underline inline-flex items-center gap-1 cursor-pointer"
           >
             <span>Open Notification Workspace</span>
             <ArrowRight size={13} />

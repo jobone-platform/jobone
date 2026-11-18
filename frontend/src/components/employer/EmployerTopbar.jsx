@@ -182,7 +182,7 @@ export default function EmployerTopbar({
         {isApproved && (
           <Link
             to="/createjob"
-            className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] hover:opacity-90 font-bold text-xs transition-opacity shadow-sm"
+            className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] font-bold text-xs transition-all shadow-md hover:shadow-lg"
           >
             <PlusCircle size={14} />
             <span>Post Job</span>

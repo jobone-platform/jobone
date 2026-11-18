@@ -201,7 +201,7 @@ export default function ResumeWorkspaceToolbar({
                         </button>
                         <button
                           type="submit"
-                          className="px-2.5 py-1 rounded bg-silver text-black font-semibold text-xs hover:bg-white"
+                          className="px-2.5 py-1 rounded bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 shadow-xs"
                         >
                           Create
                         </button>
@@ -403,7 +403,7 @@ export default function ResumeWorkspaceToolbar({
           <button
             type="button"
             onClick={onPrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white text-black font-semibold text-xs hover:bg-silver transition-all shadow-sm active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-all shadow-sm active:scale-95 cursor-pointer"
             title="Export as PDF or Print"
           >
             <Printer className="w-3.5 h-3.5" />

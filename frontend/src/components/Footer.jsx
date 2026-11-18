@@ -135,8 +135,8 @@ export default function Footer() {
       aria-label="JobOne Site Footer"
       className="relative w-full border-t border-[var(--theme-border)] bg-[var(--theme-bg)] text-[var(--theme-text)] font-sans transition-colors duration-150 overflow-hidden"
     >
-      {/* Top Silver Accent Line with subtle Sheen */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent-silver)]/40 to-transparent pointer-events-none" />
+      {/* Top Gold Accent Line with subtle Sheen */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-gold)]/40 to-transparent pointer-events-none" />
 
       {/* Decorative ambient background glows (Dark mode only) */}
       <div className="absolute top-0 left-1/4 -translate-y-1/2 w-96 h-96 bg-white/[0.015] rounded-full blur-3xl pointer-events-none" />
@@ -149,13 +149,13 @@ export default function Footer() {
           <div className="lg:col-span-4 space-y-6">
             <Link
               to="/"
-              className="inline-flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-accent-silver)] rounded-xl"
+              className="inline-flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)] rounded-xl"
               aria-label="JobOne Home"
             >
               <LogoJobOne
                 width={132}
                 height={38}
-                textColor={isDark ? "#FFFFFF" : "#0F172A"}
+                textColor={isDark ? "#FFFFFF" : "#181818"}
                 className="w-[124px] md:w-[136px] h-auto object-contain"
               />
             </Link>
@@ -202,7 +202,7 @@ export default function Footer() {
             {/* Column 1: Candidate Career Hub */}
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
-                <Briefcase className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                <Briefcase className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                 For Candidates
               </h3>
               <ul className="space-y-2.5 text-sm font-medium">
@@ -252,7 +252,7 @@ export default function Footer() {
             {/* Column 2: Employer Hiring Solutions */}
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
-                <Building2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                <Building2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                 For Employers
               </h3>
               <ul className="space-y-2.5 text-sm font-medium">
@@ -302,7 +302,7 @@ export default function Footer() {
             {/* Column 3: Platform & Discovery */}
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
-                <Globe2 className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                <Globe2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                 Platform
               </h3>
               <ul className="space-y-2.5 text-sm font-medium">
@@ -344,7 +344,7 @@ export default function Footer() {
             {/* Column 4: Trust & Legal */}
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--theme-text)] mb-4 flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                 Trust &amp; Legal
               </h3>
               <ul className="space-y-2.5 text-sm font-medium">

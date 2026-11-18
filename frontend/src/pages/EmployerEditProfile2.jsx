@@ -157,7 +157,7 @@ export default function EmployerEditProfile2() {
     return (
       <EmployerLayout activeTab="settings" title="Complete Setup">
         <div className="py-24 flex flex-col items-center justify-center text-[var(--theme-text-muted)]">
-          <Loader2 size={36} className="animate-spin text-[var(--theme-accent-silver)] mb-4" />
+          <Loader2 size={36} className="animate-spin text-[var(--theme-gold)] mb-4" />
           <p className="text-sm font-semibold">Loading setup details...</p>
         </div>
       </EmployerLayout>
@@ -206,7 +206,7 @@ export default function EmployerEditProfile2() {
                     onClick={() => setImgUploadType("link")}
                     className={`text-xs font-semibold pb-1 border-b-2 transition-colors ${
                       imgUploadType === "link"
-                        ? "border-[var(--theme-accent-silver)] text-[var(--theme-text)] font-bold"
+                        ? "border-[var(--theme-gold)] text-[var(--theme-gold)] font-bold"
                         : "border-transparent text-[var(--theme-text-muted)]"
                     }`}
                   >
@@ -217,7 +217,7 @@ export default function EmployerEditProfile2() {
                     onClick={() => setImgUploadType("upload")}
                     className={`text-xs font-semibold pb-1 border-b-2 transition-colors ${
                       imgUploadType === "upload"
-                        ? "border-[var(--theme-accent-silver)] text-[var(--theme-text)] font-bold"
+                        ? "border-[var(--theme-gold)] text-[var(--theme-gold)] font-bold"
                         : "border-transparent text-[var(--theme-text-muted)]"
                     }`}
                   >
@@ -243,7 +243,7 @@ export default function EmployerEditProfile2() {
                       disabled={uploadingImage}
                       className="text-xs text-[var(--theme-text-muted)]"
                     />
-                    {uploadingImage && <Loader2 size={16} className="animate-spin text-[var(--theme-accent-silver)]" />}
+                    {uploadingImage && <Loader2 size={16} className="animate-spin text-[var(--theme-gold)]" />}
                   </div>
                 )}
               </div>
@@ -342,7 +342,7 @@ export default function EmployerEditProfile2() {
             <button
               type="submit"
               disabled={saving || uploadingImage}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity shadow-sm"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:bg-[var(--theme-gold-bright)] disabled:opacity-50 transition-all shadow-md hover:shadow-lg"
             >
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
               <span>Save & Go to Dashboard</span>

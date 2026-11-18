@@ -79,8 +79,8 @@ export default function AdminLogoutModal({
         {/* Exit Progress Animation Sequence */}
         {isExiting ? (
           <div className="py-8 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mx-auto text-[var(--theme-accent-silver)]">
-              {exitStep === 1 && <Loader2 size={30} className="animate-spin text-[var(--theme-accent-silver)]" />}
+            <div className="w-16 h-16 rounded-2xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center mx-auto text-[var(--theme-gold)]">
+              {exitStep === 1 && <Loader2 size={30} className="animate-spin text-[var(--theme-gold)]" />}
               {exitStep === 2 && <Lock size={28} className="text-amber-400 animate-pulse" />}
               {exitStep === 3 && <CheckCircle2 size={30} className="text-emerald-400" />}
             </div>
@@ -101,7 +101,7 @@ export default function AdminLogoutModal({
             {/* Micro Progress Bar */}
             <div className="w-48 h-1 bg-[var(--theme-surface-elevated)] rounded-full mx-auto overflow-hidden border border-[var(--theme-border)]">
               <div
-                className="h-full bg-[var(--theme-accent-silver)] transition-all duration-300 rounded-full"
+                className="h-full bg-[var(--theme-gold)] transition-all duration-300 rounded-full"
                 style={{ width: `${(exitStep / 3) * 100}%` }}
               />
             </div>

@@ -68,7 +68,7 @@ export default function KPIWidgetExpandedModal({
         {/* ─── Modal Header ────────────────────────────────────────── */}
         <div className="p-5 sm:p-6 border-b border-[var(--theme-border)] flex items-start justify-between gap-4 shrink-0 bg-[var(--theme-surface-elevated)]/40">
           <div className="flex items-start gap-4">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
               <Icon size={22} />
             </div>
             <div>
@@ -81,7 +81,7 @@ export default function KPIWidgetExpandedModal({
                     className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full ${
                       badgeVariant === "warning"
                         ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                        : "bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border-silver)]"
+                        : "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]"
                     }`}
                   >
                     {badge}
@@ -138,7 +138,7 @@ export default function KPIWidgetExpandedModal({
                 onClick={() => setPeriod("7d")}
                 className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                   period === "7d"
-                    ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                    ? "bg-[var(--theme-gold)] text-black shadow-xs"
                     : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                 }`}
               >
@@ -149,7 +149,7 @@ export default function KPIWidgetExpandedModal({
                 onClick={() => setPeriod("30d")}
                 className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                   period === "30d"
-                    ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                    ? "bg-[var(--theme-gold)] text-black shadow-xs"
                     : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                 }`}
               >
@@ -182,7 +182,7 @@ export default function KPIWidgetExpandedModal({
                     <div className="w-full bg-[var(--theme-surface)] rounded-md h-full flex items-end overflow-hidden p-0.5 border border-[var(--theme-border)]">
                       <div
                         style={{ height: `${heightPct}%` }}
-                        className="w-full rounded-sm bg-[var(--theme-accent-silver)] group-hover:bg-[var(--theme-text)] transition-all duration-300"
+                        className="w-full rounded-sm bg-[var(--theme-gold)] group-hover:bg-[var(--theme-gold-bright)] transition-all duration-300"
                       />
                     </div>
                     <span className="text-[9px] font-mono text-[var(--theme-text-subtle)] truncate w-full text-center">
@@ -232,7 +232,7 @@ export default function KPIWidgetExpandedModal({
                     onNavigate(targetTab);
                     onClose();
                   }}
-                  className="text-xs font-bold text-[var(--theme-accent-silver)] hover:underline inline-flex items-center gap-1"
+                  className="text-xs font-bold text-[var(--theme-gold)] hover:underline inline-flex items-center gap-1"
                 >
                   <span>Open Full Queue</span>
                   <ExternalLink size={12} />
@@ -260,7 +260,7 @@ export default function KPIWidgetExpandedModal({
                             ? onReviewJob && onReviewJob(item.id, "active")
                             : onReviewEmployer && onReviewEmployer(item.id, "approved")
                         }
-                        className="px-2.5 py-1 rounded-lg bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity"
+                        className="px-2.5 py-1 rounded-lg bg-[var(--theme-gold)] text-black text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-colors"
                       >
                         Approve
                       </button>
@@ -300,7 +300,7 @@ export default function KPIWidgetExpandedModal({
                 onNavigate(targetTab);
                 onClose();
               }}
-              className="px-5 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity inline-flex items-center gap-2 cursor-pointer shadow-sm"
+              className="px-5 py-2 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:bg-[var(--theme-gold-bright)] inline-flex items-center gap-2 cursor-pointer shadow-sm transition-colors"
             >
               <span>Explore Section in Table</span>
               <ArrowRight size={13} />

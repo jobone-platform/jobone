@@ -243,7 +243,7 @@ export default function VideoSection() {
                   className="text-center"
                 >
                   <div className="flex items-center justify-center gap-1.5 mb-1">
-                    <FaUsers className="text-blue-400" size={13} />
+                    <FaUsers className="text-[var(--theme-gold)]" size={13} />
                     <span className="text-2xl md:text-3xl font-black text-white">
                       1M+
                     </span>
@@ -260,7 +260,7 @@ export default function VideoSection() {
                   className="text-center"
                 >
                   <div className="flex items-center justify-center gap-1.5 mb-1">
-                    <FaBolt className="text-violet-400" size={12} />
+                    <FaBolt className="text-[var(--theme-gold-bright)]" size={12} />
                     <span className="text-2xl md:text-3xl font-black text-white">
                       98%
                     </span>
@@ -277,7 +277,7 @@ export default function VideoSection() {
                   className="text-center"
                 >
                   <div className="flex items-center justify-center gap-1.5 mb-1">
-                    <FaClock className="text-indigo-400" size={12} />
+                    <FaClock className="text-[var(--theme-gold)]" size={12} />
                     <span className="text-2xl md:text-3xl font-black text-white">
                       48h
                     </span>

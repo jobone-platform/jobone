@@ -198,7 +198,7 @@ export default function EmployerJobDetails() {
                 {job.status === "pending_approval" ? "Under Review" : job.status}
               </span>
 
-              <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+              <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
                 {modeStr}
               </span>
 
@@ -219,11 +219,11 @@ export default function EmployerJobDetails() {
 
             <div className="flex flex-wrap items-center text-xs text-[var(--theme-text-muted)] gap-4">
               <span className="flex items-center gap-1.5">
-                <MapPin size={14} className="text-[var(--theme-accent-silver)]" />
+                <MapPin size={14} className="text-[var(--theme-gold)]" />
                 <span className="truncate">{displayLocation}</span>
               </span>
               <span className="flex items-center gap-1.5 font-mono">
-                <Clock size={14} className="text-[var(--theme-accent-silver)]" />
+                <Clock size={14} className="text-[var(--theme-gold)]" />
                 <span>Posted {new Date(job.postedAt || job.createdAt).toLocaleDateString()}</span>
               </span>
               {job.applicationDeadline && (
@@ -239,12 +239,12 @@ export default function EmployerJobDetails() {
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <Link
               to={`/job/${job._id}/applicants`}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs sm:text-sm hover:opacity-90 transition-opacity shadow-sm"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
             >
               <Users size={16} />
               <span>Review Applicants</span>
               {job.stats?.total > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-[var(--theme-bg)] text-[var(--theme-text)] text-[10px] font-mono">
+                <span className="px-1.5 py-0.5 rounded-full bg-black text-[var(--theme-gold)] text-[10px] font-mono">
                   {job.stats.total}
                 </span>
               )}
@@ -252,7 +252,7 @@ export default function EmployerJobDetails() {
 
             <Link
               to={`/editjob/${job._id}`}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] text-xs sm:text-sm font-semibold hover:bg-[var(--theme-surface-hover)] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] text-xs sm:text-sm font-semibold hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-gold)] transition-all"
             >
               <Pencil size={15} />
               <span>Edit</span>
@@ -298,7 +298,7 @@ export default function EmployerJobDetails() {
           {/* Executive Summary */}
           <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-6 shadow-sm">
             <h2 className="text-sm sm:text-base font-bold text-[var(--theme-text)] mb-3 flex items-center gap-2">
-              <Briefcase size={16} className="text-[var(--theme-accent-silver)]" />
+              <Briefcase size={16} className="text-[var(--theme-gold)]" />
               <span>Executive Summary</span>
             </h2>
             <div className="text-xs sm:text-sm text-[var(--theme-text-muted)] leading-relaxed whitespace-pre-line">
@@ -310,7 +310,7 @@ export default function EmployerJobDetails() {
           {job.keyResponsibilities && (
             <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-6 shadow-sm">
               <h2 className="text-sm sm:text-base font-bold text-[var(--theme-text)] mb-3 flex items-center gap-2">
-                <ListChecks size={16} className="text-[var(--theme-accent-silver)]" />
+                <ListChecks size={16} className="text-[var(--theme-gold)]" />
                 <span>Deliverables & Responsibilities</span>
               </h2>
               <div className="text-xs sm:text-sm text-[var(--theme-text-muted)] leading-relaxed font-mono whitespace-pre-line space-y-1">
@@ -323,14 +323,14 @@ export default function EmployerJobDetails() {
           {(job.skillsRequired || []).length > 0 && (
             <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-6 shadow-sm">
               <h2 className="text-sm sm:text-base font-bold text-[var(--theme-text)] mb-3 flex items-center gap-2">
-                <Zap size={16} className="text-[var(--theme-accent-silver)]" />
+                <Zap size={16} className="text-[var(--theme-gold)]" />
                 <span>Required Skill Stack</span>
               </h2>
               <div className="flex flex-wrap gap-2">
                 {job.skillsRequired.map((skill, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 rounded-xl text-xs font-mono font-medium bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]"
+                    className="px-3 py-1 rounded-xl text-xs font-mono font-medium bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]"
                   >
                     {skill}
                   </span>
@@ -343,7 +343,7 @@ export default function EmployerJobDetails() {
           {((job.screeningQuestions || []).length > 0 || (job.requestedDocuments || []).length > 0) && (
             <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-6 shadow-sm space-y-4">
               <h2 className="text-sm sm:text-base font-bold text-[var(--theme-text)] flex items-center gap-2">
-                <HelpCircle size={16} className="text-[var(--theme-accent-silver)]" />
+                <HelpCircle size={16} className="text-[var(--theme-gold)]" />
                 <span>Screening & Application Criteria</span>
               </h2>
 
@@ -358,7 +358,7 @@ export default function EmployerJobDetails() {
                         key={idx}
                         className="p-3 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)]"
                       >
-                        <span className="font-mono text-[var(--theme-accent-silver)] mr-2">Q{idx + 1}:</span>
+                        <span className="font-mono text-[var(--theme-gold)] mr-2">Q{idx + 1}:</span>
                         {q}
                       </li>
                     ))}
@@ -377,7 +377,7 @@ export default function EmployerJobDetails() {
                         key={idx}
                         className="px-3 py-1 rounded-lg text-xs bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] flex items-center gap-1.5"
                       >
-                        <FileText size={12} className="text-[var(--theme-accent-silver)]" />
+                        <FileText size={12} className="text-[var(--theme-gold)]" />
                         {doc}
                       </span>
                     ))}
@@ -430,7 +430,7 @@ export default function EmployerJobDetails() {
             </h3>
 
             <div className="flex items-start gap-2.5 text-xs">
-              <Target size={15} className="text-[var(--theme-accent-silver)] shrink-0 mt-0.5" />
+              <Target size={15} className="text-[var(--theme-gold)] shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-[var(--theme-text)]">Experience</p>
                 <p className="text-[var(--theme-text-muted)]">{renderExperience()}</p>
@@ -438,7 +438,7 @@ export default function EmployerJobDetails() {
             </div>
 
             <div className="flex items-start gap-2.5 text-xs">
-              <GraduationCap size={15} className="text-[var(--theme-accent-silver)] shrink-0 mt-0.5" />
+              <GraduationCap size={15} className="text-[var(--theme-gold)] shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-[var(--theme-text)]">Education</p>
                 <p className="text-[var(--theme-text-muted)]">
@@ -449,7 +449,7 @@ export default function EmployerJobDetails() {
             </div>
 
             <div className="flex items-start gap-2.5 text-xs">
-              <Languages size={15} className="text-[var(--theme-accent-silver)] shrink-0 mt-0.5" />
+              <Languages size={15} className="text-[var(--theme-gold)] shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-[var(--theme-text)]">Languages</p>
                 <p className="text-[var(--theme-text-muted)]">{renderArray(job.languages)}</p>
@@ -457,7 +457,7 @@ export default function EmployerJobDetails() {
             </div>
 
             <div className="flex items-start gap-2.5 text-xs">
-              <UserCircle2 size={15} className="text-[var(--theme-accent-silver)] shrink-0 mt-0.5" />
+              <UserCircle2 size={15} className="text-[var(--theme-gold)] shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-[var(--theme-text)]">Gender & Age</p>
                 <p className="text-[var(--theme-text-muted)]">

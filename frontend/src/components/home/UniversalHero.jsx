@@ -63,40 +63,21 @@ export default function UniversalHero() {
           {/* ================================================================ */}
           <div className="lg:col-span-7 flex flex-col items-start text-left min-w-0">
             {/* Platform Scope Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] shadow-xs mb-5"
-            >
-              <Sparkles className="w-4 h-4 text-[var(--theme-accent-silver)] shrink-0" aria-hidden="true" />
-              <span className="text-xs font-semibold text-[var(--theme-text)]">
-                Next-Gen Recruitment Marketplace
-              </span>
-            </motion.div>
 
             {/* Universal Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.05 }}
-              className="text-3xl sm:text-5xl xl:text-6xl font-black tracking-tight leading-[1.1] text-[var(--theme-text)] mb-4 sm:mb-5"
+              className="text-3xl sm:text-5xl xl:text-6xl font-black tracking-tight leading-[1.1] text-[var(--theme-text)] mb-4 sm:mb-35"
             >
               Build Careers. Discover Talent.{" "}
-              <span className="bg-gradient-to-r from-[var(--theme-text)] via-[var(--theme-accent-silver)] to-[var(--theme-text)] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[var(--theme-text)] via-[var(--theme-gold)] to-[var(--theme-gold-bright)] bg-clip-text text-transparent">
                 Hire Smarter.
               </span>
             </motion.h1>
 
-            {/* Supporting Value Positioning */}
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              className="text-sm sm:text-base text-[var(--theme-text-muted)] leading-relaxed max-w-2xl mb-7 sm:mb-8"
-            >
-              One platform connecting ambitious professionals with verified employers through transparent opportunities and intelligent recruitment.
-            </motion.p>
+    
 
             {/* Universal Inline Quick Links */}
             <motion.nav
@@ -108,28 +89,28 @@ export default function UniversalHero() {
             >
               <Link
                 to="/jobs"
-                className="text-[var(--theme-text)] hover:text-[var(--theme-accent-silver)] hover:underline underline-offset-4 transition-colors rounded-xs py-0.5"
+                className="text-[var(--theme-text)] hover:text-[var(--theme-gold)] hover:underline underline-offset-4 transition-colors rounded-xs py-0.5"
               >
                 Explore Jobs
               </Link>
-              <span className="mx-2 sm:mx-3 text-[var(--theme-border-silver)]" aria-hidden="true">|</span>
+              <span className="mx-2 sm:mx-3 text-[var(--theme-gold-border)]" aria-hidden="true">|</span>
               <Link
                 to="/resume-builder"
-                className="text-[var(--theme-text)] hover:text-[var(--theme-accent-silver)] hover:underline underline-offset-4 transition-colors rounded-xs py-0.5"
+                className="text-[var(--theme-text)] hover:text-[var(--theme-gold)] hover:underline underline-offset-4 transition-colors rounded-xs py-0.5"
               >
                 Build ATS Resume
               </Link>
-              <span className="mx-2 sm:mx-3 text-[var(--theme-border-silver)]" aria-hidden="true">|</span>
+              <span className="mx-2 sm:mx-3 text-[var(--theme-gold-border)]" aria-hidden="true">|</span>
               <Link
                 to="/createjob"
-                className="text-[var(--theme-text)] hover:text-[var(--theme-accent-silver)] hover:underline underline-offset-4 transition-colors rounded-xs py-0.5"
+                className="text-[var(--theme-text)] hover:text-[var(--theme-gold)] hover:underline underline-offset-4 transition-colors rounded-xs py-0.5"
               >
                 Post a Job
               </Link>
-              <span className="mx-2 sm:mx-3 text-[var(--theme-border-silver)]" aria-hidden="true">|</span>
+              <span className="mx-2 sm:mx-3 text-[var(--theme-gold-border)]" aria-hidden="true">|</span>
               <Link
                 to="/candidates"
-                className="text-[var(--theme-text)] hover:text-[var(--theme-accent-silver)] hover:underline underline-offset-4 transition-colors rounded-xs py-0.5"
+                className="text-[var(--theme-text)] hover:text-[var(--theme-gold)] hover:underline underline-offset-4 transition-colors rounded-xs py-0.5"
               >
                 Candidate Search
               </Link>
@@ -141,11 +122,11 @@ export default function UniversalHero() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.18 }}
-              className="w-full max-w-2xl rounded-2xl border border-[var(--theme-border-silver)] bg-[var(--theme-surface)]/95 backdrop-blur-md p-2 shadow-xl flex flex-col md:flex-row items-center gap-2"
+              className="w-full max-w-2xl rounded-2xl border border-[var(--theme-gold-border)] bg-[var(--theme-surface)]/95 backdrop-blur-md p-2 shadow-xl flex flex-col md:flex-row items-center gap-2 focus-within:border-[var(--theme-gold)]"
             >
               {/* Job Title / Keyword Input */}
               <div className="flex items-center flex-1 w-full px-3 py-2">
-                <Briefcase className="w-4 h-4 text-[var(--theme-accent-silver)] shrink-0 mr-2.5" aria-hidden="true" />
+                <Briefcase className="w-4 h-4 text-[var(--theme-gold)] shrink-0 mr-2.5" aria-hidden="true" />
                 <input
                   type="text"
                   value={title}
@@ -160,7 +141,7 @@ export default function UniversalHero() {
 
               {/* Location Input */}
               <div className="flex items-center flex-1 w-full px-3 py-2">
-                <MapPin className="w-4 h-4 text-[var(--theme-accent-silver)] shrink-0 mr-2.5" aria-hidden="true" />
+                <MapPin className="w-4 h-4 text-[var(--theme-gold)] shrink-0 mr-2.5" aria-hidden="true" />
                 <input
                   type="text"
                   value={remoteOnly ? "Remote" : location}
@@ -179,7 +160,7 @@ export default function UniversalHero() {
                 aria-pressed={remoteOnly}
                 className={`px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border transition cursor-pointer shrink-0 ${
                   remoteOnly
-                    ? "bg-[var(--theme-text)] text-[var(--theme-bg)] border-[var(--theme-text)]"
+                    ? "bg-[var(--theme-gold)] text-black border-[var(--theme-gold)]"
                     : "bg-[var(--theme-surface-elevated)] text-[var(--theme-text-muted)] border-[var(--theme-border)] hover:text-[var(--theme-text)]"
                 }`}
               >
@@ -190,9 +171,9 @@ export default function UniversalHero() {
               {/* Search Submit Button */}
               <button
                 type="submit"
-                className="w-full md:w-auto px-5 py-3 min-h-[44px] rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-sm flex items-center justify-center gap-2 transition shrink-0 cursor-pointer"
+                className="w-full md:w-auto px-6 py-3 min-h-[44px] rounded-xl bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold text-sm flex items-center justify-center gap-2 transition shrink-0 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
               >
-                <Search className="w-4 h-4 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                <Search className="w-4 h-4 text-black" aria-hidden="true" />
                 <span>Search</span>
               </button>
             </motion.form>
@@ -200,7 +181,7 @@ export default function UniversalHero() {
             {/* Popular Search Suggestions */}
             <div className="flex items-center gap-2 flex-wrap mt-4 text-xs">
               <span className="font-semibold flex items-center gap-1 text-[var(--theme-text-muted)]">
-                <Sparkles className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" aria-hidden="true" />
+                <Sparkles className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                 Popular:
               </span>
               {POPULAR_SEARCHES.map((tag) => (
@@ -208,7 +189,7 @@ export default function UniversalHero() {
                   key={tag.label}
                   type="button"
                   onClick={() => handleSuggestionClick(tag)}
-                  className="px-2.5 py-1 rounded-full border border-[var(--theme-border)] bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] hover:border-[var(--theme-border-silver)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] font-medium transition cursor-pointer"
+                  className="px-2.5 py-1 rounded-full border border-[var(--theme-border)] bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-gold)] text-[var(--theme-text-muted)] font-medium transition cursor-pointer"
                 >
                   {tag.label}
                 </button>

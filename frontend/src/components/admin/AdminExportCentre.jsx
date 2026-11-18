@@ -119,7 +119,7 @@ export default function AdminExportCentre({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--theme-border)]">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-accent-silver)]">
+            <div className="w-9 h-9 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <Download size={18} />
             </div>
             <div>
@@ -133,8 +133,8 @@ export default function AdminExportCentre({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-xs font-mono text-[var(--theme-text)]">
-          <Lock size={13} className="text-[#C0C0C0]" />
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] text-xs font-mono text-[var(--theme-text)]">
+          <Lock size={13} className="text-[var(--theme-gold)]" />
           <span>RBAC Export Clearance: {role}</span>
         </div>
       </div>
@@ -144,14 +144,14 @@ export default function AdminExportCentre({
         {/* Card 1: Full Database Backup */}
         <div className="p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col justify-between space-y-4">
           <div>
-            <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-text)] mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)] mb-3">
               <Archive size={18} />
             </div>
             <div className="flex items-center gap-2">
               <h3 className="font-display font-bold text-sm text-[var(--theme-text)]">
                 Platform Master Database Dump
               </h3>
-              <span className="px-1.5 py-0.5 rounded font-mono text-[9px] font-bold bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+              <span className="px-1.5 py-0.5 rounded font-mono text-[9px] font-bold bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                 ZIP
               </span>
             </div>
@@ -170,7 +170,7 @@ export default function AdminExportCentre({
                 type="button"
                 disabled={downloadingType === "Full Database ZIP"}
                 onClick={handleExportAll}
-                className="w-full py-2.5 px-4 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-mono font-bold hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-mono font-bold hover:bg-[var(--theme-gold-bright)] disabled:opacity-50 transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer"
               >
                 {downloadingType === "Full Database ZIP" ? (
                   <>
@@ -195,14 +195,14 @@ export default function AdminExportCentre({
         {/* Card 2: Employers Directory */}
         <div className="p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col justify-between space-y-4">
           <div>
-            <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-text)] mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)] mb-3">
               <Building2 size={18} />
             </div>
             <div className="flex items-center gap-2">
               <h3 className="font-display font-bold text-sm text-[var(--theme-text)]">
                 Employers & Postings Dossier
               </h3>
-              <span className="px-1.5 py-0.5 rounded font-mono text-[9px] font-bold bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+              <span className="px-1.5 py-0.5 rounded font-mono text-[9px] font-bold bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                 XLSX
               </span>
             </div>
@@ -221,7 +221,7 @@ export default function AdminExportCentre({
                 type="button"
                 disabled={downloadingType === "Employers XLSX"}
                 onClick={handleExportEmployers}
-                className="w-full py-2.5 px-4 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-bold disabled:opacity-50 transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] hover:text-[var(--theme-gold)] text-xs font-mono font-bold disabled:opacity-50 transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
               >
                 {downloadingType === "Employers XLSX" ? (
                   <>
@@ -246,14 +246,14 @@ export default function AdminExportCentre({
         {/* Card 3: Candidates Talent Pool */}
         <div className="p-6 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col justify-between space-y-4">
           <div>
-            <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-text)] mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)] mb-3">
               <Users size={18} />
             </div>
             <div className="flex items-center gap-2">
               <h3 className="font-display font-bold text-sm text-[var(--theme-text)]">
                 Talent Pool & Applicants Register
               </h3>
-              <span className="px-1.5 py-0.5 rounded font-mono text-[9px] font-bold bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+              <span className="px-1.5 py-0.5 rounded font-mono text-[9px] font-bold bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                 XLSX
               </span>
             </div>
@@ -272,7 +272,7 @@ export default function AdminExportCentre({
                 type="button"
                 disabled={downloadingType === "Candidates XLSX"}
                 onClick={handleExportJobseekers}
-                className="w-full py-2.5 px-4 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-bold disabled:opacity-50 transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] hover:text-[var(--theme-gold)] text-xs font-mono font-bold disabled:opacity-50 transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
               >
                 {downloadingType === "Candidates XLSX" ? (
                   <>
@@ -339,7 +339,7 @@ export default function AdminExportCentre({
               type="button"
               disabled={!selectedSingleEmpId || downloadingType === "Single Employer XLSX"}
               onClick={handleExportSingleEmployer}
-              className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-mono font-bold hover:opacity-90 disabled:opacity-40 transition-opacity flex items-center justify-center gap-1.5 shadow-xs cursor-pointer shrink-0"
+              className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-mono font-bold hover:bg-[var(--theme-gold-bright)] disabled:opacity-40 transition-colors flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg cursor-pointer shrink-0"
             >
               {downloadingType === "Single Employer XLSX" ? (
                 <Loader2 size={13} className="animate-spin" />
@@ -381,7 +381,7 @@ export default function AdminExportCentre({
 
       {/* ─── Compliance Notice Banner ───────────────────────────────────── */}
       <div className="p-4 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text-muted)] flex items-start gap-3">
-        <ShieldCheck size={18} className="shrink-0 mt-0.5 text-[#C0C0C0]" />
+        <ShieldCheck size={18} className="shrink-0 mt-0.5 text-[var(--theme-gold)]" />
         <p className="leading-relaxed">
           Platform data exports contain sensitive corporate identity filings and candidate contact details. Downloaded files must be processed in compliance with data privacy regulations and internal security standards.
         </p>

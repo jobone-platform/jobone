@@ -191,7 +191,7 @@ export default function Contact() {
       {/* ─── 1. EDITORIAL HERO BANNER ───────────────────────────────────────── */}
       <section className="relative pb-12 sm:pb-16 text-center overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-2 border border-border text-[11px] font-mono text-silver mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[11px] font-mono text-[var(--theme-gold)] mb-4">
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -364,8 +364,8 @@ export default function Contact() {
                         }
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
                           formData.communicationType === type.id
-                            ? "bg-foreground text-background border-foreground shadow-sm"
-                            : "bg-surface-2 text-foreground/70 border-border hover:border-silver/40"
+                            ? "bg-[var(--theme-gold)] text-black border-[var(--theme-gold)] font-bold shadow-sm"
+                            : "bg-surface-2 text-foreground/70 border-border hover:border-[var(--theme-gold-border)]"
                         }`}
                       >
                         {type.label}
@@ -456,7 +456,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={status === "sending"}
-                  className="w-full py-3.5 rounded-xl bg-foreground text-background font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-[var(--theme-gold-bright)] active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
                 >
                   <Send size={15} />
                   <span>{status === "sending" ? "Dispatching..." : "Transmit Inquiry"}</span>

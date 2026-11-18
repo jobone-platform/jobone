@@ -49,13 +49,13 @@ const STATUS_CONFIG = {
   },
   "Interview Scheduled": {
     label: "Interview Scheduled",
-    badgeClass: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-    color: "purple",
+    badgeClass: "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)]",
+    color: "gold",
   },
   "Interview Conducted": {
     label: "Interview Conducted",
-    badgeClass: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
-    color: "cyan",
+    badgeClass: "bg-[var(--theme-gold-surface)]/60 text-[var(--theme-gold-bright)] border-[var(--theme-gold-border)]",
+    color: "gold",
   },
   "Assignment Scheduled": {
     label: "Assignment",
@@ -884,12 +884,12 @@ export default function JobApplicants() {
                 {
                   id: "Interview Scheduled",
                   label: "Interviewing",
-                  color: "border-purple-500/30",
+                  color: "border-[var(--theme-gold-border)]",
                 },
                 {
                   id: "Interview Conducted",
                   label: "Conducted",
-                  color: "border-cyan-500/30",
+                  color: "border-[var(--theme-gold-border)]",
                 },
                 {
                   id: "Assignment Scheduled",
@@ -1010,7 +1010,7 @@ export default function JobApplicants() {
                                         true
                                       )
                                     }
-                                    className="px-2 py-0.5 rounded bg-surface hover:bg-elevated text-purple-400 border border-border"
+                                    className="px-2 py-0.5 rounded bg-surface hover:bg-elevated text-[var(--theme-gold)] border border-border"
                                     title="Interview"
                                   >
                                     Interview
@@ -1186,7 +1186,7 @@ export default function JobApplicants() {
                               true
                             )
                           }
-                          className="px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-mono transition-colors"
+                          className="px-3 py-1.5 rounded-lg bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] hover:bg-[var(--theme-gold-surface)]/80 border border-[var(--theme-gold-border)] text-xs font-mono transition-colors"
                         >
                           Mark Conducted
                         </button>
@@ -1266,7 +1266,7 @@ export default function JobApplicants() {
                       requireMessage: true,
                     })
                   }
-                  className="px-3 py-1.5 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors"
+                  className="px-3 py-1.5 bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] hover:bg-[var(--theme-gold-surface)]/80 border border-[var(--theme-gold-border)] rounded-lg text-xs font-mono uppercase tracking-wider transition-colors"
                 >
                   Interview
                 </button>
@@ -1279,7 +1279,7 @@ export default function JobApplicants() {
                       requireMessage: true,
                     })
                   }
-                  className="px-3 py-1.5 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors"
+                  className="px-3 py-1.5 bg-[var(--theme-gold-surface)]/60 text-[var(--theme-gold-bright)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] rounded-lg text-xs font-mono uppercase tracking-wider transition-colors"
                 >
                   Conducted
                 </button>
@@ -1523,7 +1523,7 @@ export default function JobApplicants() {
                           true
                         );
                       }}
-                      className="px-3 py-2 rounded-xl bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 text-xs font-mono uppercase tracking-wider font-bold transition-colors"
+                      className="px-3 py-2 rounded-xl bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] hover:bg-[var(--theme-gold-surface)]/80 border border-[var(--theme-gold-border)] text-xs font-mono uppercase tracking-wider font-bold transition-colors"
                     >
                       Interview
                     </button>

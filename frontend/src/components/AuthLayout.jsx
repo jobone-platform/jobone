@@ -34,7 +34,7 @@ export default function AuthLayout({
             <LogoJobOne
               width={140}
               height={40}
-              textColor={isDark ? "#FFFFFF" : "#0F172A"}
+              textColor={isDark ? "#FFFFFF" : "#181818"}
               className="w-32 h-auto"
             />
           </Link>
@@ -50,8 +50,8 @@ export default function AuthLayout({
 
         {/* Middle: Editorial Narrative */}
         <div className="relative z-10 my-auto py-10 max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text-muted)] mb-6 shadow-sm">
-            <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-accent-silver)]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-xs text-[var(--theme-gold)] mb-6 shadow-sm">
+            <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
             <span className="font-semibold uppercase tracking-wider text-[11px]">
               {badge}
             </span>

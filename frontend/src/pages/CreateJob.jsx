@@ -767,9 +767,9 @@ export default function CreateJob() {
                 }}
                 className={`text-left p-2.5 sm:p-3 rounded-xl border transition-all ${
                   isCurrent
-                    ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-accent-silver)] shadow-sm"
+                    ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] shadow-sm"
                     : isDone
-                    ? "bg-[var(--theme-surface)] border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] cursor-pointer"
+                    ? "bg-[var(--theme-surface)] border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] cursor-pointer"
                     : "bg-[var(--theme-surface)]/40 border-[var(--theme-border)]/50 opacity-60 cursor-not-allowed"
                 }`}
               >
@@ -779,7 +779,7 @@ export default function CreateJob() {
                       isDone
                         ? "bg-emerald-500 text-white"
                         : isCurrent
-                        ? "bg-[var(--theme-text)] text-[var(--theme-bg)]"
+                        ? "bg-[var(--theme-gold)] text-black"
                         : "bg-[var(--theme-surface-muted)] text-[var(--theme-text-muted)]"
                     }`}
                   >
@@ -852,8 +852,8 @@ export default function CreateJob() {
                       onClick={() => toggleArrayItem("jobType", type.id)}
                       className={`p-3 rounded-xl border text-xs font-semibold text-center transition-all ${
                         selected
-                          ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-accent-silver)] text-[var(--theme-text)] shadow-sm font-bold"
-                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-border-silver)] hover:text-[var(--theme-text)]"
+                          ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)] shadow-sm font-bold"
+                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-text)]"
                       }`}
                     >
                       {type.label}
@@ -1090,8 +1090,8 @@ export default function CreateJob() {
                       onClick={() => toggleArrayItem("mode", mode.id)}
                       className={`p-3 rounded-xl border flex items-center justify-center gap-2 text-xs font-semibold transition-all ${
                         selected
-                          ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-accent-silver)] text-[var(--theme-text)] font-bold shadow-sm"
-                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-border-silver)] hover:text-[var(--theme-text)]"
+                          ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold shadow-sm"
+                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-text)]"
                       }`}
                     >
                       <Icon size={15} />
@@ -1259,8 +1259,8 @@ export default function CreateJob() {
                       onClick={() => toggleArrayItem("incentives", perk.value)}
                       className={`px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
                         selected
-                          ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-accent-silver)] text-[var(--theme-text)] font-bold shadow-sm"
-                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-border-silver)]"
+                          ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold shadow-sm"
+                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-gold-border)]"
                       }`}
                     >
                       <span className="mr-1.5">{perk.icon}</span>
@@ -1545,8 +1545,8 @@ export default function CreateJob() {
                         onClick={() => toggleArrayItem("requestedDocuments", doc)}
                         className={`p-3 rounded-xl border text-xs font-semibold text-center transition-all ${
                           selected
-                            ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-accent-silver)] text-[var(--theme-text)] font-bold shadow-sm"
-                            : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-border-silver)] hover:text-[var(--theme-text)]"
+                            ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold shadow-sm"
+                            : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-text)]"
                         }`}
                       >
                         {doc}
@@ -1645,7 +1645,7 @@ export default function CreateJob() {
                 onClick={() => setPreviewModalOpen(true)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)]"
               >
-                <Eye size={14} className="text-[var(--theme-accent-silver)]" />
+                <Eye size={14} className="text-[var(--theme-gold)]" />
                 <span>Full Modal Preview</span>
               </button>
             </div>
@@ -1659,7 +1659,7 @@ export default function CreateJob() {
                   <button
                     type="button"
                     onClick={() => setCurrentStep(1)}
-                    className="text-[11px] font-semibold text-[var(--theme-accent-silver)] hover:underline"
+                    className="text-[11px] font-semibold text-[var(--theme-gold)] hover:underline"
                   >
                     Edit
                   </button>
@@ -1677,7 +1677,7 @@ export default function CreateJob() {
                   <button
                     type="button"
                     onClick={() => setCurrentStep(2)}
-                    className="text-[11px] font-semibold text-[var(--theme-accent-silver)] hover:underline"
+                    className="text-[11px] font-semibold text-[var(--theme-gold)] hover:underline"
                   >
                     Edit
                   </button>
@@ -1697,7 +1697,7 @@ export default function CreateJob() {
                   <button
                     type="button"
                     onClick={() => setCurrentStep(3)}
-                    className="text-[11px] font-semibold text-[var(--theme-accent-silver)] hover:underline"
+                    className="text-[11px] font-semibold text-[var(--theme-gold)] hover:underline"
                   >
                     Edit
                   </button>
@@ -1709,7 +1709,7 @@ export default function CreateJob() {
                   {(job.skillsRequired || []).slice(0, 4).map((sk) => (
                     <span
                       key={sk}
-                      className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--theme-surface)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]"
+                      className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]"
                     >
                       {sk}
                     </span>
@@ -1729,7 +1729,7 @@ export default function CreateJob() {
                   <button
                     type="button"
                     onClick={() => setCurrentStep(4)}
-                    className="text-[11px] font-semibold text-[var(--theme-accent-silver)] hover:underline"
+                    className="text-[11px] font-semibold text-[var(--theme-gold)] hover:underline"
                   >
                     Edit
                   </button>
@@ -1787,7 +1787,7 @@ export default function CreateJob() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs sm:text-sm font-bold hover:opacity-90 transition-opacity shadow-sm"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs sm:text-sm font-bold hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
               >
                 <span>Continue</span>
                 <ChevronRight size={16} />
@@ -1797,7 +1797,7 @@ export default function CreateJob() {
                 type="button"
                 onClick={() => setShowConfirm(true)}
                 disabled={loading || isPostingDisabled}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs sm:text-sm font-bold hover:opacity-90 disabled:opacity-50 transition-opacity shadow-lg"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs sm:text-sm font-bold hover:bg-[var(--theme-gold-bright)] disabled:opacity-50 transition-all shadow-lg hover:shadow-xl"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
                 <span>Confirm & Publish</span>
