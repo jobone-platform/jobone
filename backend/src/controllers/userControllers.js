@@ -540,19 +540,13 @@ export const userDetails = expressAsyncHandler(async (req, res) => {
 
 export const googleLogin = expressAsyncHandler(async (req, res) => {
   try {
-    const idToken = req.body.idToken || req.body.token || req.body.credential;
-    if (!idToken || typeof idToken !== "string" || !idToken.trim()) {
+    const rawToken = req.body.idToken || req.body.token || req.body.credential || req.body.access_token;
+    if (!rawToken || typeof rawToken !== "string" || !rawToken.trim()) {
       res.status(400);
-      throw new Error("Google ID token is required.");
+      throw new Error("Google authentication token is required.");
     }
 
-    const trimmedToken = idToken.trim();
-    const tokenSegments = trimmedToken.split(".");
-    if (tokenSegments.length !== 3) {
-      res.status(400);
-      throw new Error("Invalid Google ID token format. A valid 3-segment JWT is required.");
-    }
-
+    const trimmedToken = rawToken.trim();
     const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.Google_Client_ID;
     if (!googleClientId) {
       console.error("GOOGLE_CLIENT_ID environment variable is missing in backend configuration.");
@@ -561,40 +555,78 @@ export const googleLogin = expressAsyncHandler(async (req, res) => {
     }
 
     const oauthClient = getGoogleOAuthClient();
+    const isIdToken = trimmedToken.split(".").length === 3;
 
-    let payload;
-    try {
-      const ticket = await oauthClient.verifyIdToken({
-        idToken: trimmedToken,
-        audience: googleClientId,
+    let email, name, picture, googleId;
+
+    if (isIdToken) {
+      // 1. Verify Google OpenID Connect ID Token (JWT)
+      let payload;
+      try {
+        const ticket = await oauthClient.verifyIdToken({
+          idToken: trimmedToken,
+          audience: googleClientId,
+        });
+        payload = ticket.getPayload();
+      } catch (verifyError) {
+        console.error("Google ID token verification failed (candidate):", verifyError.message);
+        res.status(401);
+        throw new Error(`Google token verification failed: ${verifyError.message}`);
+      }
+
+      if (!payload) {
+        res.status(401);
+        throw new Error("Invalid Google token payload.");
+      }
+
+      if (!payload.email_verified) {
+        res.status(401);
+        throw new Error("Google account email is not verified.");
+      }
+
+      const validIssuers = ["accounts.google.com", "https://accounts.google.com"];
+      if (!validIssuers.includes(payload.iss)) {
+        res.status(401);
+        throw new Error(`Invalid token issuer: ${payload.iss}`);
+      }
+
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+      googleId = payload.sub;
+    } else {
+      // 2. Verify Google OAuth2 Access Token
+      let tokenInfo;
+      try {
+        tokenInfo = await oauthClient.getTokenInfo(trimmedToken);
+      } catch (tokenInfoErr) {
+        console.error("Google access token inspection failed:", tokenInfoErr.message);
+        res.status(401);
+        throw new Error("Invalid or expired Google access token.");
+      }
+
+      if (tokenInfo.aud && googleClientId && tokenInfo.aud !== googleClientId) {
+        res.status(401);
+        throw new Error("Invalid Google OAuth client credentials (audience mismatch).");
+      }
+
+      const googleUserRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${trimmedToken}` },
       });
-      payload = ticket.getPayload();
-    } catch (verifyError) {
-      console.error("Google ID token verification failed (candidate):", verifyError.message);
-      res.status(401);
-      throw new Error(`Google token verification failed: ${verifyError.message}`);
+      if (!googleUserRes.ok) {
+        res.status(401);
+        throw new Error("Failed to verify Google access token with Google identity service.");
+      }
+      const profile = await googleUserRes.json();
+      if (profile.email_verified === false || profile.verified_email === false) {
+        res.status(401);
+        throw new Error("Google account email is not verified.");
+      }
+      email = profile.email;
+      name = profile.name;
+      picture = profile.picture;
+      googleId = profile.sub;
     }
-
-    if (!payload) {
-      res.status(401);
-      throw new Error("Invalid Google token payload.");
-    }
-
-    if (!payload.email_verified) {
-      res.status(401);
-      throw new Error("Google account email is not verified.");
-    }
-
-    const validIssuers = ["accounts.google.com", "https://accounts.google.com"];
-    if (!validIssuers.includes(payload.iss)) {
-      res.status(401);
-      throw new Error(`Invalid token issuer: ${payload.iss}`);
-    }
-
-    const email = payload.email;
-    const name = payload.name;
-    const picture = payload.picture;
-    const googleId = payload.sub;
 
     if (!email) {
       res.status(400);

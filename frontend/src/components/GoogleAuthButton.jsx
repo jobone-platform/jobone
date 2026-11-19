@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { API_BASE_URL } from "../config/api";
-import { useAuth, useTheme } from "../routes/Context";
+import { useAuth } from "../routes/Context";
 import { handlePostAuthRedirection } from "../utils/pendingActionHandler";
 
 /**
@@ -56,7 +56,9 @@ export function AuthDivider({ text = "or continue with", className = "my-6" }) {
 }
 
 /**
- * Reusable Google Authentication Button
+ * Enhanced Google Authentication Button
+ * Fully matches the JobOne Gold + Dark + Light theme design system.
+ * 100% responsive, beautiful hover animations, tactile press state.
  *
  * @param {"candidate"|"employer"|"user"} role - Target identity portal
  * @param {"login"|"register"} mode - "login" -> "Sign in with Google", "register" -> "Continue with Google"
@@ -78,17 +80,19 @@ export default function GoogleAuthButton({
   const navigate = useNavigate();
   const location = useLocation();
   const { loginUser, loginEmployer } = useAuth();
-  const { resolvedTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
 
   const isEmployer = role === "employer";
+  const defaultLabel =
+    mode === "register" ? "Continue with Google" : "Sign in with Google";
+  const buttonText = label || defaultLabel;
 
-  const handleCredentialResponse = async (credentialResponse) => {
+  const handleGoogleSuccess = async (tokenResponse) => {
     if (isLoading || disabled) return;
-    const idToken = credentialResponse?.credential;
-    if (!idToken) {
+    const token = tokenResponse?.access_token || tokenResponse?.credential;
+    if (!token) {
       if (onError) {
-        onError("Google authentication did not provide a valid credential. Please try again.");
+        onError("Google authentication did not return a valid credential. Please try again.");
       }
       return;
     }
@@ -102,9 +106,10 @@ export default function GoogleAuthButton({
         : `${API_BASE_URL}/user/google-login`;
 
       const { data } = await axios.post(endpoint, {
-        idToken,
-        token: idToken,
-        credential: idToken,
+        token: token,
+        access_token: token,
+        idToken: token,
+        credential: token,
       });
 
       if (isEmployer) {
@@ -137,11 +142,48 @@ export default function GoogleAuthButton({
     }
   };
 
-  const handleGoogleError = () => {
+  const handleGoogleError = (errorResponse) => {
     setIsLoading(false);
-    console.warn("Google Sign-In failed or popup was closed.");
+    console.warn("Google OAuth Trigger Error:", errorResponse);
     if (onError) {
-      onError("Google Sign-In was cancelled or failed. Please try again.");
+      if (errorResponse?.error === "popup_closed_by_user") {
+        onError("Google Sign-In was cancelled.");
+      } else if (errorResponse?.error === "access_denied") {
+        onError("Google Sign-In access was denied.");
+      } else {
+        onError("Google authentication encountered an error. Please try again.");
+      }
+    }
+  };
+
+  const handleNonOAuthError = (nonOAuthError) => {
+    setIsLoading(false);
+    console.warn("Google Non-OAuth Error:", nonOAuthError);
+    if (onError) {
+      if (nonOAuthError?.type === "popup_closed") {
+        onError("Google Sign-In window was closed before completion.");
+      } else if (nonOAuthError?.type === "popup_failed_to_open") {
+        onError("Popup was blocked by your browser. Please allow popups for Google authentication.");
+      } else {
+        onError("Google authentication could not be completed. Please try again.");
+      }
+    }
+  };
+
+  const triggerLogin = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: handleGoogleError,
+    onNonOAuthError: handleNonOAuthError,
+  });
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    if (disabled || isLoading) return;
+    try {
+      triggerLogin();
+    } catch (err) {
+      console.error("Trigger Google Login error:", err);
+      if (onError) onError("Failed to launch Google authentication.");
     }
   };
 
@@ -158,29 +200,26 @@ export default function GoogleAuthButton({
   }
 
   return (
-    <div
-      className={`w-full flex items-center justify-center min-h-[44px] ${
-        disabled ? "pointer-events-none opacity-50" : ""
-      } ${className}`}
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={disabled || isLoading}
+      aria-label={buttonText}
+      className={`group relative w-full py-3 sm:py-3.5 px-4 rounded-xl font-semibold text-xs sm:text-sm tracking-wide transition-all duration-200 shadow-xs flex items-center justify-center gap-3 cursor-pointer select-none border bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border-[var(--theme-border)] hover:border-[var(--theme-gold)] text-[var(--theme-text)] hover:shadow-[0_0_18px_rgba(212,175,55,0.14)] hover:scale-[1.008] active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ${className}`}
     >
       {isLoading ? (
-        <div className="w-full py-3 px-4 rounded-xl font-medium text-xs sm:text-sm tracking-wide shadow-xs flex items-center justify-center gap-3 border bg-[var(--theme-surface-elevated)] border-[var(--theme-border-silver)] text-[var(--theme-text-muted)]">
-          <Loader2 className="w-4 h-4 animate-spin text-[var(--theme-text-muted)]" />
-          <span>Connecting to Google...</span>
-        </div>
+        <>
+          <Loader2 className="w-4 h-4 animate-spin text-[var(--theme-gold)] shrink-0" />
+          <span className="text-[var(--theme-text-muted)] font-medium">Connecting to Google...</span>
+        </>
       ) : (
-        <div className="w-full flex justify-center [&>div]:!w-full [&_iframe]:!w-full [&>div>div]:!w-full">
-          <GoogleLogin
-            onSuccess={handleCredentialResponse}
-            onError={handleGoogleError}
-            theme={resolvedTheme === "light" ? "outline" : "filled_black"}
-            size="large"
-            shape="rectangular"
-            text={mode === "register" ? "signup_with" : "signin_with"}
-            width="100%"
-          />
-        </div>
+        <>
+          <div className="flex items-center justify-center w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110">
+            <GoogleIcon className="w-4.5 h-4.5" />
+          </div>
+          <span className="truncate">{buttonText}</span>
+        </>
       )}
-    </div>
+    </button>
   );
 }
