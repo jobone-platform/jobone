@@ -416,7 +416,7 @@ export default function NavBar() {
             ) : (
               /* If Guest: Post a Job Shortcut + Sign In */
               <div className="flex items-center gap-1.5">
-                <button
+                {/* <button
                   type="button"
                   onClick={() => {
                     executeProtectedAction({
@@ -432,7 +432,7 @@ export default function NavBar() {
                 >
                   <Building2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                   <span>Post a Job</span>
-                </button>
+                </button> */}
                 <Link
                   to="/login"
                   className="px-4 py-1.5 rounded-full text-xs font-bold bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] transition shadow-xs whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)]"
