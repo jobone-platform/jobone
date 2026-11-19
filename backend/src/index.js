@@ -25,9 +25,10 @@ const app = express();
 // from the X-Forwarded-For header, preventing express-rate-limit ERR_ERL_UNEXPECTED_X_FORWARDED_FOR errors.
 app.set("trust proxy", 1);
 
-// Security Headers with Cross-Origin Resource Policy enabled for assets
+// Security Headers with Cross-Origin Resource Policy enabled for assets and allow OAuth popups
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
 
 // Request body size limits (prevents payload flood attacks)
