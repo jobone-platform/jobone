@@ -492,7 +492,7 @@ export default function UserDashboard() {
                 <div className="space-y-2">
                   <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground">
                     {greetingText},{" "}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground via-foreground to-[var(--theme-gold)]">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--theme-gold)] via-foreground to-[var(--theme-gold)]">
                       {candidateDisplayName}
                     </span>
                   </h1>

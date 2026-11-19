@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { API_BASE_URL } from "../config/api";
-import { useAuth } from "../routes/Context";
+import { useAuth, useTheme } from "../routes/Context";
 import { handlePostAuthRedirection } from "../utils/pendingActionHandler";
 
 /**
@@ -78,15 +78,21 @@ export default function GoogleAuthButton({
   const navigate = useNavigate();
   const location = useLocation();
   const { loginUser, loginEmployer } = useAuth();
+  const { resolvedTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
 
   const isEmployer = role === "employer";
-  const defaultLabel =
-    mode === "register" ? "Continue with Google" : "Sign in with Google";
-  const buttonText = label || defaultLabel;
 
-  const handleGoogleSuccess = async (tokenResponse) => {
+  const handleCredentialResponse = async (credentialResponse) => {
     if (isLoading || disabled) return;
+    const idToken = credentialResponse?.credential;
+    if (!idToken) {
+      if (onError) {
+        onError("Google authentication did not provide a valid credential. Please try again.");
+      }
+      return;
+    }
+
     setIsLoading(true);
     if (onError) onError("");
 
@@ -96,7 +102,9 @@ export default function GoogleAuthButton({
         : `${API_BASE_URL}/user/google-login`;
 
       const { data } = await axios.post(endpoint, {
-        token: tokenResponse.access_token,
+        idToken,
+        token: idToken,
+        credential: idToken,
       });
 
       if (isEmployer) {
@@ -129,70 +137,50 @@ export default function GoogleAuthButton({
     }
   };
 
-  const handleGoogleError = (errorResponse) => {
+  const handleGoogleError = () => {
     setIsLoading(false);
-    console.warn("Google OAuth Trigger Error:", errorResponse);
+    console.warn("Google Sign-In failed or popup was closed.");
     if (onError) {
-      if (errorResponse?.error === "popup_closed_by_user") {
-        onError("Google Sign-In was cancelled.");
-      } else if (errorResponse?.error === "access_denied") {
-        onError("Google Sign-In access was denied.");
-      } else {
-        onError("Google authentication encountered an error. Please try again.");
-      }
+      onError("Google Sign-In was cancelled or failed. Please try again.");
     }
   };
 
-  const handleNonOAuthError = (nonOAuthError) => {
-    setIsLoading(false);
-    console.warn("Google Non-OAuth Error:", nonOAuthError);
-    if (onError) {
-      if (nonOAuthError?.type === "popup_closed") {
-        onError("Google Sign-In window was closed before completion.");
-      } else if (nonOAuthError?.type === "popup_failed_to_open") {
-        onError("Popup was blocked by your browser. Please allow popups for Google authentication.");
-      } else {
-        onError("Google authentication could not be completed. Please try again.");
-      }
-    }
-  };
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-  const triggerLogin = useGoogleLogin({
-    onSuccess: handleGoogleSuccess,
-    onError: handleGoogleError,
-    onNonOAuthError: handleNonOAuthError,
-  });
-
-  const handleClick = (e) => {
-    e.preventDefault();
-    if (disabled || isLoading) return;
-    try {
-      triggerLogin();
-    } catch (err) {
-      console.error("Trigger Google Login error:", err);
-      if (onError) onError("Failed to launch Google authentication.");
-    }
-  };
+  if (!googleClientId) {
+    return (
+      <div
+        className={`w-full py-3 px-4 rounded-xl border border-dashed border-[var(--theme-border)] text-center text-xs text-[var(--theme-text-muted)] bg-[var(--theme-surface-elevated)] ${className}`}
+      >
+        Google authentication is currently unavailable (Client ID not configured).
+      </div>
+    );
+  }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={disabled || isLoading}
-      aria-label={buttonText}
-      className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all shadow-xs flex items-center justify-center gap-3 cursor-pointer select-none border bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border-[var(--theme-border-silver)] text-[var(--theme-text)] hover:scale-[1.005] active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-silver)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ${className}`}
+    <div
+      className={`w-full flex items-center justify-center min-h-[44px] ${
+        disabled ? "pointer-events-none opacity-50" : ""
+      } ${className}`}
     >
       {isLoading ? (
-        <>
+        <div className="w-full py-3 px-4 rounded-xl font-medium text-xs sm:text-sm tracking-wide shadow-xs flex items-center justify-center gap-3 border bg-[var(--theme-surface-elevated)] border-[var(--theme-border-silver)] text-[var(--theme-text-muted)]">
           <Loader2 className="w-4 h-4 animate-spin text-[var(--theme-text-muted)]" />
           <span>Connecting to Google...</span>
-        </>
+        </div>
       ) : (
-        <>
-          <GoogleIcon className="w-4 h-4 shrink-0" />
-          <span>{buttonText}</span>
-        </>
+        <div className="w-full flex justify-center [&>div]:!w-full [&_iframe]:!w-full [&>div>div]:!w-full">
+          <GoogleLogin
+            onSuccess={handleCredentialResponse}
+            onError={handleGoogleError}
+            theme={resolvedTheme === "light" ? "outline" : "filled_black"}
+            size="large"
+            shape="rectangular"
+            text={mode === "register" ? "signup_with" : "signin_with"}
+            width="100%"
+          />
+        </div>
       )}
-    </button>
+    </div>
   );
 }

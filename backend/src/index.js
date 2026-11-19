@@ -20,6 +20,11 @@ import { generalApiLimiter } from './middleware/rateLimiter.js';
 
 const app = express();
 
+// Render and production reverse-proxy configuration:
+// Trust the first-hop reverse proxy (Render load balancer/proxy) to correctly identify client IPs
+// from the X-Forwarded-For header, preventing express-rate-limit ERR_ERL_UNEXPECTED_X_FORWARDED_FOR errors.
+app.set("trust proxy", 1);
+
 // Security Headers with Cross-Origin Resource Policy enabled for assets
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
