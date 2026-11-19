@@ -1,10 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Briefcase, PlusCircle, LayoutDashboard, Sparkles } from "lucide-react";
 import { useAuth } from "../../routes/Context";
+import { useProtectedAction } from "../../context/ProtectedActionContext";
 
 export default function UniversalCTA() {
+  const navigate = useNavigate();
   const { user, employer, admin, role, authStatus } = useAuth();
+  const { executeProtectedAction } = useProtectedAction();
 
   const isCandidateLoggedIn =
     authStatus === "authenticated" &&
@@ -12,6 +15,18 @@ export default function UniversalCTA() {
   const isEmployerLoggedIn =
     authStatus === "authenticated" &&
     (role === "employer" || Boolean(employer && !admin));
+
+  const handlePostJobClick = (e) => {
+    e.preventDefault();
+    executeProtectedAction({
+      action: "post_job",
+      requiredRole: "employer",
+      title: "Sign in or create an Employer account to publish job opportunities",
+      subtitle: "Verified employer credentials are required to post requisitions and manage recruitment.",
+      returnUrl: "/createjob",
+      onExecute: () => navigate("/createjob"),
+    });
+  };
 
   return (
     <section
@@ -49,13 +64,14 @@ export default function UniversalCTA() {
             </Link>
 
             {/* Employer Primary Action */}
-            <Link
-              to={isEmployerLoggedIn ? "/createjob" : "/employerregisteroption"}
-              className="inline-flex items-center gap-2 px-6 py-3.5 min-h-[46px] rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] hover:border-[var(--theme-gold)] text-[var(--theme-text)] font-bold text-sm transition"
+            <button
+              type="button"
+              onClick={handlePostJobClick}
+              className="inline-flex items-center gap-2 px-6 py-3.5 min-h-[46px] rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] hover:border-[var(--theme-gold)] text-[var(--theme-text)] font-bold text-sm transition cursor-pointer"
             >
               <PlusCircle className="w-4 h-4 text-[var(--theme-gold)] shrink-0" />
               <span>Post a Job</span>
-            </Link>
+            </button>
 
             {/* Auth / Account Shortcut */}
             {isCandidateLoggedIn ? (

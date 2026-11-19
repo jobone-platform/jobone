@@ -5,6 +5,7 @@ import { KeyRound, Mail, ArrowRight, Loader2, RefreshCw, CheckCircle2, AlertTria
 import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../routes/Context";
 import AuthLayout from "../components/AuthLayout";
+import { handlePostAuthRedirection } from "../utils/pendingActionHandler";
 
 export default function UserOTP() {
   const navigate = useNavigate();
@@ -38,6 +39,9 @@ export default function UserOTP() {
   // Handle browser back button: discard pending registration
   useEffect(() => {
     const handlePopState = () => {
+      try {
+        sessionStorage.removeItem("jobone_pending_action");
+      } catch {}
       if (email) {
         try {
           if (navigator.sendBeacon) {
@@ -64,6 +68,9 @@ export default function UserOTP() {
   const handleCancelRegistration = async () => {
     if (cancelling) return;
     setCancelling(true);
+    try {
+      sessionStorage.removeItem("jobone_pending_action");
+    } catch {}
     try {
       if (email) {
         await axios.post(`${API_BASE_URL}/user/cancel-registration`, {
@@ -137,12 +144,20 @@ export default function UserOTP() {
 
       setMessage(
         res.data.alreadyVerified
-          ? "Account verified! Redirecting to your candidate dashboard..."
-          : "Verification successful! Welcome to JobOne. Redirecting to dashboard..."
+          ? "Account verified! Resuming your session..."
+          : "Verification successful! Welcome to JobOne. Resuming..."
       );
       setIsError(false);
 
-      setTimeout(() => navigate("/userdashboard"), 1100);
+      setTimeout(async () => {
+        await handlePostAuthRedirection({
+          role: "jobseeker",
+          token: res.data.token,
+          navigate,
+          fallbackPath: "/userdashboard",
+          stateFromLocation: location.state,
+        });
+      }, 1000);
     } catch (err) {
       const errMsg =
         err.response?.data?.message ||

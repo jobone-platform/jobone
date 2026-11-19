@@ -29,6 +29,7 @@ import axios from "axios";
 import CompanyDisplay from "./CompanyDisplay";
 import ApplyModal from "./ApplyModal";
 import { API_BASE_URL } from "../config/api";
+import { useProtectedAction } from "../context/ProtectedActionContext";
 
 export default function JobDetailsModal({ job, onClose }) {
   const navigate = useNavigate();
@@ -72,6 +73,8 @@ export default function JobDetailsModal({ job, onClose }) {
   const validFeatures =
     job.jobFeatures?.filter((f) => f && typeof f === "string" && f.trim() !== "") || [];
 
+  const { executeProtectedAction, saveJobWithAuth } = useProtectedAction();
+
   const handleShare = async () => {
     const url = `${window.location.origin}/apply/${job._id}`;
     if (navigator.clipboard) {
@@ -82,24 +85,45 @@ export default function JobDetailsModal({ job, onClose }) {
   };
 
   const handleToggleSave = async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) {
-      setIsSaved(!isSaved);
-      return;
-    }
     try {
       setSaveLoading(true);
-      await axios.post(
-        `${API_BASE_URL}/user/save-job`,
-        { jobId: job._id },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setIsSaved((prev) => !prev);
-    } catch {
-      setIsSaved((prev) => !prev);
+      const res = await saveJobWithAuth(job._id, job);
+      if (res?.success) {
+        setIsSaved(res.saved);
+      }
     } finally {
       setSaveLoading(false);
     }
+  };
+
+  const handleApplyClick = () => {
+    executeProtectedAction({
+      action: "apply",
+      requiredRole: "jobseeker",
+      title: "Sign in to apply for this job",
+      subtitle: `Create a candidate profile or sign in to submit your verified application for ${job.title}.`,
+      resourceId: job._id,
+      resourceData: job,
+      returnUrl: window.location.pathname + window.location.search,
+      onExecute: () => {
+        setShowApplyModal(true);
+      },
+    });
+  };
+
+  const handleFullPageApply = () => {
+    executeProtectedAction({
+      action: "apply",
+      requiredRole: "jobseeker",
+      title: "Sign in to apply for this job",
+      subtitle: `Create a candidate profile or sign in to submit your verified application for ${job.title}.`,
+      resourceId: job._id,
+      resourceData: job,
+      returnUrl: `/apply/${job._id}`,
+      onExecute: () => {
+        navigate(`/apply/${job._id}`);
+      },
+    });
   };
 
   return (
@@ -593,7 +617,7 @@ export default function JobDetailsModal({ job, onClose }) {
             <div className="flex items-center gap-2 sm:gap-3">
               <button
                 type="button"
-                onClick={() => navigate(`/apply/${job._id}`)}
+                onClick={handleFullPageApply}
                 className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-border text-foreground/80 hover:text-foreground hover:bg-surface-2 text-xs font-semibold transition-colors cursor-pointer"
               >
                 <span>Full Application Page</span>
@@ -602,7 +626,7 @@ export default function JobDetailsModal({ job, onClose }) {
 
               <button
                 type="button"
-                onClick={() => setShowApplyModal(true)}
+                onClick={handleApplyClick}
                 className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm flex items-center gap-2 hover:bg-[var(--theme-gold-bright)] active:scale-[0.99] transition shadow-md cursor-pointer"
               >
                 <Send size={15} className="text-black" />

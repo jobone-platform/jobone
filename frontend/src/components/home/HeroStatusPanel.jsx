@@ -18,6 +18,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useAuth } from "../../routes/Context";
+import { useProtectedAction } from "../../context/ProtectedActionContext";
 
 // --- CANDIDATE BENEFIT DETAILS (4 Balanced Cards) ---
 const CANDIDATE_BENEFITS = [
@@ -99,6 +100,44 @@ export default function HeroStatusPanel({ className = "" }) {
 
   const employerDisplayName =
     employer?.companyName || employer?.name || (employer?.email ? employer.email.split("@")[0] : "Employer");
+
+  const { executeProtectedAction } = useProtectedAction();
+
+  const handleResumeBuilderClick = (e) => {
+    e.preventDefault();
+    executeProtectedAction({
+      action: "resume_builder",
+      requiredRole: "jobseeker",
+      title: "Sign in to access ATS Resume Builder",
+      subtitle: "Create a candidate profile or sign in to build and analyze formatted resumes.",
+      returnUrl: "/resume-builder",
+      onExecute: () => navigate("/resume-builder"),
+    });
+  };
+
+  const handlePostJobClick = (e) => {
+    e.preventDefault();
+    executeProtectedAction({
+      action: "post_job",
+      requiredRole: "employer",
+      title: "Sign in or create an Employer account to publish job opportunities",
+      subtitle: "Verified employer credentials are required to post requisitions and manage recruitment.",
+      returnUrl: "/createjob",
+      onExecute: () => navigate("/createjob"),
+    });
+  };
+
+  const handleSearchCandidatesClick = (e) => {
+    e.preventDefault();
+    executeProtectedAction({
+      action: "search_candidates",
+      requiredRole: "employer",
+      title: "Sign in to access Candidate Talent Search",
+      subtitle: "Verified employer credentials are required to search candidate databases.",
+      returnUrl: "/candidates",
+      onExecute: () => navigate("/candidates"),
+    });
+  };
 
   return (
     <div
@@ -331,17 +370,19 @@ export default function HeroStatusPanel({ className = "" }) {
 
                   <div className="flex items-center justify-between text-xs text-[var(--theme-text-muted)] px-1 pt-0.5">
                     {/* More action: ATS Resume Builder */}
-                    <Link
-                      to="/resume-builder"
-                      className="hover:text-[var(--theme-gold)] transition flex items-center gap-1 text-[11px] font-medium"
+                    <button
+                      type="button"
+                      onClick={handleResumeBuilderClick}
+                      className="hover:text-[var(--theme-gold)] transition flex items-center gap-1 text-[11px] font-medium cursor-pointer"
                     >
                       <FileText className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       <span>ATS Resume Builder</span>
-                    </Link>
+                    </button>
 
                     {/* Candidate Sign In */}
                     <Link
                       to="/login"
+                      state={{ tab: "user" }}
                       className="text-[var(--theme-text)] hover:text-[var(--theme-gold)] transition font-bold inline-flex items-center gap-1 text-[11px]"
                     >
                       <LogIn className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
@@ -469,17 +510,18 @@ export default function HeroStatusPanel({ className = "" }) {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     {/* More action: Post a Job */}
-                    <Link
-                      to="/createjob"
+                    <button
+                      type="button"
+                      onClick={handlePostJobClick}
                       className="px-3 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:bg-[var(--theme-gold-bright)] transition cursor-pointer"
                     >
                       <span>Post a Job</span>
                       <ArrowRight className="w-3.5 h-3.5 text-black" aria-hidden="true" />
-                    </Link>
+                    </button>
 
                     {/* Employer Sign Up */}
                     <Link
-                      to="/employerregister"
+                      to="/employerregisteroption"
                       className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
                     >
                       <UserPlus className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
@@ -489,17 +531,19 @@ export default function HeroStatusPanel({ className = "" }) {
 
                   <div className="flex items-center justify-between text-xs text-[var(--theme-text-muted)] px-1 pt-0.5">
                     {/* More action: Search Candidates */}
-                    <Link
-                      to="/candidates"
-                      className="hover:text-[var(--theme-gold)] transition flex items-center gap-1 text-[11px] font-medium"
+                    <button
+                      type="button"
+                      onClick={handleSearchCandidatesClick}
+                      className="hover:text-[var(--theme-gold)] transition flex items-center gap-1 text-[11px] font-medium cursor-pointer"
                     >
                       <Users className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />
                       <span>Search Candidates</span>
-                    </Link>
+                    </button>
 
                     {/* Employer Sign In */}
                     <Link
                       to="/login"
+                      state={{ tab: "employer" }}
                       className="text-[var(--theme-text)] hover:text-[var(--theme-gold)] transition font-bold inline-flex items-center gap-1 text-[11px]"
                     >
                       <LogIn className="w-3.5 h-3.5 text-[var(--theme-gold)]" aria-hidden="true" />

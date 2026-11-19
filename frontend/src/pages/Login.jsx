@@ -6,6 +6,7 @@ import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../routes/Context";
 import AuthLayout from "../components/AuthLayout";
 import GoogleAuthButton, { AuthDivider } from "../components/GoogleAuthButton";
+import { handlePostAuthRedirection } from "../utils/pendingActionHandler";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -106,11 +107,23 @@ export default function Login() {
       if (activeTab === "employer") {
         loginEmployer(data.token, data);
         localStorage.setItem("lastEmployerEmail", normalizedEmail);
-        navigate(redirectPath || "/employerdashboard");
+        await handlePostAuthRedirection({
+          role: "employer",
+          token: data.token,
+          navigate,
+          fallbackPath: "/employerdashboard",
+          stateFromLocation: location.state,
+        });
       } else {
         loginUser(data.token, data);
         localStorage.setItem("lastJobseekerEmail", normalizedEmail);
-        navigate(redirectPath || "/userdashboard");
+        await handlePostAuthRedirection({
+          role: "jobseeker",
+          token: data.token,
+          navigate,
+          fallbackPath: "/userdashboard",
+          stateFromLocation: location.state,
+        });
       }
     } catch (err) {
       setError(err.response?.data?.message || "Invalid email or password.");

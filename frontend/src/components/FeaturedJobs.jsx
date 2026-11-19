@@ -15,6 +15,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { API_BASE_URL } from "../config/api";
+import { useProtectedAction } from "../context/ProtectedActionContext";
 import CompanyDisplay from "./CompanyDisplay";
 import JobDetailsModal from "./JobDetailsModal";
 
@@ -30,6 +31,19 @@ export default function FeaturedJobs() {
       return [];
     }
   });
+
+  const { saveJobWithAuth } = useProtectedAction();
+
+  // Keep savedJobIds in sync with localStorage updates
+  useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        setSavedJobIds(JSON.parse(localStorage.getItem("jobone_saved_jobs") || "[]"));
+      } catch {}
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -67,19 +81,16 @@ export default function FeaturedJobs() {
     };
   }, []);
 
-  const toggleBookmark = (e, jobId) => {
+  const toggleBookmark = async (e, job) => {
     e.stopPropagation();
-    setSavedJobIds((prev) => {
-      const next = prev.includes(jobId)
-        ? prev.filter((id) => id !== jobId)
-        : [...prev, jobId];
-      try {
-        localStorage.setItem("jobone_saved_jobs", JSON.stringify(next));
-      } catch (err) {
-        console.error("Error saving bookmark:", err);
-      }
-      return next;
-    });
+    const res = await saveJobWithAuth(job._id, job);
+    if (res?.success) {
+      setSavedJobIds((prev) =>
+        res.saved
+          ? Array.from(new Set([...prev, job._id]))
+          : prev.filter((id) => id !== job._id)
+      );
+    }
   };
 
   const formatTimeAgo = (dateString) => {
@@ -311,7 +322,7 @@ export default function FeaturedJobs() {
 
                       <button
                         type="button"
-                        onClick={(e) => toggleBookmark(e, job._id)}
+                        onClick={(e) => toggleBookmark(e, job)}
                         className={`p-2 rounded-lg border transition-colors shrink-0 cursor-pointer ${
                           isBookmarked
                             ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)]"

@@ -29,7 +29,7 @@ import { useAuth } from "../routes/Context";
 export default function ApplyPage() {
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const { user, token } = useAuth();
+  const { user, token, authStatus, role, logout } = useAuth();
 
   // Job & Similar Jobs State
   const [job, setJob] = useState(null);
@@ -229,6 +229,116 @@ export default function ApplyPage() {
         >
           Explore Other Opportunities
         </Link>
+      </div>
+    );
+  }
+
+  const isCandidateRole = role === "jobseeker" || role === "candidate";
+
+  // Enforce Candidate Authentication on Direct Access to Application Gateway
+  if (authStatus !== "loading" && (!activeToken || !isCandidateRole)) {
+    const isEmployer = role === "employer";
+    return (
+      <div className="min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] font-sans antialiased py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <div className="max-w-md w-full p-8 rounded-3xl border border-[var(--theme-gold-border)] bg-[var(--theme-surface-elevated)] shadow-2xl text-center space-y-6">
+          <div className="w-14 h-14 rounded-2xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] flex items-center justify-center mx-auto shadow-sm">
+            <ShieldCheck className="w-7 h-7" />
+          </div>
+
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
+            Candidate Authentication Required
+          </span>
+
+          <div className="space-y-2">
+            <h2 className="text-xl sm:text-2xl font-black text-[var(--theme-text)]">
+              {isEmployer ? "Candidate Account Required" : "Sign in to Apply"}
+            </h2>
+            <p className="text-xs text-[var(--theme-text-muted)] leading-relaxed">
+              {isEmployer ? (
+                <>
+                  You are currently signed in as an <strong>Employer</strong>. Submitting direct applications to{" "}
+                  <strong>{job.title}</strong> at <strong>{companyName}</strong> requires an active Candidate account.
+                </>
+              ) : (
+                <>
+                  You are viewing the application dossier for <strong>{job.title}</strong> at <strong>{companyName}</strong>.
+                  Please sign in or create your candidate profile to continue.
+                </>
+              )}
+            </p>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            {isEmployer ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    navigate("/login", {
+                      state: {
+                        tab: "user",
+                        from: { pathname: `/apply/${jobId}` },
+                        pendingAction: { action: "apply", requiredRole: "jobseeker", resourceId: jobId },
+                      },
+                    });
+                  }}
+                  className="w-full py-3.5 px-5 rounded-2xl bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-extrabold text-sm tracking-wide transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Switch to Candidate Account</span>
+                  <ArrowRight className="w-4 h-4 text-black" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/employerdashboard")}
+                  className="w-full py-3 px-5 rounded-2xl bg-[var(--theme-card)] hover:bg-[var(--theme-surface)] text-[var(--theme-text)] border border-[var(--theme-border)] text-xs font-bold transition cursor-pointer"
+                >
+                  Return to Employer Dashboard
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigate("/login", {
+                      state: {
+                        tab: "user",
+                        from: { pathname: `/apply/${jobId}` },
+                        pendingAction: { action: "apply", requiredRole: "jobseeker", resourceId: jobId },
+                      },
+                    });
+                  }}
+                  className="w-full py-3.5 px-5 rounded-2xl bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-extrabold text-sm tracking-wide transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Sign In as Candidate</span>
+                  <ArrowRight className="w-4 h-4 text-black" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigate("/userregister", {
+                      state: {
+                        pendingAction: { action: "apply", requiredRole: "jobseeker", resourceId: jobId },
+                      },
+                    });
+                  }}
+                  className="w-full py-3 px-5 rounded-2xl bg-[var(--theme-card)] hover:bg-[var(--theme-surface)] text-[var(--theme-text)] border border-[var(--theme-border)] hover:border-[var(--theme-gold)] text-xs font-bold transition cursor-pointer"
+                >
+                  Create Candidate Account
+                </button>
+              </>
+            )}
+
+            <button
+              type="button"
+              onClick={() => navigate("/jobs")}
+              className="w-full py-2.5 text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition cursor-pointer text-center"
+            >
+              Back to Job Search
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

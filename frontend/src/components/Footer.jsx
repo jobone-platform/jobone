@@ -1,5 +1,6 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useProtectedAction } from "../context/ProtectedActionContext";
 import {
   Briefcase,
   Building2,
@@ -25,6 +26,8 @@ import { useTheme } from "../routes/Context";
 
 export default function Footer() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { executeProtectedAction } = useProtectedAction();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -223,20 +226,40 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/resume-builder"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      executeProtectedAction({
+                        action: "resume_builder",
+                        requiredRole: "jobseeker",
+                        title: "Sign in to access ATS Resume Builder",
+                        subtitle: "Create a candidate profile or sign in to build and analyze formatted resumes.",
+                        returnUrl: "/resume-builder",
+                        onExecute: () => navigate("/resume-builder"),
+                      });
+                    }}
+                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block cursor-pointer text-left"
                   >
                     ATS Resume Builder
-                  </Link>
+                  </button>
                 </li>
                 <li>
-                  <Link
-                    to="/myapplications"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      executeProtectedAction({
+                        action: "applications",
+                        requiredRole: "jobseeker",
+                        title: "Sign in to view Application Tracking",
+                        subtitle: "Create a candidate account or sign in to track your submissions and interview schedules.",
+                        returnUrl: "/myapplications",
+                        onExecute: () => navigate("/myapplications"),
+                      });
+                    }}
+                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block cursor-pointer text-left"
                   >
                     Application Tracking
-                  </Link>
+                  </button>
                 </li>
                 <li>
                   <Link
@@ -257,20 +280,40 @@ export default function Footer() {
               </h3>
               <ul className="space-y-2.5 text-sm font-medium">
                 <li>
-                  <Link
-                    to="/createjob"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      executeProtectedAction({
+                        action: "post_job",
+                        requiredRole: "employer",
+                        title: "Sign in or create an Employer account to publish job opportunities",
+                        subtitle: "Verified employer credentials are required to post requisitions and manage recruitment.",
+                        returnUrl: "/createjob",
+                        onExecute: () => navigate("/createjob"),
+                      });
+                    }}
+                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block cursor-pointer text-left"
                   >
                     Post a Job
-                  </Link>
+                  </button>
                 </li>
                 <li>
-                  <Link
-                    to="/candidates"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      executeProtectedAction({
+                        action: "search_candidates",
+                        requiredRole: "employer",
+                        title: "Sign in to access Candidate Talent Search",
+                        subtitle: "Verified employer credentials are required to search candidate databases.",
+                        returnUrl: "/candidates",
+                        onExecute: () => navigate("/candidates"),
+                      });
+                    }}
+                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block cursor-pointer text-left"
                   >
                     Candidate Search
-                  </Link>
+                  </button>
                 </li>
                 <li>
                   <Link
@@ -281,12 +324,22 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/employerdashboard"
-                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      executeProtectedAction({
+                        action: "employer_portal",
+                        requiredRole: "employer",
+                        title: "Sign in to access Employer Recruitment Console",
+                        subtitle: "Verified employer credentials are required to view dashboard telemetry and pipeline analytics.",
+                        returnUrl: "/employerdashboard",
+                        onExecute: () => navigate("/employerdashboard"),
+                      });
+                    }}
+                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors inline-block cursor-pointer text-left"
                   >
                     Hiring Console
-                  </Link>
+                  </button>
                 </li>
                 <li>
                   <Link

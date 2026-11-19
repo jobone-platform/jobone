@@ -11,6 +11,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import EmployerProtectedRoute from "./components/EmployerProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import GlobalNotificationPopup from "./components/GlobalNotificationPopup";
+import ProtectedAuthModal from "./components/ProtectedAuthModal";
+import RoleMismatchModal from "./components/RoleMismatchModal";
+import ProtectedActionToast from "./components/ProtectedActionToast";
 
 // Lightweight fallback spinner for code-split route transitions
 const RouteFallback = () => (
@@ -220,6 +223,9 @@ const AppLayout = ({ children }) => {
       {!isStandalone && <Navbar />}
       {!isStandalone && <MobileBottomNav />}
       {!isStandalone && <GlobalNotificationPopup />}
+      <ProtectedAuthModal />
+      <RoleMismatchModal />
+      <ProtectedActionToast />
       <main id="main-content" tabIndex="-1" className={`outline-none min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] transition-colors duration-150 ${actualPadding}`}>
         {children}
       </main>

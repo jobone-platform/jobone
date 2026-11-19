@@ -23,11 +23,13 @@ import {
 } from "lucide-react";
 import LogoJobOne from "./LogoJobOne";
 import { useAuth, useTheme } from "../routes/Context";
+import { useProtectedAction } from "../context/ProtectedActionContext";
 
 export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, employer, admin, logout, authStatus, role } = useAuth();
+  const { executeProtectedAction } = useProtectedAction();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -412,13 +414,32 @@ export default function NavBar() {
                 </div>
               </div>
             ) : (
-              /* If Guest: Sign In */
-              <Link
-                to="/login"
-                className="px-4 py-1.5 rounded-full text-xs font-bold bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] transition shadow-xs whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)]"
-              >
-                Sign In
-              </Link>
+              /* If Guest: Post a Job Shortcut + Sign In */
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    executeProtectedAction({
+                      action: "post_job",
+                      requiredRole: "employer",
+                      title: "Sign in or create an Employer account to publish job opportunities",
+                      subtitle: "Verified employer credentials are required to post requisitions and manage recruitment.",
+                      returnUrl: "/createjob",
+                      onExecute: () => navigate("/createjob"),
+                    });
+                  }}
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition cursor-pointer"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
+                  <span>Post a Job</span>
+                </button>
+                <Link
+                  to="/login"
+                  className="px-4 py-1.5 rounded-full text-xs font-bold bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] transition shadow-xs whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)]"
+                >
+                  Sign In
+                </Link>
+              </div>
             )}
           </div>
 
@@ -545,14 +566,24 @@ export default function NavBar() {
                     <Briefcase className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                     <span>Find Jobs</span>
                   </Link>
-                  <Link
-                    to="/createjob"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="py-3 px-3 rounded-2xl font-bold text-xs border border-[var(--theme-gold-border)] bg-[var(--theme-card)] text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] flex items-center justify-center gap-1.5 transition text-center"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      executeProtectedAction({
+                        action: "post_job",
+                        requiredRole: "employer",
+                        title: "Sign in or create an Employer account to publish job opportunities",
+                        subtitle: "Verified employer credentials are required to post requisitions and manage recruitment.",
+                        returnUrl: "/createjob",
+                        onExecute: () => navigate("/createjob"),
+                      });
+                    }}
+                    className="py-3 px-3 rounded-2xl font-bold text-xs border border-[var(--theme-gold-border)] bg-[var(--theme-card)] text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] flex items-center justify-center gap-1.5 transition text-center cursor-pointer"
                   >
                     <Building2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                     <span>Post a Job</span>
-                  </Link>
+                  </button>
                 </div>
 
                 {/* Theme Switcher (Light / Dark / Default) */}

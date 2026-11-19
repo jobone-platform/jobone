@@ -6,6 +6,7 @@ import "./index.css";
 import App from "./App.jsx";
 
 import { ThemeProvider, AuthProvider } from "./routes/Context.jsx";
+import { ProtectedActionProvider } from "./context/ProtectedActionContext.jsx";
 
 // Cross-platform safe localStorage polyfill for Safari Private Browsing & storage quota limits
 try {
@@ -99,7 +100,9 @@ createRoot(document.getElementById("root")).render(
     <StrictMode>
       <ThemeProvider>
         <AuthProvider>
-          <App />
+          <ProtectedActionProvider>
+            <App />
+          </ProtectedActionProvider>
         </AuthProvider>
       </ThemeProvider>
     </StrictMode>
