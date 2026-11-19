@@ -54,7 +54,7 @@ export default function AdminAuditDetailDrawer({ event, isOpen, onClose }) {
       case "PENDING":
         return "bg-amber-500/10 text-amber-400 border border-amber-500/20";
       default:
-        return "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)]";
+        return "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-gold-border)]";
     }
   };
 
@@ -72,7 +72,7 @@ export default function AdminAuditDetailDrawer({ event, isOpen, onClose }) {
           {/* Drawer Header */}
           <div className="p-5 sm:p-6 border-b border-[var(--theme-border)] flex items-center justify-between gap-4 bg-[var(--theme-surface-elevated)]/40">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-text)] shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-text)] shrink-0">
                 {getEntityIcon(event.entityType)}
               </div>
               <div className="min-w-0">
@@ -204,7 +204,7 @@ export default function AdminAuditDetailDrawer({ event, isOpen, onClose }) {
 
             {/* Immutability Notice */}
             <div className="p-3.5 rounded-xl bg-[var(--theme-surface)] border border-dashed border-[var(--theme-border)] flex items-start gap-2.5 text-xs font-mono text-[var(--theme-text-muted)]">
-              <Lock size={15} className="shrink-0 mt-0.5 text-[#C0C0C0]" />
+              <Lock size={15} className="shrink-0 mt-0.5 text-[var(--theme-gold)]" />
               <p>
                 This audit log is verified immutable. Administrative deletion or client-side tampering is strictly blocked by platform governance policies.
               </p>

@@ -87,7 +87,7 @@ export default function EmployerLayout({
     "pending";
 
   return (
-    <div className="min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] flex flex-col lg:flex-row transition-colors duration-200 antialiased selection:bg-[var(--theme-text)] selection:text-[var(--theme-bg)] overflow-x-hidden relative">
+    <div className="min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] flex flex-col lg:flex-row transition-colors duration-200 antialiased selection:bg-[var(--theme-text)] selection:text-[var(--theme-bg)] overflow-x-clip relative">
       {/* Skip to Main Content Link for accessibility */}
       <a
         href="#employer-main-content"

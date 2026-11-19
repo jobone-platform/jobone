@@ -346,7 +346,7 @@ export default function EditJob() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity shadow-sm"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:bg-[var(--theme-gold-bright)] disabled:opacity-50 transition-all shadow-md hover:shadow-lg"
             >
               {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               <span>Save Changes</span>
@@ -357,7 +357,7 @@ export default function EditJob() {
         {/* 1. Core Fundamentals */}
         <section className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
           <h2 className="text-sm font-bold text-[var(--theme-text)] flex items-center gap-2 border-b border-[var(--theme-border)] pb-3">
-            <Briefcase size={16} className="text-[var(--theme-accent-silver)]" />
+            <Briefcase size={16} className="text-[var(--theme-gold)]" />
             <span>Role Fundamentals</span>
           </h2>
 
@@ -486,8 +486,8 @@ export default function EditJob() {
                       onClick={() => toggleArrayItem("jobType", type)}
                       className={`p-2.5 rounded-xl border text-xs font-semibold text-center transition-all ${
                         sel
-                          ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-accent-silver)] text-[var(--theme-text)] font-bold shadow-sm"
-                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)]"
+                          ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold shadow-sm"
+                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-gold-border)]"
                       }`}
                     >
                       {type}
@@ -502,7 +502,7 @@ export default function EditJob() {
         {/* 2. Workplace & Compensation */}
         <section className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
           <h2 className="text-sm font-bold text-[var(--theme-text)] flex items-center gap-2 border-b border-[var(--theme-border)] pb-3">
-            <MapPin size={16} className="text-[var(--theme-accent-silver)]" />
+            <MapPin size={16} className="text-[var(--theme-gold)]" />
             <span>Workplace & Compensation</span>
           </h2>
 
@@ -521,8 +521,8 @@ export default function EditJob() {
                       onClick={() => toggleArrayItem("mode", m)}
                       className={`p-2.5 rounded-xl border text-xs font-semibold text-center transition-all ${
                         sel
-                          ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-accent-silver)] text-[var(--theme-text)] font-bold shadow-sm"
-                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)]"
+                          ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold shadow-sm"
+                          : "border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:border-[var(--theme-gold-border)]"
                       }`}
                     >
                       {m}
@@ -608,7 +608,7 @@ export default function EditJob() {
         {/* 3. Description & Responsibilities */}
         <section className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
           <h2 className="text-sm font-bold text-[var(--theme-text)] flex items-center gap-2 border-b border-[var(--theme-border)] pb-3">
-            <FileText size={16} className="text-[var(--theme-accent-silver)]" />
+            <FileText size={16} className="text-[var(--theme-gold)]" />
             <span>Description & Deliverables</span>
           </h2>
 
@@ -660,7 +660,7 @@ export default function EditJob() {
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity shadow-sm"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:bg-[var(--theme-gold-bright)] disabled:opacity-50 transition-all shadow-md hover:shadow-lg"
           >
             {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
             <span>Save & Apply Updates</span>

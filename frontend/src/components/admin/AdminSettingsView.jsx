@@ -153,7 +153,7 @@ export default function AdminSettingsView({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--theme-border)]">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-accent-silver)]">
+            <div className="w-9 h-9 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <Settings size={18} />
             </div>
             <div>
@@ -188,11 +188,11 @@ export default function AdminSettingsView({
                 onClick={() => setActiveSubTab(tab.id)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-mono font-semibold flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer ${
                   isActive
-                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-xs"
+                    ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shadow-xs font-bold"
                     : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface)]"
                 }`}
               >
-                <Icon size={14} className={isActive ? "text-[#C0C0C0]" : ""} />
+                <Icon size={14} className={isActive ? "text-[var(--theme-gold)]" : ""} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -235,7 +235,7 @@ export default function AdminSettingsView({
                 <span className="text-[var(--theme-text-muted)] block text-[10px] uppercase">
                   Assigned RBAC Role
                 </span>
-                <span className="px-2 py-0.5 rounded-md bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold uppercase text-[10px] inline-block">
+                <span className="px-2 py-0.5 rounded-md bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold uppercase text-[10px] inline-block">
                   {adminInfo?.role}
                 </span>
               </div>
@@ -464,7 +464,7 @@ export default function AdminSettingsView({
                       <td className="py-3 px-4 font-bold text-[var(--theme-text)]">{adm.name}</td>
                       <td className="py-3 px-4 text-[var(--theme-text-muted)]">{adm.email}</td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold uppercase">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold uppercase">
                           {adm.role}
                         </span>
                       </td>
@@ -476,7 +476,7 @@ export default function AdminSettingsView({
                               setEditingAdmin(adm);
                               setEditRole(adm.role);
                             }}
-                            className="text-xs text-[var(--theme-text)] hover:underline cursor-pointer"
+                            className="text-xs text-[var(--theme-gold)] hover:underline cursor-pointer"
                           >
                             Change Role
                           </button>
@@ -521,17 +521,17 @@ export default function AdminSettingsView({
                 onClick={() => setTheme("dark")}
                 className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
                   theme === "dark"
-                    ? "bg-[#050505] border-[#FFFFFF] shadow-md ring-2 ring-[var(--theme-text)]/20"
+                    ? "bg-[#050505] border-[var(--theme-gold)] shadow-md ring-2 ring-[var(--theme-gold)]/20"
                     : "bg-[#050505] border-[#262626] hover:border-[#404040]"
                 }`}
               >
                 <div className="flex items-center justify-between mb-3 text-white">
                   <Moon size={18} />
-                  {theme === "dark" && <Check size={16} className="text-white" />}
+                  {theme === "dark" && <Check size={16} className="text-[var(--theme-gold)]" />}
                 </div>
                 <h4 className="font-bold text-sm text-white font-display">Deep Carbon (Dark)</h4>
                 <p className="text-[11px] text-[#A3A3A3] mt-1 font-mono">
-                  #050505 canvas with #111111 surfaces and pure silver accents
+                  #050505 canvas with #101010 surfaces and gold accents
                 </p>
               </button>
 
@@ -541,17 +541,17 @@ export default function AdminSettingsView({
                 onClick={() => setTheme("light")}
                 className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
                   theme === "light"
-                    ? "bg-[#FFFFFF] border-[#0F172A] shadow-md ring-2 ring-[var(--theme-text)]/20"
+                    ? "bg-[#FFFFFF] border-[var(--theme-gold)] shadow-md ring-2 ring-[var(--theme-gold)]/20"
                     : "bg-[#FFFFFF] border-[#E5E7EB] hover:border-[#94A3B8]"
                 }`}
               >
                 <div className="flex items-center justify-between mb-3 text-neutral-900">
                   <Sun size={18} />
-                  {theme === "light" && <Check size={16} className="text-neutral-900" />}
+                  {theme === "light" && <Check size={16} className="text-[var(--theme-gold)]" />}
                 </div>
                 <h4 className="font-bold text-sm text-neutral-900 font-display">Crisp Light</h4>
                 <p className="text-[11px] text-neutral-600 mt-1 font-mono">
-                  High-contrast off-white canvas with clean slate typography
+                  #F7F7F5 canvas with #FFFFFF surfaces and gold accents
                 </p>
               </button>
 
@@ -561,13 +561,13 @@ export default function AdminSettingsView({
                 onClick={() => setTheme("default")}
                 className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
                   theme === "default"
-                    ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-border-silver)] shadow-md ring-2 ring-[var(--theme-text)]/20"
-                    : "bg-[var(--theme-surface)] border-[var(--theme-border)] hover:border-[var(--theme-border-silver)]"
+                    ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-gold)] shadow-md ring-2 ring-[var(--theme-gold)]/20"
+                    : "bg-[var(--theme-surface)] border-[var(--theme-border)] hover:border-[var(--theme-gold-border)]"
                 }`}
               >
                 <div className="flex items-center justify-between mb-3 text-[var(--theme-text)]">
                   <Monitor size={18} />
-                  {theme === "default" && <Check size={16} className="text-[var(--theme-text)]" />}
+                  {theme === "default" && <Check size={16} className="text-[var(--theme-gold)]" />}
                 </div>
                 <h4 className="font-bold text-sm text-[var(--theme-text)] font-display">
                   System Default
@@ -621,7 +621,7 @@ export default function AdminSettingsView({
                   value={newAdminData.name}
                   onChange={(e) => setNewAdminData({ ...newAdminData, name: e.target.value })}
                   placeholder="e.g. Jane Doe"
-                  className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)]"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)]"
                 />
               </div>
 
@@ -633,7 +633,7 @@ export default function AdminSettingsView({
                   value={newAdminData.email}
                   onChange={(e) => setNewAdminData({ ...newAdminData, email: e.target.value })}
                   placeholder="admin@jobone.com"
-                  className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)]"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)]"
                 />
               </div>
 
@@ -645,7 +645,7 @@ export default function AdminSettingsView({
                   value={newAdminData.password}
                   onChange={(e) => setNewAdminData({ ...newAdminData, password: e.target.value })}
                   placeholder="Minimum 8 characters"
-                  className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)]"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)]"
                 />
               </div>
 
@@ -654,7 +654,7 @@ export default function AdminSettingsView({
                 <select
                   value={newAdminData.role}
                   onChange={(e) => setNewAdminData({ ...newAdminData, role: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)] cursor-pointer"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)] cursor-pointer"
                 >
                   <option value="employerAdmin">Employer & Jobs Admin</option>
                   <option value="jobseekerAdmin">Candidate Talent Admin</option>
@@ -673,7 +673,7 @@ export default function AdminSettingsView({
                 <button
                   type="submit"
                   disabled={createLoading}
-                  className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold hover:opacity-90 disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold hover:bg-[var(--theme-gold-bright)] disabled:opacity-50 transition-colors shadow-md hover:shadow-lg"
                 >
                   {createLoading ? "Creating..." : "Create Account"}
                 </button>
@@ -707,7 +707,7 @@ export default function AdminSettingsView({
               <select
                 value={editRole}
                 onChange={(e) => setEditRole(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)] cursor-pointer"
+                className="w-full px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)] cursor-pointer"
               >
                 <option value="employerAdmin">Employer & Jobs Admin</option>
                 <option value="jobseekerAdmin">Candidate Talent Admin</option>

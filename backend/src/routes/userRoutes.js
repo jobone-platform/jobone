@@ -3,7 +3,8 @@ import {
   createUser, loginUser, updateUser, userDetails, verifyUserOTP, resendUserOTP, cancelUserRegistration, googleLogin,
   getResumeUploadUrl, saveResumeKey, getViewableResumeUrl, getDownloadableResumeUrl, getProfilePicUploadUrl,
   forgotPasswordUser, resetPasswordUser,
-  getJobseekerDocumentUploadUrl, saveJobseekerDocumentKey, getViewableJobseekerDocumentUrl, getDownloadableJobseekerDocumentUrl, deleteJobseekerDocument
+  getJobseekerDocumentUploadUrl, saveJobseekerDocumentKey, getViewableJobseekerDocumentUrl, getDownloadableJobseekerDocumentUrl, deleteJobseekerDocument,
+  toggleSaveJob, getSavedJobs
 } from "../controllers/userControllers.js";
 import { protectAny, protect } from "../middleware/authorization.js";
 
@@ -35,6 +36,8 @@ router.post("/verifyotp", otpVerifyLimiter, verifyUserOTP);
 router.post("/resend-otp", otpResendLimiter, resendUserOTP);
 router.post("/cancel-registration", cancelUserRegistration);
 router.post("/google-login", authLimiter, googleLogin);
+router.post("/save-job", protect, toggleSaveJob);
+router.get("/saved-jobs", protect, getSavedJobs);
 router.patch("/:id", protect, updateUser);
 router.get("/:id", userDetails);
 router.post("/forgot-password", otpResendLimiter, forgotPasswordUser);

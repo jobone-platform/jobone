@@ -58,10 +58,10 @@ export default function AdminConfirmDialog({
         };
       default:
         return {
-          icon: <CheckCircle2 className="text-[var(--theme-text)]" size={24} />,
-          iconBg: "bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)]",
+          icon: <CheckCircle2 className="text-[var(--theme-gold)]" size={24} />,
+          iconBg: "bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)]",
           button:
-            "bg-[var(--theme-text)] hover:opacity-90 text-[var(--theme-bg)] shadow-xs focus-visible:ring-2 focus-visible:ring-[var(--theme-accent-silver)]",
+            "bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold shadow-md hover:shadow-lg focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)]",
         };
     }
   };
@@ -115,7 +115,7 @@ export default function AdminConfirmDialog({
               onChange={(e) => onReasonChange(e.target.value)}
               placeholder={reasonPlaceholder}
               rows={2}
-              className="w-full px-3 py-2 text-sm rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-border-silver)] resize-none font-medium"
+              className="w-full px-3 py-2 text-sm rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-gold)] resize-none font-medium"
             />
           </div>
         )}

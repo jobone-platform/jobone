@@ -27,10 +27,10 @@ export default function BrowseByLocation() {
           action={
             <Link
               to="/jobs"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[var(--theme-text)] bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] transition shadow-xs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[var(--theme-text)] bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] hover:border-[var(--theme-gold)] transition shadow-xs"
             >
               <span>All Locations</span>
-              <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+              <ArrowRight className="w-4 h-4 text-[var(--theme-gold)]" />
             </Link>
           }
         />
@@ -40,14 +40,14 @@ export default function BrowseByLocation() {
             <Link
               key={loc.name}
               to={`/jobs?location=${encodeURIComponent(loc.query)}`}
-              className="group rounded-2xl border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] bg-[var(--theme-surface)] p-5 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-3"
+              className="group rounded-2xl border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] bg-[var(--theme-surface)] p-5 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-3"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   {loc.isRemote ? (
                     <Wifi className="w-4 h-4 text-emerald-500 shrink-0" />
                   ) : (
-                    <MapPin className="w-4 h-4 text-[var(--theme-accent-silver)] shrink-0" />
+                    <MapPin className="w-4 h-4 text-[var(--theme-gold)] shrink-0" />
                   )}
                   <h3 className="text-sm sm:text-base font-bold text-[var(--theme-text)] truncate">
                     {loc.name}

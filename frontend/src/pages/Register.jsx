@@ -19,9 +19,9 @@ export default function Register() {
       <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] mb-6">
         <button
           type="button"
-          className="flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg bg-[var(--theme-surface)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-sm"
+          className="flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg bg-[var(--theme-surface)] text-[var(--theme-text)] border border-[var(--theme-gold-border)] shadow-sm"
         >
-          <User className="w-3.5 h-3.5" />
+          <User className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
           <span>I'm a Candidate</span>
         </button>
 
@@ -45,11 +45,11 @@ export default function Register() {
       <button
         type="button"
         onClick={() => navigate("/userregister")}
-        className="w-full py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.005] active:scale-[0.99]"
+        className="w-full py-3.5 rounded-xl bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.005] active:scale-[0.99]"
       >
-        <Mail className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+        <Mail className="w-4 h-4 text-black" />
         <span>Continue with Email & Password</span>
-        <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+        <ArrowRight className="w-4 h-4 text-black" />
       </button>
 
       {/* Divider */}

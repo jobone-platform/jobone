@@ -238,13 +238,13 @@ export default function EmployerDashboard() {
       <div className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[var(--theme-accent-silver)] bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] px-2 py-0.5 rounded">
+            <span className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[var(--theme-gold)] bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] px-2 py-0.5 rounded">
               Employer Workspace
             </span>
             <span className="text-xs text-[var(--theme-text-subtle)] font-mono">• Active Workspace</span>
           </div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[var(--theme-text)] tracking-tight">
-            Welcome back, {employerName}
+            Welcome back, <span className="bg-gradient-to-r from-[var(--theme-gold)] to-[var(--theme-gold-bright)] bg-clip-text text-transparent">{employerName}</span>
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-[var(--theme-text-muted)]">
             {approvalStatus === "approved"
@@ -258,30 +258,30 @@ export default function EmployerDashboard() {
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Link
               to="/createjob"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs sm:text-sm hover:opacity-90 transition-opacity shadow-sm"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
             >
               <PlusCircle size={17} />
               <span>Post New Job</span>
             </Link>
             <Link
               to="/candidates"
-              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] font-semibold text-xs sm:text-sm hover:bg-[var(--theme-surface-hover)] transition-colors"
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] font-semibold text-xs sm:text-sm hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-gold)] transition-all"
             >
-              <Search size={16} className="text-[var(--theme-accent-silver)]" />
+              <Search size={16} className="text-[var(--theme-gold)]" />
               <span>Find Candidates</span>
             </Link>
             <Link
               to="/my-candidates"
-              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] font-semibold text-xs sm:text-sm hover:bg-[var(--theme-surface-hover)] transition-colors"
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] font-semibold text-xs sm:text-sm hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-gold)] transition-all"
             >
-              <Users size={16} className="text-[var(--theme-accent-silver)]" />
+              <Users size={16} className="text-[var(--theme-gold)]" />
               <span>My Candidates</span>
             </Link>
           </div>
         ) : (
           <Link
             to="/employerdocupload"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-amber-500/30 text-amber-400 font-bold text-xs sm:text-sm hover:bg-amber-500/10 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold text-xs sm:text-sm hover:bg-[var(--theme-gold)] hover:text-black transition-all shadow-sm"
           >
             <FileText size={16} />
             <span>Upload Verification Docs</span>
@@ -401,7 +401,7 @@ export default function EmployerDashboard() {
               value={metrics.totalJobs || jobs.length}
               subtext="All time postings"
               icon={Briefcase}
-              color="silver"
+              color="gold"
               onClick={() => setStatusFilter("all")}
               isActive={statusFilter === "all"}
             />
@@ -427,7 +427,7 @@ export default function EmployerDashboard() {
               value={pipelineStats.shortlisted}
               subtext="Passed screening"
               icon={TrendingUp}
-              color="purple"
+              color="gold"
               onClick={() => navigate("/my-candidates")}
             />
             <MetricCard
@@ -443,7 +443,7 @@ export default function EmployerDashboard() {
               value={metrics.totalViews || 0}
               subtext="Listing impressions"
               icon={Eye}
-              color="silver"
+              color="gold"
             />
           </div>
 
@@ -460,7 +460,7 @@ export default function EmployerDashboard() {
               </div>
               <Link
                 to="/my-candidates"
-                className="text-xs font-semibold text-[var(--theme-accent-silver)] hover:underline flex items-center gap-1 self-start sm:self-auto"
+                className="text-xs font-semibold text-[var(--theme-gold)] hover:underline flex items-center gap-1 self-start sm:self-auto"
               >
                 <span>Full Candidate CRM</span>
                 <ChevronRight size={13} />
@@ -481,7 +481,7 @@ export default function EmployerDashboard() {
               <PipelinePill
                 stage="Int. Scheduled"
                 count={pipelineStats.interviewScheduled}
-                color="border-purple-500/30 bg-purple-500/10 text-purple-400"
+                color="border-[var(--theme-gold-border)] bg-[var(--theme-gold-surface)] text-[var(--theme-gold)]"
               />
               <PipelinePill
                 stage="Int. Conducted"
@@ -522,7 +522,7 @@ export default function EmployerDashboard() {
                     onClick={() => setStatusFilter("all")}
                     className={`px-3 py-1 rounded-lg transition-all ${
                       statusFilter === "all"
-                        ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-sm"
+                        ? "bg-[var(--theme-gold)] text-black font-bold shadow-sm"
                         : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                     }`}
                   >
@@ -533,7 +533,7 @@ export default function EmployerDashboard() {
                     onClick={() => setStatusFilter("active")}
                     className={`px-3 py-1 rounded-lg transition-all ${
                       statusFilter === "active"
-                        ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-sm"
+                        ? "bg-[var(--theme-gold)] text-black font-bold shadow-sm"
                         : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                     }`}
                   >
@@ -544,7 +544,7 @@ export default function EmployerDashboard() {
                     onClick={() => setStatusFilter("closed")}
                     className={`px-3 py-1 rounded-lg transition-all ${
                       statusFilter === "closed"
-                        ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-sm"
+                        ? "bg-[var(--theme-gold)] text-black font-bold shadow-sm"
                         : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                     }`}
                   >
@@ -627,7 +627,7 @@ export default function EmployerDashboard() {
                 </p>
                 <Link
                   to="/createjob"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs sm:text-sm hover:opacity-90 transition-opacity shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
                 >
                   <PlusCircle size={16} />
                   <span>Create Your First Job</span>
@@ -681,7 +681,7 @@ export default function EmployerDashboard() {
                       <th className="py-3.5 px-3 font-bold text-center text-blue-400 bg-blue-500/5">
                         Shortlisted
                       </th>
-                      <th className="py-3.5 px-3 font-bold text-center text-purple-400 bg-purple-500/5">
+                      <th className="py-3.5 px-3 font-bold text-center text-[var(--theme-gold)] bg-[var(--theme-gold-surface)]/40">
                         Int. Sched
                       </th>
                       <th className="py-3.5 px-3 font-bold text-center text-amber-400 bg-amber-500/5">
@@ -740,6 +740,7 @@ function MetricCard({
   const Icon = icon;
   const colorMap = {
     silver: "text-[var(--theme-accent-silver)] bg-[var(--theme-surface-hover)] border-[var(--theme-border)]",
+    gold: "text-[var(--theme-gold)] bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)]",
     emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
     blue: "text-blue-400 bg-blue-500/10 border-blue-500/20",
     purple: "text-purple-400 bg-purple-500/10 border-purple-500/20",
@@ -750,10 +751,10 @@ function MetricCard({
     <div
       onClick={onClick}
       className={`rounded-2xl border p-4 sm:p-5 transition-all bg-[var(--theme-surface)] shadow-sm ${
-        onClick ? "cursor-pointer hover:border-[var(--theme-border-silver)] hover:shadow-md" : ""
+        onClick ? "cursor-pointer hover:border-[var(--theme-gold-border)] hover:shadow-md" : ""
       } ${
         isActive
-          ? "ring-2 ring-[var(--theme-accent-silver)] border-[var(--theme-border-silver)]"
+          ? "ring-2 ring-[var(--theme-gold)] border-[var(--theme-gold-border)]"
           : "border-[var(--theme-border)]"
       }`}
     >
@@ -809,7 +810,7 @@ function JobTableRow({
     >
       {/* Job Title & Details */}
       <td className="py-3.5 px-4 max-w-xs">
-        <div className="font-bold text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors truncate">
+        <div className="font-bold text-[var(--theme-text)] group-hover:text-[var(--theme-gold)] transition-colors truncate">
           {job.title}
         </div>
         <div className="text-[11px] text-[var(--theme-text-muted)] font-medium mt-0.5 flex items-center gap-2">
@@ -851,7 +852,7 @@ function JobTableRow({
             e.stopPropagation();
             navigate(`/job/${job._id}/applicants`);
           }}
-          className="hover:underline hover:text-[var(--theme-accent-silver)] transition-colors block cursor-pointer"
+          className="hover:underline hover:text-[var(--theme-gold)] transition-colors block cursor-pointer"
           title="View All Applicants"
         >
           {s.total || 0}
@@ -871,7 +872,7 @@ function JobTableRow({
         </span>
       </td>
 
-      <td className="py-3.5 px-3 text-center font-bold text-purple-400 bg-purple-500/5">
+      <td className="py-3.5 px-3 text-center font-bold text-[var(--theme-gold)] bg-[var(--theme-gold-surface)]/40">
         <span
           onClick={(e) => {
             e.stopPropagation();
@@ -952,7 +953,7 @@ function JobTableRow({
             <button
               type="button"
               onClick={() => handleRepost(job)}
-              className="p-1.5 rounded-lg text-[var(--theme-accent-silver)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] transition-colors"
+              className="p-1.5 rounded-lg text-[var(--theme-gold)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] transition-colors"
               title="Repost / Clone Job"
             >
               <PlusCircle size={15} />
@@ -1005,13 +1006,13 @@ function JobCardItem({
   return (
     <div
       onClick={() => navigate(`/job/${job._id}`)}
-      className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-4 sm:p-5 shadow-sm hover:border-[var(--theme-border-silver)] hover:shadow-md transition-all cursor-pointer flex flex-col justify-between group"
+      className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-4 sm:p-5 shadow-sm hover:border-[var(--theme-gold-border)] hover:shadow-md transition-all cursor-pointer flex flex-col justify-between group"
     >
       <div>
         {/* Card Header */}
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-sm sm:text-base text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors line-clamp-2">
+            <h3 className="font-bold text-sm sm:text-base text-[var(--theme-text)] group-hover:text-[var(--theme-gold)] transition-colors line-clamp-2">
               {job.title}
             </h3>
             <p className="text-xs text-[var(--theme-text-muted)] mt-1 flex items-center gap-1.5 font-medium">
@@ -1068,7 +1069,7 @@ function JobCardItem({
           <CardMetricBox
             title="Int. S"
             value={s.interviewScheduled || 0}
-            color="border-purple-500/20 bg-purple-500/10 text-purple-400"
+            color="border-[var(--theme-gold-border)] bg-[var(--theme-gold-surface)] text-[var(--theme-gold)]"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/job/${job._id}/applicants?status=Interview Scheduled`);
@@ -1094,7 +1095,7 @@ function JobCardItem({
         <button
           type="button"
           onClick={() => navigate(`/job/${job._id}/applicants`)}
-          className="text-xs font-semibold text-[var(--theme-accent-silver)] hover:underline flex items-center gap-1"
+          className="text-xs font-semibold text-[var(--theme-gold)] hover:underline flex items-center gap-1"
         >
           <span>View Applicants</span>
           <ArrowRight size={13} />
@@ -1114,7 +1115,7 @@ function JobCardItem({
             <button
               type="button"
               onClick={() => handleRepost(job)}
-              className="p-1.5 rounded-lg text-[var(--theme-accent-silver)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] transition-colors"
+              className="p-1.5 rounded-lg text-[var(--theme-gold)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] transition-colors"
               title="Repost / Clone Job"
             >
               <PlusCircle size={14} />

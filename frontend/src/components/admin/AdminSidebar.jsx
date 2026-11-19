@@ -137,12 +137,12 @@ export default function AdminSidebar({
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="w-full h-16 flex items-center justify-center border-b border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)] transition-colors group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-silver)] relative shrink-0"
+          className="w-full h-16 flex items-center justify-center border-b border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)] transition-colors group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold-border)] relative shrink-0"
           title="Expand sidebar (Ctrl+[)"
           aria-label="Expand sidebar"
         >
-          <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center font-bold font-mono text-sm tracking-tight text-[var(--theme-text)] shadow-xs group-hover:border-[var(--theme-border-silver)] group-hover:scale-105 transition-all">
-            J<span className="text-[var(--theme-accent-silver)]">1</span>
+          <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex items-center justify-center font-bold font-mono text-sm tracking-tight text-[var(--theme-text)] shadow-xs group-hover:border-[var(--theme-gold-border)] group-hover:scale-105 transition-all">
+            J<span className="text-[var(--theme-gold)]">1</span>
           </div>
 
           {/* Floating Expand Tooltip */}
@@ -159,7 +159,7 @@ export default function AdminSidebar({
               if (onSelectTab) onSelectTab("overview");
               if (isMobile && onCloseMobile) onCloseMobile();
             }}
-            className="flex items-center gap-2 overflow-hidden hover:opacity-85 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-silver)] rounded-lg p-1 group"
+            className="flex items-center gap-2 overflow-hidden hover:opacity-85 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold-border)] rounded-lg p-1 group"
             title="JobOne Executive Console"
           >
             <LogoJobOne
@@ -168,7 +168,7 @@ export default function AdminSidebar({
               textColor={isDark ? "#FFFFFF" : "#0A0A0A"}
               className="h-8 w-auto"
             />
-            <span className="text-[10px] font-mono font-bold tracking-widest uppercase px-1.5 py-0.5 rounded bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+            <span className="text-[10px] font-mono font-bold tracking-widest uppercase px-1.5 py-0.5 rounded bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
               Admin
             </span>
           </Link>
@@ -183,7 +183,7 @@ export default function AdminSidebar({
               }}
               aria-label="Collapse sidebar"
               title="Collapse sidebar (Ctrl+[)"
-              className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-silver)]"
+              className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold-border)]"
             >
               <ChevronLeft size={16} />
             </button>
@@ -195,7 +195,7 @@ export default function AdminSidebar({
               type="button"
               onClick={onCloseMobile}
               aria-label="Close navigation drawer"
-              className="p-2 rounded-xl text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-silver)]"
+              className="p-2 rounded-xl text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold-border)]"
             >
               <X size={18} />
             </button>
@@ -232,7 +232,7 @@ export default function AdminSidebar({
                 }}
                 className={`group relative w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
                   isActive
-                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-xs font-semibold"
+                    ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shadow-xs font-semibold"
                     : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] border border-transparent"
                 }`}
               >
@@ -240,12 +240,12 @@ export default function AdminSidebar({
                   size={18}
                   className={`shrink-0 transition-colors ${
                     isActive
-                      ? "text-[var(--theme-accent-silver)]"
+                      ? "text-[var(--theme-gold)]"
                       : "text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text)]"
                   }`}
                 />
                 {item.count !== undefined && item.count > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[var(--theme-surface)] animate-pulse" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--theme-gold)] ring-2 ring-[var(--theme-surface)] animate-pulse" />
                 )}
 
                 {/* Collapsed Tooltip */}
@@ -271,7 +271,7 @@ export default function AdminSidebar({
               }}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs transition-all group cursor-pointer relative ${
                 isActive
-                  ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] font-semibold border border-[var(--theme-border-silver)] shadow-xs"
+                  ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] font-bold border border-[var(--theme-gold-border)] shadow-xs"
                   : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] font-medium border border-transparent"
               } ${isMobile ? "min-h-[44px]" : "min-h-[38px]"}`}
             >
@@ -280,7 +280,7 @@ export default function AdminSidebar({
                   size={18}
                   className={`shrink-0 transition-colors ${
                     isActive
-                      ? "text-[var(--theme-accent-silver)]"
+                      ? "text-[var(--theme-gold)]"
                       : "text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text)]"
                   }`}
                 />
@@ -288,7 +288,7 @@ export default function AdminSidebar({
               </div>
 
               {item.count !== undefined && item.count > 0 && (
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0 bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0 bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
                   {item.count}
                 </span>
               )}
@@ -322,7 +322,7 @@ export default function AdminSidebar({
         ) : (
           <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)]">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
                 {adminInitials}
               </div>
               <div className="min-w-0 pr-1">

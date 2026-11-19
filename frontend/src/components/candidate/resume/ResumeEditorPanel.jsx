@@ -437,9 +437,9 @@ export default function ResumeEditorPanel({
               key={tab.id}
               type="button"
               onClick={() => onSelectSection(tab.id)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 isActive
-                  ? "bg-silver/20 text-foreground border border-silver/40 shadow-sm"
+                  ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shadow-xs"
                   : "text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
               } ${isHidden ? "opacity-50 line-through" : ""}`}
             >
@@ -458,9 +458,9 @@ export default function ResumeEditorPanel({
             key={sec.id}
             type="button"
             onClick={() => onSelectSection(sec.id)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
               activeSection === sec.id
-                ? "bg-silver/20 text-foreground border border-silver/40"
+                ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shadow-xs"
                 : "text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
             }`}
           >
@@ -711,7 +711,7 @@ export default function ResumeEditorPanel({
               <button
                 type="button"
                 onClick={handleAddExperience}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Position</span>
@@ -728,7 +728,7 @@ export default function ResumeEditorPanel({
                 <button
                   type="button"
                   onClick={handleAddExperience}
-                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white inline-flex items-center gap-1.5"
+                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 inline-flex items-center gap-1.5 shadow-xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add First Role</span>
@@ -999,7 +999,7 @@ export default function ResumeEditorPanel({
               <button
                 type="button"
                 onClick={() => handleAddSkill()}
-                className="px-4 py-2 rounded-xl bg-silver text-black font-semibold text-xs hover:bg-white transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Skill</span>
@@ -1121,7 +1121,7 @@ export default function ResumeEditorPanel({
               <button
                 type="button"
                 onClick={handleAddProject}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Project</span>
@@ -1138,7 +1138,7 @@ export default function ResumeEditorPanel({
                 <button
                   type="button"
                   onClick={handleAddProject}
-                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white inline-flex items-center gap-1.5"
+                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 inline-flex items-center gap-1.5 shadow-xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add First Project</span>
@@ -1295,7 +1295,7 @@ export default function ResumeEditorPanel({
               <button
                 type="button"
                 onClick={handleAddEducation}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Education</span>
@@ -1312,7 +1312,7 @@ export default function ResumeEditorPanel({
                 <button
                   type="button"
                   onClick={handleAddEducation}
-                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white inline-flex items-center gap-1.5"
+                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 inline-flex items-center gap-1.5 shadow-xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add First Degree</span>
@@ -1482,7 +1482,7 @@ export default function ResumeEditorPanel({
               <button
                 type="button"
                 onClick={handleAddCertification}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Certificate</span>
@@ -1499,7 +1499,7 @@ export default function ResumeEditorPanel({
                 <button
                   type="button"
                   onClick={handleAddCertification}
-                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white inline-flex items-center gap-1.5"
+                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 inline-flex items-center gap-1.5 shadow-xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add First Credential</span>
@@ -1640,7 +1640,7 @@ export default function ResumeEditorPanel({
               <button
                 type="button"
                 onClick={handleAddVolunteering}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Initiative</span>
@@ -1657,7 +1657,7 @@ export default function ResumeEditorPanel({
                 <button
                   type="button"
                   onClick={handleAddVolunteering}
-                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white inline-flex items-center gap-1.5"
+                  className="mt-3 px-3.5 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 inline-flex items-center gap-1.5 shadow-xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add First Initiative</span>
@@ -1773,7 +1773,7 @@ export default function ResumeEditorPanel({
                         ),
                       }));
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-silver text-black font-semibold text-xs hover:bg-white"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 shadow-xs"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Item</span>

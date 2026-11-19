@@ -50,13 +50,13 @@ export default function AdminDataTable({
   const endRecord = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
+    <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] shadow-xs overflow-hidden transition-colors">
       {/* Table Toolbar */}
-      <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 border-b border-[var(--theme-border)] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Search Input */}
         {onSearchChange && (
           <div className="relative flex-1 max-w-md">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--theme-text-muted)]">
               <Search size={16} />
             </div>
             <input
@@ -64,13 +64,13 @@ export default function AdminDataTable({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder={searchPlaceholder}
-              className="w-full pl-9 pr-9 py-2 text-sm rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium"
+              className="w-full pl-9 pr-9 py-2 text-sm rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none focus:border-[var(--theme-gold)] font-medium"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => onSearchChange("")}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] cursor-pointer"
               >
                 <X size={15} />
               </button>
@@ -86,7 +86,7 @@ export default function AdminDataTable({
                 value={filter.value}
                 onChange={(e) => filter.onChange(e.target.value)}
                 aria-label={filter.label}
-                className="px-3 py-2 pr-8 text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 appearance-none cursor-pointer"
+                className="px-3 py-2 pr-8 text-xs font-semibold rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] focus:outline-none focus:border-[var(--theme-gold)] appearance-none cursor-pointer"
               >
                 {filter.options.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -96,15 +96,15 @@ export default function AdminDataTable({
               </select>
               <ChevronDown
                 size={14}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)] pointer-events-none"
               />
             </div>
           ))}
 
           {/* Bulk Actions Menu (when rows are selected) */}
           {selectable && selectedIds.length > 0 && bulkActions.length > 0 && (
-            <div className="flex items-center gap-1.5 p-1 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-800/60 rounded-xl">
-              <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 px-2">
+            <div className="flex items-center gap-1.5 p-1 bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] rounded-xl">
+              <span className="text-xs font-bold text-[var(--theme-gold)] px-2">
                 {selectedIds.length} selected:
               </span>
               {bulkActions.map((act, i) => {
@@ -119,7 +119,7 @@ export default function AdminDataTable({
                         ? "bg-rose-600 hover:bg-rose-700 text-white"
                         : act.variant === "success"
                         ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                        : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                        : "bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black"
                     }`}
                   >
                     {Icon && <Icon size={12} />}
@@ -136,19 +136,19 @@ export default function AdminDataTable({
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50/75 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <tr className="bg-[var(--theme-surface-elevated)]/60 border-b border-[var(--theme-border)] text-[11px] font-bold text-[var(--theme-text-muted)] uppercase tracking-wider">
               {selectable && (
                 <th className="py-3 px-4 w-10">
                   <button
                     type="button"
                     onClick={onSelectAll}
                     aria-label="Select all rows"
-                    className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                    className="text-[var(--theme-text-muted)] hover:text-[var(--theme-gold)] transition-colors cursor-pointer"
                   >
                     {isAllSelected ? (
-                      <CheckSquare size={16} className="text-indigo-600 dark:text-indigo-400" />
+                      <CheckSquare size={16} className="text-[var(--theme-gold)]" />
                     ) : isPartiallySelected ? (
-                      <div className="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold">
+                      <div className="w-4 h-4 rounded bg-[var(--theme-gold)] text-black flex items-center justify-center text-[10px] font-bold">
                         -
                       </div>
                     ) : (
@@ -162,13 +162,13 @@ export default function AdminDataTable({
                   key={col.key}
                   onClick={() => col.sortable && onSort && onSort(col.key)}
                   className={`py-3 px-4 select-none ${
-                    col.sortable ? "cursor-pointer hover:text-slate-900 dark:hover:text-white" : ""
+                    col.sortable ? "cursor-pointer hover:text-[var(--theme-text)]" : ""
                   } ${col.className || ""}`}
                 >
                   <div className="flex items-center gap-1.5">
                     <span>{col.label}</span>
                     {col.sortable && sortColumn === col.key && (
-                      <span className="text-indigo-600 dark:text-indigo-400">
+                      <span className="text-[var(--theme-gold)]">
                         {sortDirection === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                       </span>
                     )}
@@ -178,19 +178,19 @@ export default function AdminDataTable({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+          <tbody className="divide-y divide-[var(--theme-border)] text-sm">
             {loading ? (
               // Loading Skeleton Rows
               Array.from({ length: pageSize > 10 ? 10 : pageSize }).map((_, i) => (
                 <tr key={i} className="animate-pulse">
                   {selectable && (
                     <td className="py-3.5 px-4">
-                      <div className="w-4 h-4 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                      <div className="w-4 h-4 bg-[var(--theme-surface-elevated)] rounded"></div>
                     </td>
                   )}
                   {columns.map((col) => (
                     <td key={col.key} className="py-3.5 px-4">
-                      <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-3/4"></div>
+                      <div className="h-4 bg-[var(--theme-surface-elevated)] rounded w-3/4"></div>
                     </td>
                   ))}
                 </tr>
@@ -203,13 +203,13 @@ export default function AdminDataTable({
                   className="py-16 text-center"
                 >
                   <div className="max-w-sm mx-auto flex flex-col items-center">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">
+                    <div className="w-12 h-12 rounded-2xl bg-[var(--theme-surface-elevated)] flex items-center justify-center text-[var(--theme-text-muted)] mb-3">
                       <EmptyIcon size={24} />
                     </div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">
+                    <h4 className="text-sm font-bold text-[var(--theme-text)] mb-1">
                       {emptyTitle}
                     </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    <p className="text-xs text-[var(--theme-text-muted)] leading-relaxed">
                       {emptyMessage}
                     </p>
                   </div>
@@ -223,8 +223,8 @@ export default function AdminDataTable({
                 return (
                   <tr
                     key={rowId}
-                    className={`hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors ${
-                      isSelected ? "bg-indigo-50/40 dark:bg-indigo-950/20" : ""
+                    className={`hover:bg-[var(--theme-surface-hover)] transition-colors ${
+                      isSelected ? "bg-[var(--theme-gold-surface)]/30" : ""
                     }`}
                   >
                     {selectable && (
@@ -233,10 +233,10 @@ export default function AdminDataTable({
                           type="button"
                           onClick={() => onSelectRow(rowId)}
                           aria-label={`Select row ${rowId}`}
-                          className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer"
+                          className="text-[var(--theme-text-muted)] hover:text-[var(--theme-gold)] cursor-pointer"
                         >
                           {isSelected ? (
-                            <CheckSquare size={16} className="text-indigo-600 dark:text-indigo-400" />
+                            <CheckSquare size={16} className="text-[var(--theme-gold)]" />
                           ) : (
                             <Square size={16} />
                           )}
@@ -258,12 +258,12 @@ export default function AdminDataTable({
 
       {/* Table Pagination Footer */}
       {totalItems > 0 && (
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-600 dark:text-slate-400">
+        <div className="p-4 border-t border-[var(--theme-border)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium text-[var(--theme-text-muted)]">
           <div className="flex items-center gap-2">
             <span>
-              Showing <span className="font-bold text-slate-900 dark:text-white">{startRecord}</span> to{" "}
-              <span className="font-bold text-slate-900 dark:text-white">{endRecord}</span> of{" "}
-              <span className="font-bold text-slate-900 dark:text-white">{totalItems}</span> records
+              Showing <span className="font-bold text-[var(--theme-text)]">{startRecord}</span> to{" "}
+              <span className="font-bold text-[var(--theme-text)]">{endRecord}</span> of{" "}
+              <span className="font-bold text-[var(--theme-text)]">{totalItems}</span> records
             </span>
             {onPageSizeChange && (
               <div className="flex items-center gap-1.5 ml-4">
@@ -271,7 +271,7 @@ export default function AdminDataTable({
                 <select
                   value={pageSize}
                   onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                  className="px-2 py-1 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold cursor-pointer"
+                  className="px-2 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] text-xs font-semibold cursor-pointer"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -289,7 +289,7 @@ export default function AdminDataTable({
                 onClick={() => onPageChange(1)}
                 disabled={currentPage <= 1}
                 aria-label="First page"
-                className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                className="p-1.5 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
               >
                 <ChevronsLeft size={14} />
               </button>
@@ -298,12 +298,12 @@ export default function AdminDataTable({
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage <= 1}
                 aria-label="Previous page"
-                className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                className="p-1.5 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
 
-              <span className="px-3 py-1 text-xs font-bold text-slate-800 dark:text-slate-200">
+              <span className="px-3 py-1 text-xs font-bold text-[var(--theme-text)]">
                 Page {currentPage} of {totalPages}
               </span>
 
@@ -312,7 +312,7 @@ export default function AdminDataTable({
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages}
                 aria-label="Next page"
-                className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                className="p-1.5 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
               >
                 <ChevronRight size={14} />
               </button>
@@ -321,7 +321,7 @@ export default function AdminDataTable({
                 onClick={() => onPageChange(totalPages)}
                 disabled={currentPage >= totalPages}
                 aria-label="Last page"
-                className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                className="p-1.5 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
               >
                 <ChevronsRight size={14} />
               </button>

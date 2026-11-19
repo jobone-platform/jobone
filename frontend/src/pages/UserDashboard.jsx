@@ -418,7 +418,7 @@ export default function UserDashboard() {
     const s = (status || "").toLowerCase();
     if (s.includes("interview")) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/30 shadow-xs">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shadow-xs">
           <Calendar size={13} /> Interview
         </span>
       );
@@ -432,7 +432,7 @@ export default function UserDashboard() {
     }
     if (s === "shortlisted") {
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-silver/20 text-foreground border border-silver/40 shadow-xs">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shadow-xs">
           <Award size={13} /> Shortlisted
         </span>
       );
@@ -475,14 +475,14 @@ export default function UserDashboard() {
         <section aria-label="Candidate Welcome Command Hero">
           <div className="relative rounded-3xl border border-border bg-gradient-to-br from-surface via-surface to-surface-elevated p-6 sm:p-8 lg:p-10 shadow-sm overflow-hidden">
             {/* Subtle ambient lighting accent */}
-            <div className="absolute top-0 right-0 w-[420px] h-[420px] bg-silver/5 rounded-full blur-3xl pointer-events-none -mr-24 -mt-24" />
+            <div className="absolute top-0 right-0 w-[420px] h-[420px] bg-[var(--theme-gold-surface)] rounded-full blur-3xl pointer-events-none -mr-24 -mt-24" />
 
             <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
               {/* Left Column: Greeting, Role Status & Quick Actions */}
               <div className="space-y-4 max-w-2xl">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-md bg-surface-elevated text-silver border border-border">
-                    <ShieldCheck size={14} className="text-silver" /> Active Candidate Workspace
+                  <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-md bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
+                    <ShieldCheck size={14} className="text-[var(--theme-gold)]" /> Active Candidate Workspace
                   </span>
                   <span className="text-xs text-muted-foreground font-mono">
                     • Live Recruitment Sync
@@ -492,7 +492,7 @@ export default function UserDashboard() {
                 <div className="space-y-2">
                   <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground">
                     {greetingText},{" "}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground via-foreground to-silver">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground via-foreground to-[var(--theme-gold)]">
                       {candidateDisplayName}
                     </span>
                   </h1>
@@ -508,8 +508,8 @@ export default function UserDashboard() {
                 {/* Primary Action Buttons */}
                 <div className="pt-2 flex flex-wrap items-center gap-2.5 sm:gap-3">
                   <Link
-                    to="/jobs"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-foreground text-background font-bold text-xs sm:text-sm hover:opacity-90 transition-opacity shadow-sm"
+                    to="/candidate/jobs"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm hover:opacity-90 transition-all shadow-sm"
                   >
                     <Search size={16} />
                     <span>Explore Open Roles</span>
@@ -519,18 +519,18 @@ export default function UserDashboard() {
                     to="/myapplications"
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-elevated border border-border text-foreground hover:bg-surface-hover font-semibold text-xs sm:text-sm transition-colors"
                   >
-                    <Briefcase size={16} className="text-silver" />
+                    <Briefcase size={16} className="text-[var(--theme-gold)]" />
                     <span>Track Applications ({applications.length})</span>
                   </Link>
 
                   <Link
-                    to="/candidate/resume-builder"
+                    to="/resume-builder"
                     className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border text-foreground hover:bg-surface-hover font-semibold text-xs sm:text-sm transition-colors"
                     title="Launch ATS Resume Builder"
                   >
-                    <Sparkles size={16} className="text-silver" />
+                    <Sparkles size={16} className="text-[var(--theme-gold)]" />
                     <span className="hidden sm:inline">ATS Resume</span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-silver/20 text-foreground font-bold">
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] font-bold border border-[var(--theme-gold-border)]">
                       PRO
                     </span>
                   </Link>
@@ -539,7 +539,7 @@ export default function UserDashboard() {
                     to="/jobseeker-documents"
                     className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border text-foreground hover:bg-surface-hover font-semibold text-xs sm:text-sm transition-colors"
                   >
-                    <FileText size={16} className="text-silver" />
+                    <FileText size={16} className="text-[var(--theme-gold)]" />
                     <span>Documents</span>
                   </Link>
                 </div>
@@ -551,7 +551,7 @@ export default function UserDashboard() {
                   <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
                     Profile Strength
                   </span>
-                  <span className="text-xs font-mono font-bold text-silver px-2.5 py-0.5 rounded-md bg-surface-elevated border border-border">
+                  <span className="text-xs font-mono font-bold text-[var(--theme-gold)] px-2.5 py-0.5 rounded-md bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)]">
                     {strengthTier}
                   </span>
                 </div>
@@ -568,10 +568,10 @@ export default function UserDashboard() {
                     </span>
                   </div>
 
-                  {/* Silver Progress Track */}
+                  {/* Gold Progress Track */}
                   <div className="w-full h-2.5 rounded-full bg-border overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-silver/70 via-silver to-foreground transition-all duration-700 ease-out rounded-full shadow-xs"
+                      className="h-full bg-gradient-to-r from-[var(--theme-gold-deep)] via-[var(--theme-gold)] to-[var(--theme-gold-bright)] transition-all duration-700 ease-out rounded-full shadow-xs"
                       style={{ width: `${Math.max(6, profileStrength)}%` }}
                     />
                   </div>
@@ -584,7 +584,7 @@ export default function UserDashboard() {
                     </span>
                     <Link
                       to={missingChecklist[0].path}
-                      className="font-bold text-silver hover:underline flex items-center gap-1 shrink-0"
+                      className="font-bold text-[var(--theme-gold)] hover:underline flex items-center gap-1 shrink-0"
                     >
                       Complete <ChevronRight size={14} />
                     </Link>
@@ -610,14 +610,14 @@ export default function UserDashboard() {
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === "Enter" && navigate("/myapplications")}
-              className="group p-5 sm:p-6 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-silver/40 transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-silver/40 flex flex-col justify-between h-full"
+              className="group p-5 sm:p-6 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-[var(--theme-gold-border)] hover:shadow-md transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-gold)] flex flex-col justify-between h-full"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Applications
                   </span>
-                  <div className="w-10 h-10 rounded-xl bg-surface-elevated border border-border flex items-center justify-center text-silver group-hover:scale-105 transition-transform shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)] group-hover:scale-105 transition-transform shadow-xs">
                     <Send size={18} />
                   </div>
                 </div>
@@ -631,7 +631,7 @@ export default function UserDashboard() {
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t border-border/60">
                 <span className="truncate">{activeApplicationsCount} Active submissions</span>
-                <ChevronRight size={15} className="text-silver group-hover:translate-x-1 transition-transform shrink-0" />
+                <ChevronRight size={15} className="text-[var(--theme-gold)] group-hover:translate-x-1 transition-transform shrink-0" />
               </div>
             </div>
 
@@ -641,14 +641,14 @@ export default function UserDashboard() {
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === "Enter" && navigate("/myapplications")}
-              className="group p-5 sm:p-6 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-silver/40 transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-silver/40 flex flex-col justify-between h-full"
+              className="group p-5 sm:p-6 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-[var(--theme-gold)]/40 hover:shadow-md transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-gold)] flex flex-col justify-between h-full"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Interviews
                   </span>
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)] group-hover:scale-105 transition-transform shadow-xs">
                     <Calendar size={18} />
                   </div>
                 </div>
@@ -666,7 +666,7 @@ export default function UserDashboard() {
                     ? `${interviewApplications.length} Pending call${interviewApplications.length > 1 ? "s" : ""}`
                     : "No pending rounds today"}
                 </span>
-                <ChevronRight size={15} className="text-purple-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                <ChevronRight size={15} className="text-[var(--theme-gold)] group-hover:translate-x-1 transition-transform shrink-0" />
               </div>
             </div>
 
@@ -682,14 +682,14 @@ export default function UserDashboard() {
                   window.dispatchEvent(new Event("jobone_open_saved_jobs"));
                 }
               }}
-              className="group p-5 sm:p-6 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-silver/40 transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-silver/40 flex flex-col justify-between h-full"
+              className="group p-5 sm:p-6 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-[var(--theme-gold-border)] hover:shadow-md transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-gold)] flex flex-col justify-between h-full"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Saved Vault
                   </span>
-                  <div className="w-10 h-10 rounded-xl bg-surface-elevated border border-border flex items-center justify-center text-silver group-hover:scale-105 transition-transform shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)] group-hover:scale-105 transition-transform shadow-xs">
                     <Bookmark size={18} />
                   </div>
                 </div>
@@ -699,7 +699,7 @@ export default function UserDashboard() {
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t border-border/60">
                 <span className="truncate">Bookmarked opportunities</span>
-                <ChevronRight size={15} className="text-silver group-hover:translate-x-1 transition-transform shrink-0" />
+                <ChevronRight size={15} className="text-[var(--theme-gold)] group-hover:translate-x-1 transition-transform shrink-0" />
               </div>
             </div>
 
@@ -709,14 +709,14 @@ export default function UserDashboard() {
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === "Enter" && navigate("/profile")}
-              className="group p-5 sm:p-6 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-silver/40 transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-silver/40 flex flex-col justify-between h-full"
+              className="group p-5 sm:p-6 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-[var(--theme-gold-border)] hover:shadow-md transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-gold)] flex flex-col justify-between h-full"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Profile Standing
                   </span>
-                  <div className="w-10 h-10 rounded-xl bg-surface-elevated border border-border flex items-center justify-center text-silver group-hover:scale-105 transition-transform shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)] group-hover:scale-105 transition-transform shadow-xs">
                     <Award size={18} />
                   </div>
                 </div>
@@ -728,7 +728,7 @@ export default function UserDashboard() {
                 <span className="truncate">
                   {shortlistedCount > 0 ? "Direct employer shortlists" : strengthTier}
                 </span>
-                <ChevronRight size={15} className="text-silver group-hover:translate-x-1 transition-transform shrink-0" />
+                <ChevronRight size={15} className="text-[var(--theme-gold)] group-hover:translate-x-1 transition-transform shrink-0" />
               </div>
             </div>
           </div>
@@ -878,8 +878,8 @@ export default function UserDashboard() {
                         </p>
                       </div>
                       <Link
-                        to="/jobs"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-90 transition-opacity"
+                        to="/candidate/jobs"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:opacity-90 transition-opacity"
                       >
                         <span>Browse Open Positions</span>
                         <ArrowRight size={14} />
@@ -1085,7 +1085,7 @@ export default function UserDashboard() {
                                   <Link
                                     to={`/apply/${job._id}`}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="px-3.5 py-1.5 rounded-xl bg-foreground text-background font-bold text-xs hover:opacity-90 transition-opacity shadow-xs"
+                                    className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity shadow-xs"
                                   >
                                     Apply Now
                                   </Link>
@@ -1110,14 +1110,14 @@ export default function UserDashboard() {
                 <div className="p-5 sm:p-6 rounded-2xl border border-border bg-surface space-y-4 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                      <div className="w-8 h-8 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
                         <Calendar size={16} />
                       </div>
                       <h3 className="font-bold text-sm tracking-tight text-foreground">
                         Interview Schedule
                       </h3>
                     </div>
-                    <span className="text-xs font-mono font-bold text-purple-400 px-2 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20">
+                    <span className="text-xs font-mono font-bold text-[var(--theme-gold)] px-2 py-0.5 rounded-md bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)]">
                       {interviewApplications.length} Scheduled
                     </span>
                   </div>
@@ -1128,13 +1128,13 @@ export default function UserDashboard() {
                         <div
                           key={app._id}
                           onClick={() => setSelectedApplicationForModal(app)}
-                          className="p-4 rounded-xl border border-purple-500/30 bg-purple-500/5 hover:bg-purple-500/10 transition-colors cursor-pointer space-y-2"
+                          className="p-4 rounded-xl border border-[var(--theme-gold-border)] bg-[var(--theme-gold-surface)]/30 hover:bg-[var(--theme-gold-surface)]/60 transition-colors cursor-pointer space-y-2"
                         >
                           <div className="flex items-center justify-between text-xs">
                             <span className="font-bold text-foreground truncate max-w-[180px]">
                               {app.jobTitle || "Interview Round"}
                             </span>
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold uppercase">
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] font-bold uppercase">
                               Active
                             </span>
                           </div>
@@ -1153,8 +1153,8 @@ export default function UserDashboard() {
                         No active interview rounds scheduled today. As employers review your submissions, schedule notifications will appear here.
                       </p>
                       <Link
-                        to="/jobs"
-                        className="text-xs text-silver font-bold hover:underline inline-block pt-1"
+                        to="/candidate/jobs"
+                        className="text-xs text-[var(--theme-gold)] font-bold hover:underline inline-block pt-1"
                       >
                         Apply to more roles
                       </Link>
@@ -1168,14 +1168,14 @@ export default function UserDashboard() {
                 <div className="p-5 sm:p-6 rounded-2xl border border-border bg-surface space-y-4 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-xl bg-surface-elevated border border-border flex items-center justify-center text-silver">
+                      <div className="w-8 h-8 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
                         <UserCheck size={16} />
                       </div>
                       <h3 className="font-bold text-sm tracking-tight text-foreground">
                         Readiness Checklist
                       </h3>
                     </div>
-                    <span className="text-xs font-mono font-bold text-silver px-2 py-0.5 rounded-md bg-surface-elevated border border-border">
+                    <span className="text-xs font-mono font-bold text-[var(--theme-gold)] px-2 py-0.5 rounded-md bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)]">
                       {5 - missingChecklist.length}/5 Done
                     </span>
                   </div>
@@ -1186,7 +1186,7 @@ export default function UserDashboard() {
                       { id: "headline", label: "Professional Bio", path: "/editprofile" },
                       { id: "skills", label: "Core Skill Tags (3+)", path: "/editprofile" },
                       { id: "history", label: "Experience / Education", path: "/editprofile" },
-                      { id: "resume", label: "Resume & Documents", path: "/candidate/resume-builder" },
+                      { id: "resume", label: "Resume & Documents", path: "/resume-builder" },
                     ].map((item) => {
                       const isMissing = missingChecklist.some((m) => m.id === item.id);
                       return (
@@ -1215,7 +1215,7 @@ export default function UserDashboard() {
                           {isMissing && (
                             <Link
                               to={item.path}
-                              className="text-xs font-bold text-silver hover:underline shrink-0"
+                              className="text-xs font-bold text-[var(--theme-gold)] hover:underline shrink-0"
                             >
                               Add +
                             </Link>
@@ -1230,7 +1230,7 @@ export default function UserDashboard() {
               {/* 3. RECRUITMENT TOOLKIT & QUICK VAULT */}
               <div className="p-5 sm:p-6 rounded-2xl border border-border bg-surface space-y-3.5 shadow-sm">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-surface-elevated border border-border flex items-center justify-center text-silver">
+                  <div className="w-8 h-8 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
                     <FolderArchive size={16} />
                   </div>
                   <h3 className="font-bold text-sm tracking-tight text-foreground">
@@ -1240,11 +1240,11 @@ export default function UserDashboard() {
 
                 <div className="space-y-2.5 text-xs">
                   <Link
-                    to="/candidate/resume-builder"
+                    to="/resume-builder"
                     className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-surface-elevated hover:bg-surface-hover transition-colors text-foreground group"
                   >
                     <div className="flex items-center gap-3">
-                      <Sparkles size={16} className="text-silver group-hover:scale-105 transition-transform" />
+                      <Sparkles size={16} className="text-[var(--theme-gold)] group-hover:scale-105 transition-transform" />
                       <div className="space-y-0.5">
                         <span className="font-semibold block">ATS Resume Builder</span>
                         <span className="text-[11px] text-muted-foreground block">
@@ -1252,7 +1252,7 @@ export default function UserDashboard() {
                         </span>
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-silver/20 text-foreground font-bold">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] font-bold border border-[var(--theme-gold-border)]">
                       PRO
                     </span>
                   </Link>
@@ -1262,18 +1262,18 @@ export default function UserDashboard() {
                     className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-surface-elevated hover:bg-surface-hover transition-colors text-foreground group"
                   >
                     <div className="flex items-center gap-3">
-                      <FileText size={16} className="text-silver group-hover:scale-105 transition-transform" />
+                      <FileText size={16} className="text-[var(--theme-gold)] group-hover:scale-105 transition-transform" />
                       <span className="font-semibold">Documents & Marksheets</span>
                     </div>
                     <ChevronRight size={15} className="text-muted-foreground group-hover:translate-x-1 transition-transform" />
                   </Link>
 
                   <Link
-                    to="/companies"
+                    to="/candidate/companies"
                     className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-surface-elevated hover:bg-surface-hover transition-colors text-foreground group"
                   >
                     <div className="flex items-center gap-3">
-                      <Building2 size={16} className="text-silver group-hover:scale-105 transition-transform" />
+                      <Building2 size={16} className="text-[var(--theme-gold)] group-hover:scale-105 transition-transform" />
                       <span className="font-semibold">Explore Companies</span>
                     </div>
                     <ChevronRight size={15} className="text-muted-foreground group-hover:translate-x-1 transition-transform" />

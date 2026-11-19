@@ -238,7 +238,7 @@ export default function ResumeJobMatcherModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
+            className="px-5 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
           >
             Apply to Resume & Close
           </button>

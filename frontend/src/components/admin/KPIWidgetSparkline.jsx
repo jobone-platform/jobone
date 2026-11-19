@@ -2,7 +2,7 @@ import React from "react";
 
 export default function KPIWidgetSparkline({
   data = [0, 0, 0, 0, 0, 0, 0],
-  color = "#3b82f6",
+  color = "#D4AF37",
   height = 32,
   width = "100%",
   className = "",

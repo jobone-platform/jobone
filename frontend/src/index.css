@@ -3,39 +3,48 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ==========================================================================
-   JOBONE CENTRALIZED DESIGN SYSTEM TOKENS (Monochromatic Black & Silver)
-   Default Theme: Dark (#050505)
-   Alternate Theme: Light (#F8FAFC)
+   JOBONE CENTRALIZED DESIGN SYSTEM TOKENS (Gold + Black + White)
+   Default Theme: Dark (#050505) with Gold (#D4AF37)
+   Light Theme: Light (#F7F7F5) with Deep Gold (#B8860B)
    ========================================================================== */
 
 :root {
   /* Dark is the Default Visual Identity for JobOne */
   --theme-bg: #050505;
-  --theme-surface: #111111;
-  --theme-surface-muted: #161616;
-  --theme-surface-elevated: #1c1c1c;
-  --theme-surface-hover: #222222;
+  --theme-surface: #101010;
+  --theme-surface-muted: #141414;
+  --theme-surface-elevated: #171717;
+  --theme-surface-hover: #1f1f1f;
 
-  --theme-border: rgba(255, 255, 255, 0.08);
-  --theme-border-muted: rgba(255, 255, 255, 0.04);
-  --theme-border-silver: rgba(255, 255, 255, 0.16);
-  --theme-border-focus: rgba(255, 255, 255, 0.4);
+  --theme-border: #292929;
+  --theme-border-muted: rgba(255, 255, 255, 0.05);
+  --theme-border-silver: rgba(212, 175, 55, 0.30);
+  --theme-border-focus: #D4AF37;
 
   --theme-text: #ffffff;
   --theme-text-muted: #a1a1aa;
   --theme-text-subtle: #71717a;
 
-  --theme-card: #111111;
+  --theme-card: #121212;
   --theme-card-foreground: #ffffff;
 
-  --theme-input-bg: #151515;
-  --theme-input-border: rgba(255, 255, 255, 0.12);
+  --theme-input-bg: #101010;
+  --theme-input-border: #292929;
   --theme-input-text: #ffffff;
   --theme-input-placeholder: #71717a;
 
-  --theme-accent-silver: #c0c0c0;
-  --theme-accent-silver-sheen: #e5e5e5;
-  --theme-accent-silver-dark: #888888;
+  /* Gold Palette Tokens (Dark Theme) */
+  --theme-gold: #D4AF37;
+  --theme-gold-bright: #E6C65A;
+  --theme-gold-deep: #B8860B;
+  --theme-gold-hover: #E0BD4B;
+  --theme-gold-surface: rgba(212, 175, 55, 0.10);
+  --theme-gold-border: rgba(212, 175, 55, 0.30);
+
+  /* Semantic compatibility: silver mapped to gold */
+  --theme-accent-silver: #D4AF37;
+  --theme-accent-silver-sheen: #E6C65A;
+  --theme-accent-silver-dark: #B8860B;
 
   --theme-success: #10b981;
   --theme-success-bg: rgba(16, 185, 129, 0.1);
@@ -43,8 +52,8 @@
   --theme-warning-bg: rgba(245, 158, 11, 0.1);
   --theme-danger: #ef4444;
   --theme-danger-bg: rgba(239, 68, 68, 0.1);
-  --theme-info: #38bdf8;
-  --theme-info-bg: rgba(56, 189, 248, 0.1);
+  --theme-info: #D4AF37;
+  --theme-info-bg: rgba(212, 175, 55, 0.1);
 
   /* Shadows */
   --theme-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.6);
@@ -56,31 +65,39 @@
 html.dark,
 html[data-theme="dark"] {
   --theme-bg: #050505;
-  --theme-surface: #111111;
-  --theme-surface-muted: #161616;
-  --theme-surface-elevated: #1c1c1c;
-  --theme-surface-hover: #222222;
+  --theme-surface: #101010;
+  --theme-surface-muted: #141414;
+  --theme-surface-elevated: #171717;
+  --theme-surface-hover: #1f1f1f;
 
-  --theme-border: rgba(255, 255, 255, 0.08);
-  --theme-border-muted: rgba(255, 255, 255, 0.04);
-  --theme-border-silver: rgba(255, 255, 255, 0.16);
-  --theme-border-focus: rgba(255, 255, 255, 0.4);
+  --theme-border: #292929;
+  --theme-border-muted: rgba(255, 255, 255, 0.05);
+  --theme-border-silver: rgba(212, 175, 55, 0.30);
+  --theme-border-focus: #D4AF37;
 
   --theme-text: #ffffff;
   --theme-text-muted: #a1a1aa;
   --theme-text-subtle: #71717a;
 
-  --theme-card: #111111;
+  --theme-card: #121212;
   --theme-card-foreground: #ffffff;
 
-  --theme-input-bg: #151515;
-  --theme-input-border: rgba(255, 255, 255, 0.12);
+  --theme-input-bg: #101010;
+  --theme-input-border: #292929;
   --theme-input-text: #ffffff;
   --theme-input-placeholder: #71717a;
 
-  --theme-accent-silver: #c0c0c0;
-  --theme-accent-silver-sheen: #e5e5e5;
-  --theme-accent-silver-dark: #888888;
+  /* Gold Palette Tokens (Dark Theme) */
+  --theme-gold: #D4AF37;
+  --theme-gold-bright: #E6C65A;
+  --theme-gold-deep: #B8860B;
+  --theme-gold-hover: #E0BD4B;
+  --theme-gold-surface: rgba(212, 175, 55, 0.10);
+  --theme-gold-border: rgba(212, 175, 55, 0.30);
+
+  --theme-accent-silver: #D4AF37;
+  --theme-accent-silver-sheen: #E6C65A;
+  --theme-accent-silver-dark: #B8860B;
 
   --theme-success: #10b981;
   --theme-success-bg: rgba(16, 185, 129, 0.1);
@@ -88,38 +105,46 @@ html[data-theme="dark"] {
   --theme-warning-bg: rgba(245, 158, 11, 0.1);
   --theme-danger: #ef4444;
   --theme-danger-bg: rgba(239, 68, 68, 0.1);
-  --theme-info: #38bdf8;
-  --theme-info-bg: rgba(56, 189, 248, 0.1);
+  --theme-info: #D4AF37;
+  --theme-info-bg: rgba(212, 175, 55, 0.1);
 }
 
 html.light,
 html[data-theme="light"] {
-  --theme-bg: #f8fafc;
-  --theme-surface: #ffffff;
-  --theme-surface-muted: #f1f5f9;
-  --theme-surface-elevated: #ffffff;
-  --theme-surface-hover: #f8fafc;
+  --theme-bg: #F7F7F5;
+  --theme-surface: #FFFFFF;
+  --theme-surface-muted: #F0F0EC;
+  --theme-surface-elevated: #FFFFFF;
+  --theme-surface-hover: #F2F2EE;
 
-  --theme-border: #e2e8f0;
-  --theme-border-muted: #f1f5f9;
-  --theme-border-silver: #cbd5e1;
-  --theme-border-focus: #0f172a;
+  --theme-border: #E5E5E0;
+  --theme-border-muted: #ECECE8;
+  --theme-border-silver: rgba(184, 134, 11, 0.28);
+  --theme-border-focus: #B8860B;
 
-  --theme-text: #0f172a;
-  --theme-text-muted: #64748b;
-  --theme-text-subtle: #94a3b8;
+  --theme-text: #181818;
+  --theme-text-muted: #686868;
+  --theme-text-subtle: #8A8A85;
 
-  --theme-card: #ffffff;
-  --theme-card-foreground: #0f172a;
+  --theme-card: #FFFFFF;
+  --theme-card-foreground: #181818;
 
-  --theme-input-bg: #ffffff;
-  --theme-input-border: #cbd5e1;
-  --theme-input-text: #0f172a;
-  --theme-input-placeholder: #94a3b8;
+  --theme-input-bg: #FFFFFF;
+  --theme-input-border: #E5E5E0;
+  --theme-input-text: #181818;
+  --theme-input-placeholder: #8A8A85;
 
-  --theme-accent-silver: #475569;
-  --theme-accent-silver-sheen: #1e293b;
-  --theme-accent-silver-dark: #334155;
+  /* Gold Palette Tokens (Light Theme) */
+  --theme-gold: #B8860B;
+  --theme-gold-bright: #D4AF37;
+  --theme-gold-deep: #996515;
+  --theme-gold-hover: #A67608;
+  --theme-gold-surface: rgba(184, 134, 11, 0.08);
+  --theme-gold-border: rgba(184, 134, 11, 0.28);
+
+  --theme-accent-silver: #B8860B;
+  --theme-accent-silver-sheen: #D4AF37;
+  --theme-accent-silver-dark: #996515;
 
   --theme-success: #059669;
   --theme-success-bg: rgba(5, 150, 105, 0.1);
@@ -127,18 +152,23 @@ html[data-theme="light"] {
   --theme-warning-bg: rgba(217, 119, 6, 0.1);
   --theme-danger: #dc2626;
   --theme-danger-bg: rgba(220, 38, 38, 0.1);
-  --theme-info: #0284c7;
-  --theme-info-bg: rgba(2, 132, 199, 0.1);
+  --theme-info: #B8860B;
+  --theme-info-bg: rgba(184, 134, 11, 0.08);
 
-  --theme-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --theme-shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.08);
-  --theme-shadow-md: 0 12px 32px rgba(15, 23, 42, 0.1);
-  --theme-shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.14);
+  --theme-shadow-xs: 0 1px 2px rgba(24, 24, 24, 0.04);
+  --theme-shadow-sm: 0 4px 12px rgba(24, 24, 24, 0.06);
+  --theme-shadow-md: 0 12px 32px rgba(24, 24, 24, 0.08);
+  --theme-shadow-lg: 0 24px 60px rgba(24, 24, 24, 0.12);
 }
 
 html {
   -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   color-scheme: dark;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 html.light {
@@ -148,9 +178,106 @@ html.light {
 body {
   background-color: var(--theme-bg);
   color: var(--theme-text);
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   transition: background-color 0.2s ease, color 0.2s ease;
   overflow-x: hidden;
+  width: 100%;
+}
+
+/* ==========================================================================
+   SAFARI & WEBKIT CROSS-PLATFORM COMPATIBILITY LAYER
+   ========================================================================== */
+
+/* 1. Backdrop Filter WebKit Prefixing for Glassmorphism in Safari */
+@supports (-webkit-backdrop-filter: blur(1px)) {
+  .backdrop-blur-none { -webkit-backdrop-filter: none; }
+  .backdrop-blur-xs   { -webkit-backdrop-filter: blur(2px); }
+  .backdrop-blur-sm   { -webkit-backdrop-filter: blur(4px); }
+  .backdrop-blur      { -webkit-backdrop-filter: blur(8px); }
+  .backdrop-blur-md   { -webkit-backdrop-filter: blur(12px); }
+  .backdrop-blur-lg   { -webkit-backdrop-filter: blur(16px); }
+  .backdrop-blur-xl   { -webkit-backdrop-filter: blur(24px); }
+  .backdrop-blur-2xl  { -webkit-backdrop-filter: blur(40px); }
+  .backdrop-blur-3xl  { -webkit-backdrop-filter: blur(64px); }
+
+  [class*="backdrop-blur-sm"] { -webkit-backdrop-filter: blur(4px); }
+  [class*="backdrop-blur-md"] { -webkit-backdrop-filter: blur(12px); }
+  [class*="backdrop-blur-lg"] { -webkit-backdrop-filter: blur(16px); }
+  [class*="backdrop-blur-xl"] { -webkit-backdrop-filter: blur(24px); }
+  [class*="backdrop-blur-2xl"] { -webkit-backdrop-filter: blur(40px); }
+  [class*="backdrop-blur-3xl"] { -webkit-backdrop-filter: blur(64px); }
+}
+
+/* Fallback for environments lacking backdrop-filter support entirely */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .backdrop-blur-xs,
+  .backdrop-blur-sm,
+  .backdrop-blur,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-3xl {
+    background-color: var(--theme-surface) !important;
+  }
+}
+
+/* 2. WebKit Momentum Scrolling */
+.overflow-y-auto,
+.overflow-y-scroll,
+.overflow-x-auto,
+.overflow-x-scroll,
+.custom-scrollbar {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 3. Dynamic Viewport Height (iOS/Safari 100vh address bar jump fix) */
+.min-h-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.h-screen {
+  height: 100vh;
+  height: 100dvh;
+}
+.max-h-screen {
+  max-height: 100vh;
+  max-height: 100dvh;
+}
+
+/* 4. GPU Compositing Optimization for Sticky/Fixed and Modal Overlays */
+.gpu-accelerated,
+.sticky,
+header.sticky {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* 5. Safe Area Insets for MacBook Notch & Mobile Safari */
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* 6. Form Input & Button Reset for Safari */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
+
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Global Form Controls & Select Options */
@@ -179,27 +306,50 @@ textarea::placeholder {
 
 /* Glass & Architectural Utility Classes */
 .floating-nav-glass {
-  background: rgba(10, 10, 10, 0.75);
+  background: rgba(16, 16, 16, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--theme-gold-border);
 }
 
 html.light .floating-nav-glass {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--theme-gold-border);
 }
 
-.silver-shimmer {
-  background: linear-gradient(135deg, #c0c0c0 0%, #ffffff 50%, #888888 100%);
+.gold-shimmer {
+  background: linear-gradient(135deg, #E6C65A 0%, #D4AF37 50%, #B8860B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.silver-border {
+.silver-shimmer {
+  background: linear-gradient(135deg, #E6C65A 0%, #D4AF37 50%, #B8860B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.silver-border,
+.gold-border {
   border-color: var(--theme-border-silver);
+}
+
+.text-gold {
+  color: var(--theme-gold);
+}
+.bg-gold {
+  background-color: var(--theme-gold);
+}
+.bg-gold-surface {
+  background-color: var(--theme-gold-surface);
+}
+.border-gold {
+  border-color: var(--theme-gold);
+}
+.border-gold-border {
+  border-color: var(--theme-gold-border);
 }
 
 /* Semantic Theme Bridge Utilities */

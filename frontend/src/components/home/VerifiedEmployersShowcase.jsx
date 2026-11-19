@@ -39,10 +39,10 @@ export default function VerifiedEmployersShowcase() {
           action={
             <Link
               to="/companies"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[var(--theme-text)] bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] transition shadow-xs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[var(--theme-text)] bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] hover:border-[var(--theme-gold)] transition shadow-xs"
             >
               <span>Explore All Companies</span>
-              <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+              <ArrowRight className="w-4 h-4 text-[var(--theme-gold)]" />
             </Link>
           }
         />
@@ -91,7 +91,7 @@ export default function VerifiedEmployersShowcase() {
                 <Link
                   key={emp._id}
                   to={`/company/${emp._id}`}
-                  className="group rounded-2xl border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] bg-[var(--theme-surface)] p-6 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between"
+                  className="group rounded-2xl border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] bg-[var(--theme-surface)] p-6 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start gap-3.5 mb-4">
@@ -103,7 +103,7 @@ export default function VerifiedEmployersShowcase() {
                             className="w-full h-full object-contain rounded-lg"
                           />
                         ) : (
-                          <Building2 className="w-5 h-5 text-[var(--theme-accent-silver)]" />
+                          <Building2 className="w-5 h-5 text-[var(--theme-gold)]" />
                         )}
                       </div>
                       <div className="min-w-0 flex-1">

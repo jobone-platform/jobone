@@ -107,7 +107,7 @@ export default function JobseekerDocumentManager() {
           <div className="flex items-center gap-2.5 shrink-0">
             <Link
               to="/resume-builder"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-all shadow-xs"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:opacity-90 transition-all shadow-xs"
             >
               <FileCode size={14} /> Resume Builder
             </Link>
@@ -346,7 +346,7 @@ function DocumentUploader({ doc, profile, onRefresh }) {
                   type="button"
                   onClick={handleUpload}
                   disabled={uploading}
-                  className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-xs"
                 >
                   {uploading ? (
                     <Loader2 size={13} className="animate-spin" />

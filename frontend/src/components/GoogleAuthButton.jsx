@@ -5,6 +5,7 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../routes/Context";
+import { handlePostAuthRedirection } from "../utils/pendingActionHandler";
 
 /**
  * Official Google Multi-colour "G" Vector Icon
@@ -107,12 +108,13 @@ export default function GoogleAuthButton({
       if (onSuccess) {
         onSuccess(data);
       } else {
-        const redirectPath = location.state?.from?.pathname;
-        if (isEmployer) {
-          navigate(redirectPath || "/employerdashboard");
-        } else {
-          navigate(redirectPath || "/userdashboard");
-        }
+        await handlePostAuthRedirection({
+          role: isEmployer ? "employer" : "jobseeker",
+          token: data.token,
+          navigate,
+          fallbackPath: isEmployer ? "/employerdashboard" : "/userdashboard",
+          stateFromLocation: location.state,
+        });
       }
     } catch (err) {
       console.error("Google Auth Backend Error:", err);

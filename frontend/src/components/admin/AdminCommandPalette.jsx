@@ -322,13 +322,13 @@ export default function AdminCommandPalette({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border-silver)] shadow-2xl overflow-hidden flex flex-col max-h-[75vh]"
+        className="w-full max-w-2xl bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-gold-border)] shadow-2xl overflow-hidden flex flex-col max-h-[75vh]"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
         {/* Search Header */}
         <div className="p-4 border-b border-[var(--theme-border)] flex items-center gap-3 bg-[var(--theme-surface-elevated)]/40">
-          <Search size={18} className="text-[var(--theme-accent-silver)] shrink-0" />
+          <Search size={18} className="text-[var(--theme-gold)] shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -346,7 +346,7 @@ export default function AdminCommandPalette({
         <div ref={listRef} className="flex-1 overflow-y-auto divide-y divide-[var(--theme-border)] p-2">
           {allFilteredItems.length === 0 ? (
             <div className="py-14 text-center">
-              <Command size={28} className="mx-auto text-[var(--theme-accent-silver)] mb-2 opacity-50" />
+              <Command size={28} className="mx-auto text-[var(--theme-gold)] mb-2 opacity-50" />
               <p className="text-sm font-bold text-[var(--theme-text)]">No Matching Results</p>
               <p className="text-xs text-[var(--theme-text-muted)] mt-1">
                 Zero items found matching &quot;{query}&quot;. Try a different keyword or command.
@@ -363,7 +363,7 @@ export default function AdminCommandPalette({
                   onClick={() => handleSelect(item)}
                   className={`p-3 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-colors ${
                     isSelected
-                      ? "bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] shadow-xs"
+                      ? "bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] shadow-xs"
                       : "hover:bg-[var(--theme-surface-hover)] border border-transparent"
                   }`}
                 >
@@ -371,7 +371,7 @@ export default function AdminCommandPalette({
                     <div
                       className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${
                         isSelected
-                          ? "bg-[var(--theme-surface)] border-[var(--theme-border-silver)] text-[var(--theme-text)]"
+                          ? "bg-[var(--theme-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)]"
                           : "bg-[var(--theme-surface-elevated)] border-[var(--theme-border)] text-[var(--theme-text-muted)]"
                       }`}
                     >
@@ -396,7 +396,7 @@ export default function AdminCommandPalette({
                     size={14}
                     className={`shrink-0 transition-transform ${
                       isSelected
-                        ? "text-[var(--theme-text)] translate-x-1"
+                        ? "text-[var(--theme-gold)] translate-x-1"
                         : "text-transparent"
                     }`}
                   />

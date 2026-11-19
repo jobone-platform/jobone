@@ -24,6 +24,8 @@ export default defineConfig({
       : undefined,
   },
   build: {
+    target: ['es2020', 'safari15', 'ios15'],
+    cssTarget: ['safari15', 'ios15'],
     chunkSizeWarningLimit: 800,
     rollupOptions: {
       output: {

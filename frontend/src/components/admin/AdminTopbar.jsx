@@ -110,11 +110,11 @@ export default function AdminTopbar({
         <button
           type="button"
           onClick={onOpenCommandPalette}
-          className="w-full px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] flex items-center justify-between transition-all cursor-pointer group"
+          className="w-full px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:border-[var(--theme-gold-border)] flex items-center justify-between transition-all cursor-pointer group"
           title="Search commands and sections (Ctrl+K)"
         >
           <div className="flex items-center gap-2">
-            <Search size={14} className="text-[var(--theme-accent-silver)] group-hover:text-[var(--theme-text)] transition-colors" />
+            <Search size={14} className="text-[var(--theme-gold)] group-hover:text-[var(--theme-text)] transition-colors" />
             <span className="truncate">Search admin commands & sections...</span>
           </div>
           <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--theme-surface)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] shrink-0">
@@ -145,7 +145,7 @@ export default function AdminTopbar({
             aria-label="Refresh platform statistics"
             className="p-2 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] rounded-xl hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border)] transition-colors cursor-pointer disabled:opacity-50"
           >
-            <RefreshCw size={16} className={isRefreshing ? "animate-spin text-[var(--theme-accent-silver)]" : ""} />
+            <RefreshCw size={16} className={isRefreshing ? "animate-spin text-[var(--theme-gold)]" : ""} />
           </button>
         )}
 
@@ -159,7 +159,7 @@ export default function AdminTopbar({
         >
           <CurrentThemeIcon size={16} />
           {theme === "default" && (
-            <span className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--theme-accent-silver)]" />
+            <span className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--theme-gold)]" />
           )}
         </button>
 
@@ -173,7 +173,7 @@ export default function AdminTopbar({
         >
           <Bell size={16} />
           {pendingAlertsCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[var(--theme-surface)] animate-pulse" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--theme-gold)] ring-2 ring-[var(--theme-surface)] animate-pulse" />
           )}
         </button>
 
@@ -186,7 +186,7 @@ export default function AdminTopbar({
             aria-expanded={profileOpen}
             className="flex items-center gap-2 p-1 sm:px-2 sm:py-1 rounded-xl hover:bg-[var(--theme-surface-hover)] border border-transparent hover:border-[var(--theme-border)] transition-colors cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs flex items-center justify-center shadow-xs">
+            <div className="w-8 h-8 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] font-bold text-xs flex items-center justify-center shadow-xs">
               {adminInitials}
             </div>
             <div className="hidden sm:block text-left max-w-[120px]">
@@ -211,7 +211,7 @@ export default function AdminTopbar({
                 </p>
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase text-[var(--theme-text-subtle)]">Role</span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border-silver)]">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
                     {roleNameMap[role] || role}
                   </span>
                 </div>
@@ -242,7 +242,7 @@ export default function AdminTopbar({
                     onClick={() => setTheme("dark")}
                     className={`flex items-center justify-center gap-1 py-1 rounded text-[10px] font-bold border transition-colors ${
                       theme === "dark"
-                        ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border-[var(--theme-border-silver)]"
+                        ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)]"
                         : "text-[var(--theme-text-muted)] border-transparent hover:bg-[var(--theme-surface-hover)]"
                     }`}
                   >
@@ -253,7 +253,7 @@ export default function AdminTopbar({
                     onClick={() => setTheme("light")}
                     className={`flex items-center justify-center gap-1 py-1 rounded text-[10px] font-bold border transition-colors ${
                       theme === "light"
-                        ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border-[var(--theme-border-silver)]"
+                        ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)]"
                         : "text-[var(--theme-text-muted)] border-transparent hover:bg-[var(--theme-surface-hover)]"
                     }`}
                   >
@@ -264,7 +264,7 @@ export default function AdminTopbar({
                     onClick={() => setTheme("default")}
                     className={`flex items-center justify-center gap-1 py-1 rounded text-[10px] font-bold border transition-colors ${
                       theme === "default"
-                        ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border-[var(--theme-border-silver)]"
+                        ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)]"
                         : "text-[var(--theme-text-muted)] border-transparent hover:bg-[var(--theme-surface-hover)]"
                     }`}
                   >

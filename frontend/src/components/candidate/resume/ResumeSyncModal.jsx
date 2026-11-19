@@ -108,11 +108,11 @@ export default function ResumeSyncModal({
             type="button"
             onClick={onConfirm}
             disabled={saving}
-            className="px-5 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs hover:opacity-90 transition-all flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
+            className="px-5 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-all flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
           >
             {saving ? (
               <>
-                <Loader2 size={13} className="animate-spin text-[var(--theme-bg)]" />
+                <Loader2 size={13} className="animate-spin text-black" />
                 <span>Synchronizing...</span>
               </>
             ) : (

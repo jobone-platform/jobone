@@ -54,8 +54,8 @@ export default function About() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
         {/* --- EDITORIAL HERO --- */}
         <section className="text-center pt-8 pb-12 relative overflow-hidden">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-2 border border-border text-[11px] font-mono text-silver mb-6">
-            <ShieldCheck size={13} className="text-silver" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[11px] font-mono text-[var(--theme-gold)] mb-6">
+            <ShieldCheck size={13} className="text-[var(--theme-gold)]" />
             <span>ARCHITECTURAL RECRUITMENT MANIFESTO</span>
           </div>
 
@@ -70,7 +70,7 @@ export default function About() {
           <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
             <Link
               to="/jobs"
-              className="px-6 py-3 rounded-xl bg-foreground text-background font-semibold text-xs sm:text-sm hover:opacity-90 transition shadow-md"
+              className="px-6 py-3 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm hover:bg-[var(--theme-gold-bright)] transition shadow-md"
             >
               Explore Active Requisitions
             </Link>
@@ -87,7 +87,7 @@ export default function About() {
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 sm:p-8 rounded-3xl bg-surface-1 border border-border shadow-xl">
           {milestones.map((item, idx) => (
             <div key={idx} className="text-center p-3">
-              <div className="text-2xl sm:text-4xl font-display font-extrabold text-foreground mb-1">
+              <div className="text-2xl sm:text-4xl font-display font-extrabold text-[var(--theme-gold)] mb-1">
                 {item.metric}
               </div>
               <p className="text-[11px] sm:text-xs font-mono uppercase tracking-wider text-foreground/50">

@@ -50,13 +50,13 @@ const STATUS_CONFIG = {
   },
   "Interview Scheduled": {
     label: "Interview Scheduled",
-    badgeClass: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-    color: "purple",
+    badgeClass: "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)]",
+    color: "gold",
   },
   "Interview Conducted": {
     label: "Interview Conducted",
-    badgeClass: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
-    color: "cyan",
+    badgeClass: "bg-[var(--theme-gold-surface)]/60 text-[var(--theme-gold-bright)] border-[var(--theme-gold-border)]",
+    color: "gold",
   },
   "Assignment Scheduled": {
     label: "Assignment",
@@ -452,7 +452,7 @@ export default function MyCandidates() {
       ]}
     >
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
-          <Loader2 className="animate-spin text-silver mb-3" size={36} />
+          <Loader2 className="animate-spin text-[var(--theme-gold)] mb-3" size={36} />
           <p className="text-xs font-mono tracking-widest text-foreground/50 uppercase">
             Loading Recruitment Workspace...
           </p>
@@ -479,7 +479,7 @@ export default function MyCandidates() {
                 Employer Workspace
               </span>
               <span className="text-foreground/30 font-mono">/</span>
-              <span className="text-xs font-mono text-silver uppercase">
+              <span className="text-xs font-mono text-[var(--theme-gold)] uppercase font-semibold">
                 Candidate CRM & Interviews
               </span>
             </div>
@@ -497,7 +497,7 @@ export default function MyCandidates() {
               onClick={() => switchTab("roster")}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono transition-all whitespace-nowrap ${
                 currentTab === "roster"
-                  ? "bg-elevated text-foreground shadow-sm font-bold border border-border"
+                  ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] shadow-sm font-bold border border-[var(--theme-gold-border)]"
                   : "text-foreground/60 hover:text-foreground"
               }`}
             >
@@ -507,7 +507,7 @@ export default function MyCandidates() {
               onClick={() => switchTab("interviews")}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono transition-all whitespace-nowrap ${
                 currentTab === "interviews"
-                  ? "bg-elevated text-foreground shadow-sm font-bold border border-border"
+                  ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] shadow-sm font-bold border border-[var(--theme-gold-border)]"
                   : "text-foreground/60 hover:text-foreground"
               }`}
             >
@@ -517,7 +517,7 @@ export default function MyCandidates() {
               onClick={() => switchTab("analytics")}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono transition-all whitespace-nowrap ${
                 currentTab === "analytics"
-                  ? "bg-elevated text-foreground shadow-sm font-bold border border-border"
+                  ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] shadow-sm font-bold border border-[var(--theme-gold-border)]"
                   : "text-foreground/60 hover:text-foreground"
               }`}
             >
@@ -527,7 +527,7 @@ export default function MyCandidates() {
               onClick={() => switchTab("team")}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono transition-all whitespace-nowrap ${
                 currentTab === "team"
-                  ? "bg-elevated text-foreground shadow-sm font-bold border border-border"
+                  ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] shadow-sm font-bold border border-[var(--theme-gold-border)]"
                   : "text-foreground/60 hover:text-foreground"
               }`}
             >
@@ -796,7 +796,7 @@ export default function MyCandidates() {
                               },
                             })
                           }
-                          className="px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold bg-foreground text-background hover:bg-silver transition-colors inline-flex items-center gap-1"
+                          className="px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1 shadow-md hover:shadow-lg"
                         >
                           Full Profile <ChevronRight size={13} />
                         </button>
@@ -905,7 +905,7 @@ export default function MyCandidates() {
                                       },
                                     })
                                   }
-                                  className="px-3 py-1.5 rounded-lg bg-foreground text-background font-mono text-xs font-bold hover:bg-silver inline-flex items-center gap-1"
+                                  className="px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1 shadow-sm"
                                 >
                                   Profile <ChevronRight size={13} />
                                 </button>
@@ -994,7 +994,7 @@ export default function MyCandidates() {
                 </p>
                 <button
                   onClick={() => switchTab("roster")}
-                  className="px-4 py-2 rounded-xl bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors"
+                  className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
                 >
                   Browse Candidates & Schedule
                 </button>
@@ -1095,7 +1095,7 @@ export default function MyCandidates() {
                                   href={app.meetingLink}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="px-3 py-1 rounded-lg bg-foreground text-background text-xs font-mono font-bold hover:bg-silver transition-colors inline-flex items-center gap-1 shrink-0"
+                                  className="px-3 py-1 rounded-lg bg-[var(--theme-gold)] text-black text-xs font-mono font-bold hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1 shrink-0 shadow-sm"
                                 >
                                   <Video size={12} /> Launch
                                 </a>
@@ -1146,7 +1146,7 @@ export default function MyCandidates() {
                                 });
                                 setEmployerMessage(app.employerMessage || "");
                               }}
-                              className="px-3 py-1.5 rounded-xl bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-mono"
+                              className="px-3 py-1.5 rounded-xl bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] hover:bg-[var(--theme-gold-surface)]/80 border border-[var(--theme-gold-border)] text-xs font-mono"
                             >
                               Mark Conducted
                             </button>
@@ -1162,7 +1162,7 @@ export default function MyCandidates() {
                                 },
                               })
                             }
-                            className="px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold bg-foreground text-background hover:bg-silver transition-colors inline-flex items-center gap-1 ml-auto"
+                            className="px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1 ml-auto shadow-sm"
                           >
                             Dossier <ChevronRight size={13} />
                           </button>
@@ -1267,7 +1267,7 @@ export default function MyCandidates() {
                   {
                     stage: "1. Applications Received",
                     count: analyticsMetrics.total,
-                    color: "bg-silver",
+                    color: "bg-[var(--theme-gold)]",
                     percent: 100,
                   },
                   {
@@ -1284,7 +1284,7 @@ export default function MyCandidates() {
                   {
                     stage: "3. Scheduled & Interviewed",
                     count: analyticsMetrics.scheduled,
-                    color: "bg-purple-500",
+                    color: "bg-[var(--theme-gold)]",
                     percent:
                       analyticsMetrics.total > 0
                         ? Math.round(
@@ -1357,7 +1357,7 @@ export default function MyCandidates() {
                         </div>
                         <div className="h-2 w-full bg-surface rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-silver rounded-full"
+                            className="h-full bg-[var(--theme-gold)] rounded-full"
                             style={{ width: `${widthPercent}%` }}
                           />
                         </div>
@@ -1377,7 +1377,7 @@ export default function MyCandidates() {
           <div className="space-y-6">
             <div className="p-6 rounded-3xl bg-surface border border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-silver">
+                <span className="text-xs font-mono uppercase tracking-widest text-[var(--theme-gold)] font-semibold">
                   Recruiting Permissions
                 </span>
                 <h2 className="text-2xl font-display font-bold text-foreground mt-1">
@@ -1390,7 +1390,7 @@ export default function MyCandidates() {
 
               <button
                 onClick={() => setInviteModalOpen(true)}
-                className="px-4 py-2 rounded-xl bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1.5 shadow-md hover:shadow-lg"
               >
                 <Plus size={14} /> Invite Collaborator
               </button>
@@ -1429,7 +1429,7 @@ export default function MyCandidates() {
                         <span
                           className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono uppercase tracking-wider border ${
                             member.role === "Admin"
-                              ? "bg-purple-500/10 text-purple-400 border-purple-500/30 font-bold"
+                              ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] font-bold"
                               : member.role === "Recruiter"
                               ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
                               : "bg-surface text-foreground/70 border-border"
@@ -1608,7 +1608,7 @@ export default function MyCandidates() {
                         setEmployerMessage(drawerApp.employerMessage || "");
                         setMeetingLink(drawerApp.meetingLink || "");
                       }}
-                      className="px-3 py-2 rounded-xl bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 text-xs font-mono uppercase tracking-wider font-bold transition-colors"
+                      className="px-3 py-2 rounded-xl bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] hover:bg-[var(--theme-gold-surface)]/80 border border-[var(--theme-gold-border)] text-xs font-mono uppercase tracking-wider font-bold transition-colors"
                     >
                       Schedule Interview
                     </button>
@@ -1624,7 +1624,7 @@ export default function MyCandidates() {
                         },
                       });
                     }}
-                    className="w-full py-2.5 rounded-xl bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors flex items-center justify-center gap-1.5"
+                    className="w-full py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg"
                   >
                     Open Candidate Dossier <ChevronRight size={14} />
                   </button>
@@ -1757,7 +1757,7 @@ export default function MyCandidates() {
                     <button
                       onClick={handleStatusUpdate}
                       disabled={actionLoading}
-                      className="px-5 py-2 rounded-xl text-xs font-mono font-bold text-background bg-foreground hover:bg-silver transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 shadow-sm"
+                      className="px-5 py-2 rounded-xl text-xs font-mono font-bold text-black bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1.5 disabled:opacity-50 shadow-md hover:shadow-lg"
                     >
                       {actionLoading ? (
                         <Loader2 className="animate-spin" size={13} />
@@ -1851,7 +1851,7 @@ export default function MyCandidates() {
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-xl text-xs font-mono font-bold text-background bg-foreground hover:bg-silver transition-colors"
+                      className="px-5 py-2 rounded-xl text-xs font-mono font-bold text-black bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
                     >
                       Send Invitation
                     </button>

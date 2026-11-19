@@ -232,7 +232,7 @@ export default function AdminNotificationsView({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--theme-border)]">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-accent-silver)]">
+            <div className="w-9 h-9 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <Bell size={18} />
             </div>
             <div>
@@ -241,7 +241,7 @@ export default function AdminNotificationsView({
                   Notification Workspace
                 </h1>
                 {unreadCount > 0 && (
-                  <span className="px-2 py-0.5 rounded-full font-mono text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  <span className="px-2 py-0.5 rounded-full font-mono text-[10px] font-bold bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
                     {unreadCount} Unread
                   </span>
                 )}
@@ -257,7 +257,7 @@ export default function AdminNotificationsView({
           <button
             type="button"
             onClick={handleMarkAllAsRead}
-            className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            className="px-3.5 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] hover:text-[var(--theme-gold)] text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
           >
             <Check size={14} className="text-emerald-400" />
             <span>Mark All As Read</span>
@@ -279,7 +279,7 @@ export default function AdminNotificationsView({
               placeholder="Search notifications by title, sender, or subject..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-hidden focus:border-[var(--theme-border-silver)] transition-colors"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-hidden focus:border-[var(--theme-gold)] transition-colors"
             />
           </div>
 
@@ -287,7 +287,7 @@ export default function AdminNotificationsView({
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)] cursor-pointer"
+            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)] cursor-pointer"
           >
             <option value="all">All Categories</option>
             <option value="jobs">Job Moderation ({pendingJobs.length})</option>
@@ -300,7 +300,7 @@ export default function AdminNotificationsView({
           <select
             value={readFilter}
             onChange={(e) => setReadFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)] cursor-pointer"
+            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)] cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="unread">Unread Only</option>
@@ -332,7 +332,7 @@ export default function AdminNotificationsView({
       <div className="space-y-3">
         {filteredNotifications.length === 0 ? (
           <div className="p-12 text-center rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
-            <Inbox size={36} className="mx-auto text-[var(--theme-accent-silver)] mb-3 opacity-60" />
+            <Inbox size={36} className="mx-auto text-[var(--theme-gold)] mb-3 opacity-60" />
             <p className="text-sm font-bold text-[var(--theme-text)]">No Notifications Matched</p>
             <p className="text-xs text-[var(--theme-text-muted)] mt-1 max-w-sm mx-auto">
               Your operational inbox is clean. There are no pending alerts matching your active filters.
@@ -348,7 +348,7 @@ export default function AdminNotificationsView({
                 key={notif.id}
                 className={`p-4 sm:p-5 rounded-2xl border transition-all shadow-xs flex flex-col sm:flex-row sm:items-start justify-between gap-4 ${
                   isUnread
-                    ? "bg-[var(--theme-surface)] border-[var(--theme-border-silver)]"
+                    ? "bg-[var(--theme-surface)] border-[var(--theme-gold-border)]"
                     : "bg-[var(--theme-surface)]/60 border-[var(--theme-border)] opacity-85"
                 }`}
               >
@@ -357,7 +357,7 @@ export default function AdminNotificationsView({
                   <div
                     className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 mt-0.5 ${
                       isUnread
-                        ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-border-silver)] text-[var(--theme-text)]"
+                        ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)]"
                         : "bg-[var(--theme-surface)] border-[var(--theme-border)] text-[var(--theme-text-muted)]"
                     }`}
                   >
@@ -373,7 +373,7 @@ export default function AdminNotificationsView({
                         {notif.category}
                       </span>
                       {isUnread && (
-                        <span className="w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[var(--theme-surface)] animate-pulse" />
+                        <span className="w-2 h-2 rounded-full bg-[var(--theme-gold)] ring-2 ring-[var(--theme-surface)] animate-pulse" />
                       )}
                     </div>
 
@@ -413,7 +413,7 @@ export default function AdminNotificationsView({
                   {notif.actionLink ? (
                     <Link
                       to={notif.actionLink}
-                      className="px-3 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-mono font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-xs"
+                      className="px-3 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-mono font-bold hover:bg-[var(--theme-gold-bright)] transition-colors flex items-center gap-1.5 shadow-md hover:shadow-lg"
                     >
                       <span>Inspect</span>
                       <ExternalLink size={13} />
@@ -422,7 +422,7 @@ export default function AdminNotificationsView({
                     <button
                       type="button"
                       onClick={() => onSelectTab && onSelectTab(notif.tabTarget)}
-                      className="px-3 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-mono font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-mono font-bold hover:bg-[var(--theme-gold-bright)] transition-colors flex items-center gap-1.5 shadow-md hover:shadow-lg cursor-pointer"
                     >
                       <span>Open Queue</span>
                       <ArrowRight size={13} />
@@ -434,7 +434,7 @@ export default function AdminNotificationsView({
                         setActiveContactModal(notif.rawContact);
                         handleMarkAsRead(notif);
                       }}
-                      className="px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-bold hover:bg-[var(--theme-surface)] transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      className="px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] text-[var(--theme-text)] text-xs font-mono font-bold hover:bg-[var(--theme-gold-surface)] hover:text-[var(--theme-gold)] transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <span>Read Message</span>
                       <Eye size={13} />
@@ -461,7 +461,7 @@ export default function AdminNotificationsView({
           >
             <div className="flex items-center justify-between pb-3 border-b border-[var(--theme-border)]">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)]">
+                <div className="p-2 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                   <Mail size={16} />
                 </div>
                 <div>

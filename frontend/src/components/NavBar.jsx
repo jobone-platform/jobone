@@ -23,13 +23,22 @@ import {
 } from "lucide-react";
 import LogoJobOne from "./LogoJobOne";
 import { useAuth, useTheme } from "../routes/Context";
+import { useProtectedAction } from "../context/ProtectedActionContext";
 
 export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, employer, admin, logout, authStatus, role } = useAuth();
+  const { executeProtectedAction } = useProtectedAction();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
+
+  // Cycle 3-Way Theme Standard per RULE[user_global]
+  const cycleTheme = () => {
+    if (theme === "light") setTheme("dark");
+    else if (theme === "dark") setTheme("default");
+    else setTheme("light");
+  };
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -167,28 +176,14 @@ export default function NavBar() {
     ? "Employer Dashboard"
     : "Career Center";
 
-  // --- 3. PUBLIC NAVIGATION LINKS (Role-Aware) ---
-  const isEmployerHome = currentPath === "/employer";
-  const publicLinks = isEmployerHome
-    ? [
-        { to: "/candidates", label: "Find Candidates", icon: User },
-        { to: "/companies", label: "Companies", icon: Building2 },
-        { to: "/services", label: "Services", icon: Sparkles },
-        { to: "/about", label: "About", icon: Info },
-        { to: "/contact", label: "Contact", icon: PhoneCall },
-      ]
-    : [
-        { to: "/jobs", label: "Find Jobs", icon: Briefcase },
-        { to: "/companies", label: "Companies", icon: Building2 },
-        { to: "/services", label: "Services", icon: Sparkles },
-        { to: "/about", label: "About", icon: Info },
-        { to: "/contact", label: "Contact", icon: PhoneCall },
-      ];
-
-  const audienceSwitch = isEmployerHome
-    ? { to: "/", label: "Candidate", icon: User, ariaLabel: "Switch to Candidate Homepage" }
-    : { to: "/employer", label: "Employer", icon: Building2, ariaLabel: "Switch to Employer Homepage" };
-  const AudienceIcon = audienceSwitch.icon;
+  // --- 3. UNIVERSAL PUBLIC NAVIGATION LINKS ---
+  const publicLinks = [
+    { to: "/jobs", label: "Find Jobs", icon: Briefcase },
+    { to: "/companies", label: "Companies", icon: Building2 },
+    { to: "/services", label: "Services", icon: Sparkles },
+    { to: "/about", label: "About", icon: Info },
+    { to: "/contact", label: "Contact", icon: PhoneCall },
+  ];
 
   const isLinkActive = (to) => {
     if (to === "/") return currentPath === "/";
@@ -217,7 +212,7 @@ export default function NavBar() {
             <LogoJobOne
               width={140}
               height={40}
-              textColor={isDark ? "#FFFFFF" : "#0F172A"}
+              textColor={isDark ? "#FFFFFF" : "#181818"}
               className="h-6 sm:h-8 w-auto group-hover:opacity-90 transition-opacity"
             />
           </Link>
@@ -234,9 +229,9 @@ export default function NavBar() {
                   key={link.to}
                   to={link.to}
                   aria-current={active ? "page" : undefined}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-accent-silver)] ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)] ${
                     active
-                      ? "bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold shadow-xs"
+                      ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] font-bold shadow-xs"
                       : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)]"
                   }`}
                 >
@@ -248,8 +243,8 @@ export default function NavBar() {
 
           {/* ──── RIGHT ACTION CONTROLS ──────────────────────────────────── */}
           <div className="hidden lg:flex items-center gap-2.5 shrink-0">
-            {/* Theme Toggle Pill (Light, Dark, System) */}
-            <div className="flex items-center p-0.5 rounded-full border border-[var(--theme-border)] bg-[var(--theme-card)] shadow-2xs">
+            {/* Theme Toggle Pill (Light, Dark, Default) */}
+            <div className="flex items-center p-0.5 rounded-full border border-[var(--theme-gold-border)] bg-[var(--theme-card)] shadow-2xs">
               <button
                 type="button"
                 onClick={() => setTheme("light")}
@@ -257,7 +252,7 @@ export default function NavBar() {
                 aria-label="Switch to Light mode"
                 className={`p-1.5 rounded-full transition-all cursor-pointer ${
                   theme === "light"
-                    ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                    ? "bg-[var(--theme-gold)] text-black shadow-xs"
                     : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                 }`}
               >
@@ -270,7 +265,7 @@ export default function NavBar() {
                 aria-label="Switch to Dark mode"
                 className={`p-1.5 rounded-full transition-all cursor-pointer ${
                   theme === "dark"
-                    ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                    ? "bg-[var(--theme-gold)] text-black shadow-xs"
                     : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                 }`}
               >
@@ -283,7 +278,7 @@ export default function NavBar() {
                 aria-label="Switch to System default theme"
                 className={`p-1.5 rounded-full transition-all cursor-pointer ${
                   theme === "default"
-                    ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                    ? "bg-[var(--theme-gold)] text-black shadow-xs"
                     : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                 }`}
               >
@@ -291,27 +286,17 @@ export default function NavBar() {
               </button>
             </div>
 
-            {/* Audience Switcher (Always visible on desktop, preserves auth & theme) */}
-            <Link
-              to={audienceSwitch.to}
-              aria-label={audienceSwitch.ariaLabel}
-              className="px-3 py-1.5 rounded-full text-xs font-semibold border border-[var(--theme-border-silver)] bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] text-[var(--theme-text)] transition flex items-center gap-1.5 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-accent-silver)]"
-            >
-              <AudienceIcon className="w-3.5 h-3.5 text-[var(--theme-accent-silver)] shrink-0" />
-              <span>{audienceSwitch.label}</span>
-            </Link>
-
             {/* If Authenticated: Portal Shortcut Pill + User Avatar Menu */}
             {authStatus === "authenticated" && activeUser ? (
               <div className="flex items-center gap-2">
                 <Link
                   to={portalRoute}
-                  className="px-3.5 py-1.5 rounded-full text-xs font-bold border border-[var(--theme-border-silver)] bg-[var(--theme-card)] hover:bg-[var(--theme-surface-hover)] text-[var(--theme-text)] transition flex items-center gap-1.5 shadow-xs whitespace-nowrap shrink-0"
+                  className="px-3.5 py-1.5 rounded-full text-xs font-bold border border-[var(--theme-gold-border)] bg-[var(--theme-gold-surface)] hover:bg-[var(--theme-gold)]/20 text-[var(--theme-text)] transition flex items-center gap-1.5 shadow-xs whitespace-nowrap shrink-0"
                 >
                   {isEmployer ? (
-                    <Building2 className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                    <Building2 className="w-3.5 h-3.5 text-[var(--theme-gold)] shrink-0" />
                   ) : (
-                    <LayoutDashboard className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                    <LayoutDashboard className="w-3.5 h-3.5 text-[var(--theme-gold)] shrink-0" />
                   )}
                   <span>{portalLabel}</span>
                 </Link>
@@ -323,9 +308,9 @@ export default function NavBar() {
                     aria-expanded={userDropdownOpen}
                     aria-haspopup="true"
                     aria-label="User profile menu"
-                    className="flex items-center gap-1.5 p-1 pl-1.5 pr-2 rounded-full border border-[var(--theme-border)] bg-[var(--theme-card)] hover:border-zinc-400 transition cursor-pointer"
+                    className="flex items-center gap-1.5 p-1 pl-1.5 pr-2 rounded-full border border-[var(--theme-gold-border)] bg-[var(--theme-card)] hover:border-[var(--theme-gold)] transition cursor-pointer"
                   >
-                    <div className="w-6 h-6 rounded-full bg-zinc-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] flex items-center justify-center font-bold text-[10px] shrink-0">
                       {initials}
                     </div>
                     <ChevronDown
@@ -351,7 +336,7 @@ export default function NavBar() {
                               {displayEmail}
                             </p>
                           )}
-                          <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-[var(--theme-card)] border border-[var(--theme-border)] text-[var(--theme-accent-silver)]">
+                          <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                             {role || "Member"}
                           </span>
                         </div>
@@ -363,9 +348,9 @@ export default function NavBar() {
                             className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition"
                           >
                             {isEmployer ? (
-                              <Building2 className="w-3.5 h-3.5 text-zinc-400" />
+                              <Building2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                             ) : (
-                              <LayoutDashboard className="w-3.5 h-3.5 text-zinc-400" />
+                              <LayoutDashboard className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                             )}
                             <span>{isEmployer ? "Employer Dashboard" : "Dashboard"}</span>
                           </Link>
@@ -377,7 +362,7 @@ export default function NavBar() {
                                 onClick={() => setUserDropdownOpen(false)}
                                 className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition"
                               >
-                                <User className="w-3.5 h-3.5 text-zinc-400" />
+                                <User className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                                 <span>Candidate Profile</span>
                               </Link>
                               <Link
@@ -385,7 +370,7 @@ export default function NavBar() {
                                 onClick={() => setUserDropdownOpen(false)}
                                 className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition"
                               >
-                                <FileText className="w-3.5 h-3.5 text-zinc-400" />
+                                <FileText className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                                 <span>My Applications</span>
                               </Link>
                             </>
@@ -398,7 +383,7 @@ export default function NavBar() {
                                 onClick={() => setUserDropdownOpen(false)}
                                 className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition"
                               >
-                                <PlusCircle className="w-3.5 h-3.5 text-zinc-400" />
+                                <PlusCircle className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                                 <span>Post a Job</span>
                               </Link>
                               <Link
@@ -406,7 +391,7 @@ export default function NavBar() {
                                 onClick={() => setUserDropdownOpen(false)}
                                 className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition"
                               >
-                                <Building2 className="w-3.5 h-3.5 text-zinc-400" />
+                                <Building2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
                                 <span>Organization Profile</span>
                               </Link>
                             </>
@@ -429,35 +414,57 @@ export default function NavBar() {
                 </div>
               </div>
             ) : (
-              /* If Guest: Sign In */
-              <Link
-                to="/login"
-                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[var(--theme-text)] text-[var(--theme-bg)] hover:opacity-90 transition shadow-xs whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-accent-silver)]"
-              >
-                Sign In
-              </Link>
+              /* If Guest: Post a Job Shortcut + Sign In */
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    executeProtectedAction({
+                      action: "post_job",
+                      requiredRole: "employer",
+                      title: "Sign in or create an Employer account to publish job opportunities",
+                      subtitle: "Verified employer credentials are required to post requisitions and manage recruitment.",
+                      returnUrl: "/createjob",
+                      onExecute: () => navigate("/createjob"),
+                    });
+                  }}
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition cursor-pointer"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
+                  <span>Post a Job</span>
+                </button>
+                <Link
+                  to="/login"
+                  className="px-4 py-1.5 rounded-full text-xs font-bold bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] transition shadow-xs whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)]"
+                >
+                  Sign In
+                </Link>
+              </div>
             )}
           </div>
 
           {/* ──── MOBILE & TABLET CONTROLS ────────────────────────────────── */}
           <div className="flex lg:hidden items-center gap-1.5 shrink-0">
-            <Link
-              to={audienceSwitch.to}
-              aria-label={audienceSwitch.ariaLabel}
-              className="px-2.5 py-1.5 rounded-xl border border-[var(--theme-border-silver)] bg-[var(--theme-card)] text-[var(--theme-text)] text-[11px] font-bold flex items-center gap-1 shrink-0"
-            >
-              <AudienceIcon className="w-3.5 h-3.5 text-[var(--theme-accent-silver)] shrink-0" aria-hidden="true" />
-              <span>{audienceSwitch.label}</span>
-            </Link>
-
             <button
               type="button"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              aria-label="Toggle theme"
-              className="p-2 rounded-xl border border-[var(--theme-border)] text-[var(--theme-text)] bg-[var(--theme-card)]"
+              onClick={cycleTheme}
+              title={
+                theme === "default"
+                  ? "Theme: System Default (click to cycle)"
+                  : isDark
+                  ? "Theme: Dark Mode (click to cycle)"
+                  : "Theme: Light Mode (click to cycle)"
+              }
+              aria-label="Cycle theme: Light, Dark, System Default"
+              className="p-2 rounded-xl border border-[var(--theme-border)] text-[var(--theme-text)] bg-[var(--theme-card)] transition hover:border-[var(--theme-gold)]"
             >
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === "default" ? (
+                <Monitor className="w-4 h-4 text-[var(--theme-gold)]" />
+              ) : isDark ? (
+                <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
+              )}
             </button>
 
             <button
@@ -548,20 +555,39 @@ export default function NavBar() {
                 })}
               </div>
 
-              {/* Mobile Audience Switcher & Theme Selector */}
+              {/* Mobile Quick Action Buttons & Theme Selector */}
               <div className="pt-2 border-t border-[var(--theme-border)] space-y-3">
-                <Link
-                  to={audienceSwitch.to}
-                  onClick={() => setMobileMenuOpen(false)}
-                  aria-label={audienceSwitch.ariaLabel}
-                  className="w-full py-3 min-h-[44px] rounded-2xl font-bold text-sm border border-[var(--theme-border-silver)] bg-[var(--theme-card)] text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] flex items-center justify-center gap-2 transition"
-                >
-                  <AudienceIcon className="w-4 h-4 text-[var(--theme-accent-silver)]" />
-                  <span>{audienceSwitch.label}</span>
-                </Link>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    to="/jobs"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-3 px-3 rounded-2xl font-bold text-xs border border-[var(--theme-gold-border)] bg-[var(--theme-card)] text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] flex items-center justify-center gap-1.5 transition text-center"
+                  >
+                    <Briefcase className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
+                    <span>Find Jobs</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      executeProtectedAction({
+                        action: "post_job",
+                        requiredRole: "employer",
+                        title: "Sign in or create an Employer account to publish job opportunities",
+                        subtitle: "Verified employer credentials are required to post requisitions and manage recruitment.",
+                        returnUrl: "/createjob",
+                        onExecute: () => navigate("/createjob"),
+                      });
+                    }}
+                    className="py-3 px-3 rounded-2xl font-bold text-xs border border-[var(--theme-gold-border)] bg-[var(--theme-card)] text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] flex items-center justify-center gap-1.5 transition text-center cursor-pointer"
+                  >
+                    <Building2 className="w-3.5 h-3.5 text-[var(--theme-gold)]" />
+                    <span>Post a Job</span>
+                  </button>
+                </div>
 
                 {/* Theme Switcher (Light / Dark / Default) */}
-                <div className="flex items-center justify-between px-3 py-2 rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-card)]">
+                <div className="flex items-center justify-between px-3 py-2 rounded-2xl border border-[var(--theme-gold-border)] bg-[var(--theme-card)]">
                   <span className="text-xs font-semibold text-[var(--theme-text-muted)]">Theme</span>
                   <div className="flex items-center gap-1">
                     {[
@@ -576,7 +602,7 @@ export default function NavBar() {
                         aria-label={`Switch to ${label} theme`}
                         className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 cursor-pointer transition ${
                           theme === id
-                            ? "bg-[var(--theme-text)] text-[var(--theme-bg)]"
+                            ? "bg-[var(--theme-gold)] text-black font-bold"
                             : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
                         }`}
                       >
@@ -594,7 +620,7 @@ export default function NavBar() {
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-3 min-h-[44px] rounded-2xl font-bold text-sm bg-[var(--theme-text)] text-[var(--theme-bg)] text-center flex items-center justify-center hover:opacity-90 transition"
+                    className="w-full py-3 min-h-[44px] rounded-2xl font-bold text-sm bg-[var(--theme-gold)] text-black text-center flex items-center justify-center hover:bg-[var(--theme-gold-bright)] transition shadow-sm"
                   >
                     Sign In
                   </Link>

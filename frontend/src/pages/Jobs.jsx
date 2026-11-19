@@ -26,6 +26,7 @@ import { API_BASE_URL } from "../config/api";
 import CompanyDisplay from "../components/CompanyDisplay";
 import JobDetailsModal from "../components/JobDetailsModal";
 import { INDUSTRIES, DEPARTMENTS, normalizeIndustry, getDepartmentsForIndustry } from "../constants/taxonomy";
+import { useProtectedAction } from "../context/ProtectedActionContext";
 
 const POPULAR_SEARCH_TAGS = [
   "Remote",
@@ -99,6 +100,8 @@ export default function Jobs() {
   });
   const [sortBy, setSortBy] = useState("newest"); // "newest" | "salary_high" | "title_asc"
 
+  const { saveJobWithAuth } = useProtectedAction();
+
   // Bookmarked Jobs State
   const [savedJobIds, setSavedJobIds] = useState(() => {
     try {
@@ -109,19 +112,28 @@ export default function Jobs() {
     }
   });
 
-  const toggleBookmark = (e, jobId) => {
-    e.stopPropagation();
-    setSavedJobIds((prev) => {
-      const next = prev.includes(jobId)
-        ? prev.filter((id) => id !== jobId)
-        : [...prev, jobId];
+  // Sync saved jobs if updated from other actions or storage
+  useEffect(() => {
+    const handleStorageChange = () => {
       try {
-        localStorage.setItem("jobone_saved_jobs", JSON.stringify(next));
-      } catch (err) {
-        console.error("Error saving bookmark:", err);
-      }
-      return next;
-    });
+        const saved = localStorage.getItem("jobone_saved_jobs");
+        if (saved) setSavedJobIds(JSON.parse(saved));
+      } catch {}
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  const toggleBookmark = async (e, job) => {
+    e.stopPropagation();
+    const res = await saveJobWithAuth(job._id, job);
+    if (res?.success) {
+      setSavedJobIds((prev) =>
+        res.saved
+          ? Array.from(new Set([...prev, job._id]))
+          : prev.filter((id) => id !== job._id)
+      );
+    }
   };
 
   const handleToggleViewMode = (mode) => {
@@ -435,7 +447,7 @@ export default function Jobs() {
           >
             {/* Input: Job title or keywords */}
             <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl md:rounded-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)]">
-              <Search className="text-[var(--theme-accent-silver)] shrink-0" size={17} />
+              <Search className="text-[var(--theme-gold)] shrink-0" size={17} />
               <input
                 type="text"
                 placeholder="Job title, technical skills, or company..."
@@ -458,7 +470,7 @@ export default function Jobs() {
 
             {/* Input: Location */}
             <div className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl md:rounded-full bg-[var(--theme-input-bg)] border border-[var(--theme-border)]">
-              <MapPin className="text-[var(--theme-accent-silver)] shrink-0" size={17} />
+              <MapPin className="text-[var(--theme-gold)] shrink-0" size={17} />
               <input
                 type="text"
                 placeholder="City, region, or 'Remote'..."
@@ -482,9 +494,9 @@ export default function Jobs() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="px-7 py-3 rounded-xl md:rounded-full bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
+              className="px-8 py-3 rounded-xl md:rounded-full bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
             >
-              <Search size={15} className="text-[var(--theme-accent-silver)]" />
+              <Search size={15} className="text-black" />
               <span>Search</span>
             </button>
           </form>
@@ -1008,7 +1020,7 @@ export default function Jobs() {
 
                           <button
                             type="button"
-                            onClick={(e) => toggleBookmark(e, job._id)}
+                            onClick={(e) => toggleBookmark(e, job)}
                             title={isBookmarked ? "Remove bookmark" : "Save job"}
                             className={`p-2 rounded-lg border transition-colors cursor-pointer ${
                               isBookmarked
@@ -1162,7 +1174,7 @@ export default function Jobs() {
 
                             <button
                               type="button"
-                              onClick={(e) => toggleBookmark(e, job._id)}
+                              onClick={(e) => toggleBookmark(e, job)}
                               title={isBookmarked ? "Remove bookmark" : "Save this job"}
                               className={`p-2 rounded-lg border transition-colors cursor-pointer ${
                                 isBookmarked

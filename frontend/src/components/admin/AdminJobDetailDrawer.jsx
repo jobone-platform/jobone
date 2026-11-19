@@ -111,7 +111,7 @@ export default function AdminJobDetailDrawer({
           {/* Header */}
           <div className="p-5 sm:p-6 border-b border-[var(--theme-border)] flex items-center justify-between gap-4 bg-[var(--theme-surface-elevated)]/40">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] flex items-center justify-center font-display font-bold text-base text-[var(--theme-text)] shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center font-display font-bold text-base text-[var(--theme-gold)] shrink-0">
                 <Briefcase size={18} />
               </div>
               <div className="min-w-0">
@@ -294,7 +294,7 @@ export default function AdminJobDetailDrawer({
           <div className="p-4 sm:p-5 border-t border-[var(--theme-border)] bg-[var(--theme-surface-elevated)]/40 flex items-center justify-between gap-3">
             <Link
               to={`/admin/job/${jobId}`}
-              className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-mono font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-mono font-bold hover:bg-[var(--theme-gold-bright)] transition-colors flex items-center gap-1.5 cursor-pointer shadow-md hover:shadow-lg"
             >
               <span>Full Moderation Dossier</span>
               <ExternalLink size={13} />

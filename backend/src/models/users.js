@@ -49,6 +49,7 @@ const userSchema = new mongoose.Schema({
   isFrozen: { type: Boolean, default: false }, // The "freeze" toggle
   createdJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }], 
   appliedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }], 
+  savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }], 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   isProfileComplete:{ type: Boolean,default:false},

@@ -105,19 +105,19 @@ export default function GlobalNotificationPopup() {
         );
       case "Interview Scheduled":
         return (
-          <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] px-2 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider">
             <Clock size={12} /> Interview
           </span>
         );
       case "Assignment Scheduled":
         return (
-          <span className="inline-flex items-center gap-1 bg-orange-100 text-orange-700 px-2 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider">
             <FileText size={12} /> Assignment
           </span>
         );
       case "shortlisted":
         return (
-          <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-1 rounded text-[10px] font-extrabold uppercase tracking-wider">
             <CheckCircle2 size={12} /> Shortlisted
           </span>
         );
@@ -136,12 +136,12 @@ export default function GlobalNotificationPopup() {
             initial={{ opacity: 0, x: 50, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-            className="pointer-events-auto bg-white dark:bg-slate-900 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col"
+            className="pointer-events-auto bg-[var(--theme-surface)] rounded-2xl shadow-xl border border-[var(--theme-border)] overflow-hidden flex flex-col transition-colors"
           >
             {/* Toast Header */}
-            <div className="flex items-center justify-between px-4 py-2.5 bg-indigo-600 text-white">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-[var(--theme-surface-elevated)] border-b border-[var(--theme-border)] text-[var(--theme-text)]">
               <div className="flex items-center gap-2">
-                <BellRing size={14} className="animate-pulse" />
+                <BellRing size={14} className="text-[var(--theme-gold)] animate-pulse" />
                 <span className="text-xs font-bold tracking-wide">
                   Application Update
                 </span>
@@ -149,7 +149,7 @@ export default function GlobalNotificationPopup() {
               <button
                 onClick={() => handleDismissLocal(app.applicationId)}
                 aria-label="Dismiss notification"
-                className="text-indigo-200 hover:text-white transition-colors p-1 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none rounded"
+                className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors p-1 focus-visible:ring-2 focus-visible:ring-[var(--theme-gold)] focus-visible:outline-none rounded cursor-pointer"
                 title="Dismiss for now (will remind later)"
               >
                 <X size={16} />
@@ -160,17 +160,17 @@ export default function GlobalNotificationPopup() {
             <div className="p-4">
               <div className="mb-3">
                 {/* Job Title */}
-                <p className="text-sm font-extrabold text-slate-900 dark:text-white leading-tight truncate">
+                <p className="text-sm font-extrabold text-[var(--theme-text)] leading-tight truncate">
                   {app.job?.title || "Job Title Unavailable"}
                 </p>
 
                 {/* Company */}
-                <p className="text-xs text-slate-500 font-medium">
+                <p className="text-xs text-[var(--theme-text-muted)] font-medium">
                   {app.job?.postedByCompany || "Company"}
                 </p>
 
                 {/* Location + Mode */}
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-[var(--theme-text-muted)] mt-1">
                   📍{" "}
                   {app.job?.mode === "Work from Home"
                     ? "Remote"
@@ -180,7 +180,7 @@ export default function GlobalNotificationPopup() {
                 </p>
 
                 {/* Salary */}
-                <p className="text-[11px] font-bold text-emerald-600 mt-1">
+                <p className="text-[11px] font-bold text-[var(--theme-gold)] mt-1">
                   ₹{" "}
                   {app.job?.salaryAmount
                     ? app.job.salaryAmount.toLocaleString()
@@ -191,11 +191,11 @@ export default function GlobalNotificationPopup() {
               <div className="mb-3">{getStatusBadge(app.status)}</div>
 
               {app.employerMessage && (
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 mb-3">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <div className="bg-[var(--theme-surface-elevated)] p-3 rounded-xl border border-[var(--theme-border)] mb-3">
+                  <p className="text-[10px] font-bold text-[var(--theme-text-muted)] uppercase tracking-wider mb-1 flex items-center gap-1.5">
                     <MessageCircle size={10} /> Note from Employer
                   </p>
-                  <p className="text-xs text-slate-700 dark:text-slate-300 font-medium line-clamp-3">
+                  <p className="text-xs text-[var(--theme-text)] font-medium line-clamp-3">
                     {app.employerMessage}
                   </p>
                 </div>
@@ -205,7 +205,7 @@ export default function GlobalNotificationPopup() {
               <div className="flex justify-end mt-2">
                 <button
                   onClick={() => handleAcknowledge(app.applicationId)}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-black bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] rounded-lg transition-colors cursor-pointer shadow-sm hover:shadow"
                   title="Mark as read permanently"
                 >
                   <Check size={14} /> Acknowledge

@@ -39,7 +39,7 @@ export default function KPIWidgetCard({
     title,
     primaryValue,
     icon: Icon,
-    color = "var(--theme-accent-silver)",
+    color = "var(--theme-gold)",
     iconBg,
     iconColor,
     badge,
@@ -59,19 +59,19 @@ export default function KPIWidgetCard({
       onKeyDown={(e) => e.key === "Enter" && onClick && onClick()}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group relative rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] hover:bg-[var(--theme-surface-hover)] shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between cursor-pointer p-4 sm:p-5 overflow-hidden select-none w-full h-full min-w-0 box-border ${
+      className={`group relative rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] hover:bg-[var(--theme-surface-hover)] shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between cursor-pointer p-4 sm:p-5 overflow-hidden select-none w-full h-full min-w-0 box-border ${
         displayMode === "compact"
           ? "min-h-[135px]"
           : "min-h-[190px] sm:min-h-[200px]"
       } ${className}`}
     >
-      {/* Restrained Silver Top Accent Illumination Line on Hover */}
-      <div className="absolute top-0 inset-x-4 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full bg-gradient-to-r from-transparent via-[var(--theme-accent-silver)] to-transparent" />
+      {/* Restrained Gold Top Accent Illumination Line on Hover */}
+      <div className="absolute top-0 inset-x-4 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full bg-gradient-to-r from-transparent via-[var(--theme-gold)] to-transparent" />
 
       {/* ─── Top Row: Icon + Badge + Maximize Button ────────────────── */}
       <div className="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0 w-full">
         {/* Outline Icon Container with subtle scale on hover */}
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
           {Icon && <Icon size={17} />}
         </div>
 
@@ -85,7 +85,7 @@ export default function KPIWidgetCard({
                   ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
                   : badgeVariant === "danger"
                   ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
-                  : "bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border-silver)]"
+                  : "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]"
               }`}
             >
               {badge}
@@ -141,7 +141,7 @@ export default function KPIWidgetCard({
             {sparklineData && sparklineData.length > 1 ? (
               <KPIWidgetSparkline
                 data={sparklineData}
-                color={isPositiveTrend ? "#c0c0c0" : "#888888"}
+                color={isPositiveTrend ? "#D4AF37" : "#888888"}
                 height={24}
               />
             ) : (
@@ -160,14 +160,14 @@ export default function KPIWidgetCard({
                 <span className="truncate min-w-0" title={secondaryMetric || "Ratio"}>
                   {secondaryMetric || "Rate"}
                 </span>
-                <span className="shrink-0 text-[var(--theme-accent-silver)]">
+                <span className="shrink-0 text-[var(--theme-gold)]">
                   {progressPercentage}%
                 </span>
               </div>
               <div className="w-full bg-[var(--theme-surface-elevated)] rounded-full h-1 overflow-hidden border border-[var(--theme-border)]">
                 <div
                   style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                  className="h-full rounded-full transition-all duration-500 bg-[var(--theme-accent-silver)]"
+                  className="h-full rounded-full transition-all duration-500 bg-[var(--theme-gold)]"
                 />
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function KPIWidgetCard({
               <span className="truncate min-w-0" title={secondaryMetric || "Click to explore"}>
                 {secondaryMetric || "Click to explore"}
               </span>
-              <span className="text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text)] group-hover:translate-x-0.5 transition-all text-xs font-bold flex items-center gap-0.5 shrink-0">
+              <span className="text-[var(--theme-text-muted)] group-hover:text-[var(--theme-gold)] group-hover:translate-x-0.5 transition-all text-xs font-bold flex items-center gap-0.5 shrink-0">
                 <span>View</span>
                 <ArrowRight size={11} />
               </span>

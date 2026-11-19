@@ -225,14 +225,14 @@ export default function UserRegister() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 py-3 rounded-xl bg-[var(--theme-surface-elevated)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
+          className="w-full mt-2 py-3.5 rounded-xl bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
         >
           {loading ? (
             <span>Initiating Verification...</span>
           ) : (
             <>
               <span>Continue to Email Verification</span>
-              <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)]" />
+              <ArrowRight className="w-4 h-4 text-black" />
             </>
           )}
         </button>

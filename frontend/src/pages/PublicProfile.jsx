@@ -239,7 +239,7 @@ export default function PublicProfile() {
                 <h1 className="text-xl sm:text-2xl font-display font-bold text-[var(--theme-text)]">
                   {applicationId ? "Applicant Dossier" : "Candidate Public Profile"}
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-accent-silver)]">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)]">
                   Verified Candidate
                 </span>
               </div>

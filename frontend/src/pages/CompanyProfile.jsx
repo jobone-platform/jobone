@@ -84,7 +84,7 @@ export default function CompanyProfile() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col justify-center items-center">
-        <Loader2 className="animate-spin text-silver mb-3" size={36} />
+        <Loader2 className="animate-spin text-[var(--theme-gold)] mb-3" size={36} />
         <p className="text-xs font-mono uppercase tracking-widest text-foreground/50">
           Loading Enterprise Dossier...
         </p>
@@ -160,8 +160,8 @@ export default function CompanyProfile() {
 
           <div className="flex-1 pb-1">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-surface-2 border border-border text-silver flex items-center gap-1">
-                <ShieldCheck size={12} className="text-silver" />
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] flex items-center gap-1">
+                <ShieldCheck size={12} className="text-[var(--theme-gold)]" />
                 <span>Verified Enterprise</span>
               </span>
               {company.industry && (
@@ -193,7 +193,7 @@ export default function CompanyProfile() {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-2 border border-border text-foreground hover:border-silver/60 text-xs font-semibold transition shadow-sm"
               >
-                <Globe size={14} className="text-silver" />
+                <Globe size={14} className="text-[var(--theme-gold)]" />
                 <span>Corporate Site</span>
                 <ExternalLink size={12} />
               </a>
@@ -206,7 +206,7 @@ export default function CompanyProfile() {
           <div className="lg:col-span-2 space-y-8">
             <section className="bg-surface-1 rounded-3xl p-6 sm:p-8 border border-border shadow-sm">
               <h2 className="text-xs font-mono uppercase tracking-widest text-foreground/60 mb-4 pb-3 border-b border-border flex items-center gap-2">
-                <Building2 size={14} className="text-silver" />
+                <Building2 size={14} className="text-[var(--theme-gold)]" />
                 <span>Enterprise Overview</span>
               </h2>
               {company.description ? (
@@ -279,7 +279,7 @@ export default function CompanyProfile() {
                           <span className="text-[10px] font-mono text-foreground/40">
                             {formatTimeAgo(job.postedAt || job.createdAt)}
                           </span>
-                          <span className="px-3.5 py-1.5 rounded-xl bg-surface-2 border border-border text-foreground font-semibold text-xs group-hover:bg-foreground group-hover:text-background transition-all">
+                          <span className="px-3.5 py-1.5 rounded-xl bg-surface-2 border border-border text-foreground font-semibold text-xs group-hover:bg-[var(--theme-gold)] group-hover:text-black group-hover:border-[var(--theme-gold)] transition-all">
                             Review Role →
                           </span>
                         </div>

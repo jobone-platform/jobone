@@ -71,8 +71,8 @@ export default function Services() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
         {/* --- EDITORIAL HERO --- */}
         <section className="text-center pt-8 pb-12 relative overflow-hidden">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-2 border border-border text-[11px] font-mono text-silver mb-6">
-            <Layers size={13} className="text-silver" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[11px] font-mono text-[var(--theme-gold)] mb-6">
+            <Layers size={13} className="text-[var(--theme-gold)]" />
             <span>ENTERPRISE TALENT SOLUTIONS</span>
           </div>
 
@@ -87,7 +87,7 @@ export default function Services() {
           <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
             <Link
               to="/employerregister"
-              className="px-6 py-3 rounded-xl bg-foreground text-background font-semibold text-xs sm:text-sm hover:opacity-90 transition shadow-md"
+              className="px-6 py-3 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm hover:bg-[var(--theme-gold-bright)] transition shadow-md"
             >
               Start Hiring on JobOne
             </Link>
@@ -105,10 +105,10 @@ export default function Services() {
           {serviceOfferings.map((service, idx) => (
             <div
               key={idx}
-              className="p-8 rounded-3xl bg-surface-1 border border-border hover:border-silver/50 transition-all duration-200 flex flex-col justify-between shadow-sm hover:shadow-xl"
+              className="p-8 rounded-3xl bg-surface-1 border border-border hover:border-[var(--theme-gold-border)] transition-all duration-200 flex flex-col justify-between shadow-sm hover:shadow-xl"
             >
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-silver mb-2 block">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--theme-gold)] mb-2 block">
                   {service.badge}
                 </span>
                 <h3 className="text-xl sm:text-2xl font-display font-bold text-foreground mb-3">
@@ -121,7 +121,7 @@ export default function Services() {
                 <div className="space-y-2 pt-4 border-t border-border">
                   {service.features.map((feat, fIdx) => (
                     <div key={fIdx} className="flex items-center gap-2 text-xs text-foreground/80">
-                      <CheckCircle2 size={14} className="text-silver shrink-0" />
+                      <CheckCircle2 size={14} className="text-[var(--theme-gold)] shrink-0" />
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -131,7 +131,7 @@ export default function Services() {
               <div className="pt-6 mt-6 border-t border-border/60">
                 <Link
                   to="/employerregister"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground hover:text-silver transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground hover:text-[var(--theme-gold)] transition-colors"
                 >
                   <span>Deploy for your organization</span>
                   <ArrowRight size={13} />

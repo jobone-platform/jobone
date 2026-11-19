@@ -333,7 +333,7 @@ export default function ApplyModal({ job, onClose, onSuccess }) {
             type="button"
             onClick={handleSubmit}
             disabled={loading || !hasResume || profileLoading}
-            className="px-6 py-2.5 rounded-xl bg-foreground text-background font-semibold text-xs sm:text-sm flex items-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
+            className="px-6 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm flex items-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
           >
             {loading ? <Loader2 className="animate-spin" size={15} /> : <Send size={15} />}
             <span>{loading ? "Transmitting..." : "Submit Application"}</span>

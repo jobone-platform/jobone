@@ -110,7 +110,7 @@ export default function CandidateLayout({
   })();
 
   return (
-    <div className="min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] flex flex-col lg:flex-row transition-colors duration-200 antialiased selection:bg-[var(--theme-text)] selection:text-[var(--theme-bg)] overflow-x-hidden relative">
+    <div className="min-h-screen bg-[var(--theme-bg)] text-[var(--theme-text)] flex flex-col lg:flex-row transition-colors duration-200 antialiased selection:bg-[var(--theme-text)] selection:text-[var(--theme-bg)] overflow-x-clip relative">
       {/* Accessible skip link */}
       <a
         href="#candidate-main-content"

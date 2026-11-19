@@ -106,8 +106,8 @@ export default function AdminJobseekerView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[var(--theme-bg)] flex flex-col justify-center items-center">
-        <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center mb-3">
-          <Loader2 className="animate-spin text-[var(--theme-text)]" size={20} />
+        <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center mb-3 text-[var(--theme-gold)]">
+          <Loader2 className="animate-spin text-[var(--theme-gold)]" size={20} />
         </div>
         <p className="text-xs font-mono font-medium text-[var(--theme-text-muted)]">
           Retrieving Candidate Dossier...
@@ -182,7 +182,7 @@ export default function AdminJobseekerView() {
         {/* Executive Candidate Header Banner */}
         <div className="p-6 sm:p-7 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-16 h-16 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center font-display font-extrabold text-2xl text-[var(--theme-text)] shrink-0 shadow-xs">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center font-display font-extrabold text-2xl text-[var(--theme-gold)] shrink-0 shadow-xs">
               {jobseeker.name ? jobseeker.name.charAt(0).toUpperCase() : <User size={28} />}
             </div>
             <div className="min-w-0">
@@ -222,7 +222,7 @@ export default function AdminJobseekerView() {
                 href={jobseeker.resume}
                 target="_blank"
                 rel="noreferrer"
-                className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-mono text-xs font-bold hover:opacity-90 transition-opacity flex items-center gap-2 shadow-xs"
+                className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-colors flex items-center gap-2 shadow-md hover:shadow-lg"
               >
                 <FileText size={14} />
                 <span>Download Resume</span>
@@ -342,7 +342,7 @@ export default function AdminJobseekerView() {
                   {applications.map((app) => (
                     <div
                       key={app._id}
-                      className="p-4 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:border-[var(--theme-border-silver)] transition-colors"
+                      className="p-4 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:border-[var(--theme-gold-border)] transition-colors"
                     >
                       <div className="min-w-0">
                         <h4 className="font-bold text-[var(--theme-text)] text-sm truncate">
@@ -374,7 +374,7 @@ export default function AdminJobseekerView() {
                         {app.job_id?._id && (
                           <Link
                             to={`/admin/job/${app.job_id._id}`}
-                            className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] text-[var(--theme-text)] font-mono text-[11px] flex items-center gap-1 transition-colors"
+                            className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-gold)] text-[var(--theme-text)] font-mono text-[11px] flex items-center gap-1 transition-colors"
                           >
                             <span>Inspect Job</span>
                             <ExternalLink size={11} />

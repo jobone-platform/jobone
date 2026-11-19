@@ -127,7 +127,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
     }
     if (s.includes("interview")) {
       return {
-        color: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+        color: "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)]",
         icon: <Calendar size={20} />,
         title: "Interview Round Scheduled",
         message: "You have been shortlisted for an interview! Review the schedule and meeting access details below.",
@@ -265,7 +265,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                         href={meetingLink.startsWith("http") ? meetingLink : `https://${meetingLink}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500 text-white text-xs font-bold hover:bg-purple-600 transition-colors shadow-sm"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-colors shadow-md hover:shadow-lg"
                       >
                         <Video size={14} /> Launch Interview Room
                       </a>
@@ -351,7 +351,7 @@ export default function ApplicationDetailsModal({ application, onClose }) {
                         <button
                           type="submit"
                           disabled={rescheduleStatus === "loading"}
-                          className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-foreground text-background font-bold text-xs hover:opacity-90 transition-opacity disabled:opacity-50"
+                          className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity disabled:opacity-50 shadow-xs"
                         >
                           {rescheduleStatus === "loading" ? (
                             <Loader2 size={14} className="animate-spin" />

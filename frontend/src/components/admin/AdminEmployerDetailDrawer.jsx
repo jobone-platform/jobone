@@ -135,7 +135,7 @@ export default function AdminEmployerDetailDrawer({
           {/* Header */}
           <div className="p-5 sm:p-6 border-b border-[var(--theme-border)] flex items-center justify-between gap-4 bg-[var(--theme-surface-elevated)]/40">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-[var(--theme-surface)] border border-[var(--theme-border-silver)] flex items-center justify-center font-display font-bold text-base text-[var(--theme-text)] shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center font-display font-bold text-base text-[var(--theme-gold)] shrink-0">
                 {employer?.companyName?.charAt(0) || employer?.name?.charAt(0) || <Building2 size={18} />}
               </div>
               <div className="min-w-0">
@@ -340,7 +340,7 @@ export default function AdminEmployerDetailDrawer({
                               type="button"
                               onClick={() => handleViewDoc(doc.field)}
                               disabled={fetchingDoc}
-                              className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] text-xs font-mono font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                              className="px-2.5 py-1 rounded-lg bg-[var(--theme-surface)] hover:bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] text-xs font-mono font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
                             >
                               <Eye size={12} />
                               <span>Inspect</span>
@@ -354,7 +354,7 @@ export default function AdminEmployerDetailDrawer({
 
                 {/* Embedded Document Viewer Canvas */}
                 {docViewUrl && (
-                  <div className="p-3 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] space-y-2 animate-in fade-in">
+                  <div className="p-3 rounded-2xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] space-y-2 animate-in fade-in">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono font-bold text-[var(--theme-text)]">
                         Confidential Document Preview
@@ -418,7 +418,7 @@ export default function AdminEmployerDetailDrawer({
           <div className="p-4 sm:p-5 border-t border-[var(--theme-border)] bg-[var(--theme-surface-elevated)]/40 flex items-center justify-between gap-3">
             <Link
               to={`/admin/employer/${employerId}`}
-              className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-mono font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-mono font-bold hover:bg-[var(--theme-gold-bright)] transition-colors flex items-center gap-1.5 cursor-pointer shadow-md hover:shadow-lg"
             >
               <span>Full Verification Workspace</span>
               <ExternalLink size={13} />

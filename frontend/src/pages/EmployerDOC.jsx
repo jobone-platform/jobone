@@ -73,7 +73,7 @@ export default function EmployerDocumentManager() {
       ]}
     >
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
-          <Loader2 className="animate-spin text-silver mb-3" size={36} />
+          <Loader2 className="animate-spin text-[var(--theme-gold)] mb-3" size={36} />
           <p className="text-xs font-mono tracking-widest text-foreground/50 uppercase">
             Loading KYC Verification Vault...
           </p>
@@ -140,7 +140,7 @@ export default function EmployerDocumentManager() {
                 <ArrowLeft size={14} /> Back
               </button>
               <span className="text-foreground/30 font-mono">/</span>
-              <span className="text-xs font-mono text-silver uppercase">
+              <span className="text-xs font-mono text-[var(--theme-gold)] uppercase font-semibold">
                 Compliance & Trust
               </span>
             </div>
@@ -149,7 +149,7 @@ export default function EmployerDocumentManager() {
             </h1>
             <p className="text-xs font-sans text-foreground/50 mt-1">
               Registered entity classification:{" "}
-              <span className="font-mono font-bold text-silver uppercase">{currentType}</span>.
+              <span className="font-mono font-bold text-[var(--theme-gold)] uppercase">{currentType}</span>.
               Mandatory legal filings for platform approval and verified employer badge.
             </p>
           </div>
@@ -176,13 +176,13 @@ export default function EmployerDocumentManager() {
             <span className="text-foreground/70">
               Mandatory Compliance Completion: <strong className="text-foreground">{totalUploaded} / {totalRequired}</strong> documents
             </span>
-            <span className="text-silver font-bold">{completionPercentage}% Complete</span>
+            <span className="text-[var(--theme-gold)] font-bold">{completionPercentage}% Complete</span>
           </div>
 
           <div className="h-3 w-full bg-elevated rounded-full overflow-hidden border border-border">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
-                isComplete ? "bg-emerald-500" : "bg-silver"
+                isComplete ? "bg-emerald-500" : "bg-[var(--theme-gold)]"
               }`}
               style={{ width: `${completionPercentage}%` }}
             />
@@ -225,7 +225,7 @@ export default function EmployerDocumentManager() {
 
           <button
             onClick={() => navigate("/employerprofile")}
-            className="px-5 py-2.5 rounded-xl text-xs font-mono font-bold bg-foreground text-background hover:bg-silver transition-colors shadow-sm"
+            className="px-5 py-2.5 rounded-xl text-xs font-mono font-bold bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
           >
             View Company Profile &rarr;
           </button>
@@ -324,7 +324,7 @@ function DocumentUploaderCard({ doc, profile, onRefresh }) {
   };
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-5 shadow-sm space-y-4 hover:border-silver/40 transition-all">
+    <div className="bg-surface border border-border rounded-2xl p-5 shadow-sm space-y-4 hover:border-[var(--theme-gold-border)] transition-all">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Left Side: Info */}
         <div className="flex items-center gap-4 flex-1">
@@ -383,7 +383,7 @@ function DocumentUploaderCard({ doc, profile, onRefresh }) {
                 <button
                   onClick={handleUpload}
                   disabled={uploading}
-                  className="px-4 py-2 bg-foreground text-background hover:bg-silver rounded-xl font-mono text-xs font-bold transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 shrink-0"
+                  className="px-4 py-2 bg-[var(--theme-gold)] text-black hover:bg-[var(--theme-gold-bright)] rounded-xl font-mono text-xs font-bold transition-all disabled:opacity-50 inline-flex items-center gap-1.5 shrink-0 shadow-md hover:shadow-lg"
                 >
                   {uploading ? (
                     <Loader2 size={13} className="animate-spin" />
@@ -418,7 +418,7 @@ function DocumentUploaderCard({ doc, profile, onRefresh }) {
               />
               <label
                 htmlFor={`replace-${doc.field}`}
-                className="cursor-pointer text-xs font-mono text-foreground/50 hover:text-silver underline underline-offset-2 ml-1"
+                className="cursor-pointer text-xs font-mono text-foreground/50 hover:text-[var(--theme-gold)] underline underline-offset-2 ml-1"
               >
                 Replace
               </label>

@@ -153,7 +153,7 @@ export default function Candidates() {
                 Talent Sourcing
               </span>
               <span className="text-foreground/30 font-mono">/</span>
-              <span className="text-xs font-mono text-silver uppercase">
+              <span className="text-xs font-mono text-[var(--theme-gold)] uppercase font-semibold">
                 Global Candidate Pool
               </span>
             </div>
@@ -167,7 +167,7 @@ export default function Candidates() {
 
           <div className="flex items-center gap-2">
             <span className="px-3.5 py-1.5 rounded-xl bg-surface border border-border text-xs font-mono text-foreground">
-              Active Talent: <strong className="text-silver">{totalCandidates}</strong>
+              Active Talent: <strong className="text-[var(--theme-gold)]">{totalCandidates}</strong>
             </span>
           </div>
         </div>
@@ -176,7 +176,7 @@ export default function Candidates() {
         <div className="p-6 rounded-3xl bg-surface border border-border shadow-sm space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-border pb-3">
             <div className="flex items-center gap-2">
-              <Sparkles size={16} className="text-silver" />
+              <Sparkles size={16} className="text-[var(--theme-gold)]" />
               <span className="text-xs font-mono uppercase tracking-wider text-foreground font-bold">
                 Skill Query Builder
               </span>
@@ -192,7 +192,7 @@ export default function Candidates() {
               {searchSkills.map((skill, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-elevated border border-silver/40 text-foreground text-xs font-mono font-bold shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] text-xs font-mono font-bold shadow-sm"
                 >
                   {skill}
                   <button
@@ -225,7 +225,7 @@ export default function Candidates() {
                   }
                 }}
                 placeholder="Type a skill (e.g. React, Python, Product Design) and press Enter..."
-                className="w-full pl-10 pr-4 py-2.5 bg-elevated border border-border rounded-xl text-xs font-sans text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-silver transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-elevated border border-border rounded-xl text-xs font-sans text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-[var(--theme-gold-border)] transition-colors"
               />
             </div>
 
@@ -242,7 +242,7 @@ export default function Candidates() {
                 type="button"
                 onClick={handleSearch}
                 disabled={loading || (searchSkills.length === 0 && !skillInput.trim())}
-                className="px-5 py-2.5 rounded-xl bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors disabled:opacity-50 shadow-sm"
+                className="px-5 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all disabled:opacity-50 shadow-md hover:shadow-lg"
               >
                 Search Talent
               </button>
@@ -277,7 +277,7 @@ export default function Candidates() {
                   className={`px-2.5 py-1 rounded-lg text-[10px] font-mono transition-colors border ${
                     isSelected
                       ? "bg-elevated/40 text-foreground/30 border-border cursor-not-allowed"
-                      : "bg-elevated hover:bg-surface border-border text-foreground/70 hover:text-foreground hover:border-silver/40"
+                      : "bg-elevated hover:bg-surface border-border text-foreground/70 hover:text-[var(--theme-gold)] hover:border-[var(--theme-gold-border)]"
                   }`}
                 >
                   +{popSkill}
@@ -292,7 +292,7 @@ export default function Candidates() {
           <div className="text-xs font-mono text-foreground/60">
             {appliedQuery ? (
               <>
-                Filtered by: <span className="text-silver font-bold">{appliedQuery}</span> &bull;{" "}
+                Filtered by: <span className="text-[var(--theme-gold)] font-bold">{appliedQuery}</span> &bull;{" "}
                 {totalCandidates} match{totalCandidates === 1 ? "" : "es"}
               </>
             ) : (
@@ -329,7 +329,7 @@ export default function Candidates() {
         {/* CANDIDATES PRESENTATION */}
         {loading ? (
           <div className="min-h-[40vh] flex flex-col items-center justify-center">
-            <Loader2 className="animate-spin text-silver mb-3" size={32} />
+            <Loader2 className="animate-spin text-[var(--theme-gold)] mb-3" size={32} />
             <p className="text-xs font-mono tracking-widest text-foreground/50 uppercase">
               Searching Candidate Database...
             </p>
@@ -356,7 +356,7 @@ export default function Candidates() {
             {candidates.map((candidate) => (
               <div
                 key={candidate._id}
-                className="p-5 rounded-2xl bg-surface border border-border hover:border-silver/40 transition-all flex flex-col justify-between space-y-4 shadow-sm"
+                className="p-5 rounded-2xl bg-surface border border-border hover:border-[var(--theme-gold-border)] transition-all flex flex-col justify-between space-y-4 shadow-sm"
               >
                 <div>
                   {/* Top info */}
@@ -398,7 +398,7 @@ export default function Candidates() {
                       {candidate.skills?.slice(0, 5).map((skill, idx) => (
                         <span
                           key={idx}
-                          className="px-2 py-0.5 rounded-md bg-elevated border border-border text-[10px] font-mono text-foreground/80"
+                          className="px-2 py-0.5 rounded-md bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[10px] font-mono text-[var(--theme-gold)]"
                         >
                           {skill}
                         </span>
@@ -432,7 +432,7 @@ export default function Candidates() {
                         state: { applicantList: masterList },
                       })
                     }
-                    className="w-full py-2.5 rounded-xl bg-foreground text-background font-mono text-xs font-bold hover:bg-silver transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                    className="w-full py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg"
                   >
                     View Full Profile Dossier <ChevronRight size={14} />
                   </button>
@@ -527,7 +527,7 @@ export default function Candidates() {
                               state: { applicantList: masterList },
                             })
                           }
-                          className="px-3 py-1.5 rounded-lg bg-foreground text-background font-mono text-xs font-bold hover:bg-silver inline-flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-mono text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all inline-flex items-center gap-1 shadow-sm"
                         >
                           Profile <ChevronRight size={13} />
                         </button>

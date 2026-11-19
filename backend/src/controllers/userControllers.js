@@ -23,6 +23,7 @@ import {
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import Application from "../models/applications.js";
+import Job from "../models/jobs.js";
 import crypto from 'crypto';
 
 let s3Client;
@@ -521,10 +522,12 @@ export const userDetails = expressAsyncHandler(async (req, res) => {
     }
 
     if (!isAuthorized) {
-      // Sanitize sensitive documents so internal S3 keys are not exposed to unauthenticated callers
+      // Sanitize sensitive documents, contact info, and private data for unauthenticated callers
       const userObj = user.toObject();
       delete userObj.documents;
       delete userObj.resumeFileKey;
+      delete userObj.savedJobs;
+      delete userObj.phone;
       return res.status(200).json(userObj);
     }
 
@@ -1082,4 +1085,78 @@ export const deleteJobseekerDocument = expressAsyncHandler(async (req, res) => {
   }
 
   res.status(200).json({ message: "Document removed successfully.", documents: user.documents });
+});
+
+// FACT: Protected Candidate Save / Bookmark Job Handler
+export const toggleSaveJob = expressAsyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+  if (!userId) {
+    res.status(401);
+    throw new Error("Unauthorized: Candidate authentication required to save jobs");
+  }
+
+  const { jobId } = req.body;
+  if (!jobId) {
+    res.status(400);
+    throw new Error("Job ID is required");
+  }
+
+  const job = await Job.findById(jobId);
+  if (!job) {
+    res.status(404);
+    throw new Error("Job not found");
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404);
+    throw new Error("Candidate account not found");
+  }
+
+  user.savedJobs = user.savedJobs || [];
+  const isAlreadySaved = user.savedJobs.some((id) => id.toString() === jobId.toString());
+
+  if (isAlreadySaved) {
+    user.savedJobs = user.savedJobs.filter((id) => id.toString() !== jobId.toString());
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      saved: false,
+      message: "Job removed from your saved career collection",
+      savedJobs: user.savedJobs,
+    });
+  } else {
+    user.savedJobs.push(jobId);
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      saved: true,
+      message: "Opportunity saved to your candidate workspace",
+      savedJobs: user.savedJobs,
+    });
+  }
+});
+
+// FACT: Retrieve Saved Jobs with Populated Details
+export const getSavedJobs = expressAsyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+  if (!userId) {
+    res.status(401);
+    throw new Error("Unauthorized: Candidate authentication required");
+  }
+
+  const user = await User.findById(userId).populate({
+    path: "savedJobs",
+    populate: { path: "postedBy", select: "name email profileImage" },
+  });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("Candidate account not found");
+  }
+
+  res.status(200).json({
+    success: true,
+    savedJobs: user.savedJobs || [],
+  });
 });

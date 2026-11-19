@@ -15,6 +15,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { API_BASE_URL } from "../config/api";
+import { useProtectedAction } from "../context/ProtectedActionContext";
 import CompanyDisplay from "./CompanyDisplay";
 import JobDetailsModal from "./JobDetailsModal";
 
@@ -30,6 +31,19 @@ export default function FeaturedJobs() {
       return [];
     }
   });
+
+  const { saveJobWithAuth } = useProtectedAction();
+
+  // Keep savedJobIds in sync with localStorage updates
+  useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        setSavedJobIds(JSON.parse(localStorage.getItem("jobone_saved_jobs") || "[]"));
+      } catch {}
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -67,19 +81,16 @@ export default function FeaturedJobs() {
     };
   }, []);
 
-  const toggleBookmark = (e, jobId) => {
+  const toggleBookmark = async (e, job) => {
     e.stopPropagation();
-    setSavedJobIds((prev) => {
-      const next = prev.includes(jobId)
-        ? prev.filter((id) => id !== jobId)
-        : [...prev, jobId];
-      try {
-        localStorage.setItem("jobone_saved_jobs", JSON.stringify(next));
-      } catch (err) {
-        console.error("Error saving bookmark:", err);
-      }
-      return next;
-    });
+    const res = await saveJobWithAuth(job._id, job);
+    if (res?.success) {
+      setSavedJobIds((prev) =>
+        res.saved
+          ? Array.from(new Set([...prev, job._id]))
+          : prev.filter((id) => id !== job._id)
+      );
+    }
   };
 
   const formatTimeAgo = (dateString) => {
@@ -181,10 +192,10 @@ export default function FeaturedJobs() {
           <div className="flex items-center gap-3">
             <Link
               to="/jobs"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[var(--theme-text)] bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-border-silver)] transition-all duration-200 shadow-sm group"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[var(--theme-text)] bg-[var(--theme-surface)] hover:bg-[var(--theme-surface-hover)] border border-[var(--theme-gold-border)] hover:border-[var(--theme-gold)] transition-all duration-200 shadow-sm group"
             >
               <span>Explore All Jobs</span>
-              <ArrowRight className="w-4 h-4 text-[var(--theme-accent-silver)] group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 text-[var(--theme-gold)] group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
@@ -200,13 +211,13 @@ export default function FeaturedJobs() {
                 onClick={() => setActiveFilter(opt.id)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                   isActive
-                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border border-[var(--theme-border-silver)] shadow-sm"
+                    ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)] shadow-sm"
                     : "bg-[var(--theme-surface)] text-[var(--theme-text-muted)] border border-[var(--theme-border)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)]"
                 }`}
               >
                 <span>{opt.label}</span>
                 {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--theme-accent-silver)]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--theme-gold)]" />
                 )}
               </button>
             );
@@ -286,20 +297,20 @@ export default function FeaturedJobs() {
                           ) : job.postedByCompany ? (
                             job.postedByCompany.charAt(0).toUpperCase()
                           ) : (
-                            <Building2 className="w-5 h-5 text-[var(--theme-accent-silver)]" />
+                            <Building2 className="w-5 h-5 text-[var(--theme-gold)]" />
                           )}
                         </div>
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
-                            <p className="text-xs sm:text-sm font-bold text-[var(--theme-text)] truncate group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors">
+                            <p className="text-xs sm:text-sm font-bold text-[var(--theme-text)] truncate group-hover:text-[var(--theme-gold)] transition-colors">
                               <CompanyDisplay
                                 job={job}
                                 fallback="Confidential Employer"
                               />
                             </p>
                             <ShieldCheck
-                              className="w-3.5 h-3.5 text-silver shrink-0"
+                              className="w-3.5 h-3.5 text-[var(--theme-gold)] shrink-0"
                               title="Verified Employer"
                             />
                           </div>
@@ -311,39 +322,39 @@ export default function FeaturedJobs() {
 
                       <button
                         type="button"
-                        onClick={(e) => toggleBookmark(e, job._id)}
+                        onClick={(e) => toggleBookmark(e, job)}
                         className={`p-2 rounded-lg border transition-colors shrink-0 cursor-pointer ${
                           isBookmarked
-                            ? "bg-[var(--theme-surface-elevated)] border-[var(--theme-border-silver)] text-amber-400"
-                            : "bg-[var(--theme-surface)] border-[var(--theme-border)] text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)]"
+                            ? "bg-[var(--theme-gold-surface)] border-[var(--theme-gold-border)] text-[var(--theme-gold)]"
+                            : "bg-[var(--theme-surface)] border-[var(--theme-border)] text-[var(--theme-text-subtle)] hover:text-[var(--theme-text)] hover:border-[var(--theme-gold-border)]"
                         }`}
                         title={isBookmarked ? "Remove bookmark" : "Save this job"}
                       >
                         <Bookmark
-                          className={`w-4 h-4 ${isBookmarked ? "fill-amber-400" : ""}`}
+                          className={`w-4 h-4 ${isBookmarked ? "fill-[var(--theme-gold)]" : ""}`}
                         />
                       </button>
                     </div>
 
                     {/* Job Title */}
-                    <h3 className="text-base sm:text-lg font-bold text-[var(--theme-text)] leading-snug line-clamp-1 mb-3 group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors">
+                    <h3 className="text-base sm:text-lg font-bold text-[var(--theme-text)] leading-snug line-clamp-1 mb-3 group-hover:text-[var(--theme-gold)] transition-colors">
                       {job.title}
                     </h3>
 
                     {/* Metadata Pills */}
                     <div className="flex flex-wrap items-center gap-2 mb-4 text-xs font-medium">
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] text-[11px]">
-                        <MapPin className="w-3 h-3 text-[var(--theme-accent-silver)] shrink-0" />
+                        <MapPin className="w-3 h-3 text-[var(--theme-gold)] shrink-0" />
                         <span className="truncate max-w-[110px]">{locationStr.split(",")[0]}</span>
                       </span>
 
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text-muted)] text-[11px] capitalize">
-                        <Briefcase className="w-3 h-3 text-[var(--theme-accent-silver)] shrink-0" />
+                        <Briefcase className="w-3 h-3 text-[var(--theme-gold)] shrink-0" />
                         <span>{jobTypeDisplay}</span>
                       </span>
 
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-[var(--theme-text)] text-[11px] font-bold">
-                        <IndianRupee className="w-3 h-3 text-[var(--theme-accent-silver)] shrink-0" />
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] text-[11px] font-bold">
+                        <IndianRupee className="w-3 h-3 text-[var(--theme-gold)] shrink-0" />
                         <span>{formattedSalary}</span>
                       </span>
                     </div>

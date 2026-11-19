@@ -344,7 +344,7 @@ export default function AdminAuditLogsView({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[var(--theme-border)]">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-accent-silver)]">
+            <div className="w-9 h-9 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <ShieldAlert size={18} />
             </div>
             <div>
@@ -359,8 +359,8 @@ export default function AdminAuditLogsView({
         </div>
 
         {/* Immutability Notice Badge */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-xs font-mono text-[var(--theme-text)]">
-          <Lock size={13} className="text-[#C0C0C0]" />
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-gold-border)] text-xs font-mono text-[var(--theme-text)]">
+          <Lock size={13} className="text-[var(--theme-gold)]" />
           <span>System Immutability: Active • Read-Only Logs</span>
         </div>
       </div>
@@ -425,7 +425,7 @@ export default function AdminAuditLogsView({
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-hidden focus:border-[var(--theme-border-silver)] transition-colors"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-hidden focus:border-[var(--theme-gold)] transition-colors"
             />
           </div>
 
@@ -436,7 +436,7 @@ export default function AdminAuditLogsView({
               setCategoryFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)] cursor-pointer"
+            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)] cursor-pointer"
           >
             <option value="all">All Categories</option>
             <option value="Security">Security</option>
@@ -453,7 +453,7 @@ export default function AdminAuditLogsView({
               setDateFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)] cursor-pointer"
+            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)] cursor-pointer"
           >
             <option value="all">All Timelines</option>
             <option value="today">Today</option>
@@ -465,7 +465,7 @@ export default function AdminAuditLogsView({
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-border-silver)] cursor-pointer"
+            className="px-3 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-mono text-[var(--theme-text)] focus:outline-hidden focus:border-[var(--theme-gold)] cursor-pointer"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
@@ -497,7 +497,7 @@ export default function AdminAuditLogsView({
       <div className="bg-[var(--theme-surface)] rounded-2xl border border-[var(--theme-border)] shadow-xs overflow-hidden">
         {filteredEvents.length === 0 ? (
           <div className="py-20 text-center px-4">
-            <ShieldCheck size={36} className="mx-auto text-[var(--theme-accent-silver)] mb-3 opacity-60" />
+            <ShieldCheck size={36} className="mx-auto text-[var(--theme-gold)] mb-3 opacity-60" />
             <p className="text-sm font-bold text-[var(--theme-text)]">Zero Audit Events Matched</p>
             <p className="text-xs text-[var(--theme-text-muted)] mt-1 max-w-sm mx-auto">
               No audit records were found for the chosen search and category filters.

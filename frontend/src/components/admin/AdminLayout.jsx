@@ -115,7 +115,7 @@ export default function AdminLayout({
       {/* Skip to Main Content Link for accessibility */}
       <a
         href="#admin-main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[var(--theme-text)] focus:text-[var(--theme-bg)] focus:font-bold focus:rounded-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-silver)]"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[var(--theme-gold)] focus:text-black focus:font-bold focus:rounded-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-[var(--theme-gold-bright)]"
       >
         Skip to administrative control center
       </a>

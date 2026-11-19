@@ -162,7 +162,7 @@ export default function AdminActivityWorkspace({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--theme-border)]">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] flex items-center justify-center text-[var(--theme-accent-silver)]">
+            <div className="w-9 h-9 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] flex items-center justify-center text-[var(--theme-gold)]">
               <Activity size={18} />
             </div>
             <div>
@@ -197,7 +197,7 @@ export default function AdminActivityWorkspace({
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-hidden focus:border-[var(--theme-border-silver)] transition-colors"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs text-[var(--theme-text)] placeholder-[var(--theme-text-muted)] focus:outline-hidden focus:border-[var(--theme-gold)] transition-colors"
             />
           </div>
 
@@ -255,7 +255,7 @@ export default function AdminActivityWorkspace({
       <div className="space-y-3">
         {filteredActivities.length === 0 ? (
           <div className="p-12 text-center rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs">
-            <Activity size={36} className="mx-auto text-[var(--theme-accent-silver)] mb-3 opacity-60" />
+            <Activity size={36} className="mx-auto text-[var(--theme-gold)] mb-3 opacity-60" />
             <p className="text-sm font-bold text-[var(--theme-text)]">No Platform Activities Found</p>
             <p className="text-xs text-[var(--theme-text-muted)] mt-1 max-w-sm mx-auto">
               Zero records match your active query and category filters.
@@ -267,10 +267,10 @@ export default function AdminActivityWorkspace({
             return (
               <div
                 key={act.id}
-                className="p-4 sm:p-5 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[var(--theme-border-silver)] transition-all"
+                className="p-4 sm:p-5 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[var(--theme-gold-border)] transition-all"
               >
                 <div className="flex items-start gap-3.5 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-text)] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-9 h-9 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] flex items-center justify-center shrink-0 mt-0.5">
                     <Icon size={16} />
                   </div>
 
@@ -302,7 +302,7 @@ export default function AdminActivityWorkspace({
                   <div className="shrink-0 self-end sm:self-center">
                     <Link
                       to={act.link}
-                      className="px-3 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-mono font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-xs"
+                      className="px-3 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-mono font-bold hover:bg-[var(--theme-gold-bright)] transition-colors flex items-center gap-1.5 shadow-md hover:shadow-lg"
                     >
                       <span>Open Dossier</span>
                       <ExternalLink size={13} />

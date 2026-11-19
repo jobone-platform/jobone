@@ -124,7 +124,7 @@ export default function ForgotPassword() {
             }}
             className={`py-2 px-3 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === "user"
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-[var(--theme-gold)] text-black font-bold shadow-sm"
                 : "text-foreground/70 hover:text-foreground"
             }`}
           >
@@ -139,7 +139,7 @@ export default function ForgotPassword() {
             }}
             className={`py-2 px-3 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === "employer"
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-[var(--theme-gold)] text-black font-bold shadow-sm"
                 : "text-foreground/70 hover:text-foreground"
             }`}
           >
@@ -150,8 +150,8 @@ export default function ForgotPassword() {
 
       {/* Step Indicator */}
       <div className="flex items-center gap-2 mb-4">
-        <div className={`h-1 flex-1 rounded-full ${step >= 1 ? "bg-foreground" : "bg-border"}`} />
-        <div className={`h-1 flex-1 rounded-full ${step >= 2 ? "bg-foreground" : "bg-border"}`} />
+        <div className={`h-1 flex-1 rounded-full ${step >= 1 ? "bg-[var(--theme-gold)]" : "bg-border"}`} />
+        <div className={`h-1 flex-1 rounded-full ${step >= 2 ? "bg-[var(--theme-gold)]" : "bg-border"}`} />
       </div>
 
       {error && (
@@ -189,7 +189,7 @@ export default function ForgotPassword() {
           <button
             type="submit"
             disabled={loading || !email}
-            className="w-full mt-2 py-3 rounded-xl bg-foreground text-background font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
+            className="w-full mt-2 py-3.5 rounded-xl bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <>
@@ -259,7 +259,7 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={loading || otp.length !== 6 || !newPassword}
-              className="flex-1 py-3 rounded-xl bg-foreground text-background font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
+              className="flex-1 py-3.5 rounded-xl bg-[var(--theme-gold)] hover:bg-[var(--theme-gold-bright)] text-black font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.99] transition shadow-md disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>

@@ -79,7 +79,7 @@ export default function AdminSettingsModal({
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-[var(--theme-border)] flex items-center justify-between bg-[var(--theme-surface-elevated)]/40">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border-silver)] text-[var(--theme-accent-silver)] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[var(--theme-gold)] flex items-center justify-center">
               <Settings size={18} />
             </div>
             <div>
@@ -108,7 +108,7 @@ export default function AdminSettingsModal({
               <span className="text-[11px] font-mono uppercase text-[var(--theme-text-subtle)] font-bold">
                 Identity Profile
               </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--theme-surface)] text-[var(--theme-accent-silver)] border border-[var(--theme-border-silver)]">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
                 {roleNameMap[currentRole]}
               </span>
             </div>
@@ -135,7 +135,7 @@ export default function AdminSettingsModal({
                 onClick={() => setTheme("dark")}
                 className={`p-3 rounded-xl border flex flex-col items-center gap-1.5 text-xs font-bold transition-all ${
                   theme === "dark"
-                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border-[var(--theme-border-silver)] shadow-sm"
+                    ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)] shadow-sm font-bold"
                     : "bg-[var(--theme-surface)] text-[var(--theme-text-muted)] border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)]"
                 }`}
               >
@@ -147,7 +147,7 @@ export default function AdminSettingsModal({
                 onClick={() => setTheme("light")}
                 className={`p-3 rounded-xl border flex flex-col items-center gap-1.5 text-xs font-bold transition-all ${
                   theme === "light"
-                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border-[var(--theme-border-silver)] shadow-sm"
+                    ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)] shadow-sm font-bold"
                     : "bg-[var(--theme-surface)] text-[var(--theme-text-muted)] border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)]"
                 }`}
               >
@@ -159,7 +159,7 @@ export default function AdminSettingsModal({
                 onClick={() => setTheme("default")}
                 className={`p-3 rounded-xl border flex flex-col items-center gap-1.5 text-xs font-bold transition-all ${
                   theme === "default"
-                    ? "bg-[var(--theme-surface-elevated)] text-[var(--theme-text)] border-[var(--theme-border-silver)] shadow-sm"
+                    ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border-[var(--theme-gold-border)] shadow-sm font-bold"
                     : "bg-[var(--theme-surface)] text-[var(--theme-text-muted)] border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)]"
                 }`}
               >
@@ -172,7 +172,7 @@ export default function AdminSettingsModal({
           {/* RBAC Capabilities */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <ShieldCheck size={14} className="text-[var(--theme-accent-silver)]" />
+              <ShieldCheck size={14} className="text-[var(--theme-gold)]" />
               <span className="text-xs font-bold text-[var(--theme-text)]">Active Capabilities & Permissions</span>
             </div>
             <ul className="space-y-1.5 text-xs text-[var(--theme-text-muted)]">
@@ -191,7 +191,7 @@ export default function AdminSettingsModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 transition-opacity"
+            className="px-4 py-2 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs hover:bg-[var(--theme-gold-bright)] transition-colors"
           >
             Done
           </button>

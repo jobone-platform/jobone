@@ -433,10 +433,10 @@ export default function AdminKPISection({
           <button
             type="button"
             onClick={() => setCustomizeOpen(true)}
-            className="px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:border-[var(--theme-border-silver)] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+            className="px-3 py-1.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs font-semibold text-[var(--theme-text-muted)] hover:text-[var(--theme-gold)] hover:border-[var(--theme-gold-border)] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
             title="Rearrange and toggle widget visibility"
           >
-            <Settings2 size={13} className="text-[var(--theme-accent-silver)]" />
+            <Settings2 size={13} className="text-[var(--theme-gold)]" />
             <span>Customize</span>
           </button>
 
@@ -447,7 +447,7 @@ export default function AdminKPISection({
               onClick={() => handleToggleMode("compact")}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 displayMode === "compact"
-                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                  ? "bg-[var(--theme-gold)] text-black shadow-xs"
                   : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
               }`}
               title="Compact card layout"
@@ -460,7 +460,7 @@ export default function AdminKPISection({
               onClick={() => handleToggleMode("detailed")}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 displayMode === "detailed"
-                  ? "bg-[var(--theme-text)] text-[var(--theme-bg)] shadow-xs"
+                  ? "bg-[var(--theme-gold)] text-black shadow-xs"
                   : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
               }`}
               title="Detailed analytics with mini charts and progress tracking"
@@ -503,7 +503,7 @@ export default function AdminKPISection({
           >
             <div className="p-4 sm:p-5 border-b border-[var(--theme-border)] flex items-center justify-between bg-[var(--theme-surface-elevated)]/40">
               <div className="flex items-center gap-2.5">
-                <Settings2 size={16} className="text-[var(--theme-accent-silver)]" />
+                <Settings2 size={16} className="text-[var(--theme-gold)]" />
                 <h3 id="customize-title" className="text-sm font-bold text-[var(--theme-text)]">
                   Customize Dashboard Widgets
                 </h3>

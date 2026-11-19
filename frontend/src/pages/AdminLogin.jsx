@@ -72,11 +72,11 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-dark text-slate-100 flex flex-col justify-center items-center p-4 sm:p-8 relative selection:bg-silver/30 selection:text-white">
+    <div className="min-h-screen bg-[#050505] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-8 relative selection:bg-[var(--theme-gold)]/30 selection:text-white">
       {/* Return to general portal */}
       <Link
         to="/login"
-        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-dark border border-white/10 text-xs font-mono text-slate-400 hover:text-white hover:border-silver/40 transition-all backdrop-blur-md shadow-lg group"
+        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#101010] border border-white/10 text-xs font-mono text-slate-400 hover:text-white hover:border-[var(--theme-gold-border)] transition-all backdrop-blur-md shadow-lg group"
       >
         <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
         <span className="hidden sm:inline">Candidate & Employer Portal</span>
@@ -85,15 +85,15 @@ export default function AdminLogin() {
 
       {/* Background Architectural Mesh & Subtle Lighting */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/[0.02] rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--theme-gold-surface)] rounded-full blur-3xl opacity-30" />
         <div className="absolute inset-0 [background-image:linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-40" />
       </div>
 
       <div className="w-full max-w-md relative z-10 my-auto">
         {/* Security badge and telemetry */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono text-silver mb-4">
-            <Shield size={12} className="text-silver" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-[11px] font-mono text-[var(--theme-gold)] mb-4">
+            <Shield size={12} className="text-[var(--theme-gold)]" />
             <span>SECURE GATEWAY • CONSOLE ACCESS</span>
           </div>
 
@@ -106,8 +106,8 @@ export default function AdminLogin() {
         </div>
 
         {/* Console Box */}
-        <div className="bg-surface-dark/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-silver/50 to-transparent" />
+        <div className="bg-[#101010]/95 backdrop-blur-xl border border-[var(--theme-gold-border)]/40 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-gold)]/60 to-transparent" />
 
           {/* Flash Logout Alert */}
           {loggedOutNotice && (
@@ -151,7 +151,7 @@ export default function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@jobone.io"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white placeholder-slate-500 text-sm font-mono focus:outline-none focus:border-silver/80 transition-colors"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white placeholder-slate-500 text-sm font-mono focus:outline-none focus:border-[var(--theme-gold)] transition-colors"
                 />
                 <Mail size={16} className="absolute left-3.5 top-3.5 text-slate-500 pointer-events-none" />
               </div>
@@ -168,7 +168,7 @@ export default function AdminLogin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white placeholder-slate-500 text-sm font-mono focus:outline-none focus:border-silver/80 transition-colors"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white placeholder-slate-500 text-sm font-mono focus:outline-none focus:border-[var(--theme-gold)] transition-colors"
                 />
                 <Lock size={16} className="absolute left-3.5 top-3.5 text-slate-500 pointer-events-none" />
               </div>
@@ -177,7 +177,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-3 py-3.5 rounded-xl bg-white text-black font-semibold text-sm flex items-center justify-center gap-2 hover:bg-silver transition-all shadow-md active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+              className="w-full mt-3 py-3.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-sm flex items-center justify-center gap-2 hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg active:scale-[0.99] disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -203,14 +203,14 @@ export default function AdminLogin() {
                 to="/login?tab=user"
                 className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-xs text-slate-300 transition-colors"
               >
-                <User size={13} className="text-silver" />
+                <User size={13} className="text-[var(--theme-gold)]" />
                 <span>Candidate</span>
               </Link>
               <Link
                 to="/login?tab=employer"
                 className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-xs text-slate-300 transition-colors"
               >
-                <Building2 size={13} className="text-silver" />
+                <Building2 size={13} className="text-[var(--theme-gold)]" />
                 <span>Employer</span>
               </Link>
             </div>

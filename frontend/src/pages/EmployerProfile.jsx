@@ -80,7 +80,7 @@ export default function EmployerProfile() {
     return (
       <EmployerLayout activeTab="profile" title="Company Profile">
         <div className="py-24 flex flex-col items-center justify-center text-[var(--theme-text-muted)]">
-          <Loader2 size={36} className="animate-spin text-[var(--theme-accent-silver)] mb-4" />
+          <Loader2 size={36} className="animate-spin text-[var(--theme-gold)] mb-4" />
           <p className="text-sm font-semibold">Loading enterprise dossier...</p>
         </div>
       </EmployerLayout>
@@ -156,7 +156,7 @@ export default function EmployerProfile() {
                     {companyName}
                   </h1>
 
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[var(--theme-surface-elevated)] text-[var(--theme-accent-silver)] border border-[var(--theme-border)]">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] border border-[var(--theme-gold-border)]">
                     {profile.employerType === "company" ? (
                       <Building size={11} />
                     ) : (
@@ -185,14 +185,14 @@ export default function EmployerProfile() {
 
                 <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--theme-text-muted)]">
                   <span className="flex items-center gap-1.5">
-                    <MapPin size={14} className="text-[var(--theme-accent-silver)] shrink-0" />
+                    <MapPin size={14} className="text-[var(--theme-gold)] shrink-0" />
                     <span>
                       {profile.officeLocation?.address || profile.location || "HQ Location Not Set"}
                     </span>
                   </span>
 
                   <span className="flex items-center gap-1.5">
-                    <Calendar size={14} className="text-[var(--theme-accent-silver)] shrink-0" />
+                    <Calendar size={14} className="text-[var(--theme-gold)] shrink-0" />
                     <span>Member since {new Date(profile.createdAt || Date.now()).getFullYear()}</span>
                   </span>
 
@@ -211,7 +211,7 @@ export default function EmployerProfile() {
             <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
               <Link
                 to="/employereditprofile"
-                className="flex-1 md:flex-none justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] font-bold text-xs sm:text-sm hover:opacity-90 transition-opacity shadow-sm"
+                className="flex-1 md:flex-none justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs sm:text-sm hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
               >
                 <Edit size={15} />
                 <span>Edit Profile</span>
@@ -222,10 +222,10 @@ export default function EmployerProfile() {
                   to={`/company/${employerId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 md:flex-none justify-center inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs sm:text-sm font-semibold text-[var(--theme-text)] hover:bg-[var(--theme-surface-hover)] transition-colors"
+                  className="flex-1 md:flex-none justify-center inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[var(--theme-surface-elevated)] border border-[var(--theme-border)] text-xs sm:text-sm font-semibold text-[var(--theme-text)] hover:border-[var(--theme-gold-border)] hover:text-[var(--theme-gold)] transition-all"
                 >
                   <span>Public View</span>
-                  <ExternalLink size={14} className="text-[var(--theme-accent-silver)]" />
+                  <ExternalLink size={14} className="text-[var(--theme-gold)]" />
                 </Link>
               )}
             </div>
@@ -272,7 +272,7 @@ export default function EmployerProfile() {
                       }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold text-[var(--theme-accent-silver)] hover:underline flex items-center gap-1 mt-0.5"
+                      className="font-semibold text-[var(--theme-gold)] hover:underline flex items-center gap-1 mt-0.5"
                     >
                       <span>{profile.companyWebsite.replace(/^https?:\/\//, "")}</span>
                       <ExternalLink size={12} />
@@ -290,7 +290,7 @@ export default function EmployerProfile() {
 
               <div className="space-y-3 text-xs">
                 <div className="flex items-center gap-2.5">
-                  <User size={15} className="text-[var(--theme-accent-silver)] shrink-0" />
+                  <User size={15} className="text-[var(--theme-gold)] shrink-0" />
                   <div>
                     <span className="text-[var(--theme-text-subtle)] block text-[10px]">Contact Person</span>
                     <span className="font-semibold text-[var(--theme-text)]">{profile.name}</span>
@@ -298,7 +298,7 @@ export default function EmployerProfile() {
                 </div>
 
                 <div className="flex items-center gap-2.5">
-                  <Mail size={15} className="text-[var(--theme-accent-silver)] shrink-0" />
+                  <Mail size={15} className="text-[var(--theme-gold)] shrink-0" />
                   <div className="min-w-0">
                     <span className="text-[var(--theme-text-subtle)] block text-[10px]">Corporate Email</span>
                     <span className="font-semibold text-[var(--theme-text)] truncate block">
@@ -309,7 +309,7 @@ export default function EmployerProfile() {
 
                 {profile.phone && (
                   <div className="flex items-center gap-2.5">
-                    <Phone size={15} className="text-[var(--theme-accent-silver)] shrink-0" />
+                    <Phone size={15} className="text-[var(--theme-gold)] shrink-0" />
                     <div>
                       <span className="text-[var(--theme-text-subtle)] block text-[10px]">Direct Line</span>
                       <span className="font-semibold text-[var(--theme-text)]">{profile.phone}</span>
@@ -327,7 +327,7 @@ export default function EmployerProfile() {
                 </h2>
                 <Link
                   to="/employerdocupload"
-                  className="text-[11px] font-semibold text-[var(--theme-accent-silver)] hover:underline"
+                  className="text-[11px] font-semibold text-[var(--theme-gold)] hover:underline"
                 >
                   Manage
                 </Link>
@@ -362,7 +362,7 @@ export default function EmployerProfile() {
             {/* About / Corporate Story */}
             <div className="bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl p-6 sm:p-7 shadow-sm">
               <h2 className="text-sm font-bold text-[var(--theme-text)] mb-3 flex items-center gap-2">
-                <Briefcase size={16} className="text-[var(--theme-accent-silver)]" />
+                <Briefcase size={16} className="text-[var(--theme-gold)]" />
                 <span>About the Organization</span>
               </h2>
 
@@ -397,7 +397,7 @@ export default function EmployerProfile() {
 
                 <Link
                   to="/createjob"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--theme-text)] text-[var(--theme-bg)] text-xs font-bold hover:opacity-90 shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--theme-gold)] text-black text-xs font-bold hover:bg-[var(--theme-gold-bright)] transition-all shadow-md hover:shadow-lg"
                 >
                   <PlusCircle size={14} />
                   <span>Post Job</span>
@@ -411,7 +411,7 @@ export default function EmployerProfile() {
                   </p>
                   <Link
                     to="/createjob"
-                    className="text-xs font-bold text-[var(--theme-accent-silver)] hover:underline"
+                    className="text-xs font-bold text-[var(--theme-gold)] hover:underline"
                   >
                     Create Your First Job Opportunity
                   </Link>
@@ -422,11 +422,11 @@ export default function EmployerProfile() {
                     <div
                       key={job._id}
                       onClick={() => navigate(`/job/${job._id}`)}
-                      className="p-4 sm:p-5 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-border-silver)] transition-all cursor-pointer group flex flex-col justify-between"
+                      className="p-4 sm:p-5 rounded-2xl bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:border-[var(--theme-gold-border)] transition-all cursor-pointer group flex flex-col justify-between shadow-sm"
                     >
                       <div>
                         <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3 className="font-bold text-xs sm:text-sm text-[var(--theme-text)] group-hover:text-[var(--theme-accent-silver-sheen)] transition-colors line-clamp-1">
+                          <h3 className="font-bold text-xs sm:text-sm text-[var(--theme-text)] group-hover:text-[var(--theme-gold)] transition-colors line-clamp-1">
                             {job.title}
                           </h3>
                           <span
@@ -453,7 +453,7 @@ export default function EmployerProfile() {
                         <span className="text-[11px] text-[var(--theme-text-muted)] font-mono">
                           {job.stats?.total || 0} applicants
                         </span>
-                        <span className="text-[11px] font-semibold text-[var(--theme-accent-silver)] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                        <span className="text-[11px] font-semibold text-[var(--theme-gold)] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
                           <span>View Dossier</span>
                           <ArrowRight size={12} />
                         </span>

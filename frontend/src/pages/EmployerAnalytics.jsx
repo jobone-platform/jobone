@@ -175,7 +175,7 @@ export default function EmployerAnalytics() {
       ]}
     >
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
-          <Loader2 className="animate-spin text-silver mb-3" size={36} />
+          <Loader2 className="animate-spin text-[var(--theme-gold)] mb-3" size={36} />
           <p className="text-xs font-mono tracking-widest text-foreground/50 uppercase">
             Computing Recruitment Intelligence Telemetry...
           </p>
@@ -202,7 +202,7 @@ export default function EmployerAnalytics() {
                 Recruitment Intelligence
               </span>
               <span className="text-foreground/30 font-mono">/</span>
-              <span className="text-xs font-mono text-silver uppercase">
+              <span className="text-xs font-mono text-[var(--theme-gold)] uppercase font-semibold">
                 Funnel Telemetry
               </span>
             </div>
@@ -245,7 +245,7 @@ export default function EmployerAnalytics() {
                   onClick={() => setDateRange(d.id)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
                     dateRange === d.id
-                      ? "bg-elevated text-foreground font-bold shadow-sm border border-border"
+                      ? "bg-[var(--theme-gold-surface)] text-[var(--theme-gold)] font-bold shadow-sm border border-[var(--theme-gold-border)]"
                       : "text-foreground/50 hover:text-foreground"
                   }`}
                 >
@@ -334,7 +334,7 @@ export default function EmployerAnalytics() {
                   Multi-stage drop-off rates and candidate qualification velocity.
                 </p>
               </div>
-              <span className="px-3 py-1 rounded-xl bg-elevated border border-border text-xs font-mono text-silver">
+              <span className="px-3 py-1 rounded-xl bg-[var(--theme-gold-surface)] border border-[var(--theme-gold-border)] text-xs font-mono text-[var(--theme-gold)] font-bold">
                 {telemetry.total} Candidates Processed
               </span>
             </div>
@@ -345,8 +345,8 @@ export default function EmployerAnalytics() {
                   stage: "1. Applications Received",
                   count: telemetry.total,
                   percentage: 100,
-                  color: "bg-silver",
-                  textColor: "text-silver",
+                  color: "bg-[var(--theme-gold)]",
+                  textColor: "text-[var(--theme-gold)]",
                 },
                 {
                   stage: "2. Shortlisted for Evaluation",
@@ -365,8 +365,8 @@ export default function EmployerAnalytics() {
                     telemetry.total > 0
                       ? Math.round((telemetry.scheduled / telemetry.total) * 100)
                       : 0,
-                  color: "bg-purple-400",
-                  textColor: "text-purple-400",
+                  color: "bg-[var(--theme-gold)]",
+                  textColor: "text-[var(--theme-gold)]",
                 },
                 {
                   stage: "4. Practical Assignment",
@@ -418,7 +418,7 @@ export default function EmployerAnalytics() {
                 {[
                   { label: "Applied (Awaiting Review)", count: telemetry.total - telemetry.shortlisted - telemetry.scheduled - telemetry.assignment - telemetry.hired - telemetry.nctt, color: "bg-foreground/40" },
                   { label: "Shortlisted", count: telemetry.shortlisted, color: "bg-blue-400" },
-                  { label: "Interviewing", count: telemetry.scheduled, color: "bg-purple-400" },
+                  { label: "Interviewing", count: telemetry.scheduled, color: "bg-[var(--theme-gold)]" },
                   { label: "Assignment", count: telemetry.assignment, color: "bg-amber-400" },
                   { label: "Hired", count: telemetry.hired, color: "bg-emerald-400" },
                   { label: "Not a Fit (NCTT)", count: telemetry.nctt, color: "bg-rose-400" },
@@ -437,7 +437,7 @@ export default function EmployerAnalytics() {
             </div>
 
             <div className="p-3 rounded-2xl bg-elevated border border-border text-[11px] font-mono text-foreground/50 space-y-1">
-              <span className="text-silver font-bold block uppercase">Data Provenance</span>
+              <span className="text-[var(--theme-gold)] font-bold block uppercase">Data Provenance</span>
               <span>
                 Computed from live MongoDB collections (`Application` and `Job`). Zero synthesized extrapolation.
               </span>
@@ -500,7 +500,7 @@ export default function EmployerAnalytics() {
                       <td className="p-4">
                         <Link
                           to={`/job/${item.id}/applicants`}
-                          className="font-display font-bold text-sm text-foreground hover:text-silver transition-colors flex items-center gap-1.5"
+                          className="font-display font-bold text-sm text-foreground hover:text-[var(--theme-gold)] transition-colors flex items-center gap-1.5"
                         >
                           {item.title}
                           <ArrowUpRight size={13} className="text-foreground/40" />
@@ -523,7 +523,7 @@ export default function EmployerAnalytics() {
                       <td className="p-4 font-mono font-bold text-foreground">
                         {item.applications}
                       </td>
-                      <td className="p-4 font-mono text-purple-400">{item.interviews}</td>
+                      <td className="p-4 font-mono text-[var(--theme-gold)]">{item.interviews}</td>
                       <td className="p-4 font-mono text-emerald-400 font-bold">{item.hired}</td>
                       <td className="p-4 font-mono text-right font-bold text-foreground">
                         {item.conversion}%

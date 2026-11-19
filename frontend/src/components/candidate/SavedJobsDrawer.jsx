@@ -167,9 +167,9 @@ export default function SavedJobsDrawer({
                 Bookmark job listings while exploring roles so you can compare, review, and apply to them later.
               </p>
               <Link
-                to="/jobs"
+                to="/candidate/jobs"
                 onClick={onClose}
-                className="px-4 py-2.5 rounded-xl bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] text-xs font-bold hover:opacity-90 transition-opacity inline-flex items-center gap-2 shadow-xs min-h-[40px]"
+                className="px-4 py-2.5 rounded-xl bg-[var(--theme-gold)] text-black font-bold text-xs hover:opacity-90 transition-opacity inline-flex items-center gap-2 shadow-xs min-h-[40px]"
               >
                 Explore Open Roles <ArrowRight size={14} />
               </Link>
@@ -246,7 +246,7 @@ export default function SavedJobsDrawer({
                         e.stopPropagation();
                         onClose();
                       }}
-                      className="px-3 py-1.5 rounded-lg bg-[var(--theme-primary-btn-bg)] text-[var(--theme-primary-btn-text)] font-semibold text-[11px] hover:opacity-90 transition-opacity shadow-xs"
+                      className="px-3 py-1.5 rounded-lg bg-[var(--theme-gold)] text-black font-semibold text-[11px] hover:opacity-90 transition-opacity shadow-xs"
                     >
                       Apply Now
                     </Link>
@@ -286,9 +286,9 @@ export default function SavedJobsDrawer({
             ) : (
               <div className="flex items-center justify-between">
                 <Link
-                  to="/jobs"
+                  to="/candidate/jobs"
                   onClick={onClose}
-                  className="text-xs text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] font-medium transition-colors flex items-center gap-1"
+                  className="text-xs text-[var(--theme-text-muted)] hover:text-[var(--theme-gold)] font-medium transition-colors flex items-center gap-1"
                 >
                   Browse more jobs <ExternalLink size={12} />
                 </Link>
