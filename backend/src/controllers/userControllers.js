@@ -41,7 +41,10 @@ const getS3Client = () => {
 };
 
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const getGoogleOAuthClient = () => {
+  const clientId = process.env.GOOGLE_CLIENT_ID || process.env.Google_Client_ID;
+  return new OAuth2Client(clientId);
+};
 
 export const createUser = expressAsyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -537,47 +540,61 @@ export const userDetails = expressAsyncHandler(async (req, res) => {
 
 export const googleLogin = expressAsyncHandler(async (req, res) => {
   try {
-    const { token: googleToken } = req.body;
-    if (!googleToken) {
+    const idToken = req.body.idToken || req.body.token || req.body.credential;
+    if (!idToken || typeof idToken !== "string" || !idToken.trim()) {
       res.status(400);
-      throw new Error("Google authentication token is required.");
+      throw new Error("Google ID token is required.");
     }
 
-    let email, name, picture, googleId;
-    const isIdToken = typeof googleToken === "string" && googleToken.split(".").length === 3;
-
-    if (isIdToken) {
-      // 1. Verify Google OIDC ID Token (JWT)
-      const ticket = await client.verifyIdToken({
-        idToken: googleToken,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-      const payload = ticket.getPayload();
-      email = payload.email;
-      name = payload.name;
-      picture = payload.picture;
-      googleId = payload.sub;
-    } else {
-      // 2. Verify Google OAuth2 Access Token
-      const tokenInfo = await client.getTokenInfo(googleToken);
-      if (tokenInfo.aud && process.env.GOOGLE_CLIENT_ID && tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID) {
-        res.status(401);
-        throw new Error("Invalid Google OAuth client credentials.");
-      }
-
-      const googleUserRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-        headers: { Authorization: `Bearer ${googleToken}` },
-      });
-      if (!googleUserRes.ok) {
-        res.status(401);
-        throw new Error("Failed to verify Google access token with Google identity service.");
-      }
-      const profile = await googleUserRes.json();
-      email = profile.email;
-      name = profile.name;
-      picture = profile.picture;
-      googleId = profile.sub;
+    const trimmedToken = idToken.trim();
+    const tokenSegments = trimmedToken.split(".");
+    if (tokenSegments.length !== 3) {
+      res.status(400);
+      throw new Error("Invalid Google ID token format. A valid 3-segment JWT is required.");
     }
+
+    const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.Google_Client_ID;
+    if (!googleClientId) {
+      console.error("GOOGLE_CLIENT_ID environment variable is missing in backend configuration.");
+      res.status(500);
+      throw new Error("Backend authentication configuration error: Google Client ID not configured.");
+    }
+
+    const oauthClient = getGoogleOAuthClient();
+
+    let payload;
+    try {
+      const ticket = await oauthClient.verifyIdToken({
+        idToken: trimmedToken,
+        audience: googleClientId,
+      });
+      payload = ticket.getPayload();
+    } catch (verifyError) {
+      console.error("Google ID token verification failed (candidate):", verifyError.message);
+      res.status(401);
+      throw new Error(`Google token verification failed: ${verifyError.message}`);
+    }
+
+    if (!payload) {
+      res.status(401);
+      throw new Error("Invalid Google token payload.");
+    }
+
+    if (!payload.email_verified) {
+      res.status(401);
+      throw new Error("Google account email is not verified.");
+    }
+
+    const validIssuers = ["accounts.google.com", "https://accounts.google.com"];
+    if (!validIssuers.includes(payload.iss)) {
+      res.status(401);
+      throw new Error(`Invalid token issuer: ${payload.iss}`);
+    }
+
+    const email = payload.email;
+    const name = payload.name;
+    const picture = payload.picture;
+    const googleId = payload.sub;
 
     if (!email) {
       res.status(400);
@@ -596,7 +613,7 @@ export const googleLogin = expressAsyncHandler(async (req, res) => {
       // --- SCENARIO 1: EXISTING USER (LOGIN) ---
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '5h' });
       
-      if (!user.profilePicture) {
+      if (!user.profilePicture && picture) {
           user.profilePicture = picture;
           await user.save();
       }
@@ -616,17 +633,17 @@ export const googleLogin = expressAsyncHandler(async (req, res) => {
 
     } else {
       // --- SCENARIO 2: NEW USER (REGISTER) ---
-      // 3. Check for Employer collision BEFORE creating a new user
+      // Check for Employer collision BEFORE creating a new user
       const existingEmployer = await Employer.findOne({ email: normalizedEmail });
       if (existingEmployer) {
         res.status(400);
         throw new Error("This email is already registered as an Employer. You cannot create a Jobseeker account with this email.");
       }
-      // --- SCENARIO 2: NEW USER (REGISTER) ---
+
       const randomPassword = crypto.randomBytes(16).toString('hex');
       const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
-      // FACT: We inject a completely unique dummy phone number to prevent MongoDB E11000 duplicate key crashes
+      // Inject unique dummy phone number to prevent MongoDB duplicate key crash
       const dummyPhone = `G-${Date.now().toString().slice(-8)}`;
 
       const newUser = new User({
@@ -635,14 +652,15 @@ export const googleLogin = expressAsyncHandler(async (req, res) => {
         password: hashedPassword,
         profilePicture: picture,
         isVerified: true, 
-        phone: dummyPhone // Bypass crash here
+        authProvider: 'google',
+        googleId: googleId,
+        phone: dummyPhone
       });
 
       const savedUser = await newUser.save();
       
       const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: '5h' });
 
-      // Send false so frontend redirects to Edit Profile
       return res.status(201).json({
         message: "Google Registration Successful",
         token,
@@ -652,7 +670,7 @@ export const googleLogin = expressAsyncHandler(async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("FATAL GOOGLE LOGIN ERROR:", error);
+    console.error("FATAL GOOGLE LOGIN ERROR (CANDIDATE):", error.message);
     const status = res.statusCode >= 400 ? res.statusCode : 401;
     res.status(status);
     throw new Error(error.message || "Google Authentication Failed");
